@@ -1,0 +1,43 @@
+{
+  "name": "lodgetix---reconcile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node scripts/start-dev.js",
+    "dev:concurrent": "concurrently \"npm run server\" \"npm run mongodb-explorer\"",
+    "start": "node dist/index.js",
+    "migrate": "ts-node src/migrate.ts",
+    "import-payments": "ts-node src/import-payments.ts",
+    "server": "ts-node src/server.ts",
+    "server:dev": "nodemon --exec ts-node src/server.ts --watch src",
+    "mongodb-explorer": "cd mongodb-explorer && npm run dev",
+    "start:all": "node scripts/start-dev.js",
+    "dev:all": "concurrently \"npm run server:dev\" \"npm run mongodb-explorer\"",
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.0.4",
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/pg": "^8.15.4",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.6.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongodb": "^6.17.0",
+    "pg": "^8.16.2"
+  }
+}

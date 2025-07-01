@@ -1,0 +1,172 @@
+{
+  "_id": "ObjectId",
+  "ticketNumber": "Generated: TKT-FUNCTIONID-EVENTCODE-NNNNN",
+  "product": {
+    "functionId": "functions: functionId",
+    "eventId": "functions.events: event_id",
+    "eventName": "functions.events: name",
+    "productId": "functions.events.products: _id",
+    "productName": "functions.events.products: name",
+    "productCategory": "functions.events.products: category",
+    "description": "functions.events.products: description",
+    "price": "functions.events.products: pricing.basePrice",
+    "features": ["functions.events.products: features array"],
+    "restrictions": ["functions.events.products: restrictions array"]
+  },
+  "purchase": {
+    "registrationId": "registrations: _id",
+    "registrationNumber": "registrations: registrationNumber",
+    "purchasedBy": {
+      "type": "registrations.registrant: type",
+      "id": "registrations.registrant: id",
+      "name": "registrations.registrant: name"
+    },
+    "purchaseDate": "registrations: metadata.createdAt",
+    "paymentStatus": "registrations.payment: status",
+    "lineItemId": "registrations.purchase.items: lineItemId",
+    "pricePaid": "registrations.purchase.items: unitPrice",
+    "discount": {
+      "amount": "registrations.purchase.items.discount: amount",
+      "code": "registrations.purchase.items.discount: code",
+      "percentage": "registrations.purchase.items.discount: percentage"
+    },
+    "refund": {
+      "amount": "TODO: Refund amount",
+      "date": "TODO: Refund date",
+      "reason": "TODO: Refund reason",
+      "transactionId": "financialTransactions: _id for refund"
+    }
+  },
+  "currentOwner": {
+    "attendeeId": "attendees: _id",
+    "attendeeNumber": "attendees: attendeeNumber",
+    "name": "attendees: profile.firstName + profile.lastName",
+    "assignedAt": "Generated: Assignment timestamp",
+    "assignedBy": "users: _id (assigner)"
+  },
+  "transferHistory": [
+    {
+      "transferId": "Generated: ObjectId",
+      "from": {
+        "attendeeId": "attendees: _id",
+        "name": "attendees: profile.firstName + profile.lastName"
+      },
+      "to": {
+        "attendeeId": "attendees: _id",
+        "name": "attendees: profile.firstName + profile.lastName"
+      },
+      "transferredAt": "TODO: Transfer timestamp",
+      "transferredBy": "users: _id",
+      "reason": "TODO: Transfer reason",
+      "salePrice": "TODO: Secondary market price",
+      "platform": "internal",
+      "verificationCode": "Generated: Secure transfer code"
+    }
+  ],
+  "access": {
+    "zones": ["general", "vip", "backstage"],
+    "gates": ["main", "vip", "performer"],
+    "validFrom": "functions.events: eventStart",
+    "validUntil": "functions.events: eventEnd",
+    "singleUse": false,
+    "multiEntry": true,
+    "maxEntries": 0,
+    "entryCount": 0,
+    "status": "valid",
+    "revokedReason": null,
+    "revokedAt": null,
+    "revokedBy": null
+  },
+  "usageHistory": [
+    {
+      "usedAt": "TODO: Entry timestamp",
+      "location": {
+        "gate": "TODO: Entry gate ID",
+        "scanner": "TODO: Scanner device ID",
+        "coordinates": {
+          "latitude": -33.8688,
+          "longitude": 151.2093
+        }
+      },
+      "method": "qr_scan",
+      "staff": "users: _id (scanner operator)",
+      "notes": "TODO: Entry notes",
+      "exitAt": "TODO: Exit timestamp",
+      "exitLocation": {
+        "gate": "TODO: Exit gate ID",
+        "scanner": "TODO: Exit scanner ID"
+      }
+    }
+  ],
+  "delivery": {
+    "method": "digital",
+    "status": "sent",
+    "digital": {
+      "sentAt": "TODO: Email sent timestamp",
+      "email": "attendees.profile.contact: email",
+      "downloadCount": 0,
+      "lastDownloadAt": "TODO: Last download timestamp"
+    },
+    "physical": {
+      "shippedAt": "TODO: Ship date",
+      "carrier": "TODO: Shipping carrier",
+      "trackingNumber": "TODO: Tracking number",
+      "deliveredAt": "TODO: Delivery date",
+      "signature": "TODO: Delivery signature"
+    },
+    "willCall": {
+      "booth": "TODO: Pickup booth",
+      "collectedAt": "TODO: Collection timestamp",
+      "collectedBy": {
+        "name": "TODO: Collector name",
+        "idVerified": false,
+        "idType": "TODO: ID type shown",
+        "notes": "TODO: Collection notes"
+      }
+    }
+  },
+  "seat": {
+    "section": "TODO: Seating section",
+    "row": "TODO: Seat row",
+    "number": "TODO: Seat number",
+    "accessibility": false,
+    "assigned": false,
+    "assignedAt": "TODO: Seat assignment timestamp",
+    "preferences": {
+      "zone": "TODO: Preferred zone",
+      "companions": ["TODO: Other ticket numbers"]
+    }
+  },
+  "addOns": [
+    {
+      "type": "parking",
+      "description": "VIP Parking Pass",
+      "value": 50.00,
+      "status": "active",
+      "redeemedAt": "TODO: Redemption timestamp"
+    }
+  ],
+  "security": {
+    "barcode": "Generated: Unique barcode string",
+    "qrData": "Generated: Encrypted QR payload",
+    "securityCode": "Generated: Visual security code",
+    "ipAddress": "registrations.metadata: ipAddress",
+    "deviceFingerprint": "TODO: Purchase device fingerprint",
+    "riskScore": 0.0,
+    "verified": false,
+    "verifiedAt": "TODO: Verification timestamp",
+    "verificationMethod": "TODO: Verification method"
+  },
+  "status": "active",
+  "customFields": {},
+  "metadata": {
+    "createdAt": "Generated: Creation timestamp",
+    "createdBy": "users: _id or system",
+    "updatedAt": "Generated: Update timestamp",
+    "updatedBy": "users: _id or system",
+    "version": 1,
+    "source": "purchase",
+    "importBatch": "TODO: Import batch ID",
+    "migrationId": "TODO: Legacy system ID"
+  }
+}

@@ -1,0 +1,2 @@
+payment_gateway_id,payment_gateway_uuid,payment_gateway,fee_mode,domestic_card_percentage,domestic_card_fixed,international_card_percentage,international_card_fixed,platform_fee_percentage,platform_fee_min,platform_fee_cap,is_active,created_on,enabled_on,disabled_on
+1,1688a9ff-213b-449c-8bad-2514a96457c4,square,pass_on,2.20,0.00,2.20,0.00,2.00,1.00,20.00,true,2025-06-23 15:35:14.534848+00,2025-06-23 15:35:14.534848+00,

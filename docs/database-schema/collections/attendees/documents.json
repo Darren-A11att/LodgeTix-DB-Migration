@@ -1,0 +1,160 @@
+{
+  "_id": "ObjectId",
+  "attendeeNumber": "Generated: ATT-YYYY-NNNNN",
+  "registrationId": "registrations: _id",
+  "functionId": "registrations: functionId",
+  "profile": {
+    "firstName": "users: firstName or import",
+    "lastName": "users: lastName or import",
+    "preferredName": "users: displayName",
+    "dateOfBirth": "users: dateOfBirth",
+    "gender": "users: gender",
+    "contact": {
+      "email": "users: email or registrant.contact.email",
+      "phone": "users: phone or registrant.contact.phone",
+      "emergencyContact": {
+        "name": "TODO: Emergency contact name",
+        "phone": "TODO: Emergency contact phone",
+        "relationship": "TODO: Emergency contact relationship"
+      }
+    },
+    "identification": {
+      "type": "TODO: ID type (drivers_license, passport, member_card)",
+      "number": "TODO: ID number (encrypted)",
+      "verifiedAt": "TODO: Verification timestamp",
+      "verifiedBy": "TODO: Verifier user ID"
+    }
+  },
+  "qrCode": {
+    "code": "Generated: UUID or custom format",
+    "format": "uuid",
+    "generatedAt": "Generated: Creation timestamp",
+    "lastScanned": "TODO: Last scan timestamp",
+    "scanCount": 0,
+    "security": {
+      "pin": "TODO: Optional PIN (hashed)",
+      "validFrom": "functions.dates.startDate",
+      "validUntil": "functions.dates.endDate plus buffer",
+      "revoked": false,
+      "revokedReason": null
+    }
+  },
+  "tickets": [
+    {
+      "ticketId": "tickets: _id",
+      "eventId": "tickets: eventId",
+      "eventName": "functions.events: name",
+      "productName": "functions.events.products: name",
+      "access": {
+        "zones": ["general", "vip"],
+        "validFrom": "events: eventStart",
+        "validUntil": "events: eventEnd",
+        "singleUse": false,
+        "used": false,
+        "usedAt": null
+      }
+    }
+  ],
+  "checkIns": [
+    {
+      "eventId": "events: event_id",
+      "locationId": "TODO: Scanner location ID",
+      "checkInTime": "TODO: Check-in timestamp",
+      "checkOutTime": "TODO: Check-out timestamp",
+      "device": "TODO: Scanner device ID",
+      "staff": "users: _id (scanner operator)",
+      "method": "qr_scan",
+      "notes": "TODO: Check-in notes"
+    }
+  ],
+  "requirements": {
+    "dietary": ["TODO: Dietary requirements array"],
+    "accessibility": ["TODO: Accessibility needs array"],
+    "medical": {
+      "conditions": ["TODO: Medical conditions"],
+      "medications": ["TODO: Current medications"],
+      "allergies": ["TODO: Known allergies"]
+    },
+    "seating": {
+      "preference": "TODO: Seating preference",
+      "companionIds": ["attendees: _id"],
+      "avoidIds": ["attendees: _id"]
+    }
+  },
+  "accommodation": {
+    "roomId": "TODO: Room identifier",
+    "roomType": "TODO: Room type",
+    "checkIn": "TODO: Accommodation check-in date",
+    "checkOut": "TODO: Accommodation check-out date",
+    "companions": ["attendees: _id"],
+    "preferences": {
+      "floor": "TODO: Floor preference",
+      "bedType": "TODO: Bed type preference",
+      "notes": "TODO: Accommodation notes"
+    }
+  },
+  "communications": {
+    "preferences": {
+      "email": true,
+      "sms": true,
+      "pushNotifications": false
+    },
+    "language": "en",
+    "timezone": "Australia/Sydney",
+    "sent": [
+      {
+        "type": "confirmation",
+        "channel": "email",
+        "sentAt": "TODO: Communication timestamp",
+        "subject": "TODO: Communication subject",
+        "status": "sent"
+      }
+    ]
+  },
+  "engagement": {
+    "eventsAttended": 0,
+    "lastEventDate": "TODO: Last event attended",
+    "totalSpent": 0.00,
+    "sessions": [
+      {
+        "eventId": "events: event_id",
+        "sessionId": "TODO: Session identifier",
+        "attended": false,
+        "feedback": {
+          "rating": null,
+          "comments": null
+        }
+      }
+    ],
+    "activities": [
+      {
+        "type": "TODO: Activity type",
+        "activityId": "TODO: Activity identifier",
+        "participatedAt": "TODO: Participation timestamp",
+        "result": "TODO: Activity result"
+      }
+    ]
+  },
+  "badge": {
+    "printed": false,
+    "printedAt": "TODO: Print timestamp",
+    "collectedAt": "TODO: Collection timestamp",
+    "badgeType": "standard",
+    "customFields": {
+      "title": "TODO: Badge title",
+      "organisation": "organisations: name",
+      "ribbons": ["TODO: Special designations"]
+    }
+  },
+  "status": "active",
+  "source": "registration",
+  "customFields": {},
+  "metadata": {
+    "createdAt": "Generated: Creation timestamp",
+    "createdBy": "users: _id or system",
+    "updatedAt": "Generated: Update timestamp",
+    "updatedBy": "users: _id or system",
+    "importId": "TODO: Bulk import identifier",
+    "version": 1
+  }
+}
