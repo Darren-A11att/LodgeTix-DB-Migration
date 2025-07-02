@@ -223,6 +223,363 @@ app.get('/api/collections/:name/documents', async (req, res) => {
   }
 });
 
+// Search documents in a specific collection
+app.post('/api/collections/:name/search', async (req, res) => {
+  try {
+    const { db } = await connectMongoDB();
+    const collectionName = req.params.name;
+    const { query } = req.body;
+    
+    if (!query || typeof query !== 'object') {
+      res.status(400).json({ error: 'Invalid search query' });
+      return;
+    }
+    
+    const collection = db.collection(collectionName);
+    
+    // Build MongoDB query from the provided query object
+    const filter: any = {};
+    
+    // Handle different query patterns
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        // For ID fields, use exact match
+        if (key.includes('Id') || key === '_id') {
+          if (key === '_id' && ObjectId.isValid(value as string)) {
+            filter[key] = new ObjectId(value as string);
+          } else {
+            filter[key] = value;
+          }
+        } else if (key === 'email' || key === 'customerEmail') {
+          // For email fields, use case-insensitive regex
+          filter[key] = { $regex: new RegExp(value as string, 'i') };
+        } else {
+          // For other fields, use exact match
+          filter[key] = value;
+        }
+      }
+    });
+    
+    // If no valid filters, return empty results
+    if (Object.keys(filter).length === 0) {
+      res.json({
+        results: [],
+        total: 0,
+        collection: collectionName,
+        query
+      });
+      return;
+    }
+    
+    // Execute search
+    const results = await collection.find(filter).limit(50).toArray();
+    const total = await collection.countDocuments(filter);
+    
+    res.json({
+      results,
+      total,
+      collection: collectionName,
+      query
+    });
+  } catch (error) {
+    console.error('Error searching documents:', error);
+    res.status(500).json({ error: 'Failed to search documents' });
+  }
+});
+
+// Create a new document in a collection
+app.post('/api/collections/:name/documents', async (req, res) => {
+  try {
+    const { db } = await connectMongoDB();
+    const collectionName = req.params.name;
+    const document = req.body;
+    
+    if (!document || typeof document !== 'object') {
+      res.status(400).json({ error: 'Invalid document data' });
+      return;
+    }
+    
+    const collection = db.collection(collectionName);
+    
+    // Add timestamps
+    const newDocument = {
+      ...document,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    // Insert document
+    const result = await collection.insertOne(newDocument);
+    
+    res.json({
+      success: true,
+      insertedId: result.insertedId,
+      document: { ...newDocument, _id: result.insertedId }
+    });
+  } catch (error) {
+    console.error('Error creating document:', error);
+    res.status(500).json({ error: 'Failed to create document' });
+  }
+});
+
+// Get related documents for any document in any collection
+app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
+  try {
+    const { db } = await connectMongoDB();
+    const { name: collectionName, id: documentId } = req.params;
+    
+    if (!ObjectId.isValid(documentId)) {
+      res.status(400).json({ error: 'Invalid document ID' });
+      return;
+    }
+    
+    // Get the source document
+    const sourceCollection = db.collection(collectionName);
+    const sourceDoc = await sourceCollection.findOne({ _id: new ObjectId(documentId) });
+    
+    if (!sourceDoc) {
+      res.status(404).json({ error: 'Document not found' });
+      return;
+    }
+    
+    const relatedDocs: Record<string, any[]> = {};
+    
+    // Special handling for functions collection
+    if (collectionName === 'functions') {
+      // First, get documents by specific IDs mentioned in the function
+      if (sourceDoc.locationId) {
+        try {
+          const locationsCollection = db.collection('locations');
+          const locationQueries: any[] = [
+            { locationId: sourceDoc.locationId },
+            { id: sourceDoc.locationId }
+          ];
+          if (ObjectId.isValid(sourceDoc.locationId)) {
+            locationQueries.push({ _id: new ObjectId(sourceDoc.locationId) });
+          }
+          const location = await locationsCollection.findOne({ $or: locationQueries });
+          if (location) {
+            relatedDocs.locations = [location];
+          }
+        } catch (err) {
+          console.warn('Failed to fetch location:', err);
+        }
+      }
+      
+      if (sourceDoc.organiserId) {
+        try {
+          const organisersCollection = db.collection('organisers');
+          const organiserQueries: any[] = [
+            { organiserId: sourceDoc.organiserId },
+            { id: sourceDoc.organiserId }
+          ];
+          if (ObjectId.isValid(sourceDoc.organiserId)) {
+            organiserQueries.push({ _id: new ObjectId(sourceDoc.organiserId) });
+          }
+          const organiser = await organisersCollection.findOne({ $or: organiserQueries });
+          if (organiser) {
+            relatedDocs.organisers = [organiser];
+          }
+        } catch (err) {
+          console.warn('Failed to fetch organiser:', err);
+        }
+      }
+      
+      // Then get documents with functionId
+      const functionRelatedCollections = ['events', 'event_tickets', 'packages'];
+      for (const relCollection of functionRelatedCollections) {
+        try {
+          const collection = db.collection(relCollection);
+          const results = await collection.find({
+            $or: [
+              { functionId: sourceDoc._id.toString() },
+              { functionId: sourceDoc.functionId },
+              { function_id: sourceDoc._id.toString() },
+              { function_id: sourceDoc.functionId }
+            ]
+          }).limit(50).toArray();
+          
+          if (results.length > 0) {
+            relatedDocs[relCollection] = results;
+          }
+        } catch (err) {
+          console.warn(`Failed to search ${relCollection}:`, err);
+        }
+      }
+      
+      // If we found events, also get their event tickets
+      if (relatedDocs.events && relatedDocs.events.length > 0) {
+        try {
+          const eventTicketsCollection = db.collection('event_tickets');
+          const eventIds = relatedDocs.events.map((event: any) => event._id.toString());
+          
+          // Also collect any eventId fields from the events
+          relatedDocs.events.forEach((event: any) => {
+            if (event.eventId) eventIds.push(event.eventId);
+            if (event.id) eventIds.push(event.id);
+          });
+          
+          const eventTickets = await eventTicketsCollection.find({
+            $or: [
+              { eventId: { $in: eventIds } },
+              { event_id: { $in: eventIds } }
+            ]
+          }).limit(200).toArray();
+          
+          if (eventTickets.length > 0) {
+            // Merge with existing event_tickets if any
+            relatedDocs.event_tickets = [
+              ...(relatedDocs.event_tickets || []),
+              ...eventTickets
+            ];
+            
+            // Remove duplicates based on _id
+            const uniqueTickets = relatedDocs.event_tickets.filter(
+              (ticket: any, index: number, self: any[]) =>
+                index === self.findIndex((t: any) => t._id?.toString() === ticket._id?.toString())
+            );
+            relatedDocs.event_tickets = uniqueTickets;
+          }
+        } catch (err) {
+          console.warn('Failed to fetch event tickets for events:', err);
+        }
+      }
+      
+      // Skip the normal relationship processing for functions
+      res.json({
+        source: {
+          collection: collectionName,
+          document: sourceDoc
+        },
+        relatedDocuments: relatedDocs,
+        summary: {
+          totalRelated: Object.values(relatedDocs).reduce((sum, docs) => sum + docs.length, 0),
+          collections: Object.keys(relatedDocs)
+        }
+      });
+      return;
+    }
+    
+    // Define relationships for other collection types
+    const relationships: Record<string, string[]> = {
+      registrations: ['attendees', 'eventTickets', 'packages', 'functions', 'events', 'lodges', 'organisations', 'users'],
+      attendees: ['registrations', 'tickets', 'users'],
+      payments: ['registrations', 'invoices'],
+      users: ['registrations', 'attendees', 'organisations'],
+      organisations: ['registrations', 'users', 'lodges'],
+      events: ['functions', 'eventTickets', 'registrations']
+    };
+    
+    const relatedCollections = relationships[collectionName] || [];
+    
+    // Extract all possible ID fields from source document
+    const idFields: Record<string, any> = {};
+    const extractIds = (obj: any, prefix = '') => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (key.includes('Id') || key === '_id' || key === 'id') {
+          idFields[key] = value;
+        }
+        if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+          extractIds(value, prefix ? `${prefix}.${key}` : key);
+        }
+      });
+    };
+    extractIds(sourceDoc);
+    
+    console.log(`Searching for related documents for ${collectionName} document ${documentId}`);
+    console.log('Extracted ID fields:', idFields);
+    console.log('Will search in collections:', relatedCollections);
+    
+    // Search related collections
+    for (const relatedCollection of relatedCollections) {
+      try {
+        const collection = db.collection(relatedCollection);
+        const queries: any[] = [];
+        
+        // Build queries based on ID fields
+        Object.entries(idFields).forEach(([field, value]) => {
+          if (value) {
+            // Direct field match
+            queries.push({ [field]: value });
+            
+            // Also check if it's an ObjectId
+            if (ObjectId.isValid(value)) {
+              queries.push({ [field]: new ObjectId(value) });
+              queries.push({ _id: new ObjectId(value) });
+            }
+            
+            // Check nested fields
+            queries.push({ [`${collectionName}Id`]: value });
+            queries.push({ [`${collectionName}._id`]: value });
+          }
+        });
+        
+        // Add email-based queries if applicable
+        if (sourceDoc.email) {
+          queries.push({ email: sourceDoc.email });
+          queries.push({ customerEmail: sourceDoc.email });
+          queries.push({ primaryEmail: sourceDoc.email });
+        }
+        if (sourceDoc.customerEmail) {
+          queries.push({ email: sourceDoc.customerEmail });
+          queries.push({ customerEmail: sourceDoc.customerEmail });
+          queries.push({ primaryEmail: sourceDoc.customerEmail });
+        }
+        
+        // Add registration-specific queries
+        if (collectionName === 'registrations') {
+          if (sourceDoc.confirmationNumber) {
+            queries.push({ confirmationNumber: sourceDoc.confirmationNumber });
+            queries.push({ registrationConfirmationNumber: sourceDoc.confirmationNumber });
+          }
+          if (sourceDoc.registrationId) {
+            queries.push({ registrationId: sourceDoc.registrationId });
+            queries.push({ registration_id: sourceDoc.registrationId });
+          }
+          if (sourceDoc.customerId) {
+            queries.push({ customerId: sourceDoc.customerId });
+            queries.push({ customer_id: sourceDoc.customerId });
+            queries.push({ userId: sourceDoc.customerId });
+          }
+          if (sourceDoc.functionId) {
+            queries.push({ functionId: sourceDoc.functionId });
+            queries.push({ function_id: sourceDoc.functionId });
+          }
+          if (sourceDoc.lodgeId) {
+            queries.push({ lodgeId: sourceDoc.lodgeId });
+            queries.push({ lodge_id: sourceDoc.lodgeId });
+            queries.push({ organisationId: sourceDoc.lodgeId });
+          }
+        }
+        
+        if (queries.length > 0) {
+          const results = await collection.find({ $or: queries }).limit(50).toArray();
+          if (results.length > 0) {
+            relatedDocs[relatedCollection] = results;
+          }
+        }
+      } catch (err) {
+        console.warn(`Failed to search ${relatedCollection}:`, err);
+      }
+    }
+    
+    res.json({
+      source: {
+        collection: collectionName,
+        document: sourceDoc
+      },
+      relatedDocuments: relatedDocs,
+      summary: {
+        totalRelated: Object.values(relatedDocs).reduce((sum, docs) => sum + docs.length, 0),
+        collections: Object.keys(relatedDocs)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching related documents:', error);
+    res.status(500).json({ error: 'Failed to fetch related documents' });
+  }
+});
+
 // Get reconciliation data
 app.get('/api/reconciliation', async (_req, res) => {
   try {
@@ -1108,28 +1465,61 @@ app.patch('/api/registrations/:id', async (req, res) => {
 app.post('/api/invoices/create', async (req, res) => {
   try {
     const { db } = await connectMongoDB();
-    const { payment, registration, invoice } = req.body;
+    const { payment, registration, invoice, customerInvoice, supplierInvoice } = req.body;
     
     if (!payment || !invoice) {
       res.status(400).json({ error: 'Payment and invoice data are required' });
       return;
     }
     
-    // Generate final invoice number
+    // Generate final invoice number for customer invoice
     const invoiceSequence = new InvoiceSequence(db);
-    const invoiceNumber = await invoiceSequence.generateLodgeTixInvoiceNumber();
+    const customerInvoiceNumber = await invoiceSequence.generateLodgeTixInvoiceNumber();
     
-    // Create final invoice
-    const finalInvoice = {
-      ...invoice,
-      invoiceNumber,
+    // Extract the base number (without prefix) to use for supplier invoice
+    const baseNumber = customerInvoiceNumber.replace('LTIV-', '');
+    const supplierInvoiceNumber = `LTSP-${baseNumber}`;
+    
+    // Create invoice document with both customer and supplier invoices
+    const invoiceDocument = {
+      _id: new ObjectId(),
+      customerInvoice: customerInvoice ? {
+        ...customerInvoice,
+        invoiceNumber: customerInvoiceNumber,
+        invoiceType: 'customer'
+      } : {
+        ...invoice,
+        invoiceNumber: customerInvoiceNumber,
+        invoiceType: 'customer'
+      },
+      supplierInvoice: supplierInvoice ? {
+        ...supplierInvoice,
+        invoiceNumber: supplierInvoiceNumber,
+        invoiceType: 'supplier'
+      } : null,
+      payment: {
+        _id: payment._id,
+        paymentId: payment.paymentId,
+        transactionId: payment.transactionId,
+        amount: payment.amount || payment.grossAmount,
+        customerEmail: payment.customerEmail,
+        customerName: payment.customerName,
+        timestamp: payment.timestamp
+      },
+      registration: registration ? {
+        _id: registration._id,
+        registrationId: registration.registrationId,
+        confirmationNumber: registration.confirmationNumber,
+        functionName: registration.functionName,
+        customerName: registration.customerName || registration.primaryAttendee
+      } : null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
     
-    // Insert invoice
+    // Insert invoice document
     const invoicesCollection = db.collection('invoices');
-    const insertResult = await invoicesCollection.insertOne(finalInvoice);
+    const insertResult = await invoicesCollection.insertOne(invoiceDocument);
     
     // Update payment record
     const paymentsCollection = db.collection('payments');
@@ -1138,7 +1528,8 @@ app.post('/api/invoices/create', async (req, res) => {
       { 
         $set: { 
           invoiceCreated: true,
-          invoiceNumber,
+          customerInvoiceNumber,
+          supplierInvoiceNumber: supplierInvoice ? supplierInvoiceNumber : null,
           invoiceStatus: 'created',
           invoiceId: insertResult.insertedId,
           invoiceCreatedAt: new Date()
@@ -1154,7 +1545,8 @@ app.post('/api/invoices/create', async (req, res) => {
         { 
           $set: { 
             invoiceCreated: true,
-            invoiceNumber,
+            customerInvoiceNumber,
+            supplierInvoiceNumber: supplierInvoice ? supplierInvoiceNumber : null,
             invoiceStatus: 'created',
             invoiceId: insertResult.insertedId,
             invoiceCreatedAt: new Date()
@@ -1165,7 +1557,9 @@ app.post('/api/invoices/create', async (req, res) => {
     
     res.json({
       success: true,
-      invoiceNumber,
+      invoiceNumber: customerInvoiceNumber,
+      customerInvoiceNumber,
+      supplierInvoiceNumber: supplierInvoice ? supplierInvoiceNumber : null,
       invoiceId: insertResult.insertedId,
       message: 'Invoice created successfully'
     });
