@@ -48,33 +48,9 @@
     "lastLoginAt": "TODO: Last login timestamp",
     "lastLoginIp": "TODO: Last login IP"
   },
+  "contactId": "contacts: _id (required - created from user profile data)",
   "profile": {
-    "firstName": "users: firstName",
-    "lastName": "users: lastName",
     "displayName": "users: displayName or firstName + lastName",
-    "dateOfBirth": "users: dateOfBirth",
-    "gender": "users: gender",
-    "phones": [
-      {
-        "type": "mobile",
-        "number": "users: phone",
-        "verified": false,
-        "primary": true
-      }
-    ],
-    "addresses": [
-      {
-        "type": "home",
-        "addressLine1": "users: addressLine1",
-        "addressLine2": "users: addressLine2",
-        "city": "users: city",
-        "state": "users: state",
-        "postcode": "users: postcode",
-        "country": "users: country or Australia",
-        "primary": true,
-        "validatedAt": "TODO: Address validation timestamp"
-      }
-    ],
     "avatar": {
       "url": "TODO: Avatar URL",
       "uploadedAt": "TODO: Avatar upload timestamp",
@@ -131,7 +107,7 @@
       }
     ],
     "billing": {
-      "defaultAddress": "profile.addresses: _id",
+      "defaultAddress": "contacts.addresses: _id (reference to address in contact)",
       "taxId": "users: abn or taxId",
       "invoiceEmails": ["accounts@example.com"],
       "autoPayEnabled": false,
@@ -179,8 +155,8 @@
         "preSale": true,
         "lastChance": false
       },
-      "accessibility": ["TODO: Accessibility needs"],
-      "dietary": ["TODO: Dietary requirements"]
+      "accessibility": ["NOTE: Accessibility/special needs stored in contacts.profile.specialNeeds"],
+      "dietary": ["NOTE: Dietary requirements stored in contacts.profile.dietaryRequirements"]
     },
     "privacy": {
       "profileVisibility": "private",
@@ -225,24 +201,11 @@
     }
   },
   "relationships": {
-    "family": [
-      {
-        "userId": "users: _id",
-        "relationship": "spouse",
-        "confirmed": true
-      }
-    ],
-    "emergencyContacts": [
-      {
-        "name": "TODO: Emergency contact name",
-        "relationship": "TODO: Relationship",
-        "phone": "TODO: Emergency phone",
-        "email": "TODO: Emergency email"
-      }
-    ],
+    "NOTE": "Relationships are managed in contacts.relationships",
     "managedAccounts": [
       {
         "userId": "users: _id",
+        "contactId": "contacts: _id (of managed account)",
         "relationship": "child",
         "permissions": ["view", "purchase"]
       }

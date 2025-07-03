@@ -41,6 +41,15 @@ db.financialTransactions.createIndex(
 ```
 **Purpose**: Customer transaction history and statements
 
+### 4a. Customer Type Analysis
+```javascript
+db.financialTransactions.createIndex(
+  { "parties.customer.type": 1, "parties.customer.id": 1 },
+  { name: "customer_type_lookup" }
+)
+```
+**Purpose**: Analyze transactions by customer type (organisation, contact, user)
+
 ## Payment Processing Indexes
 
 ### 5. Gateway Transaction Lookup

@@ -515,6 +515,10 @@ db.createCollection("organisations", {
             }
           }
         },
+        jurisdictionId: {
+          bsonType: ["objectId", "null"],
+          description: "Reference to jurisdictions collection (for Masonic organisations)"
+        },
         relationships: {
           bsonType: ["object", "null"],
           properties: {

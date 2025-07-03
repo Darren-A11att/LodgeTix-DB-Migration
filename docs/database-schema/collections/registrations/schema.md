@@ -1,7 +1,7 @@
 # Registrations Collection Schema
 
 ## Overview
-The registrations collection represents purchase transactions where customers register for functions and buy products (tickets, merchandise, etc.). A registration is essentially an order in the e-commerce system.
+The registrations collection represents purchase transactions where customers register for functions and buy products (tickets, merchandise, etc.). A registration is essentially an order in the e-commerce system. Registrant information now references the contacts collection, while attendee information is stored in the attendees collection which also references contacts.
 
 ## Document Structure
 
@@ -14,15 +14,17 @@ The registrations collection represents purchase transactions where customers re
   
   // Registrant (purchaser) information
   registrant: {
-    type: String,                 // "organisation" or "user"
-    id: ObjectId,                 // Reference to organisations or users collection
-    name: String,                 // Denormalized for display
-    contact: {
-      name: String,               // Contact person name
-      email: String,              // Contact email
-      phone: String               // Contact phone
-    },
-    // Organisation-specific fields
+    type: String,                 // "contact" or "organisation"
+    contactId: ObjectId,          // Reference to contacts collection (for individuals)
+    organisationId: ObjectId,     // Reference to organisations collection (for orgs)
+    userId: ObjectId,             // Reference to users collection (account that made purchase)
+    
+    // Denormalized for display and historical record
+    name: String,                 // Contact or organisation name
+    email: String,                // Contact email at time of registration
+    phone: String,                // Contact phone at time of registration
+    
+    // Organisation-specific fields (when type is "organisation")
     abn: String,                  // For organisations
     lodgeNumber: String           // For lodge registrations
   },
@@ -195,11 +197,13 @@ The registrations collection represents purchase transactions where customers re
 - `metadata.createdAt` - For date range queries
 
 ## Relationships
+- **Contacts** - Registrant contact via `registrant.contactId`
+- **Users** - Account that made purchase via `registrant.userId`
+- **Organisations** - Organisation registrant via `registrant.organisationId`
 - **Functions** - References via `functionId`
-- **Attendees** - References via `attendeeIds` array
+- **Attendees** - References via `attendeeIds` array (attendees have their own contact references)
 - **Tickets** - Created tickets referenced in `purchase.items.ticketIds`
 - **Financial Transactions** - References via `financialTransactionId`
-- **Users/Organisations** - References via `registrant.id`
 
 ## Patterns Used
 

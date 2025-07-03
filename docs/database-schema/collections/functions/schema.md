@@ -73,43 +73,6 @@ The functions collection represents ticketed experiences (conferences, ceremonie
       }]
     },
     
-    // Products available for this event
-    products: [{
-      _id: ObjectId,
-      sku: String,          // Stock keeping unit
-      name: String,
-      type: String,         // "ticket", "addon", "upgrade"
-      description: String,
-      status: String,       // "active", "inactive", "sold_out"
-      
-      // Pricing
-      price: {
-        amount: Decimal128,
-        currency: String,   // "AUD"
-        tax_rate: Number,   // 0.10 for 10% GST
-        tax_included: Boolean
-      },
-      
-      // Inventory management
-      inventory: {
-        tracking_method: String,  // "allocated", "unlimited"
-        max: Number,             // Maximum available
-        allocated: {
-          sold: Number,          // Tickets sold
-          reserved: Number,      // Temporarily reserved
-          available: Number      // Remaining available
-        },
-        lastUpdated: Date,
-        version: Number          // For optimistic locking
-      },
-      
-      // Additional product settings
-      restrictions: {
-        min_per_order: Number,
-        max_per_order: Number,
-        membership_required: Boolean
-      }
-    }],
     
     // Event timing
     dates: {
@@ -126,39 +89,6 @@ The functions collection represents ticketed experiences (conferences, ceremonie
         allow_waitlist: Boolean,
         reservation_timeout_minutes: Number
       }
-    }
-  }],
-  
-  // Non-event products (merchandise, etc.)
-  merchandise: [{
-    _id: ObjectId,
-    sku: String,
-    name: String,
-    type: String,           // "merchandise", "donation"
-    description: String,
-    price: {
-      amount: Decimal128,
-      currency: String,
-      tax_rate: Number,
-      tax_included: Boolean
-    },
-    inventory: {
-      tracking_method: String,
-      max: Number,
-      allocated: {
-        sold: Number,
-        reserved: Number,
-        available: Number
-      }
-    },
-    shipping: {
-      weight_grams: Number,
-      dimensions_cm: {
-        length: Number,
-        width: Number,
-        height: Number
-      },
-      requires_shipping: Boolean
     }
   }],
   
@@ -285,33 +215,30 @@ The functions collection represents ticketed experiences (conferences, ceremonie
 - `dates.startDate` - Calculated from earliest event start time
 - `dates.endDate` - Calculated from latest event end time
 - `financial_summary.actuals` - Aggregated from financial transactions collection
-- `events.products.inventory.allocated` - Updated via transactions when tickets are sold
 
 ## Relationships
 - **Registrations** reference this collection via `functionId`
 - **Financial Transactions** reference this collection via `reference.functionId`
-- **Tickets** reference products within events via `product.productId`
+- **Products** reference this collection via `functionId`
 - **Attendees** reference this collection via `registration.functionId`
 
 ## Patterns Used
 
 ### Embedded Pattern
-Events and products are embedded within functions because:
+Events are embedded within functions because:
 - They are always accessed together
 - They have a strong ownership relationship
 - The total size remains well within MongoDB's 16MB document limit
 
 ### Computed Pattern
-Financial summaries and inventory levels use computed values that are updated via:
+Financial summaries use computed values that are updated via:
 - Change streams monitoring the financial transactions collection
-- Atomic updates during ticket purchase transactions
 - Scheduled aggregation jobs for financial summaries
 
 ### Attribute Pattern
 The `features` object allows for flexible feature configuration without schema changes.
 
 ## Transaction Requirements
-Updates to inventory must use MongoDB transactions to ensure:
-- No overselling of limited capacity events
-- Atomic updates across multiple products
-- Consistent state between inventory and ticket creation
+Updates to function-level data must use MongoDB transactions to ensure:
+- Atomic updates across related collections
+- Consistent state between functions and related entities

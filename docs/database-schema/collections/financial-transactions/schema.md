@@ -23,10 +23,10 @@ The financial transactions collection serves as the single source of truth for a
   // Transaction parties
   parties: {
     customer: {
-      type: String,             // "organisation" or "user"
-      id: ObjectId,             // Customer ID
-      name: String,             // Customer name
-      abn: String,              // ABN if applicable
+      type: String,             // "organisation", "contact", or "user"
+      id: ObjectId,             // Customer ID (organisationId, contactId, or userId)
+      name: String,             // Customer name (denormalized)
+      abn: String,              // ABN if applicable (for organisations)
       email: String,            // Contact email
       contact: {
         name: String,

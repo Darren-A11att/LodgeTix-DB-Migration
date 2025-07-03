@@ -46,7 +46,7 @@ db.createCollection("financialTransactions", {
               properties: {
                 type: {
                   bsonType: "string",
-                  enum: ["organisation", "user"]
+                  enum: ["organisation", "contact", "user"]
                 },
                 id: { bsonType: "objectId" },
                 name: { 

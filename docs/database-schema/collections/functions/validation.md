@@ -124,55 +124,6 @@ db.createCollection("functions", {
                   }
                 }
               },
-              products: {
-                bsonType: "array",
-                items: {
-                  bsonType: "object",
-                  required: ["_id", "name", "type", "price", "stock"],
-                  properties: {
-                    _id: { bsonType: "objectId" },
-                    name: { bsonType: "string" },
-                    type: { 
-                      bsonType: "string",
-                      enum: ["Ticket", "Merchandise", "Food_Beverage", "Donation"]
-                    },
-                    description: { bsonType: ["string", "null"] },
-                    status: { bsonType: ["string", "null"] },
-                    billing_details: {
-                      bsonType: "array",
-                      items: {
-                        bsonType: "object",
-                        required: ["gateway", "type", "id"],
-                        properties: {
-                          gateway: { bsonType: "string" },
-                          type: { bsonType: "string" },
-                          id: { bsonType: "string" }
-                        }
-                      }
-                    },
-                    price: {
-                      bsonType: "object",
-                      required: ["cost", "amount", "currency"],
-                      properties: {
-                        cost: { bsonType: "number" },
-                        amount: { bsonType: "number" },
-                        tax_rate: { bsonType: ["number", "null"] },
-                        currency: { bsonType: "string" }
-                      }
-                    },
-                    stock: {
-                      bsonType: "object",
-                      required: ["available", "reserved", "sold", "max"],
-                      properties: {
-                        available: { bsonType: "int" },
-                        reserved: { bsonType: "int" },
-                        sold: { bsonType: "int" },
-                        max: { bsonType: "int" }
-                      }
-                    }
-                  }
-                }
-              },
               published: { bsonType: ["bool", "null"] },
               featured: { bsonType: ["bool", "null"] }
             }

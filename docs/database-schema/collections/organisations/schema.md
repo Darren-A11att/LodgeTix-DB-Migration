@@ -306,6 +306,9 @@ The organisations collection represents groups such as Masonic lodges, companies
     }
   },
   
+  // Jurisdiction Reference (for Masonic organisations)
+  jurisdictionId: ObjectId,       // Reference to jurisdictions collection
+  
   // Relationships
   relationships: {
     // Parent/child organisations

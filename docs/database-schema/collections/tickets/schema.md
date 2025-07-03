@@ -31,8 +31,8 @@ The tickets collection represents individual ticket instances that are created w
     registrationId: ObjectId,     // Reference to registration
     registrationNumber: String,   // Denormalized for quick lookup
     purchasedBy: {
-      type: String,               // "organisation" or "user"
-      id: ObjectId,               // Reference to purchaser
+      type: String,               // "organisation", "contact", or "user"
+      id: ObjectId,               // Reference to purchaser (organisationId, contactId, or userId)
       name: String                // Denormalized name
     },
     purchaseDate: Date,
@@ -56,29 +56,29 @@ The tickets collection represents individual ticket instances that are created w
     }
   },
   
-  // Current Ownership
-  currentOwner: {
-    attendeeId: ObjectId,         // Reference to attendees collection
-    attendeeNumber: String,       // Denormalized for display
-    name: String,                 // Denormalized for display
-    assignedAt: Date,
-    assignedBy: ObjectId          // User who assigned
+  // Ownership
+  owner: {
+    attendeeId: ObjectId          // Reference to attendees collection (null = owned by registration)
   },
   
   // Transfer History
   transferHistory: [{
     transferId: ObjectId,         // Unique transfer ID
+    type: String,                 // "assignment", "transfer", "return"
     from: {
-      attendeeId: ObjectId,
-      name: String
+      type: String,               // "registration", "attendee"
+      attendeeId: ObjectId,       // If from attendee
+      name: String                // Display name
     },
     to: {
-      attendeeId: ObjectId,
-      name: String
+      type: String,               // "attendee", "registration"
+      attendeeId: ObjectId,       // If to attendee
+      name: String                // Display name
     },
-    transferredAt: Date,
+    transferDate: Date,
     transferredBy: ObjectId,      // User who processed transfer
-    reason: String,               // "sold", "gifted", "reassigned"
+    reason: String,               // "initial_assignment", "reassignment", "sold", "gifted", "returned"
+    notes: String,                // Additional context
     
     // For secondary market transfers
     salePrice: Decimal128,        // If sold
@@ -236,6 +236,7 @@ The tickets collection represents individual ticket instances that are created w
 - `purchase.registrationId` - Must reference valid registration
 - `purchase.purchaseDate` - When ticket was created
 - `access.status` - Current ticket status
+- `owner` - Object required (attendeeId can be null for registration-owned tickets)
 
 ### Enumerations
 
@@ -266,15 +267,16 @@ The tickets collection represents individual ticket instances that are created w
 - `ticketNumber` - Unique index
 - `product.functionId, product.eventId` - Event queries
 - `purchase.registrationId` - Registration lookups
-- `currentOwner.attendeeId` - Owner queries
+- `owner.attendeeId` - Owner queries (including null for unassigned)
+- `purchase.registrationId, owner.attendeeId` - Unassigned tickets by registration
 - `security.barcode` - Barcode scanning
 - `security.qrData` - QR code scanning
 - `access.status, product.eventId` - Active tickets by event
 
 ## Relationships
 - **Functions** - Via `product.functionId`
-- **Registrations** - Purchase via `purchase.registrationId`
-- **Attendees** - Current owner via `currentOwner.attendeeId`
+- **Registrations** - Purchase via `purchase.registrationId` (owns ticket if `owner.attendeeId` is null)
+- **Attendees** - Current owner via `owner.attendeeId` (when assigned)
 - **Users** - Various staff/admin references
 
 ## Security Considerations

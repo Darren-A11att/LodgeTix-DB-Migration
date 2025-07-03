@@ -1,0 +1,66 @@
+{
+  "_id": "ObjectId",
+  "contactNumber": "TODO: Generate CON-YYYY-NNNNN format",
+  "profile": {
+    "firstName": "Multiple sources: registrations.registrationData.primaryAttendee.firstName, attendees.firstName, customers.firstName, users.profile.firstName",
+    "lastName": "Multiple sources: registrations.registrationData.primaryAttendee.lastName, attendees.lastName, customers.lastName, users.profile.lastName",
+    "preferredName": "TODO: Extract from display names or generate from firstName",
+    "email": "Multiple sources: registrations.registrationData.primaryAttendee.primaryEmail, attendees.primaryEmail, customers.email, users.email",
+    "phone": "Multiple sources: registrations.registrationData.primaryAttendee.primaryPhone, attendees.primaryPhone, customers.phone, users.profile.phone",
+    "dateOfBirth": "attendees.dateOfBirth",
+    "dietaryRequirements": "Multiple sources: registrations.registrationData.primaryAttendee.dietaryRequirements, attendees.dietaryRequirements",
+    "specialNeeds": "Multiple sources: registrations.registrationData.primaryAttendee.specialNeeds, attendees.specialNeeds"
+  },
+  "addresses": [{
+    "type": "billing",
+    "addressLine1": "Multiple sources: registrations.registrationData.billingDetails.addressLine1, customers.addressLine1",
+    "addressLine2": "Multiple sources: registrations.registrationData.billingDetails.addressLine2, customers.addressLine2",
+    "city": "Multiple sources: registrations.registrationData.billingDetails.city, customers.city",
+    "state": "Multiple sources: registrations.registrationData.billingDetails.stateProvince, customers.state",
+    "postcode": "Multiple sources: registrations.registrationData.billingDetails.postalCode, customers.postcode",
+    "country": "Multiple sources: registrations.registrationData.billingDetails.country, customers.country",
+    "isPrimary": "TODO: Set first address as primary"
+  }],
+  "masonicProfile": {
+    "craft": {
+      "grandLodge": {
+        "name": "Multiple sources: registrations.registrationData.primaryAttendee.grand_lodge, attendees.grandLodgeName",
+        "memberNumber": "TODO: Extract if available in masonic profile data"
+      },
+      "lodge": {
+        "organisationId": "Multiple sources: registrations.registrationData.primaryAttendee.lodgeOrganisationId, attendees.lodgeOrganisationId",
+        "name": "Multiple sources: registrations.registrationData.primaryAttendee.lodge, attendees.lodgeName",
+        "number": "TODO: Extract from lodge name or separate field"
+      },
+      "title": "Multiple sources: registrations.registrationData.primaryAttendee.title, attendees.title",
+      "rank": "Multiple sources: registrations.registrationData.primaryAttendee.rank, attendees.rank",
+      "grandRank": "TODO: Extract from grand officer data",
+      "isGrandOfficer": "TODO: Derive from grandOfficerStatus field",
+      "grandOffice": "Multiple sources: registrations.registrationData.primaryAttendee.presentGrandOfficerRole, attendees.grandOffice"
+    }
+  },
+  "relationships": [{
+    "contactId": "TODO: Link after creating all contacts",
+    "relationshipType": "TODO: Map from partner/relationship fields",
+    "isPrimary": "TODO: Determine primary relationships",
+    "isEmergencyContact": "TODO: Set based on relationship type",
+    "notes": "TODO: Extract relationship notes if available",
+    "reciprocal": "TODO: Set for bidirectional relationships",
+    "reciprocalType": "TODO: Set reciprocal type"
+  }],
+  "userId": "Multiple sources: registrations.authUserId, customers.authUserId, users._id",
+  "references": {
+    "organisationIds": "TODO: Collect from registrations.organisationId and other sources",
+    "attendeeIds": "TODO: Link all attendee records for this person",
+    "paymentTransactionIds": "TODO: Link payment transactions",
+    "invoiceIds": "TODO: Link invoices"
+  },
+  "metadata": {
+    "source": "TODO: Set based on import source",
+    "createdAt": "TODO: Set to import timestamp",
+    "createdBy": "TODO: Set to migration user",
+    "updatedAt": "TODO: Set to import timestamp",
+    "updatedBy": "TODO: Set to migration user",
+    "version": 1
+  }
+}

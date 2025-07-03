@@ -41,6 +41,7 @@ export interface InvoicePayment {
 export interface Invoice {
   _id?: string;
   invoiceNumber: string; // This will be the confirmation number
+  invoiceType?: 'customer' | 'supplier'; // Type of invoice
   date: Date;
   status: 'paid' | 'pending' | 'overdue' | 'cancelled';
   supplier: InvoiceSupplier;

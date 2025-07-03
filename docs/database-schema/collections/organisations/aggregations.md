@@ -1266,3 +1266,72 @@ db.organisations.aggregate([
   }
 ])
 ```
+
+### 11. Jurisdiction Analysis
+```javascript
+// Analyze organisations by jurisdiction
+db.organisations.aggregate([
+  {
+    $match: {
+      status: "active",
+      jurisdictionId: { $exists: true }
+    }
+  },
+  {
+    $lookup: {
+      from: "jurisdictions",
+      localField: "jurisdictionId",
+      foreignField: "_id",
+      as: "jurisdiction"
+    }
+  },
+  { $unwind: "$jurisdiction" },
+  {
+    $group: {
+      _id: {
+        jurisdictionId: "$jurisdictionId",
+        jurisdictionType: "$jurisdiction.type"
+      },
+      jurisdictionName: { $first: "$jurisdiction.definitions.parentName" },
+      organisations: {
+        $push: {
+          id: "$organisationId",
+          name: "$profile.name",
+          type: "$profile.type",
+          memberCount: "$profile.details.size.activeMembers"
+        }
+      },
+      totalOrganisations: { $sum: 1 },
+      totalMembers: { $sum: "$profile.details.size.activeMembers" },
+      avgMembersPerOrg: { $avg: "$profile.details.size.activeMembers" }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      jurisdiction: {
+        id: "$_id.jurisdictionId",
+        type: "$_id.jurisdictionType",
+        name: "$jurisdictionName"
+      },
+      statistics: {
+        organisationCount: "$totalOrganisations",
+        totalMembers: "$totalMembers",
+        avgMembersPerOrg: { $round: ["$avgMembersPerOrg", 0] }
+      },
+      organisations: {
+        $slice: [
+          {
+            $sortArray: {
+              input: "$organisations",
+              sortBy: { memberCount: -1 }
+            }
+          },
+          10 // Top 10 organisations by member count
+        ]
+      }
+    }
+  },
+  { $sort: { "statistics.organisationCount": -1 } }
+])
+```

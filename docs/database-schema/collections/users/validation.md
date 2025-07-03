@@ -7,7 +7,7 @@ db.createCollection("users", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["userId", "auth", "profile", "flags"],
+      required: ["userId", "auth", "contactId", "flags"],
       properties: {
         userId: {
           bsonType: "string",
@@ -124,90 +124,16 @@ db.createCollection("users", {
             lastLoginIp: { bsonType: ["string", "null"] }
           }
         },
+        contactId: {
+          bsonType: "objectId",
+          description: "Reference to contacts collection"
+        },
         profile: {
           bsonType: "object",
-          required: ["firstName", "lastName"],
           properties: {
-            firstName: {
-              bsonType: "string",
-              minLength: 1,
-              maxLength: 100
-            },
-            lastName: {
-              bsonType: "string",
-              minLength: 1,
-              maxLength: 100
-            },
             displayName: {
               bsonType: ["string", "null"],
               maxLength: 200
-            },
-            dateOfBirth: { bsonType: ["date", "null"] },
-            gender: {
-              bsonType: ["string", "null"],
-              enum: ["male", "female", "other", "prefer_not_to_say", null]
-            },
-            phones: {
-              bsonType: "array",
-              maxItems: 5,
-              items: {
-                bsonType: "object",
-                required: ["type", "number"],
-                properties: {
-                  type: {
-                    bsonType: "string",
-                    enum: ["mobile", "home", "work"]
-                  },
-                  number: {
-                    bsonType: "string",
-                    pattern: "^\\+?[0-9\\s-()]+$"
-                  },
-                  verified: { bsonType: "bool" },
-                  primary: { bsonType: "bool" }
-                }
-              }
-            },
-            addresses: {
-              bsonType: "array",
-              maxItems: 5,
-              items: {
-                bsonType: "object",
-                required: ["type", "addressLine1", "city", "country"],
-                properties: {
-                  type: {
-                    bsonType: "string",
-                    enum: ["home", "work", "billing", "shipping"]
-                  },
-                  addressLine1: {
-                    bsonType: "string",
-                    minLength: 1,
-                    maxLength: 200
-                  },
-                  addressLine2: {
-                    bsonType: ["string", "null"],
-                    maxLength: 200
-                  },
-                  city: {
-                    bsonType: "string",
-                    maxLength: 100
-                  },
-                  state: {
-                    bsonType: ["string", "null"],
-                    maxLength: 100
-                  },
-                  postcode: {
-                    bsonType: ["string", "null"],
-                    maxLength: 20
-                  },
-                  country: {
-                    bsonType: "string",
-                    minLength: 2,
-                    maxLength: 2
-                  },
-                  primary: { bsonType: "bool" },
-                  validatedAt: { bsonType: ["date", "null"] }
-                }
-              }
             },
             avatar: {
               bsonType: ["object", "null"],
@@ -560,40 +486,6 @@ db.createCollection("users", {
         relationships: {
           bsonType: ["object", "null"],
           properties: {
-            family: {
-              bsonType: "array",
-              items: {
-                bsonType: "object",
-                properties: {
-                  userId: { bsonType: "objectId" },
-                  relationship: {
-                    bsonType: "string",
-                    enum: ["spouse", "child", "parent", "sibling", "guardian"]
-                  },
-                  confirmed: { bsonType: "bool" }
-                }
-              }
-            },
-            emergencyContacts: {
-              bsonType: "array",
-              maxItems: 3,
-              items: {
-                bsonType: "object",
-                required: ["name", "phone"],
-                properties: {
-                  name: { bsonType: "string" },
-                  relationship: { bsonType: "string" },
-                  phone: {
-                    bsonType: "string",
-                    pattern: "^\\+?[0-9\\s-()]+$"
-                  },
-                  email: {
-                    bsonType: ["string", "null"],
-                    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-                  }
-                }
-              }
-            },
             managedAccounts: {
               bsonType: "array",
               items: {

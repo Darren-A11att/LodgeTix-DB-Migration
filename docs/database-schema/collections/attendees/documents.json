@@ -1,160 +1,139 @@
 {
   "_id": "ObjectId",
-  "attendeeNumber": "Generated: ATT-YYYY-NNNNN",
+  "attendeeNumber": "TODO: Generate ATT-YYYY-NNNNN format",
+  "attendeeId": "attendees: attendeeId",
   "registrationId": "registrations: _id",
   "functionId": "registrations: functionId",
+  "contactId": "contacts: _id (populated via post-registration reconciliation)",
+  "contactMatched": false,
+  "contactMatchedAt": "Generated: Timestamp when contact is matched",
+  "attendeeType": "attendees: attendeeType",
+  "isPrimary": "attendees: isPrimary",
+  "paymentStatus": "attendees: paymentStatus",
   "profile": {
-    "firstName": "users: firstName or import",
-    "lastName": "users: lastName or import",
-    "preferredName": "users: displayName",
-    "dateOfBirth": "users: dateOfBirth",
-    "gender": "users: gender",
-    "contact": {
-      "email": "users: email or registrant.contact.email",
-      "phone": "users: phone or registrant.contact.phone",
-      "emergencyContact": {
-        "name": "TODO: Emergency contact name",
-        "phone": "TODO: Emergency contact phone",
-        "relationship": "TODO: Emergency contact relationship"
-      }
-    },
-    "identification": {
-      "type": "TODO: ID type (drivers_license, passport, member_card)",
-      "number": "TODO: ID number (encrypted)",
-      "verifiedAt": "TODO: Verification timestamp",
-      "verifiedBy": "TODO: Verifier user ID"
+    "title": "attendees: title",
+    "firstName": "attendees: firstName",
+    "lastName": "attendees: lastName",
+    "suffix": "attendees: suffix or postNominals",
+    "primaryEmail": "attendees: primaryEmail",
+    "primaryPhone": "attendees: primaryPhone",
+    "contactPreference": "attendees: contactPreference",
+    "contactConfirmed": "attendees: contactConfirmed"
+  },
+  "partnerInfo": {
+    "partner": "attendees: partner",
+    "isPartner": "attendees: isPartner",
+    "partnerOf": "attendees: partnerOf",
+    "relationship": "attendees: relationship"
+  },
+  "masonicInfo": {
+    "rank": "attendees: rank",
+    "title": "attendees: title",
+    "grandOfficerStatus": "attendees: grandOfficerStatus",
+    "postNominals": "attendees: postNominals",
+    "lodge": "attendees: lodge",
+    "lodgeId": "attendees: lodge_id",
+    "lodgeNameNumber": "attendees: lodgeNameNumber",
+    "lodgeOrganisationId": "attendees: lodgeOrganisationId",
+    "grandLodge": "attendees: grand_lodge",
+    "grandLodgeId": "attendees: grand_lodge_id",
+    "grandLodgeOrganisationId": "attendees: grandLodgeOrganisationId",
+    "firstTime": "attendees: firstTime",
+    "useSameLodge": "attendees: useSameLodge"
+  },
+  "requirements": {
+    "dietaryRequirements": "attendees: dietaryRequirements",
+    "specialNeeds": "attendees: specialNeeds",
+    "accessibility": "TODO: Extract from specialNeeds if needed",
+    "seating": {
+      "tableAssignment": "attendees: tableAssignment",
+      "preference": "TODO: Extract from notes or preferences",
+      "companionIds": "attendees: _id (of partner/companion attendees)"
     }
   },
   "qrCode": {
-    "code": "Generated: UUID or custom format",
+    "code": "TODO: Generate unique QR code",
     "format": "uuid",
-    "generatedAt": "Generated: Creation timestamp",
-    "lastScanned": "TODO: Last scan timestamp",
+    "generatedAt": "TODO: Set on creation",
+    "lastScanned": null,
     "scanCount": 0,
     "security": {
-      "pin": "TODO: Optional PIN (hashed)",
-      "validFrom": "functions.dates.startDate",
-      "validUntil": "functions.dates.endDate plus buffer",
+      "pin": null,
+      "validFrom": "TODO: Set from function dates",
+      "validUntil": "TODO: Set from function dates",
       "revoked": false,
       "revokedReason": null
     }
   },
-  "tickets": [
-    {
-      "ticketId": "tickets: _id",
-      "eventId": "tickets: eventId",
-      "eventName": "functions.events: name",
-      "productName": "functions.events.products: name",
-      "access": {
-        "zones": ["general", "vip"],
-        "validFrom": "events: eventStart",
-        "validUntil": "events: eventEnd",
-        "singleUse": false,
-        "used": false,
-        "usedAt": null
-      }
+  "tickets": [{
+    "ticketId": "tickets: _id (tickets owned by this attendee)",
+    "eventId": "tickets.product: eventId",
+    "eventName": "tickets.product: eventName",
+    "productName": "tickets.product: productName",
+    "access": {
+      "zones": ["general"],
+      "validFrom": "TODO: Set from event dates",
+      "validUntil": "TODO: Set from event dates",
+      "singleUse": false,
+      "used": false,
+      "usedAt": null
     }
-  ],
-  "checkIns": [
-    {
-      "eventId": "events: event_id",
-      "locationId": "TODO: Scanner location ID",
-      "checkInTime": "TODO: Check-in timestamp",
-      "checkOutTime": "TODO: Check-out timestamp",
-      "device": "TODO: Scanner device ID",
-      "staff": "users: _id (scanner operator)",
-      "method": "qr_scan",
-      "notes": "TODO: Check-in notes"
-    }
-  ],
-  "requirements": {
-    "dietary": ["TODO: Dietary requirements array"],
-    "accessibility": ["TODO: Accessibility needs array"],
-    "medical": {
-      "conditions": ["TODO: Medical conditions"],
-      "medications": ["TODO: Current medications"],
-      "allergies": ["TODO: Known allergies"]
-    },
-    "seating": {
-      "preference": "TODO: Seating preference",
-      "companionIds": ["attendees: _id"],
-      "avoidIds": ["attendees: _id"]
-    }
-  },
+  }],
+  "isCheckedIn": "attendees: isCheckedIn",
+  "checkIns": [],
+  "notes": "attendees: notes",
   "accommodation": {
-    "roomId": "TODO: Room identifier",
-    "roomType": "TODO: Room type",
-    "checkIn": "TODO: Accommodation check-in date",
-    "checkOut": "TODO: Accommodation check-out date",
-    "companions": ["attendees: _id"],
+    "roomId": "TODO: Set if accommodation booked",
+    "roomType": "TODO: Set if accommodation booked",
+    "checkIn": "TODO: Set if accommodation booked",
+    "checkOut": "TODO: Set if accommodation booked",
+    "companions": [],
     "preferences": {
-      "floor": "TODO: Floor preference",
-      "bedType": "TODO: Bed type preference",
-      "notes": "TODO: Accommodation notes"
+      "floor": "TODO: Extract from preferences",
+      "bedType": "TODO: Extract from preferences",
+      "notes": "TODO: Extract from notes"
     }
   },
   "communications": {
     "preferences": {
       "email": true,
-      "sms": true,
+      "sms": false,
       "pushNotifications": false
     },
     "language": "en",
     "timezone": "Australia/Sydney",
-    "sent": [
-      {
-        "type": "confirmation",
-        "channel": "email",
-        "sentAt": "TODO: Communication timestamp",
-        "subject": "TODO: Communication subject",
-        "status": "sent"
-      }
-    ]
+    "sent": []
   },
   "engagement": {
     "eventsAttended": 0,
-    "lastEventDate": "TODO: Last event attended",
+    "lastEventDate": null,
     "totalSpent": 0.00,
-    "sessions": [
-      {
-        "eventId": "events: event_id",
-        "sessionId": "TODO: Session identifier",
-        "attended": false,
-        "feedback": {
-          "rating": null,
-          "comments": null
-        }
-      }
-    ],
-    "activities": [
-      {
-        "type": "TODO: Activity type",
-        "activityId": "TODO: Activity identifier",
-        "participatedAt": "TODO: Participation timestamp",
-        "result": "TODO: Activity result"
-      }
-    ]
+    "sessions": [],
+    "activities": []
   },
   "badge": {
     "printed": false,
-    "printedAt": "TODO: Print timestamp",
-    "collectedAt": "TODO: Collection timestamp",
+    "printedAt": null,
+    "collectedAt": null,
     "badgeType": "standard",
     "customFields": {
-      "title": "TODO: Badge title",
-      "organisation": "organisations: name",
-      "ribbons": ["TODO: Special designations"]
+      "title": "TODO: Set from masonic title",
+      "organisation": "TODO: Set from lodge name",
+      "ribbons": []
     }
   },
   "status": "active",
   "source": "registration",
   "customFields": {},
+  "guestInfo": {
+    "guestOfId": "attendees: guestOfId"
+  },
   "metadata": {
-    "createdAt": "Generated: Creation timestamp",
-    "createdBy": "users: _id or system",
-    "updatedAt": "Generated: Update timestamp",
-    "updatedBy": "users: _id or system",
-    "importId": "TODO: Bulk import identifier",
+    "createdAt": "attendees: createdAt or updatedAt",
+    "createdBy": "TODO: Set from registration creator",
+    "updatedAt": "attendees: updatedAt",
+    "updatedBy": "TODO: Set from last updater",
+    "importId": null,
     "version": 1
   }
 }

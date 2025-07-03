@@ -1,8 +1,149 @@
 # Registrations Collection - Aggregation Pipelines
 
+## Contact and Attendee Integration
+
+### 1. Registration with Contact Details
+```javascript
+// Get registration with registrant contact information
+db.registrations.aggregate([
+  { $match: { _id: ObjectId("registrationId") } },
+  
+  // Lookup contact for individual registrants
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "registrant.contactId",
+      foreignField: "_id",
+      as: "registrantContact"
+    }
+  },
+  
+  // Lookup organisation for org registrants
+  {
+    $lookup: {
+      from: "organisations",
+      localField: "registrant.organisationId",
+      foreignField: "_id",
+      as: "registrantOrg"
+    }
+  },
+  
+  // Lookup attendees
+  {
+    $lookup: {
+      from: "attendees",
+      localField: "attendeeIds",
+      foreignField: "_id",
+      as: "attendees"
+    }
+  },
+  
+  // Get contact details for each attendee
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "attendees.contactId",
+      foreignField: "_id",
+      as: "attendeeContacts"
+    }
+  },
+  
+  {
+    $project: {
+      registrationNumber: 1,
+      registrant: {
+        type: "$registrant.type",
+        name: "$registrant.name",
+        email: "$registrant.email",
+        phone: "$registrant.phone",
+        // Full contact details if individual
+        contact: { $arrayElemAt: ["$registrantContact", 0] },
+        // Organisation details if org
+        organisation: { $arrayElemAt: ["$registrantOrg", 0] }
+      },
+      attendees: {
+        $map: {
+          input: "$attendees",
+          as: "attendee",
+          in: {
+            attendeeNumber: "$$attendee.attendeeNumber",
+            profile: "$$attendee.profile",
+            contact: {
+              $arrayElemAt: [
+                {
+                  $filter: {
+                    input: "$attendeeContacts",
+                    cond: { $eq: ["$$this._id", "$$attendee.contactId"] }
+                  }
+                },
+                0
+              ]
+            }
+          }
+        }
+      },
+      purchase: 1
+    }
+  }
+])
+```
+
+### 2. Contact Purchase History
+```javascript
+// Get all registrations for a specific contact
+db.registrations.aggregate([
+  {
+    $match: {
+      "registrant.contactId": ObjectId("contactId")
+    }
+  },
+  {
+    $group: {
+      _id: "$registrant.contactId",
+      totalRegistrations: { $sum: 1 },
+      totalSpent: { $sum: "$purchase.total" },
+      functions: { $addToSet: "$functionId" },
+      registrations: {
+        $push: {
+          registrationNumber: "$registrationNumber",
+          functionId: "$functionId",
+          date: "$metadata.createdAt",
+          total: "$purchase.total",
+          status: "$status"
+        }
+      }
+    }
+  },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "_id",
+      foreignField: "_id",
+      as: "contact"
+    }
+  },
+  { $unwind: "$contact" },
+  {
+    $project: {
+      contact: {
+        name: { $concat: ["$contact.profile.firstName", " ", "$contact.profile.lastName"] },
+        email: "$contact.profile.email",
+        phone: "$contact.profile.phone"
+      },
+      purchaseHistory: {
+        totalRegistrations: "$totalRegistrations",
+        totalSpent: "$totalSpent",
+        uniqueFunctions: { $size: "$functions" },
+        registrations: "$registrations"
+      }
+    }
+  }
+])
+```
+
 ## Revenue Analysis
 
-### 1. Revenue by Function
+### 3. Revenue by Function
 ```javascript
 // Calculate total revenue by function
 db.registrations.aggregate([
@@ -63,7 +204,7 @@ db.registrations.aggregate([
 ])
 ```
 
-### 2. Registration Type Analysis
+### 4. Registration Type Analysis
 ```javascript
 // Analyze registration patterns and revenue by type
 db.registrations.aggregate([

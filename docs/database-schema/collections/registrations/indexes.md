@@ -23,16 +23,43 @@ db.registrations.createIndex(
 ```
 **Purpose**: Find registrations for a function by status
 
-### 3. Registrant History
+### 3. Contact Registrant History
 ```javascript
 db.registrations.createIndex(
-  { "registrant.id": 1, "metadata.createdAt": -1 },
-  { name: "registrant_history" }
+  { "registrant.contactId": 1, "metadata.createdAt": -1 },
+  { 
+    sparse: true,
+    name: "contact_registrant_history" 
+  }
 )
 ```
-**Purpose**: Customer purchase history
+**Purpose**: Individual contact purchase history
 
-### 4. Payment Transaction Lookup
+### 4. Organisation Registrant History
+```javascript
+db.registrations.createIndex(
+  { "registrant.organisationId": 1, "metadata.createdAt": -1 },
+  { 
+    sparse: true,
+    name: "org_registrant_history" 
+  }
+)
+```
+**Purpose**: Organisation purchase history
+
+### 5. User Account History
+```javascript
+db.registrations.createIndex(
+  { "registrant.userId": 1, "metadata.createdAt": -1 },
+  { 
+    sparse: true,
+    name: "user_account_history" 
+  }
+)
+```
+**Purpose**: Track registrations by user account
+
+### 6. Payment Transaction Lookup
 ```javascript
 db.registrations.createIndex(
   { "payment.transactionId": 1 },
@@ -46,7 +73,7 @@ db.registrations.createIndex(
 
 ## Status and Workflow Indexes
 
-### 5. Incomplete Registrations
+### 7. Incomplete Registrations
 ```javascript
 db.registrations.createIndex(
   { "status": 1, "metadata.createdAt": 1 },
@@ -60,7 +87,7 @@ db.registrations.createIndex(
 ```
 **Purpose**: Find registrations needing attention
 
-### 6. Payment Status
+### 8. Payment Status
 ```javascript
 db.registrations.createIndex(
   { "payment.status": 1, "payment.paidAt": 1 },
@@ -69,7 +96,7 @@ db.registrations.createIndex(
 ```
 **Purpose**: Financial reporting and reconciliation
 
-### 7. Attendee Allocation
+### 9. Attendee Allocation
 ```javascript
 db.registrations.createIndex(
   { "type": 1, "attendeeAllocation.unassigned": 1 },
@@ -85,7 +112,7 @@ db.registrations.createIndex(
 
 ## Reporting Indexes
 
-### 8. Date Range Queries
+### 10. Date Range Queries
 ```javascript
 db.registrations.createIndex(
   { "metadata.createdAt": 1, "functionId": 1 },
@@ -94,7 +121,7 @@ db.registrations.createIndex(
 ```
 **Purpose**: Registration reports by date range
 
-### 9. Registration Type Analysis
+### 11. Registration Type Analysis
 ```javascript
 db.registrations.createIndex(
   { "type": 1, "functionId": 1, "purchase.total": 1 },
@@ -103,7 +130,7 @@ db.registrations.createIndex(
 ```
 **Purpose**: Analyze registration patterns and revenue by type
 
-### 10. Product Sales
+### 12. Product Sales
 ```javascript
 db.registrations.createIndex(
   { "purchase.items.productId": 1, "purchase.items.productType": 1 },
@@ -114,7 +141,7 @@ db.registrations.createIndex(
 
 ## Communication Indexes
 
-### 11. Follow-up Required
+### 13. Follow-up Required
 ```javascript
 db.registrations.createIndex(
   { "communications.confirmationSent": 1, "status": 1 },
@@ -128,7 +155,7 @@ db.registrations.createIndex(
 ```
 **Purpose**: Find registrations needing confirmation emails
 
-### 12. Reminder Tracking
+### 14. Reminder Tracking
 ```javascript
 db.registrations.createIndex(
   { "communications.lastReminderAt": 1, "status": 1 },
@@ -139,7 +166,7 @@ db.registrations.createIndex(
 
 ## Financial Indexes
 
-### 13. Financial Transaction Link
+### 15. Financial Transaction Link
 ```javascript
 db.registrations.createIndex(
   { "financialTransactionId": 1 },
@@ -151,7 +178,7 @@ db.registrations.createIndex(
 ```
 **Purpose**: Join with financial transactions
 
-### 14. Revenue Reporting
+### 16. Revenue Reporting
 ```javascript
 db.registrations.createIndex(
   { "functionId": 1, "purchase.total": 1, "payment.status": 1 },
@@ -162,13 +189,13 @@ db.registrations.createIndex(
 
 ## Compound Text Index
 
-### 15. Registration Search
+### 17. Registration Search
 ```javascript
 db.registrations.createIndex(
   { 
     "registrationNumber": "text",
     "registrant.name": "text",
-    "registrant.contact.email": "text",
+    "registrant.email": "text",
     "customFields.internalNotes": "text"
   },
   { name: "registration_search" }

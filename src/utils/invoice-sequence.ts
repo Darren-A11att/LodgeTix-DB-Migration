@@ -140,10 +140,18 @@ export class InvoiceSequence {
   }
 
   /**
-   * Generate a LodgeTix invoice number
+   * Generate a LodgeTix customer invoice number
    * Example: LTIV-25060001
    */
   async generateLodgeTixInvoiceNumber(): Promise<string> {
     return this.generateInvoiceNumber('LTIV');
+  }
+
+  /**
+   * Generate a LodgeTix supplier invoice number
+   * Example: LTSP-25060001
+   */
+  async generateLodgeTixSupplierInvoiceNumber(): Promise<string> {
+    return this.generateInvoiceNumber('LTSP');
   }
 }

@@ -39,9 +39,22 @@ db.users.createIndex(
 ```
 **Purpose**: Unique OAuth accounts, provider authentication
 
+## Contact Reference Index
+
+### 4. Contact Lookup
+```javascript
+db.users.createIndex(
+  { "contactId": 1 },
+  { 
+    name: "contact_reference"
+  }
+)
+```
+**Purpose**: Fast lookup of associated contact record
+
 ## Authentication Indexes
 
-### 4. Session Management
+### 5. Session Management
 ```javascript
 db.users.createIndex(
   { "auth.sessions.sessionId": 1 },
@@ -53,7 +66,7 @@ db.users.createIndex(
 ```
 **Purpose**: Fast session validation
 
-### 5. Password Reset
+### 6. Password Reset
 ```javascript
 db.users.createIndex(
   { "auth.passwordResetToken": 1, "auth.passwordResetExpires": 1 },
@@ -68,7 +81,7 @@ db.users.createIndex(
 ```
 **Purpose**: Password reset token validation
 
-### 6. Active Sessions
+### 7. Active Sessions
 ```javascript
 db.users.createIndex(
   { "auth.sessions.expiresAt": 1, "flags.isActive": 1 },
@@ -82,32 +95,9 @@ db.users.createIndex(
 ```
 **Purpose**: Clean up expired sessions
 
-## Contact Information Indexes
-
-### 7. Phone Number Lookup
-```javascript
-db.users.createIndex(
-  { "profile.phones.number": 1 },
-  { 
-    sparse: true,
-    name: "phone_lookup"
-  }
-)
-```
-**Purpose**: Find users by phone number
-
-### 8. Name Search
-```javascript
-db.users.createIndex(
-  { "profile.lastName": 1, "profile.firstName": 1 },
-  { name: "name_search" }
-)
-```
-**Purpose**: Search users by name
-
 ## Organisation and Access
 
-### 9. Organisation Members
+### 8. Organisation Members
 ```javascript
 db.users.createIndex(
   { "access.organisations.organisationId": 1, "access.organisations.status": 1 },
@@ -116,7 +106,7 @@ db.users.createIndex(
 ```
 **Purpose**: List organisation members
 
-### 10. Role-based Access
+### 9. Role-based Access
 ```javascript
 db.users.createIndex(
   { "access.roles": 1, "flags.isActive": 1 },
@@ -125,7 +115,7 @@ db.users.createIndex(
 ```
 **Purpose**: Find users by role
 
-### 11. Permission Search
+### 10. Permission Search
 ```javascript
 db.users.createIndex(
   { "access.permissions": 1 },
@@ -139,7 +129,7 @@ db.users.createIndex(
 
 ## Activity and Engagement
 
-### 12. Last Active Users
+### 11. Last Active Users
 ```javascript
 db.users.createIndex(
   { "activity.engagement.lastActiveAt": -1, "flags.isActive": 1 },
@@ -148,7 +138,7 @@ db.users.createIndex(
 ```
 **Purpose**: Track active users
 
-### 13. High-Value Customers
+### 12. High-Value Customers
 ```javascript
 db.users.createIndex(
   { "activity.registrations.totalSpent": -1, "flags.isVip": 1 },
@@ -157,7 +147,7 @@ db.users.createIndex(
 ```
 **Purpose**: Identify VIP customers
 
-### 14. Loyalty Tier
+### 13. Loyalty Tier
 ```javascript
 db.users.createIndex(
   { "financial.loyaltyPoints.tier": 1, "financial.loyaltyPoints.balance": -1 },
@@ -168,7 +158,7 @@ db.users.createIndex(
 
 ## Communication and Marketing
 
-### 15. Marketing Consent
+### 14. Marketing Consent
 ```javascript
 db.users.createIndex(
   { "preferences.communications.marketing.email": 1, "flags.isActive": 1 },
@@ -182,7 +172,7 @@ db.users.createIndex(
 ```
 **Purpose**: Email marketing lists
 
-### 16. Event Preferences
+### 15. Event Preferences
 ```javascript
 db.users.createIndex(
   { "preferences.events.categories": 1, "preferences.events.notifications.newEvents": 1 },
@@ -196,7 +186,7 @@ db.users.createIndex(
 
 ## Compliance and Security
 
-### 17. Unverified Accounts
+### 16. Unverified Accounts
 ```javascript
 db.users.createIndex(
   { "auth.emailVerified": 1, "metadata.createdAt": 1 },
@@ -210,7 +200,7 @@ db.users.createIndex(
 ```
 **Purpose**: Track unverified accounts for cleanup
 
-### 18. Deletion Requests
+### 17. Deletion Requests
 ```javascript
 db.users.createIndex(
   { "compliance.dataRetention.deleteScheduledFor": 1 },
@@ -225,7 +215,7 @@ db.users.createIndex(
 ```
 **Purpose**: Process data deletion requests
 
-### 19. Banned Users
+### 18. Banned Users
 ```javascript
 db.users.createIndex(
   { "flags.isBanned": 1, "auth.email": 1 },
@@ -241,7 +231,7 @@ db.users.createIndex(
 
 ## Analytics Indexes
 
-### 20. User Cohorts
+### 19. User Cohorts
 ```javascript
 db.users.createIndex(
   { "metadata.createdAt": 1, "metadata.source": 1, "metadata.campaign": 1 },
@@ -250,27 +240,13 @@ db.users.createIndex(
 ```
 **Purpose**: Cohort analysis and attribution
 
-### 21. Geographic Distribution
-```javascript
-db.users.createIndex(
-  { "profile.addresses.country": 1, "profile.addresses.state": 1, "profile.addresses.city": 1 },
-  { 
-    sparse: true,
-    name: "geographic_distribution"
-  }
-)
-```
-**Purpose**: Geographic analytics
-
 ## Compound Text Index
 
-### 22. User Search
+### 20. User Search
 ```javascript
 db.users.createIndex(
   { 
     "auth.email": "text",
-    "profile.firstName": "text",
-    "profile.lastName": "text",
     "profile.displayName": "text",
     "userId": "text"
   },

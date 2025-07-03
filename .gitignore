@@ -41,3 +41,16 @@ tmp/
 
 # MongoDB explorer (has its own git repo)
 mongodb-explorer/
+
+# Screenshots
+Screenshot*.png
+
+# Port configuration
+.port-config.json
+
+# Next.js
+.next/
+out/
+
+# Vercel
+.vercel

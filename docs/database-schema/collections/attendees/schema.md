@@ -1,7 +1,7 @@
 # Attendees Collection Schema
 
 ## Overview
-The attendees collection represents individual people who will attend events within functions. Each attendee has a unique QR code that provides access to all their tickets across multiple events, enabling efficient check-in and access control.
+The attendees collection represents individual people who will attend events within functions. Each attendee has a unique QR code that provides access to all their tickets across multiple events, enabling efficient check-in and access control. Attendees maintain event-specific information (dietary requirements, special needs, partner relationships) while also referencing the contacts collection for master identity data. The contact reference may be populated post-registration through server-side reconciliation.
 
 ## Document Structure
 
@@ -9,34 +9,75 @@ The attendees collection represents individual people who will attend events wit
 {
   _id: ObjectId,
   attendeeNumber: String,         // Unique identifier (e.g., "ATT-2025-00123")
+  attendeeId: String,             // Legacy UUID from app (e.g., "01979bd3-dda0-718d-a100-a98759a1a67c")
   registrationId: ObjectId,       // Reference to registration
   functionId: String,             // Reference to function
   
-  // Personal Information
+  // Contact Reference (may be populated post-registration)
+  contactId: ObjectId,            // Reference to contacts collection (nullable initially)
+  contactMatched: Boolean,        // Whether contact has been matched/created
+  contactMatchedAt: Date,         // When the contact was matched
+  
+  // Attendee Type and Status
+  attendeeType: String,           // "mason", "guest", "partner", etc.
+  isPrimary: Boolean,             // Primary attendee for the registration
+  paymentStatus: String,          // "pending", "paid", "refunded"
+  
+  // Basic Information (kept for event-specific data)
   profile: {
+    title: String,                // "Mr", "Mrs", "Bro", "WBro", "VWBro", etc.
     firstName: String,
     lastName: String,
-    preferredName: String,        // Display name
-    dateOfBirth: Date,            // For age verification
-    gender: String,               // For statistics/accommodation
+    suffix: String,               // Post-nominals (e.g., "PDGDC")
     
-    // Contact (may differ from registrant)
-    contact: {
-      email: String,
-      phone: String,
-      emergencyContact: {
-        name: String,
-        phone: String,
-        relationship: String
-      }
-    },
+    // Contact info at time of registration
+    primaryEmail: String,         // May be empty for non-primary attendees
+    primaryPhone: String,         // May be empty for non-primary attendees
+    contactPreference: String,    // "directly", "primaryattendee"
+    contactConfirmed: Boolean
+  },
+  
+  // Partner/Relationship Information
+  partnerInfo: {
+    partner: String,              // AttendeeId of partner (if applicable)
+    isPartner: String,            // AttendeeId they are partner of
+    partnerOf: String,            // AttendeeId they are partner of (duplicate?)
+    relationship: String,         // "Wife", "Husband", "Partner", etc.
+  },
+  
+  // Masonic Information (for mason attendees)
+  masonicInfo: {
+    rank: String,                 // "EA", "FC", "MM", "GL", etc.
+    title: String,                // Masonic title
+    grandOfficerStatus: String,   // "Present", "Past", null
+    postNominals: String,         // Additional masonic honours
     
-    // Identification
-    identification: {
-      type: String,               // "drivers_license", "passport", "member_card"
-      number: String,             // Encrypted
-      verifiedAt: Date,
-      verifiedBy: ObjectId
+    // Lodge information
+    lodge: String,                // Lodge name (may be empty)
+    lodgeId: String,              // Lodge organisation ID
+    lodgeNameNumber: String,      // Full lodge name with number
+    lodgeOrganisationId: String,  // Organisation reference
+    
+    // Grand Lodge information
+    grandLodge: String,           // Grand Lodge name
+    grandLodgeId: String,         // Grand Lodge ID
+    grandLodgeOrganisationId: String,
+    
+    firstTime: Boolean,           // First time attending
+    useSameLodge: Boolean         // Use same lodge as primary attendee
+  },
+  
+  // Event-Specific Requirements
+  requirements: {
+    dietaryRequirements: String,  // Free text dietary needs for this event
+    specialNeeds: String,         // Free text special needs for this event
+    accessibility: [String],      // Specific accessibility requirements
+    
+    // Seating preferences
+    seating: {
+      tableAssignment: String,    // Assigned table
+      preference: String,         // Seating preference
+      companionIds: [String],     // Other attendee IDs to sit with
     }
   },
   
@@ -76,6 +117,9 @@ The attendees collection represents individual people who will attend events wit
     }
   }],
   
+  // Check-in Status
+  isCheckedIn: Boolean,           // Current check-in status
+  
   // Check-in history
   checkIns: [{
     eventId: String,
@@ -88,21 +132,8 @@ The attendees collection represents individual people who will attend events wit
     notes: String
   }],
   
-  // Special requirements
-  requirements: {
-    dietary: [String],            // "vegetarian", "vegan", "gluten_free", etc.
-    accessibility: [String],      // "wheelchair", "hearing_loop", etc.
-    medical: {
-      conditions: [String],       // Relevant conditions
-      medications: [String],      // Current medications
-      allergies: [String]         // Known allergies
-    },
-    seating: {
-      preference: String,         // "aisle", "front", "back"
-      companionIds: [ObjectId],   // Other attendees to sit with
-      avoidIds: [ObjectId]        // Attendees to avoid
-    }
-  },
+  // Notes
+  notes: String,                  // General notes about attendee
   
   // Accommodation (if applicable)
   accommodation: {
@@ -184,6 +215,11 @@ The attendees collection represents individual people who will attend events wit
   // Custom fields for function-specific data
   customFields: Map,              // Flexible key-value pairs
   
+  // Guest Information (if applicable)
+  guestInfo: {
+    guestOfId: String,            // AttendeeId of who they are guest of
+  },
+  
   // Audit trail
   metadata: {
     createdAt: Date,
@@ -200,8 +236,10 @@ The attendees collection represents individual people who will attend events wit
 
 ### Required Fields
 - `attendeeNumber` - Must be unique across system
+- `attendeeId` - Legacy UUID from application
 - `registrationId` - Must reference valid registration
 - `functionId` - Must reference valid function
+- `attendeeType` - Type of attendee
 - `profile.firstName` - Minimum identification
 - `profile.lastName` - Minimum identification
 - `qrCode.code` - Must be unique
@@ -214,11 +252,23 @@ The attendees collection represents individual people who will attend events wit
 - `no_show` - Didn't attend
 - `cancelled` - Registration cancelled
 
-**Gender:**
-- `male`
-- `female`
-- `other`
-- `prefer_not_to_say`
+**Attendee Types:**
+- `mason` - Masonic member
+- `guest` - General guest
+- `partner` - Partner/spouse of attendee
+- `vip` - VIP guest
+- `speaker` - Event speaker
+- `staff` - Event staff
+
+**Payment Status:**
+- `pending` - Awaiting payment
+- `paid` - Payment completed
+- `refunded` - Payment refunded
+- `comped` - Complimentary
+
+**Contact Preference:**
+- `directly` - Contact attendee directly
+- `primaryattendee` - Contact via primary attendee
 
 **Check-in Methods:**
 - `qr_scan` - QR code scanned
@@ -234,17 +284,23 @@ The attendees collection represents individual people who will attend events wit
 
 ## Indexes
 - `attendeeNumber` - Unique index
+- `attendeeId` - Legacy UUID index
+- `contactId` - Contact reference (sparse)
 - `qrCode.code` - Unique index for fast QR lookups
 - `registrationId` - For registration queries
 - `functionId, status` - For function attendee lists
-- `profile.contact.email` - For attendee lookup
+- `profile.primaryEmail` - For attendee lookup (sparse)
 - `profile.lastName, profile.firstName` - For name searches
+- `partnerInfo.partner` - For partner relationships
+- `partnerInfo.isPartner` - For reverse partner lookup
 
 ## Relationships
+- **Contacts** - Contact record via `contactId` (may be null initially)
 - **Registrations** - Parent registration via `registrationId`
 - **Functions** - Function via `functionId`
 - **Tickets** - Owned tickets via `tickets.ticketId`
 - **Users** - Check-in staff via `checkIns.staff`
+- **Other Attendees** - Partners via `partnerInfo.partner`
 
 ## Security Considerations
 

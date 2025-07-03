@@ -1,7 +1,7 @@
 # Users Collection Schema
 
 ## Overview
-The users collection represents individual user accounts in the system. Users can be customers, staff, administrators, or other roles. They can make purchases, manage attendees, and interact with the platform.
+The users collection represents authentication and authorization for system accounts. It focuses on login credentials, security, and access control. Personal information is now stored in the contacts collection, with users referencing their contact record via contactId.
 
 ## Document Structure
 
@@ -64,34 +64,12 @@ The users collection represents individual user accounts in the system. Users ca
     lastLoginIp: String
   },
   
-  // Personal Information
+  // Contact Reference
+  contactId: ObjectId,            // Reference to contacts collection (required)
+  
+  // User Preferences (not personal data)
   profile: {
-    firstName: String,
-    lastName: String,
-    displayName: String,          // Preferred display name
-    dateOfBirth: Date,
-    gender: String,               // "male", "female", "other", "prefer_not_to_say"
-    
-    // Contact information
-    phones: [{
-      type: String,               // "mobile", "home", "work"
-      number: String,
-      verified: Boolean,
-      primary: Boolean
-    }],
-    
-    // Addresses
-    addresses: [{
-      type: String,               // "home", "work", "billing", "shipping"
-      addressLine1: String,
-      addressLine2: String,
-      city: String,
-      state: String,
-      postcode: String,
-      country: String,
-      primary: Boolean,
-      validatedAt: Date
-    }],
+    displayName: String,          // Preferred display name for UI
     
     // Profile customization
     avatar: {
@@ -216,7 +194,7 @@ The users collection represents individual user accounts in the system. Users ca
         lastChance: Boolean
       },
       accessibility: [String],    // Required accommodations
-      dietary: [String]           // Dietary requirements
+      dietary: [String]           // Dietary preferences (actual requirements in contacts)
     },
     
     // Privacy settings
@@ -270,23 +248,8 @@ The users collection represents individual user accounts in the system. Users ca
     }
   },
   
-  // Relationships
+  // Account Relationships
   relationships: {
-    // Family/group connections
-    family: [{
-      userId: ObjectId,
-      relationship: String,       // "spouse", "child", "parent"
-      confirmed: Boolean
-    }],
-    
-    // Emergency contacts
-    emergencyContacts: [{
-      name: String,
-      relationship: String,
-      phone: String,
-      email: String
-    }],
-    
     // Managed accounts (for parents/guardians)
     managedAccounts: [{
       userId: ObjectId,
@@ -367,8 +330,7 @@ The users collection represents individual user accounts in the system. Users ca
 ### Required Fields
 - `userId` - Unique user identifier
 - `auth.email` - Primary email address
-- `profile.firstName` - Legal first name
-- `profile.lastName` - Legal last name
+- `contactId` - Reference to contacts collection
 - `flags.isActive` - Account status
 
 ### Enumerations
@@ -379,12 +341,6 @@ The users collection represents individual user accounts in the system. Users ca
 - `admin` - Administrator
 - `superadmin` - System administrator
 - `support` - Customer support
-
-**Gender:**
-- `male`
-- `female`
-- `other`
-- `prefer_not_to_say`
 
 **MFA Methods:**
 - `totp` - Time-based OTP
@@ -400,13 +356,14 @@ The users collection represents individual user accounts in the system. Users ca
 ## Indexes
 - `userId` - Unique index
 - `auth.email` - Unique index
+- `contactId` - Contact reference lookup
 - `auth.providers.providerId, auth.providers.provider` - Unique compound
-- `profile.phones.number` - For phone lookups
 - `access.organisations.organisationId` - Organisation members
 - `metadata.createdAt` - Date range queries
 - `flags.isActive, auth.email` - Active user lookups
 
 ## Relationships
+- **Contacts** - User profile data via `contactId`
 - **Registrations** - User makes registrations
 - **Attendees** - User can be linked to attendee profiles
 - **Organisations** - User belongs to organisations
@@ -435,11 +392,12 @@ The users collection represents individual user accounts in the system. Users ca
 ## Business Logic
 
 ### Account Creation
-1. Validate email uniqueness
-2. Hash password with bcrypt
-3. Send verification email
-4. Create with basic customer role
-5. Log account creation event
+1. Create or link to contact record
+2. Validate email uniqueness
+3. Hash password with bcrypt
+4. Send verification email
+5. Create with basic customer role
+6. Log account creation event
 
 ### Login Process
 1. Check login attempts/lockout

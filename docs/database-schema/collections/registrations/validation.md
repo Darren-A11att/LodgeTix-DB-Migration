@@ -26,32 +26,36 @@ db.createCollection("registrations", {
         },
         registrant: {
           bsonType: "object",
-          required: ["type", "id", "name", "contact"],
+          required: ["type", "name"],
           properties: {
             type: {
               bsonType: "string",
-              enum: ["organisation", "user"]
+              enum: ["contact", "organisation"]
             },
-            id: { bsonType: "objectId" },
+            contactId: { 
+              bsonType: ["objectId", "null"],
+              description: "Required when type is contact"
+            },
+            organisationId: { 
+              bsonType: ["objectId", "null"],
+              description: "Required when type is organisation"
+            },
+            userId: { 
+              bsonType: ["objectId", "null"],
+              description: "User account that made the purchase"
+            },
             name: {
               bsonType: "string",
               minLength: 1,
               maxLength: 200
             },
-            contact: {
-              bsonType: "object",
-              required: ["email"],
-              properties: {
-                name: { bsonType: "string" },
-                email: {
-                  bsonType: "string",
-                  pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-                },
-                phone: {
-                  bsonType: ["string", "null"],
-                  pattern: "^\\+?[0-9\\s-()]+$"
-                }
-              }
+            email: {
+              bsonType: "string",
+              pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+            },
+            phone: {
+              bsonType: ["string", "null"],
+              pattern: "^\\+?[0-9\\s-()]+$"
             },
             abn: {
               bsonType: ["string", "null"],

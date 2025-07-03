@@ -480,3 +480,90 @@ db.financialTransactions.aggregate([
   }
 ])
 ```
+
+### 11. Customer Type Breakdown
+```javascript
+// Analyze transaction distribution by customer type (organisation vs contact vs user)
+db.financialTransactions.aggregate([
+  {
+    $match: {
+      type: "registration_payment",
+      "payments.status": "succeeded"
+    }
+  },
+  {
+    $group: {
+      _id: "$parties.customer.type",
+      count: { $sum: 1 },
+      totalRevenue: { $sum: "$amounts.total" },
+      avgTransaction: { $avg: "$amounts.total" },
+      uniqueCustomers: { $addToSet: "$parties.customer.id" }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      customerType: "$_id",
+      metrics: {
+        transactions: "$count",
+        revenue: "$totalRevenue",
+        avgTransactionValue: { $round: ["$avgTransaction", 2] },
+        uniqueCustomers: { $size: "$uniqueCustomers" }
+      },
+      revenueShare: {
+        $multiply: [
+          { $divide: ["$totalRevenue", { $sum: "$totalRevenue" }] },
+          100
+        ]
+      }
+    }
+  },
+  { $sort: { "metrics.revenue": -1 } }
+])
+```
+
+### 12. Contact Customer Details
+```javascript
+// Get transaction details for contact customers with their full profile
+db.financialTransactions.aggregate([
+  {
+    $match: {
+      "parties.customer.type": "contact",
+      type: "registration_payment"
+    }
+  },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "parties.customer.id",
+      foreignField: "_id",
+      as: "contactDetails"
+    }
+  },
+  {
+    $unwind: {
+      path: "$contactDetails",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $project: {
+      transactionId: 1,
+      reference: 1,
+      amount: "$amounts.total",
+      paymentDate: { $first: "$payments.processedAt" },
+      customer: {
+        id: "$parties.customer.id",
+        name: "$parties.customer.name",
+        email: "$parties.customer.email",
+        // Enhanced details from contact record
+        profile: "$contactDetails.profile",
+        masonicProfile: "$contactDetails.masonicProfile",
+        dietaryRequirements: "$contactDetails.profile.dietaryRequirements",
+        specialNeeds: "$contactDetails.profile.specialNeeds"
+      }
+    }
+  },
+  { $sort: { paymentDate: -1 } }
+])
+```

@@ -812,9 +812,295 @@ db.tickets.aggregate([
 ])
 ```
 
+### 10. Unassigned Lodge Tickets
+```javascript
+// Find all unassigned tickets from lodge registrations
+db.tickets.aggregate([
+  {
+    $match: {
+      "owner.attendeeId": null,  // Unassigned tickets
+      status: "active"
+    }
+  },
+  {
+    $lookup: {
+      from: "registrations",
+      localField: "purchase.registrationId",
+      foreignField: "_id",
+      as: "registration"
+    }
+  },
+  {
+    $unwind: "$registration"
+  },
+  {
+    $match: {
+      "registration.type": "lodge"  // Only lodge registrations
+    }
+  },
+  {
+    $group: {
+      _id: "$purchase.registrationId",
+      registrationNumber: { $first: "$registration.registrationNumber" },
+      lodgeName: { $first: "$registration.registrant.name" },
+      bookingContact: { $first: "$registration.registrant" },
+      unassignedTickets: {
+        $push: {
+          ticketId: "$_id",
+          ticketNumber: "$ticketNumber",
+          eventId: "$product.eventId",
+          eventName: "$product.eventName",
+          category: "$product.productCategory",
+          purchaseDate: "$purchase.purchaseDate"
+        }
+      },
+      totalUnassigned: { $sum: 1 },
+      eventBreakdown: {
+        $push: "$product.eventId"
+      }
+    }
+  },
+  {
+    $project: {
+      registration: {
+        id: "$_id",
+        number: "$registrationNumber",
+        lodgeName: "$lodgeName",
+        bookingContact: "$bookingContact"
+      },
+      unassignedSummary: {
+        total: "$totalUnassigned",
+        byEvent: {
+          $arrayToObject: {
+            $map: {
+              input: { $setUnion: "$eventBreakdown" },
+              as: "eventId",
+              in: {
+                k: "$$eventId",
+                v: {
+                  $size: {
+                    $filter: {
+                      input: "$eventBreakdown",
+                      cond: { $eq: ["$$this", "$$eventId"] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      tickets: "$unassignedTickets"
+    }
+  },
+  {
+    $sort: { "unassignedSummary.total": -1 }
+  }
+])
+```
+
+### 11. Lodge Ticket Assignment Status
+```javascript
+// Track assignment progress for lodge registrations
+db.registrations.aggregate([
+  {
+    $match: { 
+      type: "lodge",
+      status: { $in: ["confirmed", "completed"] }
+    }
+  },
+  {
+    $lookup: {
+      from: "tickets",
+      let: { regId: "$_id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ["$purchase.registrationId", "$$regId"]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: "$product.eventId",
+            eventName: { $first: "$product.eventName" },
+            total: { $sum: 1 },
+            assigned: {
+              $sum: {
+                $cond: [
+                  { $ne: ["$owner.attendeeId", null] },
+                  1,
+                  0
+                ]
+              }
+            },
+            unassigned: {
+              $sum: {
+                $cond: [
+                  { $eq: ["$owner.attendeeId", null] },
+                  1,
+                  0
+                ]
+              }
+            }
+          }
+        }
+      ],
+      as: "ticketStatus"
+    }
+  },
+  {
+    $project: {
+      lodgeInfo: {
+        registrationNumber: "$registrationNumber",
+        lodgeName: "$registrant.name",
+        lodgeNumber: "$registrant.lodgeNumber",
+        bookingContact: {
+          name: "$registrant.contactName",
+          email: "$registrant.email",
+          phone: "$registrant.phone"
+        }
+      },
+      ticketAllocation: {
+        totalPurchased: { $sum: "$ticketStatus.total" },
+        totalAssigned: { $sum: "$ticketStatus.assigned" },
+        totalUnassigned: { $sum: "$ticketStatus.unassigned" },
+        assignmentRate: {
+          $multiply: [
+            {
+              $divide: [
+                { $sum: "$ticketStatus.assigned" },
+                { $sum: "$ticketStatus.total" }
+              ]
+            },
+            100
+          ]
+        },
+        byEvent: "$ticketStatus"
+      },
+      lastModified: "$metadata.updatedAt"
+    }
+  },
+  {
+    $sort: { "ticketAllocation.totalUnassigned": -1 }
+  }
+])
+```
+
+### 12. Ticket Ownership with Contact Details
+```javascript
+// Get ticket ownership with full contact information
+db.tickets.aggregate([
+  {
+    $match: {
+      "owner.attendeeId": { $exists: true, $ne: null }
+    }
+  },
+  {
+    $lookup: {
+      from: "attendees",
+      localField: "owner.attendeeId",
+      foreignField: "_id",
+      as: "attendee"
+    }
+  },
+  {
+    $unwind: "$attendee"
+  },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "attendee.contactId",
+      foreignField: "_id",
+      as: "contact"
+    }
+  },
+  {
+    $unwind: {
+      path: "$contact",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $project: {
+      ticketNumber: 1,
+      event: {
+        name: "$product.eventName",
+        category: "$product.productCategory"
+      },
+      owner: {
+        attendeeId: "$owner.attendeeId",
+        attendeeNumber: "$attendee.attendeeNumber",
+        contactId: "$attendee.contactId",
+        name: {
+          $concat: [
+            "$attendee.profile.firstName",
+            " ",
+            "$attendee.profile.lastName"
+          ]
+        },
+        
+        // From attendee
+        attendeeDetails: {
+          title: "$attendee.profile.title",
+          firstName: "$attendee.profile.firstName",
+          lastName: "$attendee.profile.lastName",
+          dietaryRequirements: "$attendee.requirements.dietaryRequirements",
+          specialNeeds: "$attendee.requirements.specialNeeds",
+          partner: "$attendee.partnerInfo.partner"
+        },
+        
+        // From contact (if matched)
+        contactDetails: {
+          $cond: [
+            { $ne: ["$contact", null] },
+            {
+              email: "$contact.profile.email",
+              phone: "$contact.profile.phone",
+              preferredDietary: "$contact.profile.dietaryRequirements",
+              preferredSpecialNeeds: "$contact.profile.specialNeeds",
+              masonicProfile: "$contact.masonicProfile",
+              relationships: "$contact.relationships"
+            },
+            null
+          ]
+        }
+      },
+      
+      // Assignment info from transfer history
+      assignment: {
+        $let: {
+          vars: {
+            lastAssignment: {
+              $arrayElemAt: [
+                {
+                  $filter: {
+                    input: "$transferHistory",
+                    cond: { $eq: ["$$this.type", "assignment"] }
+                  }
+                },
+                -1
+              ]
+            }
+          },
+          in: {
+            assignedAt: "$$lastAssignment.transferDate",
+            assignedBy: "$$lastAssignment.transferredBy"
+          }
+        }
+      }
+    }
+  },
+  {
+    $sort: { "assignment.assignedAt": -1 }
+  }
+])
+```
+
 ## Performance Metrics
 
-### 10. Scanning Performance Analysis
+### 13. Scanning Performance Analysis
 ```javascript
 // Analyze QR/barcode scanning efficiency
 db.tickets.aggregate([

@@ -1,6 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import { connectMongoDB, disconnectMongoDB } from './connections/mongodb';
+import { 
+  connectBothDBs, 
+  disconnectBothDBs,
+  getDestinationDb
+} from './connections/dual-mongodb';
+import { MigrationService } from './services/migration-service';
 import path from 'path';
 import { ObjectId } from 'mongodb';
 import { PaymentRegistrationMatcher, PaymentData } from './services/payment-registration-matcher';
@@ -386,7 +392,7 @@ app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
       }
       
       // Then get documents with functionId
-      const functionRelatedCollections = ['events', 'event_tickets', 'packages'];
+      const functionRelatedCollections = ['events', 'packages'];  // Removed event_tickets as we'll get them via events
       for (const relCollection of functionRelatedCollections) {
         try {
           const collection = db.collection(relCollection);
@@ -407,41 +413,50 @@ app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
         }
       }
       
-      // If we found events, also get their event tickets
+      // If we found events, also get their eventTickets (product templates)
       if (relatedDocs.events && relatedDocs.events.length > 0) {
         try {
-          const eventTicketsCollection = db.collection('event_tickets');
+          const eventTicketsCollection = db.collection('eventTickets');
           const eventIds = relatedDocs.events.map((event: any) => event._id.toString());
           
-          // Also collect any eventId fields from the events
+          // Also collect any eventId/event_id fields from the events
           relatedDocs.events.forEach((event: any) => {
             if (event.eventId) eventIds.push(event.eventId);
+            if (event.event_id) eventIds.push(event.event_id);
             if (event.id) eventIds.push(event.id);
           });
           
+          // Also add the eventId field values from events
+          const allEventIds = [...eventIds];
+          relatedDocs.events.forEach((event: any) => {
+            if (event.eventId && !allEventIds.includes(event.eventId)) {
+              allEventIds.push(event.eventId);
+            }
+          });
+          
+          console.log('Looking for eventTickets for event IDs:', allEventIds);
+          
           const eventTickets = await eventTicketsCollection.find({
             $or: [
-              { eventId: { $in: eventIds } },
-              { event_id: { $in: eventIds } }
+              { eventId: { $in: allEventIds } },
+              { event_id: { $in: allEventIds } },
+              { event: { $in: allEventIds } }
             ]
           }).limit(200).toArray();
           
+          console.log(`Found ${eventTickets.length} eventTickets`);
+          
           if (eventTickets.length > 0) {
-            // Merge with existing event_tickets if any
-            relatedDocs.event_tickets = [
-              ...(relatedDocs.event_tickets || []),
-              ...eventTickets
-            ];
-            
             // Remove duplicates based on _id
-            const uniqueTickets = relatedDocs.event_tickets.filter(
+            const uniqueEventTickets = eventTickets.filter(
               (ticket: any, index: number, self: any[]) =>
                 index === self.findIndex((t: any) => t._id?.toString() === ticket._id?.toString())
             );
-            relatedDocs.event_tickets = uniqueTickets;
+            
+            relatedDocs.eventTickets = uniqueEventTickets;
           }
         } catch (err) {
-          console.warn('Failed to fetch event tickets for events:', err);
+          console.warn('Failed to fetch eventTickets for events:', err);
         }
       }
       
@@ -460,6 +475,51 @@ app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
       return;
     }
     
+    // Special handling for events collection
+    if (collectionName === 'events') {
+      // Get eventTickets (product templates) for this event
+      try {
+        const eventTicketsCollection = db.collection('eventTickets');
+        const eventId = sourceDoc.event_id || sourceDoc.eventId || sourceDoc._id.toString();
+        
+        console.log('Event document - looking for eventTickets with eventId:', eventId);
+        
+        const eventTickets = await eventTicketsCollection.find({
+          $or: [
+            { eventId: eventId },
+            { event_id: eventId },
+            { event: eventId }
+          ]
+        }).limit(200).toArray();
+        
+        console.log(`Found ${eventTickets.length} eventTickets for event`);
+        
+        if (eventTickets.length > 0) {
+          relatedDocs.eventTickets = eventTickets;
+        }
+      } catch (err) {
+        console.warn('Failed to fetch eventTickets for event:', err);
+      }
+      
+      // Also get the parent function
+      if (sourceDoc.functionId || sourceDoc.function_id) {
+        try {
+          const functionsCollection = db.collection('functions');
+          const functionId = sourceDoc.functionId || sourceDoc.function_id;
+          const functionQueries: any[] = [
+            { functionId: functionId },
+            { _id: ObjectId.isValid(functionId) ? new ObjectId(functionId) : functionId }
+          ];
+          const functionDoc = await functionsCollection.findOne({ $or: functionQueries });
+          if (functionDoc) {
+            relatedDocs.functions = [functionDoc];
+          }
+        } catch (err) {
+          console.warn('Failed to fetch function for event:', err);
+        }
+      }
+    }
+    
     // Define relationships for other collection types
     const relationships: Record<string, string[]> = {
       registrations: ['attendees', 'eventTickets', 'packages', 'functions', 'events', 'lodges', 'organisations', 'users'],
@@ -467,7 +527,7 @@ app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
       payments: ['registrations', 'invoices'],
       users: ['registrations', 'attendees', 'organisations'],
       organisations: ['registrations', 'users', 'lodges'],
-      events: ['functions', 'eventTickets', 'registrations']
+      events: ['locations', 'registrations']  // Removed eventTickets since we handle it specially above
     };
     
     const relatedCollections = relationships[collectionName] || [];
@@ -1570,6 +1630,221 @@ app.post('/api/invoices/create', async (req, res) => {
   }
 });
 
+// ===== MIGRATION ENDPOINTS =====
+
+// Initialize migration service
+const migrationService = new MigrationService();
+
+// Load default mappings on startup
+migrationService.loadDefaultMappings().catch(console.error);
+
+// Get default mapping for a collection
+app.get('/api/migration/mappings/:collection', (_req, res) => {
+  try {
+    const collection = _req.params.collection;
+    const defaultMapping = migrationService.getDefaultMapping(collection);
+    
+    if (!defaultMapping) {
+      res.status(404).json({ error: `No default mapping found for collection: ${collection}` });
+      return;
+    }
+    
+    res.json({
+      collection,
+      mapping: defaultMapping
+    });
+  } catch (error) {
+    console.error('Error fetching default mapping:', error);
+    res.status(500).json({ error: 'Failed to fetch default mapping' });
+  }
+});
+
+// Get all available default mappings
+app.get('/api/migration/mappings', (_req, res) => {
+  try {
+    const collections = [
+      'functions',
+      'registrations',
+      'tickets',
+      'financial-transactions',
+      'organisations',
+      'contacts',
+      'attendees',
+      'users',
+      'jurisdictions',
+      'products'
+    ];
+    
+    const mappings: Record<string, any> = {};
+    
+    for (const collection of collections) {
+      const mapping = migrationService.getDefaultMapping(collection);
+      if (mapping) {
+        mappings[collection] = mapping;
+      }
+    }
+    
+    res.json({
+      collections: Object.keys(mappings),
+      mappings
+    });
+  } catch (error) {
+    console.error('Error fetching all mappings:', error);
+    res.status(500).json({ error: 'Failed to fetch mappings' });
+  }
+});
+
+// Create document in destination database
+app.post('/api/migration/collections/:name/documents', async (req, res) => {
+  try {
+    await connectBothDBs();
+    const collectionName = req.params.name;
+    const document = req.body;
+    
+    const destinationDb = getDestinationDb();
+    const collection = destinationDb.collection(collectionName);
+    
+    // Check if already migrated
+    if (document.sourceId) {
+      const existing = await collection.findOne({
+        'metadata.sourceId': document.sourceId
+      });
+      
+      if (existing) {
+        res.status(409).json({ 
+          error: 'Document already migrated',
+          existingId: existing._id
+        });
+        return;
+      }
+    }
+    
+    // Add metadata
+    document.metadata = {
+      ...document.metadata,
+      migrated: true,
+      migratedAt: new Date()
+    };
+    
+    const result = await collection.insertOne(document);
+    
+    res.json({
+      success: true,
+      insertedId: result.insertedId,
+      message: `Document created in destination ${collectionName}`
+    });
+    
+  } catch (error) {
+    console.error('Error creating document in destination:', error);
+    res.status(500).json({ error: 'Failed to create document in destination' });
+  }
+});
+
+// Process complex migration (with transactions)
+app.post('/api/migration/process', async (req, res) => {
+  try {
+    await connectBothDBs();
+    const { 
+      sourceDocument,
+      relatedDocuments,
+      destinationCollection,
+      mappings
+    } = req.body;
+    
+    let result;
+    
+    switch (destinationCollection) {
+      case 'functions':
+        result = await migrationService.migrateFunction(sourceDocument, mappings);
+        break;
+        
+      case 'registrations':
+        result = await migrationService.migrateRegistration(
+          sourceDocument,
+          relatedDocuments || {},
+          mappings
+        );
+        break;
+        
+      default:
+        // Simple migration without transactions
+        result = await migrationService.migrateSimpleDocument(
+          sourceDocument,
+          destinationCollection,
+          mappings[destinationCollection] || {}
+        );
+    }
+    
+    res.json({
+      success: true,
+      result,
+      message: `Successfully migrated to ${destinationCollection}`
+    });
+    
+  } catch (error) {
+    console.error('Error processing migration:', error);
+    res.status(500).json({ 
+      error: 'Failed to process migration',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Check migration status
+app.get('/api/migration/status/:collection/:sourceId', async (req, res) => {
+  try {
+    await connectBothDBs();
+    const { collection, sourceId } = req.params;
+    
+    const isMigrated = await migrationService.isAlreadyMigrated(sourceId, collection);
+    
+    res.json({
+      collection,
+      sourceId,
+      migrated: isMigrated
+    });
+    
+  } catch (error) {
+    console.error('Error checking migration status:', error);
+    res.status(500).json({ error: 'Failed to check migration status' });
+  }
+});
+
+// Get destination database stats
+app.get('/api/migration/destination/stats', async (_, res) => {
+  try {
+    await connectBothDBs();
+    const destinationDb = getDestinationDb();
+    
+    const collections = await destinationDb.listCollections().toArray();
+    const stats: Record<string, any> = {};
+    
+    for (const col of collections) {
+      const count = await destinationDb.collection(col.name).countDocuments();
+      const migrated = await destinationDb.collection(col.name).countDocuments({
+        'metadata.migrated': true
+      });
+      
+      stats[col.name] = {
+        total: count,
+        migrated,
+        nonMigrated: count - migrated
+      };
+    }
+    
+    res.json({
+      database: process.env.NEW_MONGODB_DATABASE,
+      collections: stats,
+      totalDocuments: Object.values(stats).reduce((sum: number, s: any) => sum + s.total, 0),
+      totalMigrated: Object.values(stats).reduce((sum: number, s: any) => sum + s.migrated, 0)
+    });
+    
+  } catch (error) {
+    console.error('Error fetching destination stats:', error);
+    res.status(500).json({ error: 'Failed to fetch destination stats' });
+  }
+});
+
 // Serve the HTML page
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
@@ -1621,14 +1896,20 @@ async function startServer() {
 // Handle process termination
 process.on('SIGINT', () => {
   console.log('\n\n👋 Shutting down server...');
-  disconnectMongoDB().then(() => {
+  Promise.all([
+    disconnectMongoDB(),
+    disconnectBothDBs()
+  ]).then(() => {
     process.exit(0);
   });
 });
 
 process.on('SIGTERM', () => {
   console.log('\n\n👋 Shutting down server...');
-  disconnectMongoDB().then(() => {
+  Promise.all([
+    disconnectMongoDB(),
+    disconnectBothDBs()
+  ]).then(() => {
     process.exit(0);
   });
 });

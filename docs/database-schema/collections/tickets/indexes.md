@@ -85,6 +85,18 @@ db.tickets.createIndex(
 ```
 **Purpose**: Find all tickets owned by an attendee
 
+### 7a. Contact Owner Lookup
+```javascript
+db.tickets.createIndex(
+  { "currentOwner.contactId": 1, "product.functionId": 1 },
+  { 
+    sparse: true,
+    name: "contact_tickets" 
+  }
+)
+```
+**Purpose**: Find all tickets owned by a contact (when attendee is matched to contact)
+
 ### 8. Registration Tickets
 ```javascript
 db.tickets.createIndex(

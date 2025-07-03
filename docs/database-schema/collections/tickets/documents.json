@@ -40,6 +40,7 @@
   "currentOwner": {
     "attendeeId": "attendees: _id",
     "attendeeNumber": "attendees: attendeeNumber",
+    "contactId": "attendees: contactId (may be null if not matched)",
     "name": "attendees: profile.firstName + profile.lastName",
     "assignedAt": "Generated: Assignment timestamp",
     "assignedBy": "users: _id (assigner)"
@@ -49,10 +50,12 @@
       "transferId": "Generated: ObjectId",
       "from": {
         "attendeeId": "attendees: _id",
+        "contactId": "attendees: contactId (if available)",
         "name": "attendees: profile.firstName + profile.lastName"
       },
       "to": {
         "attendeeId": "attendees: _id",
+        "contactId": "attendees: contactId (if available)",
         "name": "attendees: profile.firstName + profile.lastName"
       },
       "transferredAt": "TODO: Transfer timestamp",

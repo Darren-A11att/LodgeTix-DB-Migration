@@ -1,277 +1,142 @@
 {
   "_id": "ObjectId",
-  "functionId": "gp-2025",
-  "name": "Grand Proclamation 2025",
-  "description": "Annual Grand Lodge celebration and installation ceremony",
-  "slug": "grand-proclamation-2025",
+  "functionId": "functions: functionId",
+  "name": "functions: name",
+  "description": "functions: description",
+  "slug": "functions: slug",
   "dates": {
-    "publishedDate": "2024-06-01T00:00:00Z",
-    "onSaleDate": "2024-07-01T09:00:00Z",
-    "closedDate": "2025-11-01T23:59:59Z",
-    "startDate": "2025-11-15T09:00:00Z",
-    "endDate": "2025-11-17T17:00:00Z",
-    "createdAt": "2024-05-15T10:30:00Z",
-    "updatedAt": "2024-12-01T14:20:00Z"
+    "publishedDate": "TODO: Map from source",
+    "onSaleDate": "TODO: Map from source",
+    "closedDate": "TODO: Map from source",
+    "startDate": "Computed from events",
+    "endDate": "Computed from events",
+    "createdAt": "functions: createdAt",
+    "updatedAt": "functions: updatedAt"
   },
   "events": [{
-    "event_id": "banquet-2025",
-    "name": "Grand Banquet",
-    "type": "dinner",
-    "slug": "grand-banquet-2025",
+    "event_id": "events: event_id",
+    "name": "events: title",
+    "type": "events: type",
+    "slug": "events: slug",
     "details": {
-      "subtitle": "Formal dining experience",
-      "description": "Join us for an elegant evening of fine dining and fellowship",
-      "hero_image": "https://storage.example.com/images/banquet-hero.jpg",
-      "inclusions": "3-course meal, beverages, entertainment",
-      "importantDetails": "Dress code: Black tie. Dietary requirements must be submitted 7 days prior."
+      "subtitle": "events: subtitle",
+      "description": "events: description",
+      "hero_image": "events: imageUrl",
+      "inclusions": "events: eventIncludes",
+      "importantDetails": "events: importantInformation"
     },
     "location": {
-      "location_id": "loc-001",
-      "name": "Grand Ballroom",
-      "description": "Historic ballroom with crystal chandeliers",
-      "room_area": "Main Ballroom",
+      "location_id": "events: location_id or locations: _id",
+      "name": "locations: name",
+      "description": "locations: description",
+      "room_area": "locations: room_area",
       "address": {
-        "addressLine1": "123 Grand Avenue",
-        "addressLine2": null,
-        "suburb": "Sydney",
-        "postcode": "2000",
-        "state_territory": "NSW",
-        "country": "Australia"
+        "addressLine1": "locations: addressLine1",
+        "addressLine2": "locations: addressLine2",
+        "suburb": "locations: suburb",
+        "postcode": "locations: postcode",
+        "state_territory": "locations: state_territory",
+        "country": "locations: country"
       },
       "details": {
-        "parking": "Valet parking available. Public parking 200m walk.",
-        "public_transport": "Train: Town Hall Station (5 min walk)",
-        "google_maps_embed_url": "https://maps.google.com/...",
-        "features": "Wheelchair accessible, Audio loop system",
-        "dress_code": "Black tie required"
+        "parking": "locations: parking",
+        "public_transport": "locations: public_transport",
+        "google_maps_embed_url": "locations: google_maps_embed_url",
+        "features": "locations: features",
+        "dress_code": "locations: dress_code"
       },
-      "images": [
-        "https://storage.example.com/venues/ballroom-1.jpg",
-        "https://storage.example.com/venues/ballroom-2.jpg"
-      ]
+      "images": "locations: images"
     },
     "eligibility": {
-      "criteria": [
-        {
-          "index": 0,
-          "key": "membership",
-          "value": "Master Mason or Guest"
-        }
-      ]
+      "criteria": "TODO: Map from source"
     },
-    "products": [{
-      "_id": "ObjectId",
-      "sku": "GP2025-BANQUET-STD",
-      "name": "Banquet Ticket - Standard",
-      "type": "ticket",
-      "description": "Standard seating allocation",
-      "status": "active",
-      "price": {
-        "amount": 120.00,
-        "currency": "AUD",
-        "tax_rate": 0.10,
-        "tax_included": false
-      },
-      "inventory": {
-        "tracking_method": "allocated",
-        "max": 500,
-        "allocated": {
-          "sold": 247,
-          "reserved": 12,
-          "available": 241
-        },
-        "lastUpdated": "2024-12-01T14:00:00Z",
-        "version": 1523
-      }
-    },
-    {
-      "_id": "ObjectId",
-      "sku": "GP2025-BANQUET-VIP",
-      "name": "Banquet Ticket - VIP Table",
-      "type": "ticket",
-      "description": "Premium table near stage",
-      "status": "active",
-      "price": {
-        "amount": 180.00,
-        "currency": "AUD",
-        "tax_rate": 0.10,
-        "tax_included": false
-      },
-      "inventory": {
-        "tracking_method": "allocated",
-        "max": 50,
-        "allocated": {
-          "sold": 45,
-          "reserved": 2,
-          "available": 3
-        },
-        "lastUpdated": "2024-12-01T14:00:00Z",
-        "version": 234
-      }
-    }],
     "dates": {
-      "eventStart": "2025-11-15T18:00:00Z",
-      "eventEnd": "2025-11-15T23:00:00Z"
+      "eventStart": "events: eventStart",
+      "eventEnd": "events: eventEnd"
     },
     "settings": {
-      "published": true,
-      "featured": true,
-      "capacity_management": {
-        "enforce_limits": true,
-        "allow_waitlist": true,
-        "reservation_timeout_minutes": 15
-      }
-    }
-  },
-  {
-    "event_id": "ceremony-2025",
-    "name": "Installation Ceremony",
-    "type": "ceremony",
-    "slug": "installation-ceremony-2025",
-    "details": {
-      "subtitle": "Solemn ceremony of installation",
-      "description": "Witness the installation of the new Grand Master",
-      "hero_image": "https://storage.example.com/images/ceremony-hero.jpg",
-      "inclusions": "Ceremony attendance, light refreshments",
-      "importantDetails": "Masonic regalia required. Photography restricted."
-    },
-    "location": {
-      "location_id": "loc-002",
-      "name": "Grand Temple",
-      "description": "Historic Masonic Temple",
-      "room_area": "Main Temple",
-      "address": {
-        "addressLine1": "456 Temple Street",
-        "addressLine2": null,
-        "suburb": "Sydney",
-        "postcode": "2000",
-        "state_territory": "NSW",
-        "country": "Australia"
-      },
-      "details": {
-        "parking": "Street parking available",
-        "public_transport": "Bus routes 333, 380",
-        "features": "Heritage listed building",
-        "dress_code": "Masonic regalia"
-      },
-      "images": []
-    },
-    "eligibility": {
-      "criteria": [
-        {
-          "index": 0,
-          "key": "membership",
-          "value": "Master Mason only"
-        }
-      ]
-    },
-    "products": [{
-      "_id": "ObjectId",
-      "sku": "GP2025-CEREMONY",
-      "name": "Ceremony Attendance",
-      "type": "ticket",
-      "description": "Entry to Installation Ceremony",
-      "status": "active",
-      "price": {
-        "amount": 0.00,
-        "currency": "AUD",
-        "tax_rate": 0.00,
-        "tax_included": true
-      },
-      "inventory": {
-        "tracking_method": "allocated",
-        "max": 300,
-        "allocated": {
-          "sold": 185,
-          "reserved": 0,
-          "available": 115
-        },
-        "lastUpdated": "2024-12-01T14:00:00Z",
-        "version": 456
-      }
-    }],
-    "dates": {
-      "eventStart": "2025-11-16T10:00:00Z",
-      "eventEnd": "2025-11-16T12:00:00Z"
-    },
-    "settings": {
-      "published": true,
-      "featured": false,
+      "published": "events: published",
+      "featured": "events: featured",
       "capacity_management": {
         "enforce_limits": true,
         "allow_waitlist": false,
-        "reservation_timeout_minutes": 30
+        "reservation_timeout_minutes": 15
       }
-    }
-  }],
-  "merchandise": [{
-    "_id": "ObjectId",
-    "sku": "GP2025-PIN",
-    "name": "Commemorative Pin 2025",
-    "type": "merchandise",
-    "description": "Limited edition enamel pin",
-    "price": {
-      "amount": 25.00,
-      "currency": "AUD",
-      "tax_rate": 0.10,
-      "tax_included": false
-    },
-    "inventory": {
-      "tracking_method": "allocated",
-      "max": 1000,
-      "allocated": {
-        "sold": 342,
-        "reserved": 8,
-        "available": 650
-      }
-    },
-    "shipping": {
-      "weight_grams": 50,
-      "dimensions_cm": { "length": 5, "width": 5, "height": 1 },
-      "requires_shipping": true
     }
   }],
   "organiser": {
-    "name": "Grand Lodge Events Committee",
+    "name": "TODO: Map from source",
     "contact": {
-      "email": "events@grandlodge.org.au",
-      "phone": "+61 2 9284 2800"
-    }
+      "email": "TODO: Map from source",
+      "phone": "TODO: Map from source"
+    },
+    "logo_url": "TODO: Map from source"
   },
   "venue": {
-    "primary_location_id": "loc-001",
-    "locations": ["loc-001", "loc-002"]
+    "primary_location_id": "TODO: Map from source",
+    "locations": "TODO: Map from source"
   },
   "financial_summary": {
     "currency": "AUD",
     "projections": {
-      "expected_revenue": 125000.00,
-      "expected_attendance": 450
+      "expected_revenue": "TODO: Calculate from products",
+      "expected_attendance": "TODO: Calculate from capacity",
+      "break_even_point": "TODO: Calculate"
     },
     "actuals": {
-      "total_registrations": 156,
-      "total_tickets_sold": 432,
-      "gross_revenue": 58420.00,
-      "net_revenue": 52578.00,
-      "lastUpdated": "2024-12-01T14:00:00Z"
-    }
+      "total_registrations": 0,
+      "total_tickets_sold": 0,
+      "gross_revenue": 0,
+      "net_revenue": 0,
+      "processing_fees": 0,
+      "tax_collected": 0,
+      "refunds_issued": 0,
+      "lastUpdated": "Current date"
+    },
+    "transactionCount": 0,
+    "firstTransactionDate": null,
+    "lastTransactionDate": null
   },
   "settings": {
     "registration_types": ["individual", "lodge", "delegation"],
     "payment_gateways": ["stripe"],
     "allow_partial_registrations": true,
-    "bulk_discount_rules": [
-      {
-        "type": "lodge",
-        "min_quantity": 10,
-        "discount_percentage": 5
-      }
-    ]
+    "require_attendee_details": "immediate",
+    "bulk_discount_rules": [],
+    "cancellation_policy": {
+      "allowed": true,
+      "cutoff_date": "TODO: Map from source",
+      "refund_percentage": 100
+    }
+  },
+  "features": {
+    "accommodation": {
+      "enabled": false,
+      "partner": null,
+      "booking_url": null
+    },
+    "tourism": {
+      "enabled": false,
+      "packages": []
+    },
+    "sponsorship": {
+      "enabled": false,
+      "tiers": []
+    }
+  },
+  "marketing": {
+    "meta_title": "functions: name",
+    "meta_description": "functions: description",
+    "keywords": [],
+    "social_image": null,
+    "promotional_code": null
   },
   "metadata": {
-    "tags": ["annual", "installation", "formal"],
-    "created_by": "admin@grandlodge.org.au",
-    "version": 12,
-    "last_modified_by": "events@grandlodge.org.au"
+    "tags": [],
+    "created_by": "functions: created_by",
+    "version": 1,
+    "last_modified_by": "functions: last_modified_by",
+    "import_source": "migration",
+    "legacy_id": "functions: _id"
   }
 }

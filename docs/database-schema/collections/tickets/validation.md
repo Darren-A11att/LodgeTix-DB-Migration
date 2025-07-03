@@ -7,7 +7,7 @@ db.createCollection("tickets", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["ticketNumber", "product", "purchase", "access", "status"],
+      required: ["ticketNumber", "product", "purchase", "owner", "access", "status"],
       properties: {
         ticketNumber: {
           bsonType: "string",
@@ -71,7 +71,7 @@ db.createCollection("tickets", {
               properties: {
                 type: {
                   bsonType: "string",
-                  enum: ["organisation", "user"]
+                  enum: ["organisation", "contact", "user"]
                 },
                 id: { bsonType: "objectId" },
                 name: { bsonType: "string" }
@@ -110,46 +110,56 @@ db.createCollection("tickets", {
             }
           }
         },
-        currentOwner: {
-          bsonType: ["object", "null"],
+        owner: {
+          bsonType: "object",
+          required: [],
           properties: {
-            attendeeId: { bsonType: "objectId" },
-            attendeeNumber: { 
-              bsonType: "string",
-              pattern: "^ATT-[0-9]{4}-[0-9]{5}$"
-            },
-            name: { bsonType: "string" },
-            assignedAt: { bsonType: "date" },
-            assignedBy: { bsonType: "objectId" }
-          }
+            attendeeId: { bsonType: ["objectId", "null"] }
+          },
+          description: "Owner object required, attendeeId null means owned by registration"
         },
         transferHistory: {
           bsonType: "array",
           items: {
             bsonType: "object",
-            required: ["transferId", "from", "to", "transferredAt", "reason"],
+            required: ["transferId", "type", "from", "to", "transferDate", "reason"],
             properties: {
               transferId: { bsonType: "objectId" },
+              type: {
+                bsonType: "string",
+                enum: ["assignment", "transfer", "return"]
+              },
               from: {
                 bsonType: "object",
+                required: ["type"],
                 properties: {
-                  attendeeId: { bsonType: "objectId" },
+                  type: {
+                    bsonType: "string",
+                    enum: ["registration", "attendee"]
+                  },
+                  attendeeId: { bsonType: ["objectId", "null"] },
                   name: { bsonType: "string" }
                 }
               },
               to: {
                 bsonType: "object",
+                required: ["type"],
                 properties: {
-                  attendeeId: { bsonType: "objectId" },
+                  type: {
+                    bsonType: "string",
+                    enum: ["attendee", "registration"]
+                  },
+                  attendeeId: { bsonType: ["objectId", "null"] },
                   name: { bsonType: "string" }
                 }
               },
-              transferredAt: { bsonType: "date" },
+              transferDate: { bsonType: "date" },
               transferredBy: { bsonType: "objectId" },
               reason: {
                 bsonType: "string",
-                enum: ["sold", "gifted", "reassigned", "returned"]
+                enum: ["initial_assignment", "reassignment", "sold", "gifted", "returned"]
               },
+              notes: { bsonType: ["string", "null"] },
               salePrice: { bsonType: ["decimal", "null"], minimum: 0 },
               platform: {
                 bsonType: "string",
@@ -406,7 +416,7 @@ function validateEntryCount(access) {
 // Ensure transfer history is chronological
 function validateTransferHistory(transfers) {
   for (let i = 1; i < transfers.length; i++) {
-    if (transfers[i].transferredAt <= transfers[i-1].transferredAt) {
+    if (transfers[i].transferDate <= transfers[i-1].transferDate) {
       return false;
     }
   }
@@ -414,10 +424,17 @@ function validateTransferHistory(transfers) {
 }
 
 // Validate current owner matches last transfer
-function validateCurrentOwner(currentOwner, transferHistory) {
+function validateOwnership(owner, transferHistory) {
   if (transferHistory.length > 0) {
     const lastTransfer = transferHistory[transferHistory.length - 1];
-    return currentOwner.attendeeId.equals(lastTransfer.to.attendeeId);
+    // If last transfer was to attendee, owner.attendeeId should match
+    if (lastTransfer.to.type === 'attendee') {
+      return owner.attendeeId?.equals(lastTransfer.to.attendeeId);
+    }
+    // If last transfer was to registration, owner.attendeeId should be null
+    if (lastTransfer.to.type === 'registration') {
+      return owner.attendeeId === null;
+    }
   }
   return true;
 }
@@ -493,7 +510,7 @@ async function validateTicket(ticket) {
     validateAccessDates(ticket.access),
     validateEntryCount(ticket.access),
     validateTransferHistory(ticket.transferHistory || []),
-    validateCurrentOwner(ticket.currentOwner, ticket.transferHistory || []),
+    validateOwnership(ticket.owner, ticket.transferHistory || []),
     validateSingleUseTicket(ticket.access, ticket.usageHistory || []),
     validateUsageTimes(ticket.usageHistory || []),
     validateTicketStatus(ticket)

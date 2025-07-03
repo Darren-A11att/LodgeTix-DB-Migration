@@ -1,8 +1,109 @@
 # Users Collection - Aggregation Pipelines
 
+## Contact Integration
+
+### 1. Get User with Contact Details
+```javascript
+// Fetch user with full contact information
+db.users.aggregate([
+  { $match: { _id: ObjectId("userId") } },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "contactId",
+      foreignField: "_id",
+      as: "contact"
+    }
+  },
+  { $unwind: "$contact" },
+  {
+    $project: {
+      userId: 1,
+      email: "$auth.email",
+      displayName: "$profile.displayName",
+      roles: "$access.roles",
+      // Contact details
+      name: { $concat: ["$contact.profile.firstName", " ", "$contact.profile.lastName"] },
+      phone: "$contact.profile.phone",
+      addresses: "$contact.addresses",
+      dietaryRequirements: "$contact.profile.dietaryRequirements",
+      specialNeeds: "$contact.profile.specialNeeds",
+      masonicProfile: "$contact.masonicProfile"
+    }
+  }
+])
+```
+
+### 2. Find Users Without Contacts
+```javascript
+// Identify users that need contact records created
+db.users.aggregate([
+  {
+    $match: {
+      $or: [
+        { contactId: { $exists: false } },
+        { contactId: null }
+      ]
+    }
+  },
+  {
+    $project: {
+      userId: 1,
+      email: "$auth.email",
+      createdAt: "$metadata.createdAt",
+      lastLogin: "$auth.lastLoginAt",
+      isActive: "$flags.isActive"
+    }
+  },
+  { $sort: { createdAt: -1 } }
+])
+```
+
+### 3. Users and Contact Relationships
+```javascript
+// Find users with their emergency contacts
+db.users.aggregate([
+  { $match: { "flags.isActive": true } },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "contactId",
+      foreignField: "_id",
+      as: "contact"
+    }
+  },
+  { $unwind: "$contact" },
+  { $unwind: { path: "$contact.relationships", preserveNullAndEmptyArrays: true } },
+  { $match: { "contact.relationships.isEmergencyContact": true } },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "contact.relationships.contactId",
+      foreignField: "_id",
+      as: "emergencyContact"
+    }
+  },
+  { $unwind: "$emergencyContact" },
+  {
+    $group: {
+      _id: "$_id",
+      userId: { $first: "$userId" },
+      userName: { $first: { $concat: ["$contact.profile.firstName", " ", "$contact.profile.lastName"] } },
+      emergencyContacts: {
+        $push: {
+          name: { $concat: ["$emergencyContact.profile.firstName", " ", "$emergencyContact.profile.lastName"] },
+          phone: "$emergencyContact.profile.phone",
+          relationship: "$contact.relationships.relationshipType"
+        }
+      }
+    }
+  }
+])
+```
+
 ## User Analytics
 
-### 1. User Growth Analysis
+### 4. User Growth Analysis
 ```javascript
 // Track user acquisition over time
 db.users.aggregate([

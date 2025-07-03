@@ -4,16 +4,15 @@
   "functionId": "gp-2025",
   "type": "lodge",
   "registrant": {
-    "type": "organisation",
-    "id": "organisations: _id",
-    "name": "Unity Lodge No. 60",
-    "contact": {
-      "name": "John Secretary",
-      "email": "secretary@lodge60.org",
-      "phone": "+61 400 123 456"
-    },
-    "abn": "12345678901",
-    "lodgeNumber": "60"
+    "type": "registrations: Determine from context - 'contact' for individuals, 'organisation' for lodges/orgs",
+    "contactId": "contacts: _id (when type is 'contact')",
+    "organisationId": "organisations: _id (when type is 'organisation')",
+    "userId": "registrations: authUserId or bookingContactId",
+    "name": "Multiple sources: registrations.registrationData.billingDetails.firstName + lastName, organisations.name",
+    "email": "Multiple sources: registrations.registrationData.billingDetails.email, registrations.primaryEmail",
+    "phone": "Multiple sources: registrations.registrationData.billingDetails.phone, registrations.primaryPhone",
+    "abn": "organisations: abn",
+    "lodgeNumber": "lodges: number"
   },
   "purchase": {
     "items": [

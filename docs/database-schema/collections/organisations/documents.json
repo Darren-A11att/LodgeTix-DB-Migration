@@ -99,6 +99,7 @@
     "members": [
       {
         "userId": "users: _id",
+        "contactId": "contacts: _id (of member)",
         "memberNumber": "TODO: Internal member number",
         "role": "member",
         "title": "TODO: Honorary title",
@@ -118,6 +119,7 @@
       {
         "position": "Master",
         "userId": "users: _id",
+        "contactId": "contacts: _id (of officer)",
         "name": "organisations: master.name",
         "startDate": "TODO: Term start date",
         "endDate": "TODO: Term end date",
@@ -233,6 +235,7 @@
       }
     }
   },
+  "jurisdictionId": "jurisdictions: _id (based on organisation type - craft, mark & royal arch, etc.)",
   "relationships": {
     "parent": {
       "organisationId": "organisations: parentId",

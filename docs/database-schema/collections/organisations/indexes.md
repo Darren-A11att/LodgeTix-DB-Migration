@@ -186,6 +186,18 @@ db.organisations.createIndex(
 ```
 **Purpose**: Track organisation relationships
 
+### 16a. Jurisdiction Reference
+```javascript
+db.organisations.createIndex(
+  { "jurisdictionId": 1, "profile.type": 1 },
+  { 
+    sparse: true,
+    name: "jurisdiction_lookup"
+  }
+)
+```
+**Purpose**: Find organisations by jurisdiction (for Masonic lodges)
+
 ## Compliance and Documents
 
 ### 17. Insurance Expiry
