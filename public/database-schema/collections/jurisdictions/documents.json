@@ -1,0 +1,87 @@
+{
+  "_id": "ObjectId",
+  "jurisdictionId": "TODO: Generate based on type and location",
+  "type": "TODO: Set based on import source (default 'craft' for initial migration)",
+  "definitions": {
+    "parentName": "TODO: Set to 'grandLodge' for craft jurisdictions",
+    "parentLabel": "TODO: Set to 'Grand Lodge' for craft jurisdictions",
+    "childName": "TODO: Set to 'lodges' for craft jurisdictions",
+    "childLabel": "TODO: Set to 'Lodges' for craft jurisdictions",
+    "ranks": [{
+      "code": "TODO: Define ranks for jurisdiction type",
+      "name": "TODO: Define rank names",
+      "order": "TODO: Set rank order",
+      "abbreviation": "TODO: Set rank abbreviations"
+    }],
+    "titles": [{
+      "code": "TODO: Define title codes",
+      "name": "TODO: Define title names",
+      "abbreviation": "TODO: Define title abbreviations"
+    }],
+    "parentOffices": [{
+      "code": "TODO: Define parent office codes",
+      "name": "TODO: Define parent office names",
+      "order": "TODO: Set precedence order",
+      "type": "TODO: Set as elected or appointed"
+    }],
+    "childOffices": [{
+      "code": "TODO: Define child office codes",
+      "name": "TODO: Define child office names",
+      "order": "TODO: Set precedence order",
+      "type": "TODO: Set as elected or appointed"
+    }]
+  },
+  "grandLodge": {
+    "id": "grand_lodges: grand_lodge_id",
+    "name": "grand_lodges: name",
+    "abbreviation": "grand_lodges: abbreviation",
+    "country": "grand_lodges: country",
+    "countryCode": "grand_lodges: country_code_iso3",
+    "stateRegion": "grand_lodges: state_region",
+    "stateRegionCode": "grand_lodges: state_region_code",
+    "organisationId": "grand_lodges: organisation_id",
+    "address": {
+      "addressLine1": "TODO: Extract from organisation or other source",
+      "addressLine2": "TODO: Extract from organisation or other source",
+      "city": "TODO: Extract from organisation or other source",
+      "state": "TODO: Extract from organisation or other source",
+      "postcode": "TODO: Extract from organisation or other source",
+      "country": "grand_lodges: country"
+    },
+    "contact": {
+      "phone": "TODO: Extract from organisation or other source",
+      "email": "TODO: Extract from organisation or other source",
+      "website": "TODO: Extract from organisation or other source"
+    },
+    "lodges": [{
+      "id": "lodges: lodge_id",
+      "number": "lodges: number",
+      "name": "lodges: name",
+      "displayName": "lodges: display_name",
+      "district": "lodges: district",
+      "meetingPlace": "lodges: meeting_place",
+      "areaType": "lodges: area_type",
+      "stateRegion": "lodges: state_region",
+      "organisationId": "lodges: organisation_id",
+      "meetingSchedule": {
+        "frequency": "TODO: Extract from lodge meeting data",
+        "dayOfWeek": "TODO: Extract from lodge meeting data",
+        "weekOfMonth": "TODO: Extract from lodge meeting data",
+        "time": "TODO: Extract from lodge meeting data",
+        "notes": "TODO: Extract from lodge meeting data"
+      },
+      "status": "TODO: Default to 'active' unless specified",
+      "consecrationDate": "TODO: Extract if available",
+      "warrantsNumber": "TODO: Extract if available",
+      "customFields": {}
+    }]
+  },
+  "metadata": {
+    "source": "TODO: Set to 'migration' or appropriate source",
+    "createdAt": "TODO: Set to migration timestamp",
+    "createdBy": "TODO: Set to migration user",
+    "updatedAt": "TODO: Set to migration timestamp",
+    "updatedBy": "TODO: Set to migration user",
+    "version": 1
+  }
+}
