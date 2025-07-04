@@ -1,7 +1,7 @@
 # Contacts Collection Schema
 
 ## Overview
-The contacts collection serves as the central identity hub for all people in the system. It consolidates person data that was previously duplicated across users, registrations, and attendees collections. Each contact represents a unique person who may have multiple roles and relationships within the system.
+The contacts collection serves as the central identity hub for all people in the system. It consolidates person data that was previously duplicated across users, registrations, and attendees collections. Each contact represents a unique person who may have multiple roles and relationships within the system. With the e-commerce transformation, contacts now support multiple roles per context and track their order history.
 
 ## Document Structure
 
@@ -24,7 +24,7 @@ The contacts collection serves as the central identity hub for all people in the
   
   // Address information
   addresses: [{
-    type: String,                         // "billing", etc. - flexible for UI needs
+    type: String,                         // "billing", "shipping", etc.
     addressLine1: String,
     addressLine2: String,
     city: String,
@@ -47,45 +47,46 @@ The contacts collection serves as the central identity hub for all people in the
         number: String                    // Lodge number
       },
       title: String,                      // Masonic title (e.g., "WBro", "VWBro")
-      rank: String,                       // Current rank
-      grandRank: String,                  // Grand rank if applicable
-      isGrandOfficer: Boolean,
-      grandOffice: String                 // Current or past grand office held
+      rank: String                        // Current rank
     }
   },
+  
+  // Roles for different functions and contexts
+  roles: [{
+    role: String,                         // "attendee", "organizer", "sponsor", "vendor", "host", "staff"
+    context: String,                      // "function", "organisation", "system"
+    contextId: ObjectId | String,         // ID of function/org where role applies
+    startDate: Date,                      // When role became active
+    endDate: Date,                        // When role ends (null for ongoing)
+    permissions: [String]                 // Specific permissions for this role
+  }],
+  
+  // Track all orders/registrations this contact is part of
+  orderReferences: [{
+    orderId: ObjectId,                    // Reference to orders collection
+    orderNumber: String,                  // Denormalized for quick access
+    role: String,                         // "purchaser", "attendee"
+    items: [ObjectId]                     // Line items in the order for this contact
+  }],
   
   // Relationships with other contacts
   relationships: [{
     contactId: ObjectId,                  // Reference to another contact
     relationshipType: String,             // "spouse", "partner", "child", "parent", "emergency", etc.
     isPrimary: Boolean,                   // Primary relationship of this type
-    isEmergencyContact: Boolean,          // Can be contacted in emergencies
-    notes: String,                        // Additional context
-    
-    // Reciprocal relationship tracking
-    reciprocal: Boolean,                  // If true, maintains matching relationship on other contact
-    reciprocalType: String                // Relationship type from their perspective
+    isEmergencyContact: Boolean           // Can be contacted in emergencies
   }],
   
   // Optional authentication link
   userId: ObjectId,                       // Reference to users collection (optional)
   
-  // References to related data
-  references: {
-    organisationIds: [ObjectId],          // Organisations this contact is associated with
-    attendeeIds: [ObjectId],              // Attendee records for this contact
-    paymentTransactionIds: [ObjectId],    // Payment transactions
-    invoiceIds: [ObjectId]                // Invoices
-  },
-  
   // System metadata
   metadata: {
-    source: String,                       // How contact was created (set by application)
+    source: String,                       // How contact was created
     createdAt: Date,
     createdBy: ObjectId,                  // User who created
     updatedAt: Date,
-    updatedBy: ObjectId,                  // User who last updated
-    version: Number                       // For optimistic locking
+    updatedBy: ObjectId                   // User who last updated
   }
 }
 ```
@@ -96,41 +97,57 @@ The contacts collection serves as the central identity hub for all people in the
 - `contactNumber` - Must be unique, follows pattern
 - `profile.firstName` - Minimum identification
 - `profile.lastName` - Minimum identification
-- `profile.email` OR `profile.phone` - At least one contact method
+- `metadata.createdAt` - Creation timestamp
 
 ### Enumerations
 
+**Role Types:**
+- `attendee` - Event attendee
+- `organizer` - Event organizer
+- `sponsor` - Event sponsor
+- `vendor` - Vendor/supplier
+- `host` - Event host
+- `staff` - Staff member
+
+**Role Contexts:**
+- `function` - Role within a specific function/event
+- `organisation` - Role within an organisation
+- `system` - System-wide role
+
+**Order Roles:**
+- `purchaser` - Person who made the purchase
+- `attendee` - Person attending/using the purchased item
+
 **Address Types:**
-Application-defined, common values include:
 - `billing` - Billing address
-- Additional types as needed by UI
+- `shipping` - Shipping address
+- Other types as needed by application
 
 **Relationship Types:**
-Application-defined, common values include:
 - `spouse` - Legal spouse
 - `partner` - Life partner/significant other
-- `child` - Child (reciprocal: `parent`)
-- `parent` - Parent (reciprocal: `child`)
+- `child` - Child
+- `parent` - Parent
 - `sibling` - Brother/sister
 - `emergency` - Emergency contact
 - `guardian` - Legal guardian
-- Other types as defined by application
 
 ## Indexes
 - `contactNumber` - Unique index
 - `profile.email` - For contact lookup (sparse)
-- `profile.phone` - For contact lookup (sparse)
-- `userId` - For user association lookup (sparse)
+- `profile.phone` - For contact lookup (sparse) 
+- `userId` - For user association lookup (sparse, unique)
 - `profile.lastName, profile.firstName` - For name searches
-- `references.organisationIds` - For organisation queries
+- `roles.contextId, roles.role` - For role queries
+- `orderReferences.orderId` - For order history lookup
 - `masonicProfile.craft.lodge.organisationId` - For lodge member queries
 
 ## Relationships
-- **Users** - Optional link via `userId` for authentication
-- **Organisations** - Associated organisations via `references.organisationIds`
-- **Attendees** - Event attendances via `references.attendeeIds`
-- **Financial Transactions** - Payments via `references.paymentTransactionIds`
-- **Invoices** - Invoices via `references.invoiceIds`
+- **Users** - Optional 1:1 link via `userId` for authentication
+- **Orders** - Orders involving this contact via `orderReferences`
+- **Catalog Objects** - Functions/events via `roles` with context
+- **Organisations** - Associated organisations via roles
+- **Tickets** - Event tickets owned by this contact
 
 ## Business Rules
 
@@ -139,38 +156,44 @@ Application-defined, common values include:
 - Sequential numbering per year
 - Must be unique across the system
 
-### Relationship Management
-1. When `reciprocal: true`, system should create/update the inverse relationship
-2. Deleting a reciprocal relationship should remove both sides
-3. Contacts cannot have relationships with themselves
-4. Only one primary relationship per type per contact
+### Role Management
+1. Roles are time-bound with start/end dates
+2. Multiple roles allowed per contact
+3. Roles can be scoped to specific contexts
+4. Active roles = where endDate is null or future
+
+### Order Reference Management
+1. Added when contact is part of an order (as purchaser or attendee)
+2. Maintains denormalized order number for quick reference
+3. Tracks specific line items associated with contact
 
 ### Data Quality Rules
 1. Email addresses should be validated format
 2. Phone numbers should be stored in consistent format
-3. At least one contact method (email or phone) required
-4. Names should be trimmed of whitespace
+3. Names should be trimmed of whitespace
+4. At least email OR phone should be present
 
 ### Deduplication Strategy
 - Check for existing contacts by email/phone before creating new
 - Provide merge functionality for duplicate contacts
-- Maintain audit trail of merged contacts
+- Update all references when merging contacts
 
 ## Migration Notes
 
-### Source Data Mapping
-Contacts will be created by extracting and deduplicating data from:
-1. **Registrations** - Registrant contact information
-2. **Attendees** - Attendee profile information
-3. **Users** - User profile data
-4. **Customers** - Legacy customer records
+### From Attendees Collection
+- All attendee records will be migrated to contacts
+- Attendee-specific data preserved in roles array
+- Registration references converted to orderReferences
 
-### Field Mappings
-- Various email fields → `profile.email`
-- Various phone fields → `profile.phone`
-- Various name fields → `profile.firstName`, `profile.lastName`
-- Dietary/special needs from attendees → respective profile fields
-- Addresses from billing details → `addresses` array
+### From Users Collection
+- Profile data moved to contacts
+- User record simplified to auth-only
+- Bidirectional link maintained via userId/contactId
+
+### New E-commerce Features
+- Roles array replaces static role fields
+- Order references track purchase history
+- Support for multiple contexts (events, orgs, system)
 
 ## Security Considerations
 
@@ -184,3 +207,41 @@ Contacts will be created by extracting and deduplicating data from:
 - Define retention policies for inactive contacts
 - Archive rather than delete for audit trail
 - Anonymize data when required by regulations
+
+## Computed Fields (via aggregation)
+
+### fullName
+```javascript
+{ $concat: ["$profile.firstName", " ", "$profile.lastName"] }
+```
+
+### displayName
+```javascript
+{
+  $cond: [
+    { $ne: ["$profile.preferredName", null] },
+    { $concat: ["$profile.preferredName", " ", "$profile.lastName"] },
+    { $concat: ["$profile.firstName", " ", "$profile.lastName"] }
+  ]
+}
+```
+
+### activeRoles
+```javascript
+{
+  $filter: {
+    input: "$roles",
+    cond: {
+      $or: [
+        { $eq: ["$$this.endDate", null] },
+        { $gte: ["$$this.endDate", new Date()] }
+      ]
+    }
+  }
+}
+```
+
+### orderCount
+```javascript
+{ $size: { $ifNull: ["$orderReferences", []] } }
+```

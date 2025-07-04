@@ -1,7 +1,7 @@
 # Tickets Collection Schema
 
 ## Overview
-The tickets collection represents individual ticket instances that are created when products (specifically ticket-type products) are purchased. Each ticket has a unique identifier, ownership tracking, transfer history, and access control features.
+The tickets collection represents fulfillment records created when event products are purchased through orders. Each ticket is the physical or digital manifestation of a purchased line item from an order. Tickets have unique identifiers, ownership tracking, transfer history, and access control features.
 
 ## Document Structure
 
@@ -10,55 +10,58 @@ The tickets collection represents individual ticket instances that are created w
   _id: ObjectId,
   ticketNumber: String,           // Unique identifier (e.g., "TKT-GP2025-BAN-00123")
   
-  // Product and Event Information
-  product: {
-    functionId: String,           // Reference to function
-    eventId: String,              // Reference to event within function
-    eventName: String,            // Denormalized for display
-    productId: ObjectId,          // Reference to product in function
-    productName: String,          // Ticket type name
-    productCategory: String,      // "general", "vip", "student", etc.
+  // Catalog and Product Information
+  catalog: {
+    catalogObjectId: ObjectId,    // Reference to catalog object
+    catalogName: String,          // Denormalized for display
+    productId: String,            // Product UUID from catalog
+    productName: String,          // Event name
+    variationId: String,          // Variation UUID (ticket type)
+    variationName: String,        // Ticket type name
     
-    // Ticket details from product
+    // Event details from product
+    eventStart: Date,
+    eventEnd: Date,
+    location: {
+      name: String,
+      address: Object
+    },
+    
+    // Ticket details from variation
     description: String,
-    price: Decimal128,            // Original price paid
+    price: Decimal128,            // Original price from catalog
     features: [String],           // What's included with this ticket
     restrictions: [String]        // Age limits, member-only, etc.
   },
   
-  // Purchase Information
-  purchase: {
-    registrationId: ObjectId,     // Reference to registration
-    registrationNumber: String,   // Denormalized for quick lookup
+  // Order Information
+  order: {
+    orderId: ObjectId,            // Reference to orders collection
+    orderNumber: String,          // Denormalized for quick lookup
+    lineItemId: ObjectId,         // Specific line item this fulfills
     purchasedBy: {
-      type: String,               // "organisation", "contact", or "user"
-      id: ObjectId,               // Reference to purchaser (organisationId, contactId, or userId)
+      type: String,               // "organisation", "contact"
+      contactId: ObjectId,        // Customer contact
+      organisationId: ObjectId,   // If purchased by org
       name: String                // Denormalized name
     },
     purchaseDate: Date,
-    paymentStatus: String,        // "paid", "pending", "refunded"
-    
-    // Line item reference
-    lineItemId: ObjectId,         // Reference to purchase.items in registration
     
     // Financial tracking
-    pricePaid: Decimal128,        // Actual amount after discounts
-    discount: {
-      amount: Decimal128,
-      code: String,
-      percentage: Number
-    },
-    refund: {
-      amount: Decimal128,
-      date: Date,
-      reason: String,
-      transactionId: String
-    }
+    pricePaid: Decimal128,        // Actual amount from line item
+    currency: String,             // "AUD", "NZD", "USD"
+    
+    // Fulfillment tracking
+    fulfilledAt: Date,            // When ticket was created
+    fulfillmentStatus: String     // "fulfilled", "pending", "cancelled"
   },
   
   // Ownership
   owner: {
-    attendeeId: ObjectId          // Reference to attendees collection (null = owned by registration)
+    type: String,                 // "contact", "organisation", "unassigned"
+    contactId: ObjectId,          // If owned by contact
+    organisationId: ObjectId,     // If owned by organisation
+    name: String                  // Denormalized for display
   },
   
   // Transfer History
@@ -66,13 +69,15 @@ The tickets collection represents individual ticket instances that are created w
     transferId: ObjectId,         // Unique transfer ID
     type: String,                 // "assignment", "transfer", "return"
     from: {
-      type: String,               // "registration", "attendee"
-      attendeeId: ObjectId,       // If from attendee
+      type: String,               // "contact", "organisation", "unassigned"
+      contactId: ObjectId,        // If from contact
+      organisationId: ObjectId,   // If from organisation
       name: String                // Display name
     },
     to: {
-      type: String,               // "attendee", "registration"
-      attendeeId: ObjectId,       // If to attendee
+      type: String,               // "contact", "organisation", "unassigned"
+      contactId: ObjectId,        // If to contact
+      organisationId: ObjectId,   // If to organisation
       name: String                // Display name
     },
     transferDate: Date,
@@ -232,11 +237,12 @@ The tickets collection represents individual ticket instances that are created w
 
 ### Required Fields
 - `ticketNumber` - Must be unique, follows pattern
-- `product` - Complete product information required
-- `purchase.registrationId` - Must reference valid registration
-- `purchase.purchaseDate` - When ticket was created
+- `catalog` - Complete catalog/product information required
+- `order.orderId` - Must reference valid order
+- `order.lineItemId` - Must reference specific line item
+- `order.purchaseDate` - When order was placed
 - `access.status` - Current ticket status
-- `owner` - Object required (attendeeId can be null for registration-owned tickets)
+- `owner.type` - Ownership type required
 
 ### Enumerations
 
@@ -265,18 +271,22 @@ The tickets collection represents individual ticket instances that are created w
 
 ## Indexes
 - `ticketNumber` - Unique index
-- `product.functionId, product.eventId` - Event queries
-- `purchase.registrationId` - Registration lookups
-- `owner.attendeeId` - Owner queries (including null for unassigned)
-- `purchase.registrationId, owner.attendeeId` - Unassigned tickets by registration
+- `catalog.catalogObjectId` - Catalog queries
+- `catalog.productId, catalog.variationId` - Product/variation lookups
+- `order.orderId` - Order lookups
+- `order.lineItemId` - Line item fulfillment
+- `owner.contactId` - Contact's tickets
+- `owner.organisationId` - Organisation's tickets
+- `owner.type, order.orderId` - Unassigned tickets by order
 - `security.barcode` - Barcode scanning
 - `security.qrData` - QR code scanning
-- `access.status, product.eventId` - Active tickets by event
+- `access.status, catalog.eventStart` - Active tickets by date
 
 ## Relationships
-- **Functions** - Via `product.functionId`
-- **Registrations** - Purchase via `purchase.registrationId` (owns ticket if `owner.attendeeId` is null)
-- **Attendees** - Current owner via `owner.attendeeId` (when assigned)
+- **Catalog Objects** - Via `catalog.catalogObjectId`
+- **Orders** - Purchase via `order.orderId` and `order.lineItemId`
+- **Contacts** - Current owner via `owner.contactId` (when assigned)
+- **Organisations** - Organisation owner via `owner.organisationId`
 - **Users** - Various staff/admin references
 
 ## Security Considerations
@@ -295,12 +305,20 @@ The tickets collection represents individual ticket instances that are created w
 
 ## Business Logic
 
+### Ticket Creation
+1. Created automatically when order line item is fulfilled
+2. One ticket per quantity in line item
+3. Initial owner matches line item owner
+4. Linked to specific catalog product/variation
+5. Inventory updated in catalog on creation
+
 ### Transfer Rules
 1. Only active tickets can be transferred
 2. Transfers create audit trail
 3. Verification required for high-value tickets
 4. Some tickets may be non-transferable
 5. Transfer limits may apply
+6. Organisation-owned tickets can be assigned to members
 
 ### Usage Rules
 1. Single-use tickets invalidated after first scan
@@ -308,11 +326,11 @@ The tickets collection represents individual ticket instances that are created w
 3. Time-based validity enforced
 4. Zone access validated at entry
 
-### Refund Rules
-1. Refunds update ticket status
-2. Partial refunds for multi-day tickets
-3. Refund deadlines enforced
-4. Refunded tickets become invalid
+### Cancellation Rules
+1. Cancelling order cancels associated tickets
+2. Cancelled tickets update catalog inventory
+3. Partial cancellations supported
+4. Cancelled tickets become invalid immediately
 
 ## Performance Optimizations
 

@@ -1,399 +1,461 @@
 # Users Collection - Aggregation Pipelines
 
-## Contact Integration
+## Authentication and Security
 
-### 1. Get User with Contact Details
+### 1. Active Sessions Report
 ```javascript
-// Fetch user with full contact information
+// Monitor active user sessions
 db.users.aggregate([
-  { $match: { _id: ObjectId("userId") } },
   {
-    $lookup: {
-      from: "contacts",
-      localField: "contactId",
-      foreignField: "_id",
-      as: "contact"
+    $match: {
+      status: "active",
+      "authentication.lastLogin": {
+        $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+      }
     }
   },
-  { $unwind: "$contact" },
   {
     $project: {
-      userId: 1,
-      email: "$auth.email",
-      displayName: "$profile.displayName",
-      roles: "$access.roles",
-      // Contact details
-      name: { $concat: ["$contact.profile.firstName", " ", "$contact.profile.lastName"] },
-      phone: "$contact.profile.phone",
-      addresses: "$contact.addresses",
-      dietaryRequirements: "$contact.profile.dietaryRequirements",
-      specialNeeds: "$contact.profile.specialNeeds",
-      masonicProfile: "$contact.masonicProfile"
+      email: 1,
+      lastLogin: "$authentication.lastLogin",
+      lastLoginIp: "$authentication.lastLoginIp",
+      mfaEnabled: "$authentication.mfa.enabled",
+      daysSinceCreation: {
+        $divide: [
+          { $subtract: [new Date(), "$createdAt"] },
+          1000 * 60 * 60 * 24
+        ]
+      }
     }
+  },
+  {
+    $sort: { lastLogin: -1 }
   }
 ])
 ```
 
-### 2. Find Users Without Contacts
+### 2. Failed Login Analysis
 ```javascript
-// Identify users that need contact records created
+// Track failed login attempts and locked accounts
 db.users.aggregate([
   {
     $match: {
       $or: [
-        { contactId: { $exists: false } },
-        { contactId: null }
+        { "authentication.failedAttempts": { $gt: 0 } },
+        { "authentication.lockedUntil": { $exists: true } }
       ]
     }
   },
   {
     $project: {
-      userId: 1,
-      email: "$auth.email",
-      createdAt: "$metadata.createdAt",
-      lastLogin: "$auth.lastLoginAt",
-      isActive: "$flags.isActive"
+      email: 1,
+      failedAttempts: "$authentication.failedAttempts",
+      isLocked: {
+        $cond: [
+          { $gt: ["$authentication.lockedUntil", new Date()] },
+          true,
+          false
+        ]
+      },
+      lockExpiresIn: {
+        $cond: [
+          { $gt: ["$authentication.lockedUntil", new Date()] },
+          {
+            $divide: [
+              { $subtract: ["$authentication.lockedUntil", new Date()] },
+              1000 * 60 // Minutes
+            ]
+          },
+          null
+        ]
+      },
+      lastLoginIp: "$authentication.lastLoginIp"
     }
   },
-  { $sort: { createdAt: -1 } }
+  {
+    $match: {
+      $or: [
+        { failedAttempts: { $gte: 3 } },
+        { isLocked: true }
+      ]
+    }
+  },
+  {
+    $sort: { failedAttempts: -1 }
+  }
 ])
 ```
 
-### 3. Users and Contact Relationships
+### 3. MFA Adoption Report
 ```javascript
-// Find users with their emergency contacts
+// Analyze MFA adoption across users
 db.users.aggregate([
-  { $match: { "flags.isActive": true } },
-  {
-    $lookup: {
-      from: "contacts",
-      localField: "contactId",
-      foreignField: "_id",
-      as: "contact"
-    }
-  },
-  { $unwind: "$contact" },
-  { $unwind: { path: "$contact.relationships", preserveNullAndEmptyArrays: true } },
-  { $match: { "contact.relationships.isEmergencyContact": true } },
-  {
-    $lookup: {
-      from: "contacts",
-      localField: "contact.relationships.contactId",
-      foreignField: "_id",
-      as: "emergencyContact"
-    }
-  },
-  { $unwind: "$emergencyContact" },
   {
     $group: {
-      _id: "$_id",
-      userId: { $first: "$userId" },
-      userName: { $first: { $concat: ["$contact.profile.firstName", " ", "$contact.profile.lastName"] } },
-      emergencyContacts: {
+      _id: "$status",
+      total: { $sum: 1 },
+      mfaEnabled: {
+        $sum: {
+          $cond: ["$authentication.mfa.enabled", 1, 0]
+        }
+      },
+      mfaTypes: {
         $push: {
-          name: { $concat: ["$emergencyContact.profile.firstName", " ", "$emergencyContact.profile.lastName"] },
-          phone: "$emergencyContact.profile.phone",
-          relationship: "$contact.relationships.relationshipType"
+          $cond: [
+            "$authentication.mfa.enabled",
+            "$authentication.mfa.type",
+            null
+          ]
         }
       }
     }
+  },
+  {
+    $project: {
+      status: "$_id",
+      totalUsers: "$total",
+      mfaEnabled: "$mfaEnabled",
+      mfaAdoptionRate: {
+        $multiply: [
+          { $divide: ["$mfaEnabled", "$total"] },
+          100
+        ]
+      },
+      mfaTypes: {
+        $reduce: {
+          input: "$mfaTypes",
+          initialValue: {
+            totp: 0,
+            sms: 0,
+            email: 0
+          },
+          in: {
+            totp: {
+              $cond: [
+                { $eq: ["$$this", "totp"] },
+                { $add: ["$$value.totp", 1] },
+                "$$value.totp"
+              ]
+            },
+            sms: {
+              $cond: [
+                { $eq: ["$$this", "sms"] },
+                { $add: ["$$value.sms", 1] },
+                "$$value.sms"
+              ]
+            },
+            email: {
+              $cond: [
+                { $eq: ["$$this", "email"] },
+                { $add: ["$$value.email", 1] },
+                "$$value.email"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    $sort: { status: 1 }
   }
 ])
 ```
 
 ## User Analytics
 
-### 4. User Growth Analysis
+### 4. User Growth Over Time
 ```javascript
-// Track user acquisition over time
+// Track user registration trends
 db.users.aggregate([
-  {
-    $match: {
-      "flags.isDeleted": false
-    }
-  },
   {
     $group: {
       _id: {
-        year: { $year: "$metadata.createdAt" },
-        month: { $month: "$metadata.createdAt" },
-        source: "$metadata.source"
+        year: { $year: "$createdAt" },
+        month: { $month: "$createdAt" },
+        week: { $week: "$createdAt" }
       },
       newUsers: { $sum: 1 },
       verified: {
-        $sum: { $cond: ["$auth.emailVerified", 1, 0] }
+        $sum: { $cond: ["$emailVerified", 1, 0] }
       },
-      withPurchases: {
-        $sum: { $cond: [{ $gt: ["$activity.registrations.count", 0] }, 1, 0] }
-      },
-      campaigns: {
-        $addToSet: "$metadata.campaign"
+      withContacts: {
+        $sum: { $cond: [{ $ne: ["$contactId", null] }, 1, 0] }
       }
     }
   },
   {
-    $group: {
-      _id: {
+    $project: {
+      period: {
         year: "$_id.year",
-        month: "$_id.month"
-      },
-      totalNewUsers: { $sum: "$newUsers" },
-      bySource: {
-        $push: {
-          source: "$_id.source",
-          count: "$newUsers",
-          verificationRate: {
-            $multiply: [
-              { $divide: ["$verified", "$newUsers"] },
-              100
-            ]
-          },
-          conversionRate: {
-            $multiply: [
-              { $divide: ["$withPurchases", "$newUsers"] },
-              100
-            ]
-          }
-        }
-      },
-      campaigns: {
-        $reduce: {
-          input: "$campaigns",
-          initialValue: [],
-          in: { $concatArrays: ["$$value", "$$this"] }
-        }
-      }
-    }
-  },
-  {
-    $project: {
-      date: {
-        $dateFromParts: {
-          year: "$_id.year",
-          month: "$_id.month"
-        }
+        month: "$_id.month",
+        week: "$_id.week"
       },
       metrics: {
-        totalNewUsers: "$totalNewUsers",
-        sources: "$bySource",
-        activeCampaigns: { $size: { $setUnion: "$campaigns" } }
-      },
-      growth: {
-        $let: {
-          vars: {
-            prevMonth: {
-              $dateFromParts: {
-                year: "$_id.year",
-                month: { $subtract: ["$_id.month", 1] }
-              }
-            }
-          },
-          in: "calculated_separately" // Would need separate query for month-over-month
-        }
-      }
-    }
-  },
-  {
-    $sort: { date: -1 }
-  }
-])
-```
-
-### 2. Customer Lifetime Value (CLV)
-```javascript
-// Calculate CLV by cohort
-db.users.aggregate([
-  {
-    $match: {
-      "activity.registrations.count": { $gt: 0 }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      cohort: {
-        $dateToString: {
-          format: "%Y-%m",
-          date: "$metadata.createdAt"
-        }
-      },
-      accountAge: {
-        $divide: [
-          { $subtract: [new Date(), "$metadata.createdAt"] },
-          1000 * 60 * 60 * 24 * 30 // Months
-        ]
-      },
-      revenue: "$activity.registrations.totalSpent",
-      purchaseCount: "$activity.registrations.count",
-      lastPurchase: "$activity.registrations.lastDate",
-      
-      // Engagement metrics
-      loginFrequency: {
-        $divide: ["$activity.engagement.loginCount", "$accountAge"]
-      },
-      isActive: {
-        $gt: [
-          "$activity.engagement.lastActiveAt",
-          { $subtract: [new Date(), 30 * 24 * 60 * 60 * 1000] }
-        ]
-      }
-    }
-  },
-  {
-    $group: {
-      _id: "$cohort",
-      users: { $sum: 1 },
-      totalRevenue: { $sum: "$revenue" },
-      avgRevenue: { $avg: "$revenue" },
-      avgPurchases: { $avg: "$purchaseCount" },
-      
-      // Retention metrics
-      activeUsers: {
-        $sum: { $cond: ["$isActive", 1, 0] }
-      },
-      
-      // Revenue distribution
-      revenueSegments: {
-        $push: {
-          $switch: {
-            branches: [
-              { case: { $gte: ["$revenue", 5000] }, then: "whale" },
-              { case: { $gte: ["$revenue", 1000] }, then: "high_value" },
-              { case: { $gte: ["$revenue", 100] }, then: "regular" },
-              { case: { $gt: ["$revenue", 0] }, then: "low_value" }
-            ],
-            default: "inactive"
-          }
-        }
-      }
-    }
-  },
-  {
-    $project: {
-      cohort: "$_id",
-      metrics: {
-        userCount: "$users",
-        totalRevenue: "$totalRevenue",
-        avgCLV: { $round: ["$avgRevenue", 2] },
-        avgOrderCount: { $round: ["$avgPurchases", 1] },
-        retentionRate: {
-          $multiply: [
-            { $divide: ["$activeUsers", "$users"] },
-            100
+        newUsers: "$newUsers",
+        verifiedUsers: "$verified",
+        verificationRate: {
+          $round: [
+            { $multiply: [{ $divide: ["$verified", "$newUsers"] }, 100] },
+            2
+          ]
+        },
+        contactLinkRate: {
+          $round: [
+            { $multiply: [{ $divide: ["$withContacts", "$newUsers"] }, 100] },
+            2
           ]
         }
-      },
-      segments: {
-        $arrayToObject: {
-          $map: {
-            input: { $setUnion: "$revenueSegments" },
-            as: "segment",
-            in: {
-              k: "$$segment",
-              v: {
-                $size: {
-                  $filter: {
-                    input: "$revenueSegments",
-                    cond: { $eq: ["$$this", "$$segment"] }
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     }
   },
   {
-    $sort: { cohort: -1 }
+    $sort: {
+      "period.year": -1,
+      "period.month": -1,
+      "period.week": -1
+    }
+  },
+  {
+    $limit: 52 // Last year of weekly data
   }
 ])
 ```
 
-## Authentication and Security
-
-### 3. Login Pattern Analysis
+### 5. Account Status Distribution
 ```javascript
-// Analyze login patterns and suspicious activity
+// Analyze user account statuses
 db.users.aggregate([
   {
-    $match: {
-      "auth.lastLoginAt": {
-        $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
-      }
+    $facet: {
+      byStatus: [
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 },
+            verified: {
+              $sum: { $cond: ["$emailVerified", 1, 0] }
+            },
+            avgDaysActive: {
+              $avg: {
+                $cond: [
+                  { $eq: ["$status", "active"] },
+                  {
+                    $divide: [
+                      { $subtract: [new Date(), "$createdAt"] },
+                      1000 * 60 * 60 * 24
+                    ]
+                  },
+                  null
+                ]
+              }
+            }
+          }
+        }
+      ],
+      totals: [
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            active: {
+              $sum: { $cond: [{ $eq: ["$status", "active"] }, 1, 0] }
+            },
+            inactive: {
+              $sum: { $cond: [{ $eq: ["$status", "inactive"] }, 1, 0] }
+            },
+            suspended: {
+              $sum: { $cond: [{ $eq: ["$status", "suspended"] }, 1, 0] }
+            },
+            pending: {
+              $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] }
+            }
+          }
+        }
+      ],
+      recentActivity: [
+        {
+          $match: {
+            "authentication.lastLogin": {
+              $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            activeLastMonth: { $sum: 1 }
+          }
+        }
+      ]
     }
   },
   {
     $project: {
-      userId: 1,
-      email: "$auth.email",
-      loginAttempts: "$auth.loginAttempts",
-      isLocked: { $gt: ["$auth.lockedUntil", new Date()] },
-      
-      // Session analysis
-      sessionCount: { $size: { $ifNull: ["$auth.sessions", []] } },
-      activeSessionCount: {
-        $size: {
-          $filter: {
-            input: { $ifNull: ["$auth.sessions", []] },
-            cond: {
-              $and: [
-                { $eq: ["$$this.revoked", false] },
-                { $gt: ["$$this.expiresAt", new Date()] }
-              ]
-            }
-          }
-        }
+      statusBreakdown: "$byStatus",
+      summary: { $arrayElemAt: ["$totals", 0] },
+      engagement: { $arrayElemAt: ["$recentActivity", 0] }
+    }
+  }
+])
+```
+
+## Contact Integration
+
+### 6. Users with Contact Details
+```javascript
+// Join users with their contact information
+db.users.aggregate([
+  {
+    $match: {
+      status: "active",
+      contactId: { $ne: null }
+    }
+  },
+  {
+    $lookup: {
+      from: "contacts",
+      localField: "contactId",
+      foreignField: "_id",
+      as: "contact"
+    }
+  },
+  {
+    $unwind: "$contact"
+  },
+  {
+    $project: {
+      email: 1,
+      status: 1,
+      profile: {
+        fullName: {
+          $concat: [
+            "$contact.profile.firstName",
+            " ",
+            "$contact.profile.lastName"
+          ]
+        },
+        preferredName: "$contact.profile.preferredName",
+        email: "$contact.profile.email",
+        phone: "$contact.profile.phone"
       },
-      
-      // Location diversity
-      uniqueCountries: {
-        $size: {
-          $setUnion: {
-            $map: {
-              input: { $ifNull: ["$auth.sessions", []] },
-              in: "$$this.location.country"
-            }
-          }
-        }
+      roles: "$contact.roles",
+      hasOrders: {
+        $gt: [{ $size: { $ifNull: ["$contact.orderReferences", []] } }, 0]
       },
-      
-      // MFA status
-      mfaEnabled: "$auth.mfa.enabled",
-      
-      // Risk indicators
-      recentPasswordChange: {
-        $gt: [
-          "$auth.passwordChangedAt",
-          { $subtract: [new Date(), 24 * 60 * 60 * 1000] }
+      authentication: {
+        lastLogin: "$authentication.lastLogin",
+        mfaEnabled: "$authentication.mfa.enabled"
+      }
+    }
+  },
+  {
+    $sort: { "authentication.lastLogin": -1 }
+  }
+])
+```
+
+### 7. Users Without Contacts
+```javascript
+// Identify users needing contact records
+db.users.aggregate([
+  {
+    $match: {
+      $or: [
+        { contactId: null },
+        { contactId: { $exists: false } }
+      ]
+    }
+  },
+  {
+    $project: {
+      email: 1,
+      status: 1,
+      createdAt: 1,
+      daysSinceCreation: {
+        $round: [
+          {
+            $divide: [
+              { $subtract: [new Date(), "$createdAt"] },
+              1000 * 60 * 60 * 24
+            ]
+          },
+          0
+        ]
+      },
+      lastLogin: "$authentication.lastLogin",
+      requiresImmediate: {
+        $and: [
+          { $eq: ["$status", "active"] },
+          { $gte: ["$authentication.lastLogin", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)] }
         ]
       }
     }
   },
   {
+    $sort: { requiresImmediate: -1, daysSinceCreation: -1 }
+  }
+])
+```
+
+## Security Monitoring
+
+### 8. Suspicious Activity Detection
+```javascript
+// Identify potentially compromised accounts
+db.users.aggregate([
+  {
+    $match: {
+      status: "active",
+      $or: [
+        { "authentication.failedAttempts": { $gte: 3 } },
+        {
+          "authentication.lastLogin": {
+            $gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
+          }
+        }
+      ]
+    }
+  },
+  {
     $project: {
-      userId: 1,
       email: 1,
-      securityStatus: {
-        loginAttempts: "$loginAttempts",
-        isLocked: "$isLocked",
-        mfaEnabled: "$mfaEnabled",
-        activeSessions: "$activeSessionCount"
+      riskIndicators: {
+        failedAttempts: "$authentication.failedAttempts",
+        recentlyLocked: {
+          $cond: [
+            {
+              $and: [
+                { $ne: ["$authentication.lockedUntil", null] },
+                { $gte: ["$authentication.lockedUntil", new Date(Date.now() - 24 * 60 * 60 * 1000)] }
+              ]
+            },
+            true,
+            false
+          ]
+        },
+        noMFA: { $not: "$authentication.mfa.enabled" },
+        unverifiedEmail: { $not: "$emailVerified" }
       },
       riskScore: {
         $add: [
-          { $cond: [{ $gte: ["$loginAttempts", 3] }, 20, 0] },
-          { $cond: [{ $gte: ["$uniqueCountries", 3] }, 30, 0] },
-          { $cond: ["$recentPasswordChange", 10, 0] },
-          { $cond: [{ $gte: ["$sessionCount", 10] }, 20, 0] },
-          { $cond: [{ $eq: ["$mfaEnabled", false] }, 20, 0] }
+          { $multiply: ["$authentication.failedAttempts", 10] },
+          { $cond: [{ $not: "$authentication.mfa.enabled" }, 20, 0] },
+          { $cond: [{ $not: "$emailVerified" }, 15, 0] },
+          {
+            $cond: [
+              { $gte: ["$authentication.lockedUntil", new Date(Date.now() - 24 * 60 * 60 * 1000)] },
+              25,
+              0
+            ]
+          }
         ]
       }
     }
   },
   {
     $match: {
-      riskScore: { $gte: 30 }
+      riskScore: { $gte: 20 }
     }
   },
   {
@@ -402,57 +464,58 @@ db.users.aggregate([
 ])
 ```
 
-### 4. Failed Login Report
+### 9. Login IP Analysis
 ```javascript
-// Track failed login attempts by IP and user
+// Analyze login patterns by IP address
 db.users.aggregate([
   {
     $match: {
-      "auth.loginAttempts": { $gt: 0 }
+      "authentication.lastLoginIp": { $ne: null }
     }
   },
   {
     $group: {
-      _id: "$auth.lastLoginIp",
-      attemptedUsers: {
+      _id: "$authentication.lastLoginIp",
+      users: {
         $push: {
-          userId: "$userId",
-          email: "$auth.email",
-          attempts: "$auth.loginAttempts",
-          isLocked: { $gt: ["$auth.lockedUntil", new Date()] }
+          email: "$email",
+          lastLogin: "$authentication.lastLogin",
+          failedAttempts: "$authentication.failedAttempts"
         }
       },
-      totalAttempts: { $sum: "$auth.loginAttempts" },
-      lockedAccounts: {
-        $sum: {
-          $cond: [{ $gt: ["$auth.lockedUntil", new Date()] }, 1, 0]
-        }
-      }
+      totalUsers: { $sum: 1 },
+      totalFailedAttempts: { $sum: "$authentication.failedAttempts" },
+      avgFailedAttempts: { $avg: "$authentication.failedAttempts" }
     }
   },
   {
     $match: {
       $or: [
-        { totalAttempts: { $gte: 10 } },
-        { lockedAccounts: { $gte: 2 } }
+        { totalUsers: { $gte: 5 } },  // Multiple users from same IP
+        { avgFailedAttempts: { $gte: 3 } }  // High failure rate
       ]
     }
   },
   {
     $project: {
       ipAddress: "$_id",
-      threat: {
-        totalAttempts: "$totalAttempts",
-        uniqueTargets: { $size: "$attemptedUsers" },
-        lockedAccounts: "$lockedAccounts",
-        isDistributed: { $gte: [{ $size: "$attemptedUsers" }, 5] }
+      metrics: {
+        uniqueUsers: "$totalUsers",
+        totalFailedAttempts: "$totalFailedAttempts",
+        avgFailedAttempts: { $round: ["$avgFailedAttempts", 2] }
       },
-      topTargets: {
+      suspiciousActivity: {
+        $or: [
+          { $gte: ["$totalUsers", 10] },
+          { $gte: ["$avgFailedAttempts", 5] }
+        ]
+      },
+      recentUsers: {
         $slice: [
           {
             $sortArray: {
-              input: "$attemptedUsers",
-              sortBy: { attempts: -1 }
+              input: "$users",
+              sortBy: { lastLogin: -1 }
             }
           },
           5
@@ -461,752 +524,89 @@ db.users.aggregate([
     }
   },
   {
-    $sort: { "threat.totalAttempts": -1 }
+    $sort: { "metrics.totalFailedAttempts": -1 }
   }
 ])
 ```
 
-## Customer Segmentation
+## Data Quality
 
-### 5. VIP Customer Identification
+### 10. Email Verification Status
 ```javascript
-// Identify and segment high-value customers
+// Track email verification progress
 db.users.aggregate([
   {
-    $match: {
-      "flags.isActive": true,
-      "activity.registrations.count": { $gt: 0 }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      profile: {
-        name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-        email: "$auth.email"
-      },
-      
-      // Value metrics
-      totalSpent: "$activity.registrations.totalSpent",
-      orderCount: "$activity.registrations.count",
-      avgOrderValue: {
-        $divide: ["$activity.registrations.totalSpent", "$activity.registrations.count"]
-      },
-      
-      // Recency
-      daysSinceLastOrder: {
-        $divide: [
-          { $subtract: [new Date(), "$activity.registrations.lastDate"] },
-          1000 * 60 * 60 * 24
-        ]
-      },
-      
-      // Engagement
-      loyaltyTier: "$financial.loyaltyPoints.tier",
-      loyaltyPoints: "$financial.loyaltyPoints.balance",
-      
-      // Account features
-      hasPaymentMethod: { $gt: [{ $size: { $ifNull: ["$financial.paymentMethods", []] } }, 0] },
-      isOrganisation: { $gt: [{ $size: { $ifNull: ["$access.organisations", []] } }, 0] }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      profile: 1,
-      metrics: {
-        totalSpent: "$totalSpent",
-        orderCount: "$orderCount",
-        avgOrderValue: { $round: ["$avgOrderValue", 2] },
-        recencyDays: { $round: ["$daysSinceLastOrder", 0] }
-      },
-      
-      // VIP Score calculation
-      vipScore: {
-        $add: [
-          // Spending score (max 40 points)
-          {
-            $min: [
-              40,
-              { $multiply: [{ $divide: ["$totalSpent", 1000] }, 4] }
-            ]
-          },
-          // Frequency score (max 30 points)
-          {
-            $min: [
-              30,
-              { $multiply: ["$orderCount", 2] }
-            ]
-          },
-          // Recency score (max 20 points)
-          {
-            $switch: {
-              branches: [
-                { case: { $lte: ["$daysSinceLastOrder", 30] }, then: 20 },
-                { case: { $lte: ["$daysSinceLastOrder", 90] }, then: 10 },
-                { case: { $lte: ["$daysSinceLastOrder", 180] }, then: 5 }
-              ],
-              default: 0
-            }
-          },
-          // Loyalty bonus (max 10 points)
-          {
-            $switch: {
-              branches: [
-                { case: { $eq: ["$loyaltyTier", "platinum"] }, then: 10 },
-                { case: { $eq: ["$loyaltyTier", "gold"] }, then: 7 },
-                { case: { $eq: ["$loyaltyTier", "silver"] }, then: 4 },
-                { case: { $eq: ["$loyaltyTier", "bronze"] }, then: 2 }
-              ],
-              default: 0
+    $facet: {
+      overallStats: [
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            verified: {
+              $sum: { $cond: ["$emailVerified", 1, 0] }
+            },
+            pendingVerification: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      { $eq: ["$status", "pending"] },
+                      { $eq: ["$emailVerified", false] }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
             }
           }
-        ]
-      },
-      
-      features: {
-        loyaltyTier: "$loyaltyTier",
-        hasPaymentMethod: "$hasPaymentMethod",
-        isOrganisation: "$isOrganisation"
-      }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      profile: 1,
-      metrics: 1,
-      features: 1,
-      vipScore: 1,
-      segment: {
-        $switch: {
-          branches: [
-            { case: { $gte: ["$vipScore", 80] }, then: "platinum_vip" },
-            { case: { $gte: ["$vipScore", 60] }, then: "gold_vip" },
-            { case: { $gte: ["$vipScore", 40] }, then: "silver_vip" },
-            { case: { $gte: ["$vipScore", 20] }, then: "bronze_vip" }
-          ],
-          default: "regular"
-        }
-      }
-    }
-  },
-  {
-    $match: {
-      vipScore: { $gte: 40 }
-    }
-  },
-  {
-    $sort: { vipScore: -1 }
-  },
-  {
-    $limit: 1000
-  }
-])
-```
-
-### 6. Churn Risk Analysis
-```javascript
-// Identify users at risk of churning
-db.users.aggregate([
-  {
-    $match: {
-      "flags.isActive": true,
-      "activity.registrations.count": { $gt: 0 }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      email: "$auth.email",
-      
-      // Activity metrics
-      daysSinceLastLogin: {
-        $divide: [
-          { $subtract: [new Date(), "$activity.engagement.lastActiveAt"] },
-          1000 * 60 * 60 * 24
-        ]
-      },
-      daysSinceLastPurchase: {
-        $divide: [
-          { $subtract: [new Date(), "$activity.registrations.lastDate"] },
-          1000 * 60 * 60 * 24
-        ]
-      },
-      
-      // Historical behavior
-      avgDaysBetweenPurchases: {
-        $divide: [
-          {
-            $divide: [
-              { $subtract: ["$activity.registrations.lastDate", "$activity.registrations.firstDate"] },
-              1000 * 60 * 60 * 24
-            ]
-          },
-          { $max: [{ $subtract: ["$activity.registrations.count", 1] }, 1] }
-        ]
-      },
-      
-      // Engagement decline
-      recentLoginCount: {
-        $size: {
-          $filter: {
-            input: { $ifNull: ["$auth.sessions", []] },
-            cond: {
-              $gte: [
-                "$$this.createdAt",
-                { $subtract: [new Date(), 30 * 24 * 60 * 60 * 1000] }
+        },
+        {
+          $project: {
+            total: 1,
+            verified: 1,
+            unverified: { $subtract: ["$total", "$verified"] },
+            verificationRate: {
+              $round: [
+                { $multiply: [{ $divide: ["$verified", "$total"] }, 100] },
+                2
               ]
             }
           }
         }
-      },
-      
-      // Communication preferences
-      unsubscribed: {
-        $not: "$preferences.communications.marketing.email"
-      }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      email: 1,
-      metrics: {
-        daysSinceLastLogin: { $round: ["$daysSinceLastLogin", 0] },
-        daysSinceLastPurchase: { $round: ["$daysSinceLastPurchase", 0] },
-        expectedPurchaseIn: {
-          $subtract: [
-            "$avgDaysBetweenPurchases",
-            "$daysSinceLastPurchase"
-          ]
-        }
-      },
-      
-      // Churn risk score
-      churnRisk: {
-        $add: [
-          // Inactivity score
-          {
-            $cond: [
-              { $gte: ["$daysSinceLastLogin", 90] },
-              40,
-              {
-                $cond: [
-                  { $gte: ["$daysSinceLastLogin", 60] },
-                  20,
-                  0
-                ]
-              }
-            ]
-          },
-          // Purchase delay score
-          {
-            $cond: [
-              { $gt: ["$daysSinceLastPurchase", { $multiply: ["$avgDaysBetweenPurchases", 2] }] },
-              30,
-              0
-            ]
-          },
-          // Engagement decline
-          {
-            $cond: [{ $eq: ["$recentLoginCount", 0] }, 20, 0]
-          },
-          // Unsubscribed
-          { $cond: ["$unsubscribed", 10, 0] }
-        ]
-      }
-    }
-  },
-  {
-    $match: {
-      churnRisk: { $gte: 30 }
-    }
-  },
-  {
-    $sort: { churnRisk: -1 }
-  }
-])
-```
-
-## Organisation Analytics
-
-### 7. Organisation Member Analysis
-```javascript
-// Analyze organisation membership and activity
-db.users.aggregate([
-  {
-    $match: {
-      "access.organisations": { $exists: true, $ne: [] }
-    }
-  },
-  { $unwind: "$access.organisations" },
-  {
-    $match: {
-      "access.organisations.status": "active"
-    }
-  },
-  {
-    $group: {
-      _id: "$access.organisations.organisationId",
-      members: {
-        $push: {
-          userId: "$_id",
-          name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-          email: "$auth.email",
-          role: "$access.organisations.role",
-          joinedAt: "$access.organisations.joinedAt",
-          totalSpent: "$activity.registrations.totalSpent"
-        }
-      },
-      roleDistribution: {
-        $push: "$access.organisations.role"
-      }
-    }
-  },
-  {
-    $lookup: {
-      from: "organisations",
-      localField: "_id",
-      foreignField: "_id",
-      as: "organisation"
-    }
-  },
-  {
-    $unwind: "$organisation"
-  },
-  {
-    $project: {
-      organisation: {
-        id: "$_id",
-        name: "$organisation.name",
-        type: "$organisation.type"
-      },
-      metrics: {
-        totalMembers: { $size: "$members" },
-        totalRevenue: { $sum: "$members.totalSpent" },
-        avgMemberValue: { $avg: "$members.totalSpent" },
-        roles: {
-          $arrayToObject: {
-            $map: {
-              input: { $setUnion: "$roleDistribution" },
-              as: "role",
-              in: {
-                k: "$$role",
-                v: {
-                  $size: {
-                    $filter: {
-                      input: "$roleDistribution",
-                      cond: { $eq: ["$$this", "$$role"] }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      topSpenders: {
-        $slice: [
-          {
-            $sortArray: {
-              input: "$members",
-              sortBy: { totalSpent: -1 }
-            }
-          },
-          5
-        ]
-      }
-    }
-  },
-  {
-    $sort: { "metrics.totalRevenue": -1 }
-  }
-])
-```
-
-## Communication and Marketing
-
-### 8. Email Campaign Segmentation
-```javascript
-// Segment users for targeted email campaigns
-db.users.aggregate([
-  {
-    $match: {
-      "flags.isActive": true,
-      "preferences.communications.marketing.email": true
-    }
-  },
-  {
-    $project: {
-      email: "$auth.email",
-      profile: {
-        firstName: "$profile.firstName",
-        locale: "$profile.locale",
-        timezone: "$profile.timezone"
-      },
-      
-      // Segmentation criteria
-      segment: {
-        $switch: {
-          branches: [
-            // New users
-            {
-              case: {
-                $and: [
-                  { $lte: [
-                    { $subtract: [new Date(), "$metadata.createdAt"] },
-                    30 * 24 * 60 * 60 * 1000
-                  ]},
-                  { $eq: ["$activity.registrations.count", 0] }
-                ]
-              },
-              then: "new_no_purchase"
-            },
-            // Active buyers
-            {
-              case: {
-                $and: [
-                  { $gte: ["$activity.registrations.count", 3] },
-                  { $lte: [
-                    { $subtract: [new Date(), "$activity.registrations.lastDate"] },
-                    90 * 24 * 60 * 60 * 1000
-                  ]}
-                ]
-              },
-              then: "active_buyer"
-            },
-            // Lapsed customers
-            {
-              case: {
-                $and: [
-                  { $gt: ["$activity.registrations.count", 0] },
-                  { $gt: [
-                    { $subtract: [new Date(), "$activity.registrations.lastDate"] },
-                    180 * 24 * 60 * 60 * 1000
-                  ]}
-                ]
-              },
-              then: "lapsed_customer"
-            },
-            // Event category interest
-            {
-              case: {
-                $gt: [
-                  { $size: { $ifNull: ["$preferences.events.categories", []] } },
-                  0
-                ]
-              },
-              then: "interested_subscriber"
-            }
-          ],
-          default: "general"
-        }
-      },
-      
-      // Personalization data
-      interests: "$preferences.events.categories",
-      lastEventTypes: {
-        $slice: ["$activity.engagement.searchQueries", -5]
-      }
-    }
-  },
-  {
-    $group: {
-      _id: "$segment",
-      recipients: {
-        $push: {
-          email: "$email",
-          firstName: "$profile.firstName",
-          locale: "$profile.locale",
-          timezone: "$profile.timezone",
-          interests: "$interests"
-        }
-      },
-      count: { $sum: 1 }
-    }
-  },
-  {
-    $project: {
-      segment: "$_id",
-      audienceSize: "$count",
-      sample: { $slice: ["$recipients", 10] },
-      
-      // Timezone distribution for send time optimization
-      timezones: {
-        $arrayToObject: {
-          $map: {
-            input: { $setUnion: "$recipients.timezone" },
-            as: "tz",
-            in: {
-              k: "$$tz",
-              v: {
-                $size: {
-                  $filter: {
-                    input: "$recipients",
-                    cond: { $eq: ["$$this.timezone", "$$tz"] }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-])
-```
-
-## Data Quality and Compliance
-
-### 9. Data Validation Report
-```javascript
-// Identify users with incomplete or invalid data
-db.users.aggregate([
-  {
-    $match: {
-      "flags.isActive": true
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      email: "$auth.email",
-      
-      // Data completeness checks
-      issues: {
-        missingPhone: { $eq: [{ $size: { $ifNull: ["$profile.phones", []] } }, 0] },
-        missingAddress: { $eq: [{ $size: { $ifNull: ["$profile.addresses", []] } }, 0] },
-        unverifiedEmail: { $not: "$auth.emailVerified" },
-        missingDateOfBirth: { $eq: ["$profile.dateOfBirth", null] },
-        
-        // Age verification for events
-        needsAgeVerification: {
-          $and: [
-            { $eq: ["$compliance.ageVerified", false] },
-            { $gt: ["$activity.registrations.count", 0] }
-          ]
-        },
-        
-        // Payment method validation
-        expiredPaymentMethods: {
-          $gt: [
-            {
-              $size: {
-                $filter: {
-                  input: { $ifNull: ["$financial.paymentMethods", []] },
-                  cond: {
-                    $and: [
-                      { $eq: ["$$this.type", "card"] },
-                      {
-                        $lte: [
-                          {
-                            $dateFromParts: {
-                              year: "$$this.card.expiryYear",
-                              month: "$$this.card.expiryMonth"
-                            }
-                          },
-                          new Date()
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            },
-            0
-          ]
-        },
-        
-        // GDPR compliance
-        missingGDPRConsent: {
-          $and: [
-            { $ne: ["$profile.addresses.country", "US"] },
-            { $ne: ["$compliance.gdpr.consentGiven", true] }
-          ]
-        }
-      }
-    }
-  },
-  {
-    $project: {
-      userId: 1,
-      email: 1,
-      issueCount: {
-        $add: [
-          { $cond: ["$issues.missingPhone", 1, 0] },
-          { $cond: ["$issues.missingAddress", 1, 0] },
-          { $cond: ["$issues.unverifiedEmail", 1, 0] },
-          { $cond: ["$issues.missingDateOfBirth", 1, 0] },
-          { $cond: ["$issues.needsAgeVerification", 1, 0] },
-          { $cond: ["$issues.expiredPaymentMethods", 1, 0] },
-          { $cond: ["$issues.missingGDPRConsent", 1, 0] }
-        ]
-      },
-      criticalIssues: {
-        $filter: {
-          input: [
-            { $cond: ["$issues.unverifiedEmail", "unverified_email", null] },
-            { $cond: ["$issues.needsAgeVerification", "needs_age_verification", null] },
-            { $cond: ["$issues.expiredPaymentMethods", "expired_payment_methods", null] },
-            { $cond: ["$issues.missingGDPRConsent", "missing_gdpr_consent", null] }
-          ],
-          cond: { $ne: ["$$this", null] }
-        }
-      }
-    }
-  },
-  {
-    $match: {
-      issueCount: { $gt: 0 }
-    }
-  },
-  {
-    $sort: { issueCount: -1 }
-  }
-])
-```
-
-### 10. GDPR Data Export Request
-```javascript
-// Compile all user data for GDPR export
-db.users.aggregate([
-  {
-    $match: {
-      _id: ObjectId("user_id_here")
-    }
-  },
-  {
-    $lookup: {
-      from: "registrations",
-      localField: "_id",
-      foreignField: "purchase.purchasedBy.id",
-      as: "registrations"
-    }
-  },
-  {
-    $lookup: {
-      from: "attendees",
-      let: { userId: "$_id" },
-      pipeline: [
-        {
-          $lookup: {
-            from: "registrations",
-            localField: "registrationId",
-            foreignField: "_id",
-            as: "registration"
-          }
-        },
+      ],
+      unverifiedUsers: [
         {
           $match: {
-            $expr: {
-              $eq: [{ $first: "$registration.purchase.purchasedBy.id" }, "$$userId"]
-            }
+            emailVerified: false,
+            status: { $ne: "suspended" }
           }
-        }
-      ],
-      as: "attendees"
-    }
-  },
-  {
-    $lookup: {
-      from: "financial-transactions",
-      localField: "_id",
-      foreignField: "parties.customer.id",
-      as: "transactions"
-    }
-  },
-  {
-    $project: {
-      // Personal Information
-      personalData: {
-        userId: "$userId",
-        email: "$auth.email",
-        profile: {
-          name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-          dateOfBirth: "$profile.dateOfBirth",
-          gender: "$profile.gender",
-          phones: "$profile.phones",
-          addresses: "$profile.addresses"
-        }
-      },
-      
-      // Account Information
-      accountData: {
-        createdAt: "$metadata.createdAt",
-        lastLoginAt: "$auth.lastLoginAt",
-        emailVerified: "$auth.emailVerified",
-        roles: "$access.roles",
-        organisations: "$access.organisations"
-      },
-      
-      // Purchase History
-      purchaseHistory: {
-        $map: {
-          input: "$registrations",
-          as: "reg",
-          in: {
-            registrationNumber: "$$reg.registrationNumber",
-            date: "$$reg.metadata.createdAt",
-            items: "$$reg.purchase.items",
-            total: "$$reg.purchase.total"
-          }
-        }
-      },
-      
-      // Event Attendance
-      eventAttendance: {
-        $map: {
-          input: "$attendees",
-          as: "att",
-          in: {
-            attendeeNumber: "$$att.attendeeNumber",
-            events: "$$att.tickets",
-            checkIns: "$$att.checkIns"
-          }
-        }
-      },
-      
-      // Financial Data
-      financialData: {
-        paymentMethods: {
-          $map: {
-            input: { $ifNull: ["$financial.paymentMethods", []] },
-            as: "pm",
-            in: {
-              type: "$$pm.type",
-              last4: "$$pm.card.last4",
-              addedAt: "$$pm.addedAt"
+        },
+        {
+          $project: {
+            email: 1,
+            status: 1,
+            createdAt: 1,
+            daysSinceCreation: {
+              $round: [
+                {
+                  $divide: [
+                    { $subtract: [new Date(), "$createdAt"] },
+                    1000 * 60 * 60 * 24
+                  ]
+                },
+                0
+              ]
             }
           }
         },
-        transactions: {
-          $map: {
-            input: "$transactions",
-            as: "trans",
-            in: {
-              date: "$$trans.metadata.createdAt",
-              type: "$$trans.type",
-              amount: "$$trans.amounts.total"
-            }
-          }
+        {
+          $sort: { createdAt: 1 }
+        },
+        {
+          $limit: 20
         }
-      },
-      
-      // Preferences and Communications
-      preferences: "$preferences",
-      
-      // Activity Log
-      activitySummary: {
-        totalLogins: "$activity.engagement.loginCount",
-        lastActive: "$activity.engagement.lastActiveAt",
-        totalSpent: "$activity.registrations.totalSpent"
-      },
-      
-      exportMetadata: {
-        exportDate: new Date(),
-        dataRetentionPolicy: "Data retained for 7 years per legal requirements"
-      }
+      ]
     }
   }
 ])

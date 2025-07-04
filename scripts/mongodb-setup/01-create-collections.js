@@ -106,7 +106,7 @@ async function createCollections() {
                   },
                   primaryPhone: {
                     bsonType: ["string", "null"],
-                    pattern: "^\\+?[0-9\\s-()]+$"
+                    pattern: "^\\+?[0-9\\s\\-\\(\\)]+$"
                   },
                   contactPreference: {
                     bsonType: ["string", "null"],
@@ -749,7 +749,7 @@ async function createCollections() {
                           name: { bsonType: "string" },
                           phone: { 
                             bsonType: "string",
-                            pattern: "^\\+?[0-9\\s-()]+$"
+                            pattern: "^\\+?[0-9\\s\\-\\(\\)]+$"
                           }
                         }
                       }

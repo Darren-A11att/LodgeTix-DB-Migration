@@ -86,6 +86,13 @@ function startProcess(command, args, name, color) {
 async function main() {
   log('\n🚀 Starting LodgeTix Reconcile Development Environment\n', colors.bright + colors.green);
   
+  // Setup migration viewer if needed
+  try {
+    require('./setup-migration-viewer');
+  } catch (error) {
+    log('⚠️  Could not setup migration viewer: ' + error.message, colors.yellow);
+  }
+  
   // Start API server first
   const apiProc = startProcess('npm', ['run', 'server'], 'API', colors.blue);
   
@@ -97,11 +104,24 @@ async function main() {
     // Start MongoDB Explorer
     const webProc = startProcess('npm', ['run', 'mongodb-explorer'], 'Web', colors.yellow);
     
+    // Start Migration Viewer
+    const viewerProc = startProcess('npm', ['run', 'migration-viewer'], 'Viewer', colors.green);
+    
+    // Add some delay and then show access URLs
+    setTimeout(() => {
+      log('\n📌 Services are running at:', colors.bright);
+      log(`   API Server:        http://localhost:${config.apiPort}`, colors.blue);
+      log(`   MongoDB Explorer:  http://localhost:3002`, colors.yellow);
+      log(`   Migration Viewer:  http://localhost:3003`, colors.green);
+      log('\n   Press Ctrl+C to stop all services\n', colors.bright);
+    }, 3000);
+    
     // Handle shutdown
     const shutdown = () => {
       log('\n\n👋 Shutting down all services...', colors.yellow);
       apiProc.kill();
       webProc.kill();
+      viewerProc.kill();
       process.exit(0);
     };
     

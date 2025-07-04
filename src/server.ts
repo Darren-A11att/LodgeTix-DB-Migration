@@ -417,43 +417,24 @@ app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
       if (relatedDocs.events && relatedDocs.events.length > 0) {
         try {
           const eventTicketsCollection = db.collection('eventTickets');
-          const eventIds = relatedDocs.events.map((event: any) => event._id.toString());
           
-          // Also collect any eventId/event_id fields from the events
-          relatedDocs.events.forEach((event: any) => {
-            if (event.eventId) eventIds.push(event.eventId);
-            if (event.event_id) eventIds.push(event.event_id);
-            if (event.id) eventIds.push(event.id);
-          });
+          // Collect eventId values from the events documents (NOT the _id)
+          const eventIds = relatedDocs.events
+            .map((event: any) => event.eventId)
+            .filter((id: any) => id); // Remove null/undefined values
           
-          // Also add the eventId field values from events
-          const allEventIds = [...eventIds];
-          relatedDocs.events.forEach((event: any) => {
-            if (event.eventId && !allEventIds.includes(event.eventId)) {
-              allEventIds.push(event.eventId);
-            }
-          });
+          console.log('Looking for eventTickets with eventIds:', eventIds);
           
-          console.log('Looking for eventTickets for event IDs:', allEventIds);
-          
-          const eventTickets = await eventTicketsCollection.find({
-            $or: [
-              { eventId: { $in: allEventIds } },
-              { event_id: { $in: allEventIds } },
-              { event: { $in: allEventIds } }
-            ]
-          }).limit(200).toArray();
-          
-          console.log(`Found ${eventTickets.length} eventTickets`);
-          
-          if (eventTickets.length > 0) {
-            // Remove duplicates based on _id
-            const uniqueEventTickets = eventTickets.filter(
-              (ticket: any, index: number, self: any[]) =>
-                index === self.findIndex((t: any) => t._id?.toString() === ticket._id?.toString())
-            );
+          if (eventIds.length > 0) {
+            const eventTickets = await eventTicketsCollection.find({
+              eventId: { $in: eventIds }
+            }).limit(200).toArray();
             
-            relatedDocs.eventTickets = uniqueEventTickets;
+            console.log(`Found ${eventTickets.length} eventTickets for ${eventIds.length} events`);
+            
+            if (eventTickets.length > 0) {
+              relatedDocs.eventTickets = eventTickets;
+            }
           }
         } catch (err) {
           console.warn('Failed to fetch eventTickets for events:', err);
@@ -475,50 +456,7 @@ app.get('/api/collections/:name/documents/:id/related', async (req, res) => {
       return;
     }
     
-    // Special handling for events collection
-    if (collectionName === 'events') {
-      // Get eventTickets (product templates) for this event
-      try {
-        const eventTicketsCollection = db.collection('eventTickets');
-        const eventId = sourceDoc.event_id || sourceDoc.eventId || sourceDoc._id.toString();
-        
-        console.log('Event document - looking for eventTickets with eventId:', eventId);
-        
-        const eventTickets = await eventTicketsCollection.find({
-          $or: [
-            { eventId: eventId },
-            { event_id: eventId },
-            { event: eventId }
-          ]
-        }).limit(200).toArray();
-        
-        console.log(`Found ${eventTickets.length} eventTickets for event`);
-        
-        if (eventTickets.length > 0) {
-          relatedDocs.eventTickets = eventTickets;
-        }
-      } catch (err) {
-        console.warn('Failed to fetch eventTickets for event:', err);
-      }
-      
-      // Also get the parent function
-      if (sourceDoc.functionId || sourceDoc.function_id) {
-        try {
-          const functionsCollection = db.collection('functions');
-          const functionId = sourceDoc.functionId || sourceDoc.function_id;
-          const functionQueries: any[] = [
-            { functionId: functionId },
-            { _id: ObjectId.isValid(functionId) ? new ObjectId(functionId) : functionId }
-          ];
-          const functionDoc = await functionsCollection.findOne({ $or: functionQueries });
-          if (functionDoc) {
-            relatedDocs.functions = [functionDoc];
-          }
-        } catch (err) {
-          console.warn('Failed to fetch function for event:', err);
-        }
-      }
-    }
+    // EVENTS SHOULD NEVER BE PRIMARY SOURCE - ONLY FUNCTIONS!
     
     // Define relationships for other collection types
     const relationships: Record<string, string[]> = {

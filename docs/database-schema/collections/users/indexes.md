@@ -2,22 +2,10 @@
 
 ## Primary Indexes
 
-### 1. Unique User ID
+### 1. Unique Email
 ```javascript
 db.users.createIndex(
-  { "userId": 1 },
-  { 
-    unique: true,
-    name: "userId_unique"
-  }
-)
-```
-**Purpose**: Ensure user ID uniqueness, fast lookups
-
-### 2. Unique Email
-```javascript
-db.users.createIndex(
-  { "auth.email": 1 },
+  { "email": 1 },
   { 
     unique: true,
     name: "email_unique"
@@ -26,250 +14,129 @@ db.users.createIndex(
 ```
 **Purpose**: Ensure email uniqueness, authentication lookups
 
-### 3. OAuth Provider Lookup
-```javascript
-db.users.createIndex(
-  { "auth.providers.provider": 1, "auth.providers.providerId": 1 },
-  { 
-    unique: true,
-    sparse: true,
-    name: "oauth_provider_unique"
-  }
-)
-```
-**Purpose**: Unique OAuth accounts, provider authentication
-
-## Contact Reference Index
-
-### 4. Contact Lookup
+### 2. Contact Reference
 ```javascript
 db.users.createIndex(
   { "contactId": 1 },
   { 
-    name: "contact_reference"
+    sparse: true,
+    unique: true,
+    name: "contact_unique"
   }
 )
 ```
-**Purpose**: Fast lookup of associated contact record
+**Purpose**: Ensure one user per contact, fast contact lookup
 
 ## Authentication Indexes
 
-### 5. Session Management
+### 3. Account Status
 ```javascript
 db.users.createIndex(
-  { "auth.sessions.sessionId": 1 },
+  { "status": 1, "email": 1 },
   { 
-    sparse: true,
-    name: "session_lookup"
+    name: "status_email"
   }
 )
 ```
-**Purpose**: Fast session validation
+**Purpose**: Filter by account status for login checks
 
-### 6. Password Reset
+### 4. Email Verification
 ```javascript
 db.users.createIndex(
-  { "auth.passwordResetToken": 1, "auth.passwordResetExpires": 1 },
-  {
-    sparse: true,
-    partialFilterExpression: { 
-      "auth.passwordResetToken": { $exists: true } 
-    },
-    name: "password_reset_token"
-  }
-)
-```
-**Purpose**: Password reset token validation
-
-### 7. Active Sessions
-```javascript
-db.users.createIndex(
-  { "auth.sessions.expiresAt": 1, "flags.isActive": 1 },
+  { "emailVerified": 1, "createdAt": 1 },
   {
     partialFilterExpression: { 
-      "auth.sessions.revoked": false 
-    },
-    name: "active_sessions"
-  }
-)
-```
-**Purpose**: Clean up expired sessions
-
-## Organisation and Access
-
-### 8. Organisation Members
-```javascript
-db.users.createIndex(
-  { "access.organisations.organisationId": 1, "access.organisations.status": 1 },
-  { name: "organisation_members" }
-)
-```
-**Purpose**: List organisation members
-
-### 9. Role-based Access
-```javascript
-db.users.createIndex(
-  { "access.roles": 1, "flags.isActive": 1 },
-  { name: "role_access" }
-)
-```
-**Purpose**: Find users by role
-
-### 10. Permission Search
-```javascript
-db.users.createIndex(
-  { "access.permissions": 1 },
-  { 
-    sparse: true,
-    name: "permission_search"
-  }
-)
-```
-**Purpose**: Find users with specific permissions
-
-## Activity and Engagement
-
-### 11. Last Active Users
-```javascript
-db.users.createIndex(
-  { "activity.engagement.lastActiveAt": -1, "flags.isActive": 1 },
-  { name: "recently_active" }
-)
-```
-**Purpose**: Track active users
-
-### 12. High-Value Customers
-```javascript
-db.users.createIndex(
-  { "activity.registrations.totalSpent": -1, "flags.isVip": 1 },
-  { name: "high_value_customers" }
-)
-```
-**Purpose**: Identify VIP customers
-
-### 13. Loyalty Tier
-```javascript
-db.users.createIndex(
-  { "financial.loyaltyPoints.tier": 1, "financial.loyaltyPoints.balance": -1 },
-  { name: "loyalty_tier" }
-)
-```
-**Purpose**: Loyalty program management
-
-## Communication and Marketing
-
-### 14. Marketing Consent
-```javascript
-db.users.createIndex(
-  { "preferences.communications.marketing.email": 1, "flags.isActive": 1 },
-  {
-    partialFilterExpression: { 
-      "preferences.communications.marketing.email": true 
-    },
-    name: "marketing_consent"
-  }
-)
-```
-**Purpose**: Email marketing lists
-
-### 15. Event Preferences
-```javascript
-db.users.createIndex(
-  { "preferences.events.categories": 1, "preferences.events.notifications.newEvents": 1 },
-  { 
-    sparse: true,
-    name: "event_preferences"
-  }
-)
-```
-**Purpose**: Targeted event notifications
-
-## Compliance and Security
-
-### 16. Unverified Accounts
-```javascript
-db.users.createIndex(
-  { "auth.emailVerified": 1, "metadata.createdAt": 1 },
-  {
-    partialFilterExpression: { 
-      "auth.emailVerified": false 
+      "emailVerified": false 
     },
     name: "unverified_accounts"
   }
 )
 ```
-**Purpose**: Track unverified accounts for cleanup
+**Purpose**: Track unverified accounts for cleanup/reminders
 
-### 17. Deletion Requests
+### 5. Account Lockout
 ```javascript
 db.users.createIndex(
-  { "compliance.dataRetention.deleteScheduledFor": 1 },
+  { "authentication.lockedUntil": 1 },
   {
     sparse: true,
     partialFilterExpression: { 
-      "compliance.dataRetention.deleteScheduledFor": { $exists: true } 
+      "authentication.lockedUntil": { $exists: true } 
     },
-    name: "deletion_queue"
+    name: "locked_accounts"
   }
 )
 ```
-**Purpose**: Process data deletion requests
+**Purpose**: Track and expire account lockouts
 
-### 18. Banned Users
+## Activity Indexes
+
+### 6. Last Login
 ```javascript
 db.users.createIndex(
-  { "flags.isBanned": 1, "auth.email": 1 },
+  { "authentication.lastLogin": -1 },
+  { 
+    sparse: true,
+    name: "last_login"
+  }
+)
+```
+**Purpose**: Track inactive accounts, recent activity
+
+### 7. Creation Date
+```javascript
+db.users.createIndex(
+  { "createdAt": -1 },
+  { 
+    name: "created_date"
+  }
+)
+```
+**Purpose**: Sort users by registration date
+
+## Security Indexes
+
+### 8. Failed Login Attempts
+```javascript
+db.users.createIndex(
+  { "authentication.failedAttempts": -1 },
   {
     partialFilterExpression: { 
-      "flags.isBanned": true 
+      "authentication.failedAttempts": { $gt: 0 } 
     },
-    name: "banned_users"
+    name: "failed_attempts"
   }
 )
 ```
-**Purpose**: Enforce bans
+**Purpose**: Monitor suspicious activity, rate limiting
 
-## Analytics Indexes
-
-### 19. User Cohorts
+### 9. MFA Status
 ```javascript
 db.users.createIndex(
-  { "metadata.createdAt": 1, "metadata.source": 1, "metadata.campaign": 1 },
-  { name: "user_cohorts" }
+  { "authentication.mfa.enabled": 1, "status": 1 },
+  {
+    sparse: true,
+    name: "mfa_enabled"
+  }
 )
 ```
-**Purpose**: Cohort analysis and attribution
-
-## Compound Text Index
-
-### 20. User Search
-```javascript
-db.users.createIndex(
-  { 
-    "auth.email": "text",
-    "profile.displayName": "text",
-    "userId": "text"
-  },
-  { name: "user_search" }
-)
-```
-**Purpose**: Full-text search across user details
+**Purpose**: Track MFA adoption, security audits
 
 ## Performance Considerations
 
-1. **Authentication Performance**: Email and session indexes are critical for login speed
-2. **Partial Indexes**: Reduce index size for boolean flags
-3. **Sparse Indexes**: Save space on optional fields
+1. **Minimal Indexes**: Only essential indexes for authentication performance
+2. **Partial Indexes**: Reduce index size for boolean/optional fields
+3. **Sparse Indexes**: Save space on optional fields like contactId
 4. **Compound Indexes**: Optimize common query patterns
 
-## Index Maintenance
+## Index Usage Monitoring
 
 ```javascript
 // Monitor authentication index usage
 db.users.aggregate([
   { $indexStats: {} },
   { $match: { 
-    name: { $in: ["email_unique", "session_lookup", "oauth_provider_unique"] }
+    name: { $in: ["email_unique", "status_email", "last_login"] }
   }},
   { $sort: { "accesses.ops": -1 } }
 ])
@@ -279,4 +146,22 @@ db.users.aggregate([
   { $indexStats: {} },
   { $match: { "accesses.ops": 0 } }
 ])
+
+// Validate index health
+db.users.validate({ full: true })
+```
+
+## Index Maintenance
+
+1. **Regular Reviews**: Monthly index usage analysis
+2. **Remove Unused**: Drop indexes with zero operations
+3. **Rebuild if Needed**: For fragmented indexes
+4. **Monitor Size**: Track index memory usage
+
+```javascript
+// Get index sizes
+db.users.stats().indexSizes
+
+// Rebuild specific index
+db.users.reIndex("email_unique")
 ```

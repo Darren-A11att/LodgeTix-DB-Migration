@@ -1,421 +1,198 @@
 # Users Collection Schema
 
 ## Overview
-The users collection represents authentication and authorization for system accounts. It focuses on login credentials, security, and access control. Personal information is now stored in the contacts collection, with users referencing their contact record via contactId.
+The `users` collection stores authentication-only information. All profile data is stored in the `contacts` collection to maintain separation of concerns between authentication and personal information.
 
-## Document Structure
+## Purpose
+- User authentication and authorization
+- Email-based login system
+- Account status management
+- Multi-factor authentication support
+- Session tracking and security
+
+## Schema Structure
+
+### Core Fields
 
 ```javascript
 {
   _id: ObjectId,
-  userId: String,                 // Unique identifier (e.g., "USR-123456")
-  
-  // Authentication
-  auth: {
-    email: String,                // Primary email (unique)
-    emailVerified: Boolean,
-    emailVerifiedAt: Date,
-    
-    passwordHash: String,         // Bcrypt hash
-    passwordChangedAt: Date,
-    passwordResetToken: String,   // Temporary reset token
-    passwordResetExpires: Date,
-    
-    // Multi-factor authentication
+  email: String,              // Required, unique, valid email format
+  password: String | null,    // Hashed password (bcrypt)
+  contactId: ObjectId | null, // Reference to contact for profile data
+  status: String,             // Required: active, inactive, suspended, pending
+  emailVerified: Boolean,     // Email verification status
+  authentication: {
+    lastLogin: Date | null,
+    lastLoginIp: String | null,
+    failedAttempts: Number,   // Min: 0, for rate limiting
+    lockedUntil: Date | null, // Account lockout timestamp
     mfa: {
       enabled: Boolean,
-      method: String,             // "totp", "sms", "email"
-      secret: String,             // Encrypted TOTP secret
-      backupCodes: [String],      // Encrypted backup codes
-      phone: String               // For SMS MFA
-    },
-    
-    // OAuth providers
-    providers: [{
-      provider: String,           // "google", "facebook", "apple"
-      providerId: String,         // Provider's user ID
-      connectedAt: Date,
-      profile: Object             // Provider profile data
-    }],
-    
-    // Session management
-    sessions: [{
-      sessionId: String,
-      createdAt: Date,
-      expiresAt: Date,
-      ipAddress: String,
-      userAgent: String,
-      location: {
-        country: String,
-        city: String,
-        coordinates: {
-          latitude: Number,
-          longitude: Number
-        }
-      },
-      revoked: Boolean,
-      revokedAt: Date
-    }],
-    
-    // Security
-    loginAttempts: Number,
-    lockedUntil: Date,
-    lastLoginAt: Date,
-    lastLoginIp: String
-  },
-  
-  // Contact Reference
-  contactId: ObjectId,            // Reference to contacts collection (required)
-  
-  // User Preferences (not personal data)
-  profile: {
-    displayName: String,          // Preferred display name for UI
-    
-    // Profile customization
-    avatar: {
-      url: String,
-      uploadedAt: Date,
-      source: String              // "upload", "gravatar", "provider"
-    },
-    
-    timezone: String,             // IANA timezone
-    locale: String,               // Language preference
-    currency: String              // Preferred currency
-  },
-  
-  // Roles and Permissions
-  access: {
-    roles: [String],              // "customer", "staff", "admin", "superadmin"
-    permissions: [String],        // Granular permissions
-    
-    // Organisation access
-    organisations: [{
-      organisationId: ObjectId,
-      role: String,               // "member", "secretary", "admin"
-      permissions: [String],      // Org-specific permissions
-      joinedAt: Date,
-      invitedBy: ObjectId,
-      status: String              // "active", "suspended", "invited"
-    }],
-    
-    // Restrictions
-    restrictions: [{
-      type: String,               // "purchase_limit", "event_ban"
-      reason: String,
-      appliedAt: Date,
-      appliedBy: ObjectId,
-      expiresAt: Date
-    }]
-  },
-  
-  // Financial Information
-  financial: {
-    // Payment methods
-    paymentMethods: [{
-      methodId: String,           // Unique ID
-      type: String,               // "card", "bank", "paypal"
-      
-      // Card details (tokenized)
-      card: {
-        token: String,            // Payment gateway token
-        last4: String,
-        brand: String,            // "visa", "mastercard", etc.
-        expiryMonth: Number,
-        expiryYear: Number
-      },
-      
-      // Bank details (encrypted)
-      bank: {
-        accountName: String,
-        bsb: String,              // Encrypted
-        accountNumber: String,    // Encrypted
-        accountType: String
-      },
-      
-      isDefault: Boolean,
-      addedAt: Date,
-      verifiedAt: Date
-    }],
-    
-    // Billing preferences
-    billing: {
-      defaultAddress: ObjectId,   // Reference to addresses
-      taxId: String,              // ABN, VAT, etc.
-      invoiceEmails: [String],    // Additional invoice recipients
-      autoPayEnabled: Boolean,
-      paymentTerms: String        // "immediate", "net30", etc.
-    },
-    
-    // Credit and loyalty
-    credit: {
-      balance: Decimal128,
-      currency: String,
-      history: [{
-        amount: Decimal128,
-        type: String,             // "purchase", "refund", "promotion"
-        description: String,
-        date: Date,
-        referenceId: ObjectId
-      }]
-    },
-    
-    loyaltyPoints: {
-      balance: Number,
-      tier: String,               // "bronze", "silver", "gold", "platinum"
-      tierExpiry: Date,
-      lifetimePoints: Number
+      type: String | null,    // totp, sms, email
+      secret: String | null   // Encrypted MFA secret
     }
   },
-  
-  // Preferences
-  preferences: {
-    // Communication preferences
-    communications: {
-      marketing: {
-        email: Boolean,
-        sms: Boolean,
-        push: Boolean,
-        post: Boolean
-      },
-      transactional: {
-        email: Boolean,
-        sms: Boolean
-      },
-      newsletter: Boolean,
-      partnerOffers: Boolean
-    },
-    
-    // Event preferences
-    events: {
-      categories: [String],       // Interested categories
-      notifications: {
-        newEvents: Boolean,
-        preSale: Boolean,
-        lastChance: Boolean
-      },
-      accessibility: [String],    // Required accommodations
-      dietary: [String]           // Dietary preferences (actual requirements in contacts)
-    },
-    
-    // Privacy settings
-    privacy: {
-      profileVisibility: String,  // "public", "friends", "private"
-      showInDirectory: Boolean,
-      allowTagging: Boolean,
-      dataSharing: {
-        analytics: Boolean,
-        partners: Boolean,
-        improvement: Boolean
-      }
-    }
-  },
-  
-  // Activity and Engagement
-  activity: {
-    // Registration history
-    registrations: {
-      count: Number,
-      firstDate: Date,
-      lastDate: Date,
-      totalSpent: Decimal128,
-      functionIds: [String]       // Functions attended
-    },
-    
-    // Interaction metrics
-    engagement: {
-      lastActiveAt: Date,
-      loginCount: Number,
-      pageViews: Number,
-      searchQueries: [String],    // Recent searches
-      favoriteEvents: [ObjectId], // Bookmarked events
-      
-      // Social features
-      following: [ObjectId],      // Other users
-      followers: [ObjectId],
-      reviews: [{
-        eventId: String,
-        rating: Number,
-        comment: String,
-        postedAt: Date
-      }]
-    },
-    
-    // Support history
-    support: {
-      ticketsCreated: Number,
-      lastTicketAt: Date,
-      satisfactionScore: Number
-    }
-  },
-  
-  // Account Relationships
-  relationships: {
-    // Managed accounts (for parents/guardians)
-    managedAccounts: [{
-      userId: ObjectId,
-      relationship: String,       // "child", "dependent"
-      permissions: [String]       // What they can manage
-    }]
-  },
-  
-  // Compliance and Legal
-  compliance: {
-    // Terms acceptance
-    termsAccepted: [{
-      version: String,
-      acceptedAt: Date,
-      ipAddress: String
-    }],
-    
-    // Age verification
-    ageVerified: Boolean,
-    ageVerifiedAt: Date,
-    ageVerificationMethod: String,
-    
-    // Data retention
-    dataRetention: {
-      deleteRequestedAt: Date,
-      deleteScheduledFor: Date,
-      retentionReason: String     // If keeping despite request
-    },
-    
-    // GDPR/Privacy
-    gdpr: {
-      consentGiven: Boolean,
-      consentDate: Date,
-      dataExports: [{
-        requestedAt: Date,
-        completedAt: Date,
-        downloadUrl: String,
-        expiresAt: Date
-      }]
-    }
-  },
-  
-  // System fields
-  flags: {
-    isActive: Boolean,
-    isVerified: Boolean,
-    isVip: Boolean,
-    isBanned: Boolean,
-    isDeleted: Boolean,
-    
-    // Feature flags
-    betaFeatures: [String],
-    experimentGroups: [String]
-  },
-  
-  // Metadata
-  metadata: {
-    source: String,               // "web", "mobile", "import", "admin"
-    referrer: String,             // Referral source
-    campaign: String,             // Marketing campaign
-    
-    createdAt: Date,
-    createdBy: ObjectId,
-    updatedAt: Date,
-    updatedBy: ObjectId,
-    
-    // Data quality
-    lastValidated: Date,
-    validationErrors: [String],
-    importBatchId: String,
-    legacyId: String              // ID from old system
-  }
+  createdAt: Date,           // Required
+  updatedAt: Date | null
 }
 ```
 
-## Field Constraints
+### Field Details
 
-### Required Fields
-- `userId` - Unique user identifier
-- `auth.email` - Primary email address
-- `contactId` - Reference to contacts collection
-- `flags.isActive` - Account status
+#### email
+- **Type**: String
+- **Required**: Yes
+- **Unique**: Yes
+- **Pattern**: `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$`
+- **Description**: Primary authentication identifier
 
-### Enumerations
+#### password
+- **Type**: String | null
+- **Required**: No
+- **Description**: Bcrypt hashed password. Null for SSO or passwordless users
 
-**Roles:**
-- `customer` - Regular user
-- `staff` - Event staff
-- `admin` - Administrator
-- `superadmin` - System administrator
-- `support` - Customer support
+#### contactId
+- **Type**: ObjectId | null
+- **Required**: No
+- **Unique**: Yes (when present)
+- **Description**: Links to contact record containing all profile information
 
-**MFA Methods:**
-- `totp` - Time-based OTP
-- `sms` - SMS verification
-- `email` - Email verification
+#### status
+- **Type**: String (enum)
+- **Required**: Yes
+- **Values**: 
+  - `active`: Can log in normally
+  - `inactive`: Cannot log in, voluntary deactivation
+  - `suspended`: Cannot log in, administrative action
+  - `pending`: Awaiting email verification
 
-**OAuth Providers:**
-- `google`
-- `facebook`
-- `apple`
-- `microsoft`
+#### emailVerified
+- **Type**: Boolean
+- **Default**: false
+- **Description**: Whether email address has been verified
 
-## Indexes
-- `userId` - Unique index
-- `auth.email` - Unique index
-- `contactId` - Contact reference lookup
-- `auth.providers.providerId, auth.providers.provider` - Unique compound
-- `access.organisations.organisationId` - Organisation members
-- `metadata.createdAt` - Date range queries
-- `flags.isActive, auth.email` - Active user lookups
+#### authentication
+- **Type**: Object
+- **Description**: Authentication metadata and security settings
+- **Fields**:
+  - `lastLogin`: Last successful login timestamp
+  - `lastLoginIp`: IP address of last login
+  - `failedAttempts`: Count for rate limiting (reset on successful login)
+  - `lockedUntil`: Temporary lockout expiry
+  - `mfa`: Multi-factor authentication configuration
 
 ## Relationships
-- **Contacts** - User profile data via `contactId`
-- **Registrations** - User makes registrations
-- **Attendees** - User can be linked to attendee profiles
-- **Organisations** - User belongs to organisations
-- **Financial Transactions** - User's financial history
+
+### To Contacts (1:1)
+- Each user can have one associated contact record
+- Contact stores all personal/profile information
+- Relationship via `contactId` field
+
+## Validation Rules
+
+1. **Email Format**: Must be valid email address
+2. **Status Values**: Must be one of allowed enum values
+3. **Failed Attempts**: Cannot be negative
+4. **Contact Uniqueness**: One user per contact maximum
 
 ## Security Considerations
 
-### Data Protection
-- `auth.passwordHash` - Bcrypt with appropriate rounds
-- `auth.mfa.secret` - AES encrypted
-- `financial.paymentMethods` - Tokenized/encrypted
-- `financial.bank` - Full encryption required
+1. **Password Storage**: Always bcrypt hashed, never plain text
+2. **MFA Secret**: Encrypted at rest
+3. **Rate Limiting**: Track failed attempts and lock accounts
+4. **Session Management**: Track last login for security auditing
+5. **Minimal Data**: No PII stored, only authentication essentials
 
-### Session Management
-- Automatic session expiry
-- Device fingerprinting
-- Concurrent session limits
-- Suspicious login detection
+## Migration from Legacy Model
 
-### Access Control
-- Role-based permissions
-- Organisation-specific roles
-- Feature flags for gradual rollouts
-- IP-based restrictions if needed
+### Changes from Previous Version
+- Removed all profile fields (moved to contacts)
+- Removed name fields
+- Removed direct organisation relationships
+- Simplified to authentication-only focus
+- Added comprehensive authentication tracking
+- Added MFA support structure
 
-## Business Logic
+### Data Migration Strategy
+1. Create contact record for each user
+2. Move profile data to contact
+3. Update contactId reference
+4. Remove deprecated fields
 
-### Account Creation
-1. Create or link to contact record
-2. Validate email uniqueness
-3. Hash password with bcrypt
-4. Send verification email
-5. Create with basic customer role
-6. Log account creation event
+## Example Documents
 
-### Login Process
-1. Check login attempts/lockout
-2. Verify password
-3. Check MFA if enabled
-4. Create new session
-5. Update last login info
-6. Check for suspicious activity
+### Basic User
+```json
+{
+  "_id": ObjectId("..."),
+  "email": "john.smith@example.com",
+  "password": "$2b$10$...",
+  "contactId": ObjectId("..."),
+  "status": "active",
+  "emailVerified": true,
+  "authentication": {
+    "lastLogin": ISODate("2024-01-15T10:30:00Z"),
+    "lastLoginIp": "192.168.1.100",
+    "failedAttempts": 0,
+    "lockedUntil": null,
+    "mfa": {
+      "enabled": false,
+      "type": null,
+      "secret": null
+    }
+  },
+  "createdAt": ISODate("2023-06-01T12:00:00Z"),
+  "updatedAt": ISODate("2024-01-15T10:30:00Z")
+}
+```
 
-### Password Reset
-1. Generate secure reset token
-2. Set expiry (24 hours)
-3. Send reset email
-4. Invalidate on use
-5. Force logout other sessions
+### User with MFA
+```json
+{
+  "_id": ObjectId("..."),
+  "email": "admin@lodge.org",
+  "password": "$2b$10$...",
+  "contactId": ObjectId("..."),
+  "status": "active",
+  "emailVerified": true,
+  "authentication": {
+    "lastLogin": ISODate("2024-01-20T08:00:00Z"),
+    "lastLoginIp": "10.0.0.50",
+    "failedAttempts": 0,
+    "lockedUntil": null,
+    "mfa": {
+      "enabled": true,
+      "type": "totp",
+      "secret": "encrypted_secret_here"
+    }
+  },
+  "createdAt": ISODate("2022-01-01T00:00:00Z"),
+  "updatedAt": ISODate("2024-01-20T08:00:00Z")
+}
+```
 
-### Data Retention
-- Soft delete by default
-- Hard delete after retention period
-- Anonymize rather than delete where possible
-- Maintain audit trail for compliance
+### Locked Account
+```json
+{
+  "_id": ObjectId("..."),
+  "email": "suspicious@example.com",
+  "password": "$2b$10$...",
+  "contactId": null,
+  "status": "active",
+  "emailVerified": true,
+  "authentication": {
+    "lastLogin": ISODate("2024-01-10T15:00:00Z"),
+    "lastLoginIp": "suspicious.ip.address",
+    "failedAttempts": 5,
+    "lockedUntil": ISODate("2024-01-20T16:30:00Z"),
+    "mfa": {
+      "enabled": false,
+      "type": null,
+      "secret": null
+    }
+  },
+  "createdAt": ISODate("2023-12-01T00:00:00Z"),
+  "updatedAt": ISODate("2024-01-20T16:00:00Z")
+}
+```

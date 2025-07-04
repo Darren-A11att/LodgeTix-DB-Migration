@@ -54,3 +54,13 @@ out/
 
 # Vercel
 .vercel
+
+# Migration test outputs
+test-migration-output/
+test-migration-output-*/
+scripts/test-migration/test-migration-output/
+scripts/test-migration/test-migration-output-*/
+
+# Server logs
+server.log
+explorer.log

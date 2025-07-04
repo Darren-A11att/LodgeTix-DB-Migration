@@ -1,7 +1,7 @@
 # Financial Transactions Collection Schema
 
 ## Overview
-The financial transactions collection serves as the single source of truth for all financial activities related to registrations. It tracks payments, invoices, refunds, and reconciliation status.
+The financial transactions collection serves as the single source of truth for all financial activities in the e-commerce system. It tracks payments, invoices, refunds, and reconciliation status for orders.
 
 ## Document Structure
 
@@ -13,11 +13,11 @@ The financial transactions collection serves as the single source of truth for a
   
   // Reference to related entity
   reference: {
-    type: String,               // "registration", "refund", "adjustment"
-    id: ObjectId,               // Registration ID or other entity ID
-    number: String,             // Registration number for quick reference
-    functionId: String,         // Function ID for reporting
-    functionName: String        // Denormalized for display
+    type: String,               // "order", "refund", "adjustment"
+    id: ObjectId,               // Order ID or other entity ID
+    number: String,             // Order number for quick reference
+    catalogObjectId: ObjectId,  // Catalog object for reporting
+    catalogName: String         // Denormalized for display
   },
   
   // Transaction parties
@@ -101,8 +101,10 @@ The financial transactions collection serves as the single source of truth for a
       // Line items
       lineItems: [{
         description: String,
-        productId: ObjectId,    // Reference to product
-        eventId: String,        // For ticket products
+        productId: String,      // Product UUID from catalog
+        variationId: String,    // Variation UUID
+        productName: String,    // Denormalized
+        variationName: String,  // Denormalized
         quantity: Number,
         unitPrice: Decimal128,
         total: Decimal128,
@@ -248,7 +250,7 @@ The financial transactions collection serves as the single source of truth for a
 ### Enumerations
 
 **Transaction Types:**
-- `registration_payment` - Payment for registration
+- `order_payment` - Payment for order
 - `refund` - Full or partial refund
 - `adjustment` - Price adjustment or correction
 - `transfer` - Transfer between accounts
@@ -282,6 +284,7 @@ The `amounts` object contains computed values (net, total) that are calculated f
 
 ## Transaction Requirements
 This collection requires ACID transactions when:
-- Creating a financial transaction linked to a registration
+- Creating a financial transaction linked to an order
 - Processing refunds that affect multiple documents
 - Updating reconciliation status that affects accounting exports
+- Processing payments that update order status

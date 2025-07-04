@@ -21,7 +21,7 @@ db.contacts.createIndex(
   { "profile.email": 1 },
   { 
     sparse: true,
-    name: "profile_email"
+    name: "email_lookup"
   }
 )
 ```
@@ -32,7 +32,7 @@ db.contacts.createIndex(
   { "profile.phone": 1 },
   { 
     sparse: true,
-    name: "profile_phone"
+    name: "phone_lookup"
   }
 )
 ```
@@ -45,7 +45,7 @@ db.contacts.createIndex(
     "profile.firstName": 1
   },
   { 
-    name: "profile_name_search"
+    name: "name_search"
   }
 )
 ```
@@ -56,22 +56,91 @@ db.contacts.createIndex(
   { "userId": 1 },
   { 
     sparse: true,
-    name: "userId_lookup"
+    unique: true,
+    name: "user_lookup"
   }
 )
 ```
 
-## Reference Indexes
+## Role and Context Indexes
 
-### Organisation Association
+### Role Lookup
 ```javascript
 db.contacts.createIndex(
-  { "references.organisationIds": 1 },
   { 
-    name: "organisation_refs"
+    "roles.contextId": 1,
+    "roles.role": 1
+  },
+  { 
+    name: "role_lookup"
   }
 )
 ```
+
+### Active Roles
+```javascript
+db.contacts.createIndex(
+  { 
+    "roles.role": 1,
+    "roles.endDate": 1
+  },
+  { 
+    name: "active_roles",
+    partialFilterExpression: {
+      $or: [
+        { "roles.endDate": null },
+        { "roles.endDate": { $gte: new Date() } }
+      ]
+    }
+  }
+)
+```
+
+### Function Attendees
+```javascript
+db.contacts.createIndex(
+  { 
+    "roles.contextId": 1,
+    "roles.context": 1
+  },
+  { 
+    partialFilterExpression: { 
+      "roles.context": "function",
+      "roles.role": "attendee"
+    },
+    name: "function_attendees"
+  }
+)
+```
+
+## Order Reference Indexes
+
+### Order History
+```javascript
+db.contacts.createIndex(
+  { "orderReferences.orderId": 1 },
+  { 
+    sparse: true,
+    name: "order_history"
+  }
+)
+```
+
+### Purchaser Lookup
+```javascript
+db.contacts.createIndex(
+  { 
+    "orderReferences.orderNumber": 1,
+    "orderReferences.role": 1
+  },
+  { 
+    sparse: true,
+    name: "purchaser_lookup"
+  }
+)
+```
+
+## Lodge Member Indexes
 
 ### Lodge Members
 ```javascript
@@ -102,6 +171,7 @@ db.contacts.createIndex(
 db.contacts.createIndex(
   { "relationships.contactId": 1 },
   { 
+    sparse: true,
     name: "relationship_contacts"
   }
 )
@@ -126,7 +196,18 @@ db.contacts.createIndex(
 db.contacts.createIndex(
   { "metadata.updatedAt": -1 },
   { 
+    sparse: true,
     name: "recent_updates"
+  }
+)
+```
+
+### Creation Date
+```javascript
+db.contacts.createIndex(
+  { "metadata.createdAt": -1 },
+  { 
+    name: "creation_date"
   }
 )
 ```
@@ -146,16 +227,16 @@ db.contacts.createIndex(
 
 ## Compound Indexes for Common Queries
 
-### Email and Organisation
+### Email and Roles
 ```javascript
 db.contacts.createIndex(
   { 
     "profile.email": 1,
-    "references.organisationIds": 1
+    "roles.role": 1
   },
   { 
     sparse: true,
-    name: "email_org_lookup"
+    name: "email_role_lookup"
   }
 )
 ```
@@ -174,10 +255,57 @@ db.contacts.createIndex(
 )
 ```
 
-## Index Maintenance Notes
+### Active Organisation Members
+```javascript
+db.contacts.createIndex(
+  { 
+    "roles.contextId": 1,
+    "roles.context": 1,
+    "roles.endDate": 1
+  },
+  { 
+    partialFilterExpression: { 
+      "roles.context": "organisation"
+    },
+    name: "org_members"
+  }
+)
+```
 
-1. **Sparse Indexes**: Used for optional fields to save space
-2. **Partial Indexes**: Emergency contacts index only includes documents where `isEmergencyContact` is true
+## Performance Considerations
+
+1. **Sparse Indexes**: Used extensively for optional fields to save space
+2. **Partial Indexes**: Used for specific query patterns (active roles, emergency contacts)
 3. **Compound Indexes**: Ordered by selectivity (most selective field first)
-4. **Monitoring**: Regular monitoring of index usage with `$indexStats` aggregation
-5. **Optimization**: Remove unused indexes identified through monitoring
+4. **Unique Constraints**: Contact number and user association must be unique
+
+## Index Maintenance
+
+### Monitor Usage
+```javascript
+db.contacts.aggregate([
+  { $indexStats: {} },
+  { $sort: { "accesses.ops": -1 } }
+])
+```
+
+### Find Unused Indexes
+```javascript
+db.contacts.aggregate([
+  { $indexStats: {} },
+  { $match: { "accesses.ops": 0 } }
+])
+```
+
+### Validate Index Health
+```javascript
+db.contacts.validate({ full: true })
+```
+
+## Index Strategy
+
+1. **Core Lookups**: Email, phone, and contact number for finding contacts
+2. **Role Queries**: Efficient filtering by role and context
+3. **Order History**: Quick access to purchase history
+4. **Relationships**: Support for contact networks
+5. **Analytics**: Metadata indexes for reporting
