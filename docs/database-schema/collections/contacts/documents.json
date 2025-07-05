@@ -1,66 +1,103 @@
 {
   "_id": "ObjectId",
-  "contactNumber": "TODO: Generate CON-YYYY-NNNNN format",
-  "profile": {
-    "firstName": "Multiple sources: registrations.registrationData.primaryAttendee.firstName, attendees.firstName, customers.firstName, users.profile.firstName",
-    "lastName": "Multiple sources: registrations.registrationData.primaryAttendee.lastName, attendees.lastName, customers.lastName, users.profile.lastName",
-    "preferredName": "TODO: Extract from display names or generate from firstName",
-    "email": "Multiple sources: registrations.registrationData.primaryAttendee.primaryEmail, attendees.primaryEmail, customers.email, users.email",
-    "phone": "Multiple sources: registrations.registrationData.primaryAttendee.primaryPhone, attendees.primaryPhone, customers.phone, users.profile.phone",
-    "dateOfBirth": "attendees.dateOfBirth",
-    "dietaryRequirements": "Multiple sources: registrations.registrationData.primaryAttendee.dietaryRequirements, attendees.dietaryRequirements",
-    "specialNeeds": "Multiple sources: registrations.registrationData.primaryAttendee.specialNeeds, attendees.specialNeeds"
+  "contactId": "TODO: Generate UUID v4",
+  
+  "firstName": "Multiple sources: attendees.firstName, registrations.registrationData.primaryAttendee.firstName, registrations.registrationData.bookingContact.firstName, registrations.registrationData.billingContact.firstName",
+  "lastName": "Multiple sources: attendees.lastName, registrations.registrationData.primaryAttendee.lastName, registrations.registrationData.bookingContact.lastName, registrations.registrationData.billingContact.lastName",
+  "preferredName": "TODO: Extract from display names or generate from firstName",
+  "title": "Multiple sources: attendees.title (if not masonic title), registrations.registrationData.primaryAttendee.title (if not masonic)",
+  
+  "email": "Multiple sources: attendees.primaryEmail, registrations.registrationData.primaryAttendee.primaryEmail, registrations.registrationData.bookingContact.email, registrations.registrationData.billingContact.email",
+  "phone": "Multiple sources: attendees.primaryPhone, registrations.registrationData.primaryAttendee.primaryPhone, registrations.registrationData.bookingContact.phone, registrations.registrationData.billingContact.phone",
+  "mobile": "Multiple sources: attendees.primaryPhone, registrations.registrationData.primaryAttendee.primaryPhone",
+  "alternatePhone": "TODO: Extract from secondary phone fields if available",
+  
+  "address": {
+    "line1": "Multiple sources: registrations.registrationData.billingContact.addressLine1, registrations.registrationData.bookingContact.addressLine1",
+    "line2": "Multiple sources: registrations.registrationData.billingContact.addressLine2, registrations.registrationData.bookingContact.addressLine2",
+    "city": "Multiple sources: registrations.registrationData.billingContact.city, registrations.registrationData.bookingContact.city",
+    "state": "Multiple sources: registrations.registrationData.billingContact.stateProvince, registrations.registrationData.bookingContact.stateProvince",
+    "postcode": "Multiple sources: registrations.registrationData.billingContact.postalCode, registrations.registrationData.bookingContact.postalCode",
+    "country": "Multiple sources: registrations.registrationData.billingContact.country, registrations.registrationData.bookingContact.country"
   },
-  "addresses": [{
-    "type": "billing",
-    "addressLine1": "Multiple sources: registrations.registrationData.billingDetails.addressLine1, customers.addressLine1",
-    "addressLine2": "Multiple sources: registrations.registrationData.billingDetails.addressLine2, customers.addressLine2",
-    "city": "Multiple sources: registrations.registrationData.billingDetails.city, customers.city",
-    "state": "Multiple sources: registrations.registrationData.billingDetails.stateProvince, customers.state",
-    "postcode": "Multiple sources: registrations.registrationData.billingDetails.postalCode, customers.postcode",
-    "country": "Multiple sources: registrations.registrationData.billingDetails.country, customers.country",
-    "isPrimary": "TODO: Set first address as primary"
-  }],
+  
   "masonicProfile": {
-    "craft": {
-      "grandLodge": {
-        "name": "Multiple sources: registrations.registrationData.primaryAttendee.grand_lodge, attendees.grandLodgeName",
-        "memberNumber": "TODO: Extract if available in masonic profile data"
-      },
-      "lodge": {
-        "organisationId": "Multiple sources: registrations.registrationData.primaryAttendee.lodgeOrganisationId, attendees.lodgeOrganisationId",
-        "name": "Multiple sources: registrations.registrationData.primaryAttendee.lodge, attendees.lodgeName",
-        "number": "TODO: Extract from lodge name or separate field"
-      },
-      "title": "Multiple sources: registrations.registrationData.primaryAttendee.title, attendees.title",
-      "rank": "Multiple sources: registrations.registrationData.primaryAttendee.rank, attendees.rank",
-      "grandRank": "TODO: Extract from grand officer data",
-      "isGrandOfficer": "TODO: Derive from grandOfficerStatus field",
-      "grandOffice": "Multiple sources: registrations.registrationData.primaryAttendee.presentGrandOfficerRole, attendees.grandOffice"
+    "isMason": "attendees.isMason",
+    "title": "attendees.title (if masonic title like WBro, VWBro)",
+    "rank": "attendees.rank",
+    "grandRank": "attendees.grandRank",
+    "grandOffice": "attendees.grandOffice",
+    "grandOfficer": "attendees.grandOfficer",
+    "grandLodgeId": "attendees.grandLodgeId",
+    "grandLodgeName": "attendees.grandLodgeName",
+    "lodgeId": "attendees.lodgeOrganisationId",
+    "lodgeName": "attendees.lodgeName",
+    "lodgeNumber": "TODO: Extract from lodge name (e.g. 'No. 134')"
+  },
+  
+  "registrations": {
+    "registration-id": {
+      "role": "TODO: Set based on source - 'attendee' for attendees, 'bookingContact' for booking contact, 'billingContact' for billing contact",
+      "functionId": "attendees.functionId or registrations.functionId",
+      "functionName": "attendees.functionName or registrations.functionName",
+      "eventId": "attendees.eventId",
+      "eventName": "attendees.eventName",
+      "tableNumber": "attendees.tableNumber",
+      "seatNumber": "attendees.seatNumber",
+      "registeredAt": "attendees.createdAt or registrations.createdAt",
+      "registeredBy": "TODO: Link to contact who made the booking",
+      "bookingsManaged": "TODO: Count of attendees for booking contacts"
     }
   },
-  "relationships": [{
-    "contactId": "TODO: Link after creating all contacts",
-    "relationshipType": "TODO: Map from partner/relationship fields",
-    "isPrimary": "TODO: Determine primary relationships",
-    "isEmergencyContact": "TODO: Set based on relationship type",
-    "notes": "TODO: Extract relationship notes if available",
-    "reciprocal": "TODO: Set for bidirectional relationships",
-    "reciprocalType": "TODO: Set reciprocal type"
-  }],
-  "userId": "Multiple sources: registrations.authUserId, customers.authUserId, users._id",
-  "references": {
-    "organisationIds": "TODO: Collect from registrations.organisationId and other sources",
-    "attendeeIds": "TODO: Link all attendee records for this person",
-    "paymentTransactionIds": "TODO: Link payment transactions",
-    "invoiceIds": "TODO: Link invoices"
+  
+  "organizations": {
+    "organization-id": {
+      "organizationName": "TODO: Map from organization records",
+      "role": "TODO: Extract from organization relationship",
+      "startDate": "TODO: Extract from organization relationship",
+      "endDate": "TODO: null if current",
+      "isCurrent": "TODO: Set based on endDate"
+    }
   },
-  "metadata": {
-    "source": "TODO: Set based on import source",
-    "createdAt": "TODO: Set to import timestamp",
-    "createdBy": "TODO: Set to migration user",
-    "updatedAt": "TODO: Set to import timestamp",
-    "updatedBy": "TODO: Set to migration user",
-    "version": 1
-  }
+  
+  "hosting": {
+    "function-id": {
+      "functionName": "TODO: Map from function host records",
+      "role": "TODO: Extract from function host relationship",
+      "startDate": "TODO: Extract from function host relationship",
+      "responsibilities": "TODO: Extract if available"
+    }
+  },
+  
+  "relationships": {
+    "partners": [{
+      "contactId": "TODO: Create partner contact and link",
+      "relationshipType": "TODO: Map from attendees.partnerRelationship",
+      "name": "attendees.partnerName",
+      "isPrimary": "TODO: Set true for primary partner"
+    }],
+    "emergencyContacts": [{
+      "contactId": "TODO: Create emergency contact if exists",
+      "name": "TODO: Extract from emergency contact fields",
+      "relationship": "TODO: Extract from emergency contact fields",
+      "phone": "TODO: Extract from emergency contact fields"
+    }]
+  },
+  
+  "profile": {
+    "dateOfBirth": "attendees.dateOfBirth",
+    "dietaryRequirements": "Multiple sources: attendees.dietaryRequirements, registrations.registrationData.primaryAttendee.dietaryRequirements",
+    "specialNeeds": "Multiple sources: attendees.specialNeeds, registrations.registrationData.primaryAttendee.specialNeeds",
+    "preferredCommunication": "TODO: Default to 'email'"
+  },
+  
+  "hasUserAccount": "TODO: Set true for booking/billing contacts, false for regular attendees initially",
+  "isActive": "TODO: Default to true",
+  "tags": "TODO: Generate based on masonic profile and attendance patterns",
+  
+  "source": "TODO: Set based on import source - 'attendee', 'registration', etc.",
+  "createdAt": "TODO: Set to import timestamp",
+  "updatedAt": "TODO: Set to import timestamp",
+  "createdBy": "TODO: Set to 'migration'",
+  "updatedBy": "TODO: Set to 'migration'"
 }

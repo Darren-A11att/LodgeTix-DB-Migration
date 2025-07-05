@@ -198,7 +198,7 @@ export class MigrationService {
    */
   async migrateRegistration(
     sourceDoc: any, 
-    _relatedDocs: Record<string, any>,
+    relatedDocs: Record<string, any>,
     mappings: Record<string, any>
   ): Promise<any> {
     return executeMigrationTransaction(async (session) => {
@@ -210,6 +210,33 @@ export class MigrationService {
         mappings.registrations || {}, 
         this.getDefaultMapping('registrations')
       );
+      
+      // Extract event_ticket_ids from the registration
+      const eventTicketIds = this.extractEventTicketIds(sourceDoc);
+      
+      // If we have event_ticket_ids and related event_tickets, process them
+      if (eventTicketIds.length > 0 && relatedDocs.event_tickets) {
+        // Create line items from event tickets
+        registrationDoc.lineItems = eventTicketIds.map((ticketId: string) => {
+          const eventTicket = relatedDocs.event_tickets.find(
+            (ticket: any) => ticket.eventTicketId === ticketId || 
+                           ticket.event_ticket_id === ticketId
+          );
+          
+          if (eventTicket) {
+            return {
+              productId: eventTicket.eventId || eventTicket.event_id,
+              productName: eventTicket.name || 'Event Ticket',
+              variationId: ticketId,
+              variationName: eventTicket.name,
+              quantity: 1,
+              unitPrice: eventTicket.price || 0,
+              totalPrice: eventTicket.price || 0
+            };
+          }
+          return null;
+        }).filter(Boolean);
+      }
       
       // Ensure required fields
       registrationDoc.registrationNumber = registrationDoc.registrationNumber || 
@@ -408,5 +435,47 @@ export class MigrationService {
       .findOne({ 'metadata.sourceId': sourceId });
     
     return !!existing;
+  }
+  
+  /**
+   * Extract event_ticket_ids from a registration document
+   */
+  private extractEventTicketIds(sourceDoc: any): string[] {
+    const ticketIds: string[] = [];
+    
+    // Check for tickets array with event_ticket_id
+    if (sourceDoc.tickets && Array.isArray(sourceDoc.tickets)) {
+      sourceDoc.tickets.forEach((ticket: any) => {
+        if (ticket.eventTicketId || ticket.event_ticket_id) {
+          ticketIds.push(ticket.eventTicketId || ticket.event_ticket_id);
+        }
+      });
+    }
+    
+    // Check registrationData for ticket information
+    if (sourceDoc.registrationData) {
+      const regData = sourceDoc.registrationData;
+      
+      // Check attendees for event_ticket_id
+      if (regData.attendees && Array.isArray(regData.attendees)) {
+        regData.attendees.forEach((attendee: any) => {
+          if (attendee.eventTicketId || attendee.event_ticket_id) {
+            ticketIds.push(attendee.eventTicketId || attendee.event_ticket_id);
+          }
+        });
+      }
+      
+      // Check for line items or purchase items
+      if (regData.lineItems && Array.isArray(regData.lineItems)) {
+        regData.lineItems.forEach((item: any) => {
+          if (item.eventTicketId || item.event_ticket_id) {
+            ticketIds.push(item.eventTicketId || item.event_ticket_id);
+          }
+        });
+      }
+    }
+    
+    // Remove duplicates
+    return [...new Set(ticketIds)];
   }
 }

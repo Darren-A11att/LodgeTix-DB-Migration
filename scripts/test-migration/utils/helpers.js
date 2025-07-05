@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const OUTPUT_DIR = path.join(__dirname, '../../../test-migration-output');
+const OUTPUT_DIR = path.join(__dirname, '../../../test-migration-output-v2');
 
 async function writeDocument(collection, id, document) {
   const dir = path.join(OUTPUT_DIR, collection);

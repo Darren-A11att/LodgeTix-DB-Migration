@@ -1,258 +1,208 @@
 # Orders Collection Schema
 
 ## Overview
-The orders collection represents purchase transactions in the e-commerce model. It replaces the previous registrations collection and supports various order types including event registrations, merchandise purchases, and sponsorships.
+The orders collection represents purchase transactions in the e-commerce model. Registrations from the dirty database become orders, containing attendees, payment information, and ticket purchases.
 
 ## Document Structure
 
 ```javascript
 {
-  _id: ObjectId,
-  orderNumber: String,            // "ORD-2025-000001"
-  orderType: String,              // "registration", "purchase", "sponsorship"
-  catalogObjectId: ObjectId,      // Reference to catalog object
-  status: String,                 // "pending", "processing", "paid", "partially_paid", "cancelled", "refunded"
+  "_id": ObjectId("..."),
+  "orderId": "550e8400-e29b-41d4-a716-446655440000", // UUID v4
+  "orderNumber": "IND-134890AT",                      // From registration confirmationNumber
+  "orderType": "registration",                        // registration, purchase, sponsorship
+  "catalogObjectId": "uuid",                          // Function catalog object
+  "status": "paid",                                   // pending, processing, paid, partially_paid, cancelled, refunded
   
   // Customer information
-  customer: {
-    type: String,                 // "individual", "lodge", "delegation", "organisation"
-    contactId: ObjectId,          // Reference if contact exists
-    organisationId: ObjectId,     // For lodge/delegation orders
-    // Raw data if contact doesn't exist yet
-    rawData: {
-      name: String,
-      email: String,
-      phone: String
-    }
+  "customer": {
+    "type": "individual",                             // individual, organisation
+    "contactId": "uuid",                              // Link to contact record
+    "organisationId": "uuid"                          // For org registrations
   },
   
-  // Order line items
-  lineItems: [{
-    _id: ObjectId,                // Line item ID
-    productId: String,            // Product UUID from catalog
-    productName: String,          // Denormalized
-    variationId: String,          // Variation UUID
-    variationName: String,        // Denormalized
-    quantity: Number,
-    unitPrice: Decimal128,
-    totalPrice: Decimal128,
-    
-    // Owner of this line item
-    owner: {
-      type: String,               // "contact", "organisation", "unassigned"
-      contactId: ObjectId,        // If assigned to contact
-      organisationId: ObjectId,   // If owned by org
-      // Raw attendee data before contact creation
-      rawAttendee: {
-        firstName: String,
-        lastName: String,
-        email: String,
-        phone: String,
-        dietaryRequirements: String,
-        specialNeeds: String
-      }
-    },
-    
-    // Fulfillment tracking
-    fulfillment: {
-      status: String,             // "pending", "fulfilled", "partial", "cancelled"
-      ticketId: ObjectId,         // Reference to created ticket
-      fulfilledAt: Date
+  // Booking contact (person who made the booking)
+  "booking": {
+    "contactId": "uuid",                              // MUST have user account
+    "name": "John Smith",
+    "email": "john@example.com",
+    "phone": "+61 400 123 456"
+  },
+  
+  // Order line items (tickets/products purchased)
+  "lineItems": [{
+    "_id": ObjectId("..."),
+    "productId": "uuid",                              // Event product from catalog
+    "productName": "Grand Proclamation Banquet",
+    "variationId": "uuid",                            // Ticket type variation
+    "variationName": "Premium Table",
+    "quantity": 2,
+    "unitPrice": {"$numberDecimal": "115.00"},
+    "totalPrice": {"$numberDecimal": "230.00"},
+    "attendees": ["uuid1", "uuid2"]                   // Links to attendee IDs
+  }],
+  
+  // Attendees on this order
+  "attendees": [{
+    "attendeeId": "uuid",                             // New UUID v4
+    "contactId": "uuid",                              // Created contact
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john@example.com",
+    "phone": "+61 400 123 456",
+    "ticketId": "uuid",                               // Created ticket
+    "lineItemId": ObjectId("..."),                    // Which line item
+    "dietaryRequirements": ["vegetarian"],
+    "specialNeeds": "Wheelchair access",
+    "masonicProfile": {
+      "isMason": true,
+      "title": "W Bro",
+      "rank": "MM",
+      "lodgeId": "uuid",
+      "lodgeName": "Lodge Name No. 123"
     }
   }],
   
   // Financial totals
-  totals: {
-    subtotal: Decimal128,
-    discount: Decimal128,
-    tax: Decimal128,
-    fees: Decimal128,
-    total: Decimal128,
-    paid: Decimal128,
-    balance: Decimal128,
-    currency: String              // "AUD", "NZD", "USD"
+  "totals": {
+    "subtotal": {"$numberDecimal": "230.00"},
+    "discount": {"$numberDecimal": "0.00"},
+    "tax": {"$numberDecimal": "23.00"},              // GST
+    "merchantFee": {"$numberDecimal": "6.90"},       // Stripe/Square fee
+    "platformFee": {"$numberDecimal": "11.50"},      // Platform commission
+    "total": {"$numberDecimal": "253.00"},
+    "paid": {"$numberDecimal": "253.00"},
+    "balance": {"$numberDecimal": "0.00"},
+    "currency": "AUD"
   },
   
   // Payment information
-  payment: {
-    status: String,               // "pending", "processing", "paid", "failed", "refunded"
-    transactions: [ObjectId]      // References to financialTransactions
+  "payment": {
+    "status": "paid",                                 // pending, processing, paid, failed, refunded
+    "method": "stripe",                               // stripe, square, invoice, cash
+    "transactions": ["uuid1", "uuid2"]                // Financial transaction IDs
   },
   
   // Billing information
-  billing: {
-    contact: {
-      name: String,
-      email: String,
-      phone: String
+  "billing": {
+    "contactId": "uuid",                              // MUST have user account
+    "name": "Jane Smith",
+    "email": "accounts@lodge.org.au",
+    "phone": "+61 400 123 456",
+    "address": {
+      "line1": "123 Main St",
+      "line2": "",
+      "city": "Sydney",
+      "state": "NSW",
+      "postcode": "2000",
+      "country": "Australia"
     },
-    address: {
-      addressLine1: String,
-      addressLine2: String,
-      city: String,
-      state: String,
-      postcode: String,
-      country: String
-    },
-    abn: String,                  // For business customers
-    organisationName: String
+    "abn": "12 345 678 901",
+    "organisationName": "Lodge Name No. 123"
   },
   
-  notes: String,                  // Internal notes
+  // Additional info
+  "notes": "Special dietary requirements noted",
   
   // Metadata
-  metadata: {
-    source: {
-      channel: String,            // "online", "phone", "email", "manual"
-      device: String,
-      ipAddress: String
+  "metadata": {
+    "source": {
+      "channel": "online",                            // online, admin, import
+      "device": "desktop",                            // desktop, mobile, tablet
+      "ipAddress": "203.0.113.0"
     },
-    createdAt: Date,
-    createdBy: ObjectId,
-    updatedAt: Date,
-    updatedBy: ObjectId
+    "createdAt": ISODate("2024-01-15T10:30:00Z"),
+    "createdBy": "uuid",                              // User who created
+    "updatedAt": ISODate("2024-01-15T10:35:00Z"),
+    "updatedBy": "uuid"                               // User who updated
   }
 }
 ```
 
-## Field Descriptions
+## Field Definitions
 
-### Order Identification
-- **orderNumber**: Sequential number in format ORD-YYYY-NNNNNN
-- **orderType**: Categorizes the order purpose
-- **catalogObjectId**: Links to the function/catalog being ordered from
+### Core Fields
+- `orderId`: UUID v4 for the order
+- `orderNumber`: Human-readable order number from registration
+- `orderType`: Type of order (registration for event registrations)
+- `catalogObjectId`: Links to the function catalog object
+- `status`: Current order status
 
-### Customer Object
-Identifies who is making the purchase:
-- **type**: Individual person or organization
-- **contactId/organisationId**: References if customer exists
-- **rawData**: Captures info if customer doesn't exist yet
+### Customer
+- `type`: individual or organisation registration
+- `contactId`: Link to the customer's contact record
+- `organisationId`: For lodge/organisation registrations
 
-### Line Items Array
-Each item being purchased:
-- **Product/Variation IDs**: Links to catalog object
-- **Quantity & Pricing**: What's being bought
-- **Owner**: Who will own/use this item
-- **Fulfillment**: Tracking delivery status
+### Booking Contact
+- `contactId`: Person who made the booking (MUST have user account)
+- Denormalized contact info for quick access
 
-### Owner Types
-- **contact**: Assigned to specific person
-- **organisation**: Owned by lodge/org for later assignment
-- **unassigned**: Not yet assigned (for bulk purchases)
+### Line Items
+- Each ticket type purchased becomes a line item
+- Links to catalog products (events) and variations (ticket types)
+- `attendees` array links to attendee IDs assigned to this line item
 
-### Raw Attendee Data
-For registrations where attendees don't have contact records yet:
-- Captures essential info during registration
-- Converted to contact references when claimed
-- Preserves original registration data
+### Attendees
+- Each person attending gets an attendee record
+- `contactId`: Links to created contact record
+- `ticketId`: Links to created ticket record
+- `lineItemId`: Which line item they're assigned to
+- Full profile including masonic data
 
-## Business Rules
+### Totals
+- `subtotal`: Sum of line items
+- `tax`: GST amount
+- `merchantFee`: Payment gateway fee (Stripe/Square)
+- `platformFee`: Platform commission
+- `total`: Final amount to pay
+- `paid`: Amount actually paid
+- `balance`: Remaining balance
 
-### Order Number Generation
-- Format: ORD-YYYY-NNNNNN
-- Sequential within year
-- Must be unique
+### Payment
+- `method`: Payment gateway used
+- `transactions`: Array of financial transaction IDs
 
-### Status Transitions
-- `pending` → `processing` → `paid`
-- `pending` → `cancelled`
-- `paid` → `refunded`
-- Cannot skip states
-
-### Line Item Ownership
-1. **Individual Orders**: Items assigned to contacts immediately
-2. **Lodge/Delegation Orders**: 
-   - Items initially owned by organization
-   - Can be assigned to members later
-   - Unassigned items tracked
-
-### Fulfillment Process
-1. Order placed (status: pending)
-2. Payment processed (status: paid)
-3. For each line item:
-   - Create fulfillment records (tickets)
-   - Update fulfillment status
-   - Update inventory in catalog
-
-### Contact Creation
-- Raw attendee data stored during registration
-- When user claims registration:
-  - Create/match contact record
-  - Update owner.contactId
-  - Preserve raw data for audit
+### Billing
+- `contactId`: Billing contact (MUST have user account)
+- Full billing address and business details
 
 ## Indexes
-- `orderNumber` - Unique index
-- `catalogObjectId, status` - Catalog orders
-- `customer.contactId` - Customer orders
-- `customer.organisationId` - Organization orders  
-- `metadata.createdAt` - Date ordering
-- `lineItems.owner.contactId` - Find items by owner
-
-## Relationships
-- **Catalog Objects** - What's being ordered from
-- **Contacts** - Customers and attendees
-- **Organisations** - Lodge/delegation customers
-- **Tickets** - Fulfillment records created
-- **Financial Transactions** - Payment records
-
-## Migration from Registrations
-
-### Field Mapping
-- Registration number → Order number
-- Registration type → Customer type
-- Attendees → Line items with raw data
-- Registration status → Order status
-- Payment info → Payment object
-
-### Key Changes
-- More flexible line item structure
-- Support for non-event products
-- Better ownership tracking
-- Fulfillment status per item
-- Raw data preservation
-
-## Computed Fields
-
-### Order Summary
 ```javascript
-// Total item count
-itemCount: { $size: "$lineItems" }
-
-// Total quantity
-totalQuantity: { $sum: "$lineItems.quantity" }
-
-// Fulfillment status
-fulfillmentStatus: {
-  $cond: [
-    { $allElementsTrue: {
-      $map: {
-        input: "$lineItems",
-        in: { $eq: ["$$this.fulfillment.status", "fulfilled"] }
-      }
-    }},
-    "fulfilled",
-    { $cond: [
-      { $anyElementTrue: {
-        $map: {
-          input: "$lineItems",
-          in: { $eq: ["$$this.fulfillment.status", "fulfilled"] }
-        }
-      }},
-      "partial",
-      "pending"
-    ]}
-  ]
-}
+db.orders.createIndex({ "orderId": 1 }, { unique: true })
+db.orders.createIndex({ "orderNumber": 1 }, { unique: true })
+db.orders.createIndex({ "customer.contactId": 1 })
+db.orders.createIndex({ "customer.organisationId": 1 })
+db.orders.createIndex({ "booking.contactId": 1 })
+db.orders.createIndex({ "billing.contactId": 1 })
+db.orders.createIndex({ "attendees.contactId": 1 })
+db.orders.createIndex({ "catalogObjectId": 1 })
+db.orders.createIndex({ "status": 1, "createdAt": -1 })
+db.orders.createIndex({ "payment.status": 1 })
+db.orders.createIndex({ "payment.transactions": 1 })
 ```
 
-### Customer Type
-```javascript
-// Determine if business customer
-isBusinessCustomer: {
-  $or: [
-    { $ne: ["$billing.abn", null] },
-    { $in: ["$customer.type", ["lodge", "delegation", "organisation"]] }
-  ]
-}
-```
+## Migration Notes
+
+### From Registrations:
+- `confirmation_number` → `orderNumber`
+- `registration_type` → `customer.type`
+- `function_id` → lookup catalog object → `catalogObjectId`
+- `registrationData.bookingContact` → create contact/user → `booking`
+- `registrationData.billingContact` → create contact/user → `billing`
+- `total_price_paid` → `totals.total`
+- `total_amount_paid` → `totals.paid`
+- `stripe_fee/square_fee` → `totals.merchantFee`
+- `platform_fee_amount` → `totals.platformFee`
+
+### From Attendees:
+- Each attendee → create contact → link in `attendees` array
+- Preserve all masonic profile data
+
+### From Tickets:
+- Group by event/ticket type → create line items
+- Link attendees to line items
+- Create ticket records for each attendee
+
+### From Payments:
+- Each payment → create financial transaction
+- Link via `payment.transactions`

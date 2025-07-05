@@ -7,272 +7,365 @@ db.createCollection("contacts", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["contactNumber", "profile", "metadata"],
+      required: ["contactId", "firstName", "lastName"],
       properties: {
         _id: {
           bsonType: "objectId"
         },
-        contactNumber: {
+        contactId: {
           bsonType: "string",
-          pattern: "^CON-[0-9]{4}-[0-9]{5}$",
-          description: "Must be a valid contact number in format CON-YYYY-NNNNN"
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "Must be a valid UUID v4"
         },
-        profile: {
-          bsonType: "object",
-          required: ["firstName", "lastName"],
+        firstName: {
+          bsonType: "string",
+          minLength: 1,
+          maxLength: 100,
+          description: "First name is required"
+        },
+        lastName: {
+          bsonType: "string",
+          minLength: 1,
+          maxLength: 100,
+          description: "Last name is required"
+        },
+        preferredName: {
+          bsonType: ["string", "null"],
+          maxLength: 100,
+          description: "Optional preferred name"
+        },
+        title: {
+          bsonType: ["string", "null"],
+          maxLength: 20,
+          description: "Honorific title (Mr, Mrs, Ms, Dr, etc.)"
+        },
+        email: {
+          bsonType: ["string", "null"],
+          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+          description: "Must be a valid email address"
+        },
+        phone: {
+          bsonType: ["string", "null"],
+          pattern: "^\\+[1-9]\\d{1,14}$",
+          description: "E.164 format phone number"
+        },
+        mobile: {
+          bsonType: ["string", "null"],
+          pattern: "^\\+[1-9]\\d{1,14}$",
+          description: "E.164 format mobile number"
+        },
+        alternatePhone: {
+          bsonType: ["string", "null"],
+          pattern: "^\\+[1-9]\\d{1,14}$",
+          description: "E.164 format alternate phone"
+        },
+        address: {
+          bsonType: ["object", "null"],
           properties: {
-            firstName: {
+            line1: {
               bsonType: "string",
-              minLength: 1,
-              maxLength: 100,
-              description: "First name is required"
+              maxLength: 200
             },
-            lastName: {
+            line2: {
+              bsonType: ["string", "null"],
+              maxLength: 200
+            },
+            city: {
               bsonType: "string",
-              minLength: 1,
-              maxLength: 100,
-              description: "Last name is required"
+              maxLength: 100
             },
-            preferredName: {
-              bsonType: ["string", "null"],
-              maxLength: 100,
-              description: "Optional preferred name"
+            state: {
+              bsonType: "string",
+              maxLength: 100
             },
-            email: {
-              bsonType: ["string", "null"],
-              pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-              description: "Must be a valid email address"
+            postcode: {
+              bsonType: "string",
+              maxLength: 20
             },
-            phone: {
-              bsonType: ["string", "null"],
-              description: "Phone number"
-            },
-            dateOfBirth: {
-              bsonType: ["date", "null"],
-              description: "Date of birth for age verification"
-            },
-            dietaryRequirements: {
-              bsonType: ["string", "null"],
-              maxLength: 500,
-              description: "Dietary requirements as free text"
-            },
-            specialNeeds: {
-              bsonType: ["string", "null"],
-              maxLength: 500,
-              description: "Special needs as free text"
+            country: {
+              bsonType: "string",
+              maxLength: 100
             }
           },
+          required: ["line1", "city", "state", "postcode", "country"],
           additionalProperties: false
-        },
-        addresses: {
-          bsonType: ["array", "null"],
-          items: {
-            bsonType: "object",
-            required: ["type"],
-            properties: {
-              type: {
-                bsonType: "string",
-                description: "Address type (e.g., billing, shipping)"
-              },
-              addressLine1: {
-                bsonType: ["string", "null"],
-                maxLength: 200
-              },
-              addressLine2: {
-                bsonType: ["string", "null"],
-                maxLength: 200
-              },
-              city: {
-                bsonType: ["string", "null"],
-                maxLength: 100
-              },
-              state: {
-                bsonType: ["string", "null"],
-                maxLength: 100
-              },
-              postcode: {
-                bsonType: ["string", "null"],
-                maxLength: 20
-              },
-              country: {
-                bsonType: ["string", "null"],
-                maxLength: 100
-              },
-              isPrimary: {
-                bsonType: ["bool", "null"],
-                description: "Whether this is the primary address for this type"
-              }
-            },
-            additionalProperties: false
-          }
         },
         masonicProfile: {
           bsonType: ["object", "null"],
           properties: {
-            craft: {
-              bsonType: ["object", "null"],
-              properties: {
-                grandLodge: {
-                  bsonType: ["object", "null"],
-                  properties: {
-                    name: {
-                      bsonType: ["string", "null"],
-                      maxLength: 200
-                    },
-                    memberNumber: {
-                      bsonType: ["string", "null"],
-                      maxLength: 50
-                    }
-                  }
-                },
-                lodge: {
-                  bsonType: ["object", "null"],
-                  properties: {
-                    organisationId: {
-                      bsonType: ["objectId", "null"]
-                    },
-                    name: {
-                      bsonType: ["string", "null"],
-                      maxLength: 200
-                    },
-                    number: {
-                      bsonType: ["string", "null"],
-                      maxLength: 20
-                    }
-                  }
-                },
-                title: {
-                  bsonType: ["string", "null"],
-                  maxLength: 50
-                },
-                rank: {
-                  bsonType: ["string", "null"],
-                  maxLength: 50
-                }
-              }
-            }
-          }
-        },
-        roles: {
-          bsonType: ["array", "null"],
-          items: {
-            bsonType: "object",
-            required: ["role", "context", "contextId"],
-            properties: {
-              role: {
-                bsonType: "string",
-                enum: ["attendee", "organizer", "sponsor", "vendor", "host", "staff"],
-                description: "Role type"
-              },
-              context: {
-                bsonType: "string",
-                enum: ["function", "organisation", "system"],
-                description: "Context where role applies"
-              },
-              contextId: {
-                bsonType: ["objectId", "string"],
-                description: "ID of function/org where role applies"
-              },
-              startDate: {
-                bsonType: ["date", "null"],
-                description: "When role became active"
-              },
-              endDate: {
-                bsonType: ["date", "null"],
-                description: "When role ends (null for ongoing)"
-              },
-              permissions: {
-                bsonType: ["array", "null"],
-                items: {
-                  bsonType: "string"
-                },
-                description: "Specific permissions for this role"
-              }
+            isMason: {
+              bsonType: "bool"
             },
-            additionalProperties: false
-          }
-        },
-        orderReferences: {
-          bsonType: ["array", "null"],
-          items: {
-            bsonType: "object",
-            required: ["orderId", "orderNumber", "role"],
-            properties: {
-              orderId: {
-                bsonType: "objectId",
-                description: "Reference to orders collection"
-              },
-              orderNumber: {
-                bsonType: "string",
-                pattern: "^ORD-[0-9]{4}-[0-9]{6}$",
-                description: "Order number for quick reference"
-              },
-              role: {
-                bsonType: "string",
-                enum: ["purchaser", "attendee"],
-                description: "Role in the order"
-              },
-              items: {
-                bsonType: ["array", "null"],
-                items: {
-                  bsonType: "objectId"
-                },
-                description: "Line items in the order for this contact"
-              }
-            },
-            additionalProperties: false
-          }
-        },
-        relationships: {
-          bsonType: ["array", "null"],
-          items: {
-            bsonType: "object",
-            required: ["contactId", "relationshipType"],
-            properties: {
-              contactId: {
-                bsonType: "objectId",
-                description: "Reference to another contact"
-              },
-              relationshipType: {
-                bsonType: "string",
-                description: "Type of relationship"
-              },
-              isPrimary: {
-                bsonType: ["bool", "null"]
-              },
-              isEmergencyContact: {
-                bsonType: ["bool", "null"]
-              }
-            },
-            additionalProperties: false
-          }
-        },
-        userId: {
-          bsonType: ["objectId", "null"],
-          description: "Optional reference to users collection"
-        },
-        metadata: {
-          bsonType: "object",
-          required: ["createdAt"],
-          properties: {
-            source: {
+            title: {
               bsonType: ["string", "null"],
-              description: "How contact was created"
+              maxLength: 50,
+              description: "Masonic title (WBro, VWBro, etc.)"
             },
-            createdAt: {
-              bsonType: "date"
+            rank: {
+              bsonType: ["string", "null"],
+              maxLength: 50,
+              description: "Masonic rank (EA, FC, MM, PM, etc.)"
             },
-            createdBy: {
-              bsonType: ["objectId", "null"]
+            grandRank: {
+              bsonType: ["string", "null"],
+              maxLength: 50,
+              description: "Grand Lodge rank"
             },
-            updatedAt: {
-              bsonType: ["date", "null"]
+            grandOffice: {
+              bsonType: ["string", "null"],
+              maxLength: 100,
+              description: "Current Grand Office held"
             },
-            updatedBy: {
-              bsonType: ["objectId", "null"]
+            grandOfficer: {
+              bsonType: ["bool", "null"]
+            },
+            grandLodgeId: {
+              bsonType: ["string", "null"],
+              pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            grandLodgeName: {
+              bsonType: ["string", "null"],
+              maxLength: 200
+            },
+            lodgeId: {
+              bsonType: ["string", "null"],
+              pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            lodgeName: {
+              bsonType: ["string", "null"],
+              maxLength: 200
+            },
+            lodgeNumber: {
+              bsonType: ["string", "null"],
+              maxLength: 20
             }
           },
           additionalProperties: false
+        },
+        registrations: {
+          bsonType: ["object", "null"],
+          description: "Map of registration ID to participation details",
+          patternProperties: {
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+              bsonType: "object",
+              required: ["role", "functionId"],
+              properties: {
+                role: {
+                  bsonType: "string",
+                  enum: ["attendee", "bookingContact", "billingContact"],
+                  description: "Role in this registration"
+                },
+                functionId: {
+                  bsonType: "string",
+                  pattern: "^[0-9a-f]{24}$"
+                },
+                functionName: {
+                  bsonType: ["string", "null"],
+                  maxLength: 200
+                },
+                eventId: {
+                  bsonType: ["string", "null"]
+                },
+                eventName: {
+                  bsonType: ["string", "null"],
+                  maxLength: 200
+                },
+                tableNumber: {
+                  bsonType: ["string", "null"],
+                  maxLength: 20
+                },
+                seatNumber: {
+                  bsonType: ["string", "null"],
+                  maxLength: 20
+                },
+                registeredAt: {
+                  bsonType: ["date", "null"]
+                },
+                registeredBy: {
+                  bsonType: ["string", "null"],
+                  pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                bookingsManaged: {
+                  bsonType: ["number", "null"],
+                  minimum: 0
+                }
+              },
+              additionalProperties: false
+            }
+          }
+        },
+        organizations: {
+          bsonType: ["object", "null"],
+          description: "Map of organization ID to role details",
+          patternProperties: {
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+              bsonType: "object",
+              required: ["organizationName", "role"],
+              properties: {
+                organizationName: {
+                  bsonType: "string",
+                  maxLength: 200
+                },
+                role: {
+                  bsonType: "string",
+                  maxLength: 100,
+                  description: "Role in organization"
+                },
+                startDate: {
+                  bsonType: ["date", "null"]
+                },
+                endDate: {
+                  bsonType: ["date", "null"]
+                },
+                isCurrent: {
+                  bsonType: ["bool", "null"]
+                }
+              },
+              additionalProperties: false
+            }
+          }
+        },
+        hosting: {
+          bsonType: ["object", "null"],
+          description: "Map of function ID to host details",
+          patternProperties: {
+            "^[0-9a-f]{24}$": {
+              bsonType: "object",
+              required: ["functionName", "role"],
+              properties: {
+                functionName: {
+                  bsonType: "string",
+                  maxLength: 200
+                },
+                role: {
+                  bsonType: "string",
+                  enum: ["organizer", "coordinator", "host"],
+                  description: "Host role"
+                },
+                startDate: {
+                  bsonType: ["date", "null"]
+                },
+                responsibilities: {
+                  bsonType: ["array", "null"],
+                  items: {
+                    bsonType: "string"
+                  }
+                }
+              },
+              additionalProperties: false
+            }
+          }
+        },
+        relationships: {
+          bsonType: ["object", "null"],
+          properties: {
+            partners: {
+              bsonType: ["array", "null"],
+              items: {
+                bsonType: "object",
+                required: ["contactId", "relationshipType", "name"],
+                properties: {
+                  contactId: {
+                    bsonType: "string",
+                    pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                  },
+                  relationshipType: {
+                    bsonType: "string",
+                    enum: ["spouse", "partner", "child", "parent", "sibling", "other"]
+                  },
+                  name: {
+                    bsonType: "string",
+                    maxLength: 200
+                  },
+                  isPrimary: {
+                    bsonType: ["bool", "null"]
+                  }
+                },
+                additionalProperties: false
+              }
+            },
+            emergencyContacts: {
+              bsonType: ["array", "null"],
+              items: {
+                bsonType: "object",
+                required: ["name", "relationship", "phone"],
+                properties: {
+                  contactId: {
+                    bsonType: ["string", "null"],
+                    pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                  },
+                  name: {
+                    bsonType: "string",
+                    maxLength: 200
+                  },
+                  relationship: {
+                    bsonType: "string",
+                    maxLength: 100
+                  },
+                  phone: {
+                    bsonType: "string",
+                    pattern: "^\\+[1-9]\\d{1,14}$"
+                  }
+                },
+                additionalProperties: false
+              }
+            }
+          },
+          additionalProperties: false
+        },
+        profile: {
+          bsonType: ["object", "null"],
+          properties: {
+            dateOfBirth: {
+              bsonType: ["date", "null"]
+            },
+            dietaryRequirements: {
+              bsonType: ["array", "null"],
+              items: {
+                bsonType: "string"
+              }
+            },
+            specialNeeds: {
+              bsonType: ["string", "null"],
+              maxLength: 500
+            },
+            preferredCommunication: {
+              bsonType: ["string", "null"],
+              enum: ["email", "sms", "phone", "post", null]
+            }
+          },
+          additionalProperties: false
+        },
+        hasUserAccount: {
+          bsonType: "bool",
+          description: "Whether contact has a user account"
+        },
+        isActive: {
+          bsonType: "bool",
+          description: "Whether contact is active"
+        },
+        tags: {
+          bsonType: ["array", "null"],
+          items: {
+            bsonType: "string",
+            maxLength: 50
+          }
+        },
+        source: {
+          bsonType: ["string", "null"],
+          enum: ["attendee", "registration", "import", "manual", null]
+        },
+        createdAt: {
+          bsonType: "date"
+        },
+        updatedAt: {
+          bsonType: "date"
+        },
+        createdBy: {
+          bsonType: ["string", "null"]
+        },
+        updatedBy: {
+          bsonType: ["string", "null"]
         }
       },
       additionalProperties: false
@@ -288,19 +381,22 @@ db.createCollection("contacts", {
 ### 1. Contact Method Requirement
 ```javascript
 // At least one contact method (email or phone) must be present
-function validateContactMethod(profile) {
-  if (!profile.email && !profile.phone) {
-    throw new Error("At least one contact method (email or phone) is required");
+function validateContactMethod(contact) {
+  if (!contact.email && !contact.phone && !contact.mobile) {
+    throw new Error("At least one contact method (email, phone, or mobile) is required");
   }
 }
 ```
 
-### 2. Role Date Validation
+### 2. Date Validation for Context Objects
 ```javascript
-// Ensure role dates are logical
-function validateRoleDates(role) {
-  if (role.endDate && role.startDate && role.endDate < role.startDate) {
-    throw new Error("Role end date cannot be before start date");
+// Ensure dates are logical in organizations
+function validateOrganizationDates(org) {
+  if (org.endDate && org.startDate && org.endDate < org.startDate) {
+    throw new Error("Organization end date cannot be before start date");
+  }
+  if (org.isCurrent && org.endDate && org.endDate < new Date()) {
+    throw new Error("Organization cannot be current with past end date");
   }
 }
 ```
@@ -309,56 +405,44 @@ function validateRoleDates(role) {
 ```javascript
 // Contacts cannot have relationships with themselves
 function validateRelationships(contactId, relationships) {
-  relationships.forEach(rel => {
-    if (rel.contactId.equals(contactId)) {
-      throw new Error("Contact cannot have relationship with itself");
-    }
-  });
-}
-```
-
-### 4. Primary Address Validation
-```javascript
-// Only one primary address per type
-function validatePrimaryAddresses(addresses) {
-  const primaryByType = {};
-  addresses.forEach(addr => {
-    if (addr.isPrimary) {
-      if (primaryByType[addr.type]) {
-        throw new Error(`Only one primary ${addr.type} address allowed`);
+  if (relationships && relationships.partners) {
+    relationships.partners.forEach(rel => {
+      if (rel.contactId === contactId) {
+        throw new Error("Contact cannot have relationship with itself");
       }
-      primaryByType[addr.type] = true;
-    }
-  });
+    });
+  }
 }
 ```
 
-### 5. Contact Number Generation
+### 4. Phone Number Normalization
 ```javascript
-// Generate unique contact number
-async function generateContactNumber() {
-  const year = new Date().getFullYear();
-  const lastContact = await db.contacts
-    .findOne({ contactNumber: new RegExp(`^CON-${year}-`) })
-    .sort({ contactNumber: -1 });
+// Normalize phone numbers to E.164 format
+function normalizePhoneNumber(phone, defaultCountryCode = '+61') {
+  if (!phone) return null;
   
-  let sequence = 1;
-  if (lastContact) {
-    const match = lastContact.contactNumber.match(/CON-\d{4}-(\d{5})/);
-    if (match) {
-      sequence = parseInt(match[1]) + 1;
+  // Remove all non-digits
+  let cleaned = phone.replace(/\D/g, '');
+  
+  // Add country code if missing
+  if (!phone.startsWith('+')) {
+    if (cleaned.startsWith('0')) {
+      cleaned = cleaned.substring(1);
     }
+    cleaned = defaultCountryCode.replace('+', '') + cleaned;
   }
   
-  return `CON-${year}-${sequence.toString().padStart(5, '0')}`;
+  return '+' + cleaned;
 }
 ```
 
-### 6. Email Uniqueness Check
+### 5. Email Deduplication Check
 ```javascript
 // Check if email already exists (for deduplication)
 async function checkEmailUniqueness(email, excludeContactId) {
-  const query = { "profile.email": email.toLowerCase() };
+  if (!email) return true;
+  
+  const query = { email: email.toLowerCase() };
   if (excludeContactId) {
     query._id = { $ne: excludeContactId };
   }
@@ -368,20 +452,40 @@ async function checkEmailUniqueness(email, excludeContactId) {
 }
 ```
 
-### 7. Active Role Validation
+### 6. Phone Deduplication Check
 ```javascript
-// Validate no duplicate active roles in same context
-function validateActiveRoles(roles) {
-  const activeRoles = roles.filter(r => !r.endDate || r.endDate >= new Date());
-  const roleMap = {};
+// Check if phone already exists (for deduplication)
+async function checkPhoneUniqueness(phone, excludeContactId) {
+  if (!phone) return true;
   
-  activeRoles.forEach(role => {
-    const key = `${role.context}-${role.contextId}-${role.role}`;
-    if (roleMap[key]) {
-      throw new Error(`Duplicate active role: ${role.role} in ${role.context}`);
+  const normalized = normalizePhoneNumber(phone);
+  const query = { 
+    $or: [
+      { phone: normalized },
+      { mobile: normalized }
+    ]
+  };
+  
+  if (excludeContactId) {
+    query._id = { $ne: excludeContactId };
+  }
+  
+  const existing = await db.contacts.findOne(query);
+  return !existing;
+}
+```
+
+### 7. Booking/Billing Contact User Requirement
+```javascript
+// Ensure booking and billing contacts have user accounts
+function validateUserRequirement(contact) {
+  if (!contact.hasUserAccount && contact.registrations) {
+    for (const [regId, reg] of Object.entries(contact.registrations)) {
+      if (reg.role === 'bookingContact' || reg.role === 'billingContact') {
+        throw new Error(`${reg.role} must have a user account`);
+      }
     }
-    roleMap[key] = true;
-  });
+  }
 }
 ```
 
@@ -390,23 +494,25 @@ function validateActiveRoles(roles) {
 ### Data Quality
 1. Names must be trimmed of leading/trailing whitespace
 2. Email addresses stored in lowercase
-3. Phone numbers should be normalized (country code + number)
-4. At least one contact method required
+3. Phone numbers normalized to E.164 format
+4. At least one contact method required (email or phone)
 
-### Relationships
-1. No self-relationships allowed
-2. Only one primary relationship per type
-3. Emergency contacts should have phone numbers
+### Deduplication
+1. Check existing contacts by email (case-insensitive)
+2. Check existing contacts by phone (normalized)
+3. Merge data instead of creating duplicates
+4. Keep most recent contact information
 
-### Roles
-1. Role dates must be logical (end >= start)
-2. No duplicate active roles in same context
-3. System roles require special permissions to assign
+### User Account Requirements
+1. Booking contacts MUST have user accounts
+2. Billing contacts MUST have user accounts
+3. Organization representatives should have user accounts
+4. Event hosts should have user accounts
 
-### Orders
-1. Order references are append-only (no deletion)
-2. Order numbers must match pattern
-3. Contact can be both purchaser and attendee
+### Masonic Profile
+1. If isMason is true, should have lodge details
+2. Grand officers should have grandLodgeId
+3. Lodge number extracted from lodge name if possible
 
 ## Migration Validation
 
@@ -427,7 +533,7 @@ async function validateMigrationData(sourceData) {
   }
   
   // Validate email format if present
-  if (sourceData.email && !isValidEmail(sourceData.email)) {
+  if (sourceData.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(sourceData.email)) {
     errors.push("Invalid email format");
   }
   
@@ -442,19 +548,31 @@ async function validateMigratedContacts() {
   const issues = await db.contacts.aggregate([
     {
       $project: {
-        hasEmail: { $ne: ["$profile.email", null] },
-        hasPhone: { $ne: ["$profile.phone", null] },
+        contactId: 1,
+        hasEmail: { $ne: ["$email", null] },
+        hasPhone: { $or: [
+          { $ne: ["$phone", null] },
+          { $ne: ["$mobile", null] }
+        ]},
         hasContactMethod: {
           $or: [
-            { $ne: ["$profile.email", null] },
-            { $ne: ["$profile.phone", null] }
+            { $ne: ["$email", null] },
+            { $ne: ["$phone", null] },
+            { $ne: ["$mobile", null] }
           ]
         },
-        validContactNumber: {
+        validContactId: {
           $regexMatch: {
-            input: "$contactNumber",
-            regex: "^CON-[0-9]{4}-[0-9]{5}$"
+            input: "$contactId",
+            regex: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
           }
+        },
+        hasUserWhenRequired: {
+          $or: [
+            { $eq: ["$hasUserAccount", true] },
+            { $not: { $in: ["bookingContact", "$registrations.role"] } },
+            { $not: { $in: ["billingContact", "$registrations.role"] } }
+          ]
         }
       }
     },
@@ -462,7 +580,8 @@ async function validateMigratedContacts() {
       $match: {
         $or: [
           { hasContactMethod: false },
-          { validContactNumber: false }
+          { validContactId: false },
+          { hasUserWhenRequired: false }
         ]
       }
     }

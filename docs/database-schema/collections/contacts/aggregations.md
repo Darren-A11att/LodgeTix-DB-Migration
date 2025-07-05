@@ -2,53 +2,47 @@
 
 ## Contact Search and Enrichment
 
-### 1. Search Contacts with Roles
+### 1. Search Contacts
 ```javascript
-// Search contacts by name, email, or role
+// Search contacts by name, email, or phone
 db.contacts.aggregate([
   {
     $match: {
       $or: [
-        { "profile.firstName": { $regex: "searchTerm", $options: "i" } },
-        { "profile.lastName": { $regex: "searchTerm", $options: "i" } },
-        { "profile.email": { $regex: "searchTerm", $options: "i" } },
-        { "roles.role": "searchRole" }
+        { firstName: { $regex: "searchTerm", $options: "i" } },
+        { lastName: { $regex: "searchTerm", $options: "i" } },
+        { preferredName: { $regex: "searchTerm", $options: "i" } },
+        { email: { $regex: "searchTerm", $options: "i" } },
+        { phone: { $regex: "searchTerm", $options: "i" } }
       ]
     }
   },
   {
     $addFields: {
-      fullName: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
+      fullName: { $concat: ["$firstName", " ", "$lastName"] },
       displayName: {
         $cond: [
-          { $ne: ["$profile.preferredName", null] },
-          { $concat: ["$profile.preferredName", " ", "$profile.lastName"] },
-          { $concat: ["$profile.firstName", " ", "$profile.lastName"] }
+          { $ne: ["$preferredName", null] },
+          { $concat: ["$preferredName", " ", "$lastName"] },
+          { $concat: ["$firstName", " ", "$lastName"] }
         ]
       },
-      activeRoles: {
-        $filter: {
-          input: "$roles",
-          cond: {
-            $or: [
-              { $eq: ["$$this.endDate", null] },
-              { $gte: ["$$this.endDate", new Date()] }
-            ]
-          }
-        }
-      },
-      orderCount: { $size: { $ifNull: ["$orderReferences", []] } }
+      registrationCount: { $size: { $objectToArray: { $ifNull: ["$registrations", {}] } } },
+      organizationCount: { $size: { $objectToArray: { $ifNull: ["$organizations", {}] } } },
+      hostingCount: { $size: { $objectToArray: { $ifNull: ["$hosting", {}] } } }
     }
   },
   {
     $project: {
-      contactNumber: 1,
+      contactId: 1,
       fullName: 1,
       displayName: 1,
-      email: "$profile.email",
-      phone: "$profile.phone",
-      activeRoles: 1,
-      orderCount: 1
+      email: 1,
+      phone: 1,
+      hasUserAccount: 1,
+      registrationCount: 1,
+      organizationCount: 1,
+      hostingCount: 1
     }
   },
   { $limit: 20 }
@@ -57,492 +51,484 @@ db.contacts.aggregate([
 
 ### 2. Get Contact with Full Profile
 ```javascript
-// Retrieve complete contact information with all relationships
+// Retrieve complete contact information
 db.contacts.aggregate([
-  { $match: { _id: ObjectId("contactId") } },
+  { $match: { contactId: "550e8400-e29b-41d4-a716-446655440000" } },
   
-  // Lookup user account
+  // Convert registrations object to array for processing
   {
-    $lookup: {
-      from: "users",
-      localField: "userId",
-      foreignField: "_id",
-      as: "userAccount"
+    $addFields: {
+      registrationsArray: { $objectToArray: { $ifNull: ["$registrations", {}] } },
+      organizationsArray: { $objectToArray: { $ifNull: ["$organizations", {}] } },
+      hostingArray: { $objectToArray: { $ifNull: ["$hosting", {}] } }
     }
   },
   
-  // Lookup related contacts
+  // Lookup partner contacts
   {
     $lookup: {
       from: "contacts",
-      localField: "relationships.contactId",
-      foreignField: "_id",
-      as: "relatedContacts"
-    }
-  },
-  
-  // Lookup orders
-  {
-    $lookup: {
-      from: "orders",
-      localField: "orderReferences.orderId",
-      foreignField: "_id",
-      as: "orders"
+      let: { partnerIds: "$relationships.partners.contactId" },
+      pipeline: [
+        { $match: { $expr: { $in: ["$contactId", { $ifNull: ["$$partnerIds", []] }] } } },
+        { $project: { contactId: 1, firstName: 1, lastName: 1, email: 1, phone: 1 } }
+      ],
+      as: "partnerContacts"
     }
   },
   
   // Format output
   {
     $project: {
-      contactNumber: 1,
-      profile: 1,
-      addresses: 1,
-      masonicProfile: 1,
-      
-      userAccount: {
-        $arrayElemAt: [
-          {
-            $map: {
-              input: "$userAccount",
-              in: {
-                email: "$$this.email",
-                status: "$$this.status",
-                lastLogin: "$$this.authentication.lastLogin"
-              }
-            }
-          },
-          0
-        ]
+      contactId: 1,
+      personalInfo: {
+        firstName: "$firstName",
+        lastName: "$lastName",
+        preferredName: "$preferredName",
+        title: "$title",
+        dateOfBirth: "$profile.dateOfBirth"
       },
       
-      activeRoles: {
-        $filter: {
-          input: "$roles",
-          cond: {
-            $or: [
-              { $eq: ["$$this.endDate", null] },
-              { $gte: ["$$this.endDate", new Date()] }
-            ]
+      contactInfo: {
+        email: "$email",
+        phone: "$phone",
+        mobile: "$mobile",
+        alternatePhone: "$alternatePhone",
+        address: "$address",
+        preferredCommunication: "$profile.preferredCommunication"
+      },
+      
+      masonicProfile: 1,
+      
+      eventParticipation: {
+        $map: {
+          input: "$registrationsArray",
+          as: "reg",
+          in: {
+            registrationId: "$$reg.k",
+            role: "$$reg.v.role",
+            functionName: "$$reg.v.functionName",
+            eventName: "$$reg.v.eventName",
+            tableNumber: "$$reg.v.tableNumber",
+            seatNumber: "$$reg.v.seatNumber",
+            registeredAt: "$$reg.v.registeredAt"
+          }
+        }
+      },
+      
+      organizationAffiliations: {
+        $map: {
+          input: "$organizationsArray",
+          as: "org",
+          in: {
+            organizationId: "$$org.k",
+            organizationName: "$$org.v.organizationName",
+            role: "$$org.v.role",
+            isCurrent: "$$org.v.isCurrent",
+            startDate: "$$org.v.startDate"
+          }
+        }
+      },
+      
+      eventsHosted: {
+        $map: {
+          input: "$hostingArray",
+          as: "host",
+          in: {
+            functionId: "$$host.k",
+            functionName: "$$host.v.functionName",
+            role: "$$host.v.role",
+            responsibilities: "$$host.v.responsibilities"
           }
         }
       },
       
       relationships: {
-        $map: {
-          input: "$relationships",
-          as: "rel",
-          in: {
-            $mergeObjects: [
-              "$$rel",
-              {
-                contact: {
-                  $let: {
-                    vars: {
-                      related: {
-                        $arrayElemAt: [
-                          {
-                            $filter: {
-                              input: "$relatedContacts",
-                              cond: { $eq: ["$$this._id", "$$rel.contactId"] }
-                            }
-                          },
-                          0
-                        ]
-                      }
-                    },
-                    in: {
-                      contactNumber: "$$related.contactNumber",
-                      name: {
-                        $concat: [
-                          "$$related.profile.firstName",
-                          " ",
-                          "$$related.profile.lastName"
-                        ]
+        partners: {
+          $map: {
+            input: "$relationships.partners",
+            as: "partner",
+            in: {
+              $mergeObjects: [
+                "$$partner",
+                {
+                  contactInfo: {
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: "$partnerContacts",
+                          cond: { $eq: ["$$this.contactId", "$$partner.contactId"] }
+                        }
                       },
-                      email: "$$related.profile.email",
-                      phone: "$$related.profile.phone"
-                    }
+                      0
+                    ]
                   }
                 }
-              }
-            ]
+              ]
+            }
           }
-        }
+        },
+        emergencyContacts: "$relationships.emergencyContacts"
       },
       
-      orderSummary: {
-        total: { $size: "$orders" },
-        totalSpent: { $sum: "$orders.totals.total" },
-        lastOrderDate: { $max: "$orders.metadata.createdAt" }
+      systemInfo: {
+        hasUserAccount: "$hasUserAccount",
+        isActive: "$isActive",
+        tags: "$tags",
+        source: "$source",
+        createdAt: "$createdAt",
+        updatedAt: "$updatedAt"
       }
     }
   }
 ])
 ```
 
-## Role-Based Analytics
+## Event-Based Analytics
 
 ### 3. Function Attendees Report
 ```javascript
 // Get all attendees for a specific function
 db.contacts.aggregate([
+  // Match contacts with registrations for this function
   {
     $match: {
-      "roles.context": "function",
-      "roles.contextId": ObjectId("functionId"),
-      "roles.role": "attendee"
+      "registrations": { $exists: true }
     }
   },
+  
+  // Convert registrations object to array
   {
-    $unwind: "$roles"
+    $addFields: {
+      registrationsArray: { $objectToArray: "$registrations" }
+    }
   },
+  
+  // Filter for specific function attendees
   {
     $match: {
-      "roles.context": "function",
-      "roles.contextId": ObjectId("functionId"),
-      "roles.role": "attendee"
-    }
-  },
-  {
-    $lookup: {
-      from: "orders",
-      let: { contactId: "$_id" },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: ["$catalogObjectId", ObjectId("functionId")] },
-                {
-                  $in: [
-                    "$$contactId",
-                    {
-                      $map: {
-                        input: "$lineItems",
-                        as: "item",
-                        in: "$$item.owner.contactId"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
+      "registrationsArray": {
+        $elemMatch: {
+          "v.functionId": "685beba0b2fa6b693adaba43",
+          "v.role": "attendee"
         }
-      ],
-      as: "orderInfo"
+      }
     }
   },
-  {
-    $project: {
-      contactNumber: 1,
-      name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-      email: "$profile.email",
-      phone: "$profile.phone",
-      dietaryRequirements: "$profile.dietaryRequirements",
-      specialNeeds: "$profile.specialNeeds",
-      roleStartDate: "$roles.startDate",
-      orderNumber: { $arrayElemAt: ["$orderInfo.orderNumber", 0] },
-      ticketType: "extracted_from_order_items"
-    }
-  },
-  {
-    $sort: { name: 1 }
-  }
-])
-```
-
-### 4. Organisation Members with Roles
-```javascript
-// List all members of an organisation with their roles
-db.contacts.aggregate([
-  {
-    $match: {
-      "roles.context": "organisation",
-      "roles.contextId": ObjectId("orgId")
-    }
-  },
+  
+  // Find the specific registration
   {
     $addFields: {
-      orgRoles: {
-        $filter: {
-          input: "$roles",
-          cond: {
-            $and: [
-              { $eq: ["$$this.context", "organisation"] },
-              { $eq: ["$$this.contextId", ObjectId("orgId")] },
-              {
-                $or: [
-                  { $eq: ["$$this.endDate", null] },
-                  { $gte: ["$$this.endDate", new Date()] }
-                ]
-              }
-            ]
-          }
-        }
-      }
-    }
-  },
-  {
-    $unwind: "$orgRoles"
-  },
-  {
-    $group: {
-      _id: "$orgRoles.role",
-      count: { $sum: 1 },
-      members: {
-        $push: {
-          contactNumber: "$contactNumber",
-          name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-          email: "$profile.email",
-          startDate: "$orgRoles.startDate",
-          permissions: "$orgRoles.permissions"
-        }
-      }
-    }
-  },
-  {
-    $sort: { _id: 1 }
-  }
-])
-```
-
-## Order History Analysis
-
-### 5. Contact Purchase History
-```javascript
-// Get complete purchase history for a contact
-db.contacts.aggregate([
-  { $match: { _id: ObjectId("contactId") } },
-  { $unwind: "$orderReferences" },
-  {
-    $lookup: {
-      from: "orders",
-      localField: "orderReferences.orderId",
-      foreignField: "_id",
-      as: "orderDetails"
-    }
-  },
-  { $unwind: "$orderDetails" },
-  {
-    $lookup: {
-      from: "catalogObjects",
-      localField: "orderDetails.catalogObjectId",
-      foreignField: "_id",
-      as: "catalogObject"
-    }
-  },
-  {
-    $project: {
-      contactNumber: 1,
-      orderNumber: "$orderReferences.orderNumber",
-      orderDate: "$orderDetails.metadata.createdAt",
-      orderStatus: "$orderDetails.status",
-      role: "$orderReferences.role",
-      functionName: { $arrayElemAt: ["$catalogObject.name", 0] },
-      
-      items: {
-        $filter: {
-          input: "$orderDetails.lineItems",
-          cond: {
-            $or: [
-              { $eq: ["$$this.owner.contactId", "$_id"] },
-              { $eq: ["$orderReferences.role", "purchaser"] }
-            ]
-          }
-        }
-      },
-      
-      orderTotal: "$orderDetails.totals.total",
-      paymentStatus: "$orderDetails.payment.status"
-    }
-  },
-  {
-    $group: {
-      _id: "$_id",
-      contactNumber: { $first: "$contactNumber" },
-      orders: {
-        $push: {
-          orderNumber: "$orderNumber",
-          orderDate: "$orderDate",
-          functionName: "$functionName",
-          role: "$role",
-          items: "$items",
-          total: "$orderTotal"
-        }
-      },
-      totalOrders: { $sum: 1 },
-      totalSpent: {
-        $sum: {
-          $cond: [
-            { $eq: ["$role", "purchaser"] },
-            "$orderTotal",
-            0
-          ]
-        }
-      }
-    }
-  }
-])
-```
-
-### 6. Top Purchasers Report
-```javascript
-// Find top purchasers by total spend
-db.contacts.aggregate([
-  { $unwind: "$orderReferences" },
-  { $match: { "orderReferences.role": "purchaser" } },
-  {
-    $lookup: {
-      from: "orders",
-      localField: "orderReferences.orderId",
-      foreignField: "_id",
-      as: "order"
-    }
-  },
-  { $unwind: "$order" },
-  { $match: { "order.status": { $in: ["paid", "partially_paid"] } } },
-  {
-    $group: {
-      _id: "$_id",
-      contactNumber: { $first: "$contactNumber" },
-      name: { 
-        $first: { $concat: ["$profile.firstName", " ", "$profile.lastName"] } 
-      },
-      email: { $first: "$profile.email" },
-      totalOrders: { $sum: 1 },
-      totalSpent: { $sum: "$order.totals.total" },
-      firstPurchase: { $min: "$order.metadata.createdAt" },
-      lastPurchase: { $max: "$order.metadata.createdAt" }
-    }
-  },
-  {
-    $addFields: {
-      avgOrderValue: {
-        $round: [{ $divide: ["$totalSpent", "$totalOrders"] }, 2]
-      },
-      customerLifetime: {
-        $divide: [
-          { $subtract: ["$lastPurchase", "$firstPurchase"] },
-          1000 * 60 * 60 * 24 // Days
-        ]
-      }
-    }
-  },
-  {
-    $sort: { totalSpent: -1 }
-  },
-  {
-    $limit: 100
-  }
-])
-```
-
-## Lodge Analytics
-
-### 7. Lodge Members with Ranks and Roles
-```javascript
-// Analyze lodge membership with their various roles
-db.contacts.aggregate([
-  { 
-    $match: { 
-      "masonicProfile.craft.lodge.organisationId": ObjectId("lodgeOrgId") 
-    } 
-  },
-  {
-    $addFields: {
-      functionRoles: {
-        $filter: {
-          input: "$roles",
-          cond: { $eq: ["$$this.context", "function"] }
-        }
-      },
-      organisationRoles: {
-        $filter: {
-          input: "$roles",
-          cond: { 
-            $and: [
-              { $eq: ["$$this.context", "organisation"] },
-              { $eq: ["$$this.contextId", ObjectId("lodgeOrgId")] }
-            ]
-          }
-        }
-      }
-    }
-  },
-  {
-    $group: {
-      _id: "$masonicProfile.craft.rank",
-      count: { $sum: 1 },
-      members: {
-        $push: {
-          contactNumber: "$contactNumber",
-          name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-          title: "$masonicProfile.craft.title",
-          email: "$profile.email",
-          lodgeRoles: "$organisationRoles",
-          eventAttendance: { $size: "$functionRoles" },
-          totalOrders: { $size: { $ifNull: ["$orderReferences", []] } }
-        }
-      }
-    }
-  },
-  {
-    $sort: { _id: 1 }
-  }
-])
-```
-
-## Relationship Analysis
-
-### 8. Emergency Contact Network
-```javascript
-// Map emergency contact relationships
-db.contacts.aggregate([
-  { $unwind: "$relationships" },
-  { $match: { "relationships.isEmergencyContact": true } },
-  {
-    $lookup: {
-      from: "contacts",
-      localField: "relationships.contactId",
-      foreignField: "_id",
-      as: "emergencyContact"
-    }
-  },
-  { $unwind: "$emergencyContact" },
-  {
-    $project: {
-      contactNumber: 1,
-      name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-      hasActiveOrders: {
-        $gt: [
+      functionRegistration: {
+        $arrayElemAt: [
           {
-            $size: {
-              $filter: {
-                input: { $ifNull: ["$orderReferences", []] },
-                cond: { $eq: ["$$this.role", "attendee"] }
+            $filter: {
+              input: "$registrationsArray",
+              cond: {
+                $and: [
+                  { $eq: ["$$this.v.functionId", "685beba0b2fa6b693adaba43"] },
+                  { $eq: ["$$this.v.role", "attendee"] }
+                ]
               }
             }
           },
           0
         ]
-      },
-      emergencyContact: {
-        name: { 
-          $concat: [
-            "$emergencyContact.profile.firstName", 
-            " ", 
-            "$emergencyContact.profile.lastName"
-          ] 
-        },
-        phone: "$emergencyContact.profile.phone",
-        email: "$emergencyContact.profile.email",
-        relationship: "$relationships.relationshipType"
       }
     }
   },
+  
+  // Project attendee details
   {
-    $match: { hasActiveOrders: true }
+    $project: {
+      contactId: 1,
+      name: { $concat: ["$firstName", " ", "$lastName"] },
+      email: 1,
+      phone: 1,
+      dietaryRequirements: "$profile.dietaryRequirements",
+      specialNeeds: "$profile.specialNeeds",
+      masonicTitle: "$masonicProfile.title",
+      lodgeName: "$masonicProfile.lodgeName",
+      tableNumber: "$functionRegistration.v.tableNumber",
+      seatNumber: "$functionRegistration.v.seatNumber",
+      registeredAt: "$functionRegistration.v.registeredAt",
+      registeredBy: "$functionRegistration.v.registeredBy"
+    }
+  },
+  {
+    $sort: { lastName: 1, firstName: 1 }
+  }
+])
+```
+
+### 4. Function Hosts and Organizers
+```javascript
+// Get all hosts/organizers for upcoming functions
+db.contacts.aggregate([
+  {
+    $match: {
+      "hosting": { $exists: true, $ne: {} }
+    }
+  },
+  
+  // Convert hosting object to array
+  {
+    $addFields: {
+      hostingArray: { $objectToArray: "$hosting" }
+    }
+  },
+  
+  // Unwind to process each hosting role
+  { $unwind: "$hostingArray" },
+  
+  // Lookup function details
+  {
+    $lookup: {
+      from: "functions",
+      localField: "hostingArray.k",
+      foreignField: "_id",
+      as: "functionDetails"
+    }
+  },
+  
+  { $unwind: "$functionDetails" },
+  
+  // Filter for future functions
+  {
+    $match: {
+      "functionDetails.dates.startDate": { $gte: new Date() }
+    }
+  },
+  
+  // Group by function
+  {
+    $group: {
+      _id: "$hostingArray.k",
+      functionName: { $first: "$functionDetails.name" },
+      functionStartDate: { $first: "$functionDetails.dates.startDate" },
+      hosts: {
+        $push: {
+          contactId: "$contactId",
+          name: { $concat: ["$firstName", " ", "$lastName"] },
+          email: "$email",
+          phone: "$phone",
+          role: "$hostingArray.v.role",
+          responsibilities: "$hostingArray.v.responsibilities"
+        }
+      }
+    }
+  },
+  
+  { $sort: { functionStartDate: 1 } }
+])
+```
+
+## Organization Analytics
+
+### 5. Organization Members by Role
+```javascript
+// List all members of an organization grouped by role
+db.contacts.aggregate([
+  {
+    $match: {
+      "organizations.3e893fa6-2cc2-448c-be9c-e3858cc90e11": { $exists: true }
+    }
+  },
+  
+  // Extract the specific organization data
+  {
+    $addFields: {
+      orgData: "$organizations.3e893fa6-2cc2-448c-be9c-e3858cc90e11"
+    }
+  },
+  
+  // Filter for current members only
+  {
+    $match: {
+      "orgData.isCurrent": true
+    }
+  },
+  
+  // Group by role
+  {
+    $group: {
+      _id: "$orgData.role",
+      count: { $sum: 1 },
+      members: {
+        $push: {
+          contactId: "$contactId",
+          name: { $concat: ["$firstName", " ", "$lastName"] },
+          email: "$email",
+          phone: "$phone",
+          startDate: "$orgData.startDate",
+          masonicRank: "$masonicProfile.rank"
+        }
+      }
+    }
+  },
+  
+  { $sort: { _id: 1 } }
+])
+```
+
+## Lodge Analytics
+
+### 6. Lodge Members with Masonic Details
+```javascript
+// Analyze lodge membership
+db.contacts.aggregate([
+  { 
+    $match: { 
+      "masonicProfile.lodgeId": "7f4e9b2a-1234-5678-9012-3456789abcde",
+      "isActive": true
+    } 
+  },
+  
+  // Group by rank
+  {
+    $group: {
+      _id: "$masonicProfile.rank",
+      count: { $sum: 1 },
+      members: {
+        $push: {
+          contactId: "$contactId",
+          name: { $concat: ["$firstName", " ", "$lastName"] },
+          title: "$masonicProfile.title",
+          email: "$email",
+          grandOfficer: "$masonicProfile.grandOfficer",
+          grandRank: "$masonicProfile.grandRank",
+          registrationCount: { $size: { $objectToArray: { $ifNull: ["$registrations", {}] } } }
+        }
+      }
+    }
+  },
+  
+  // Sort by masonic rank hierarchy
+  {
+    $sort: {
+      _id: {
+        $switch: {
+          branches: [
+            { case: { $eq: ["$_id", "EA"] }, then: 1 },
+            { case: { $eq: ["$_id", "FC"] }, then: 2 },
+            { case: { $eq: ["$_id", "MM"] }, then: 3 },
+            { case: { $eq: ["$_id", "PM"] }, then: 4 }
+          ],
+          default: 5
+        }
+      }
+    }
+  }
+])
+```
+
+### 7. Grand Officers by Jurisdiction
+```javascript
+// List all grand officers by grand lodge
+db.contacts.aggregate([
+  {
+    $match: {
+      "masonicProfile.grandOfficer": true,
+      "isActive": true
+    }
+  },
+  
+  {
+    $group: {
+      _id: "$masonicProfile.grandLodgeId",
+      grandLodgeName: { $first: "$masonicProfile.grandLodgeName" },
+      officers: {
+        $push: {
+          contactId: "$contactId",
+          name: { $concat: ["$firstName", " ", "$lastName"] },
+          email: "$email",
+          grandRank: "$masonicProfile.grandRank",
+          grandOffice: "$masonicProfile.grandOffice",
+          lodgeName: "$masonicProfile.lodgeName"
+        }
+      },
+      count: { $sum: 1 }
+    }
+  },
+  
+  { $sort: { grandLodgeName: 1 } }
+])
+```
+
+## Relationship Analysis
+
+### 8. Partner and Emergency Contact Network
+```javascript
+// Map partner and emergency contact relationships
+db.contacts.aggregate([
+  {
+    $match: {
+      $or: [
+        { "relationships.partners": { $exists: true, $ne: [] } },
+        { "relationships.emergencyContacts": { $exists: true, $ne: [] } }
+      ]
+    }
+  },
+  
+  // Lookup partner details
+  {
+    $lookup: {
+      from: "contacts",
+      let: { partnerIds: "$relationships.partners.contactId" },
+      pipeline: [
+        { $match: { $expr: { $in: ["$contactId", { $ifNull: ["$$partnerIds", []] }] } } },
+        { $project: { contactId: 1, firstName: 1, lastName: 1, hasUserAccount: 1 } }
+      ],
+      as: "partnerDetails"
+    }
+  },
+  
+  {
+    $project: {
+      contactId: 1,
+      name: { $concat: ["$firstName", " ", "$lastName"] },
+      email: 1,
+      
+      partners: {
+        $map: {
+          input: "$relationships.partners",
+          as: "partner",
+          in: {
+            name: "$$partner.name",
+            relationshipType: "$$partner.relationshipType",
+            isPrimary: "$$partner.isPrimary",
+            hasAccount: {
+              $let: {
+                vars: {
+                  partnerInfo: {
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: "$partnerDetails",
+                          cond: { $eq: ["$$this.contactId", "$$partner.contactId"] }
+                        }
+                      },
+                      0
+                    ]
+                  }
+                },
+                in: "$$partnerInfo.hasUserAccount"
+              }
+            }
+          }
+        }
+      },
+      
+      emergencyContacts: "$relationships.emergencyContacts",
+      
+      activeRegistrations: { 
+        $size: { $objectToArray: { $ifNull: ["$registrations", {}] } } 
+      }
+    }
+  },
+  
+  {
+    $match: { activeRegistrations: { $gt: 0 } }
   }
 ])
 ```
@@ -556,36 +542,55 @@ db.contacts.aggregate([
   {
     $match: {
       $or: [
-        { "profile.email": { $ne: null } },
-        { "profile.phone": { $ne: null } }
+        { email: { $ne: null } },
+        { phone: { $ne: null } }
       ]
     }
   },
+  
+  // Normalize phone for comparison
+  {
+    $addFields: {
+      normalizedPhone: {
+        $cond: [
+          { $ne: ["$phone", null] },
+          { $replaceAll: { input: "$phone", find: " ", replacement: "" } },
+          null
+        ]
+      }
+    }
+  },
+  
   {
     $group: {
       _id: {
-        email: { $toLower: "$profile.email" },
-        phone: "$profile.phone"
+        email: { $toLower: { $ifNull: ["$email", "no-email"] } },
+        phone: { $ifNull: ["$normalizedPhone", "no-phone"] }
       },
       count: { $sum: 1 },
       contacts: {
         $push: {
-          _id: "$_id",
-          contactNumber: "$contactNumber",
-          name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
-          createdAt: "$metadata.createdAt",
-          hasUser: { $ne: ["$userId", null] },
-          orderCount: { $size: { $ifNull: ["$orderReferences", []] } }
+          contactId: "$contactId",
+          name: { $concat: ["$firstName", " ", "$lastName"] },
+          createdAt: "$createdAt",
+          hasUser: "$hasUserAccount",
+          registrationCount: { $size: { $objectToArray: { $ifNull: ["$registrations", {}] } } },
+          source: "$source"
         }
       }
     }
   },
+  
   {
     $match: { 
       count: { $gt: 1 },
-      "_id.email": { $ne: null }
+      $or: [
+        { "_id.email": { $ne: "no-email" } },
+        { "_id.phone": { $ne: "no-phone" } }
+      ]
     }
   },
+  
   {
     $project: {
       duplicateKey: "$_id",
@@ -595,14 +600,13 @@ db.contacts.aggregate([
         $cond: [
           { $gt: [{ $size: { $filter: { input: "$contacts", cond: "$$this.hasUser" } } }, 0] },
           "Keep contact with user account",
-          "Keep contact with most orders"
+          "Keep contact with most registrations"
         ]
       }
     }
   },
-  {
-    $sort: { duplicateCount: -1 }
-  }
+  
+  { $sort: { duplicateCount: -1 } }
 ])
 ```
 
@@ -612,16 +616,17 @@ db.contacts.aggregate([
 db.contacts.aggregate([
   {
     $project: {
-      contactNumber: 1,
-      name: { $concat: ["$profile.firstName", " ", "$profile.lastName"] },
+      contactId: 1,
+      name: { $concat: ["$firstName", " ", "$lastName"] },
       
       issues: {
         $concatArrays: [
           {
             $cond: [
               { $and: [
-                { $eq: ["$profile.email", null] },
-                { $eq: ["$profile.phone", null] }
+                { $eq: ["$email", null] },
+                { $eq: ["$phone", null] },
+                { $eq: ["$mobile", null] }
               ]},
               ["No contact method"],
               []
@@ -629,28 +634,36 @@ db.contacts.aggregate([
           },
           {
             $cond: [
-              { $eq: [{ $size: { $ifNull: ["$addresses", []] } }, 0] },
-              ["No address"],
+              { $and: [
+                { $eq: ["$address", null] },
+                { $gt: [{ $size: { $objectToArray: { $ifNull: ["$registrations", {}] } } }, 0] }
+              ]},
+              ["Has registrations but no address"],
               []
             ]
           },
           {
             $cond: [
               { $and: [
-                { $gt: [{ $size: { $ifNull: ["$orderReferences", []] } }, 0] },
-                { $eq: ["$profile.dateOfBirth", null] }
+                { $eq: ["$hasUserAccount", false] },
+                { $gt: [{ $size: { 
+                  $filter: {
+                    input: { $objectToArray: { $ifNull: ["$registrations", {}] } },
+                    cond: { $in: ["$$this.v.role", ["bookingContact", "billingContact"]] }
+                  }
+                }}, 0] }
               ]},
-              ["Has orders but no date of birth"],
+              ["Booking/billing contact without user account"],
               []
             ]
           },
           {
             $cond: [
               { $and: [
-                { $ne: ["$userId", null] },
-                { $eq: ["$profile.email", null] }
+                { $eq: ["$masonicProfile.isMason", true] },
+                { $eq: ["$masonicProfile.lodgeId", null] }
               ]},
-              ["Has user account but no email"],
+              ["Mason without lodge affiliation"],
               []
             ]
           }
@@ -658,25 +671,15 @@ db.contacts.aggregate([
       },
       
       hasActiveRole: {
-        $gt: [
-          {
-            $size: {
-              $filter: {
-                input: { $ifNull: ["$roles", []] },
-                cond: {
-                  $or: [
-                    { $eq: ["$$this.endDate", null] },
-                    { $gte: ["$$this.endDate", new Date()] }
-                  ]
-                }
-              }
-            }
-          },
-          0
+        $or: [
+          { $gt: [{ $size: { $objectToArray: { $ifNull: ["$registrations", {}] } } }, 0] },
+          { $gt: [{ $size: { $objectToArray: { $ifNull: ["$organizations", {}] } } }, 0] },
+          { $gt: [{ $size: { $objectToArray: { $ifNull: ["$hosting", {}] } } }, 0] }
         ]
       }
     }
   },
+  
   {
     $match: {
       $and: [
@@ -685,16 +688,85 @@ db.contacts.aggregate([
       ]
     }
   },
+  
   {
     $project: {
-      contactNumber: 1,
+      contactId: 1,
       name: 1,
       issues: 1,
       issueCount: { $size: "$issues" }
     }
   },
+  
+  { $sort: { issueCount: -1 } }
+])
+```
+
+### 11. Booking/Billing Contacts Analysis
+```javascript
+// Analyze booking and billing contacts
+db.contacts.aggregate([
+  // Convert registrations to array
   {
-    $sort: { issueCount: -1 }
-  }
+    $addFields: {
+      registrationsArray: { $objectToArray: { $ifNull: ["$registrations", {}] } }
+    }
+  },
+  
+  // Filter for booking/billing contacts
+  {
+    $match: {
+      "registrationsArray.v.role": { $in: ["bookingContact", "billingContact"] }
+    }
+  },
+  
+  // Separate booking and billing roles
+  {
+    $addFields: {
+      bookingRoles: {
+        $filter: {
+          input: "$registrationsArray",
+          cond: { $eq: ["$$this.v.role", "bookingContact"] }
+        }
+      },
+      billingRoles: {
+        $filter: {
+          input: "$registrationsArray",
+          cond: { $eq: ["$$this.v.role", "billingContact"] }
+        }
+      }
+    }
+  },
+  
+  {
+    $project: {
+      contactId: 1,
+      name: { $concat: ["$firstName", " ", "$lastName"] },
+      email: 1,
+      hasUserAccount: 1,
+      hasAddress: { $ne: ["$address", null] },
+      
+      bookingStats: {
+        count: { $size: "$bookingRoles" },
+        totalBookingsManaged: {
+          $sum: {
+            $map: {
+              input: "$bookingRoles",
+              in: { $ifNull: ["$$this.v.bookingsManaged", 0] }
+            }
+          }
+        }
+      },
+      
+      billingStats: {
+        count: { $size: "$billingRoles" }
+      },
+      
+      requiresUserAccount: true,
+      userAccountMissing: { $eq: ["$hasUserAccount", false] }
+    }
+  },
+  
+  { $sort: { userAccountMissing: -1, "bookingStats.totalBookingsManaged": -1 } }
 ])
 ```

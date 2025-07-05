@@ -2,26 +2,27 @@
 
 ## Primary Indexes
 
-### Unique Contact Number
+### Unique Contact ID
 ```javascript
 db.contacts.createIndex(
-  { "contactNumber": 1 },
+  { "contactId": 1 },
   { 
     unique: true,
-    name: "contactNumber_unique"
+    name: "contactId_unique"
   }
 )
 ```
 
-## Query Optimization Indexes
+## Contact Lookup Indexes
 
 ### Email Lookup
 ```javascript
 db.contacts.createIndex(
-  { "profile.email": 1 },
+  { "email": 1 },
   { 
     sparse: true,
-    name: "email_lookup"
+    unique: true,
+    name: "email_unique"
   }
 )
 ```
@@ -29,7 +30,7 @@ db.contacts.createIndex(
 ### Phone Lookup
 ```javascript
 db.contacts.createIndex(
-  { "profile.phone": 1 },
+  { "phone": 1 },
   { 
     sparse: true,
     name: "phone_lookup"
@@ -41,8 +42,8 @@ db.contacts.createIndex(
 ```javascript
 db.contacts.createIndex(
   { 
-    "profile.lastName": 1,
-    "profile.firstName": 1
+    "lastName": 1,
+    "firstName": 1
   },
   { 
     name: "name_search"
@@ -53,99 +54,80 @@ db.contacts.createIndex(
 ### User Association
 ```javascript
 db.contacts.createIndex(
-  { "userId": 1 },
+  { "hasUserAccount": 1 },
+  { 
+    name: "user_account_status"
+  }
+)
+```
+
+## Context-Based Indexes
+
+### Registration Lookups
+```javascript
+db.contacts.createIndex(
+  { "registrations.functionId": 1 },
   { 
     sparse: true,
-    unique: true,
-    name: "user_lookup"
+    name: "registration_functions"
   }
 )
 ```
 
-## Role and Context Indexes
-
-### Role Lookup
+### Registration Roles
 ```javascript
 db.contacts.createIndex(
-  { 
-    "roles.contextId": 1,
-    "roles.role": 1
-  },
-  { 
-    name: "role_lookup"
-  }
-)
-```
-
-### Active Roles
-```javascript
-db.contacts.createIndex(
-  { 
-    "roles.role": 1,
-    "roles.endDate": 1
-  },
-  { 
-    name: "active_roles",
-    partialFilterExpression: {
-      $or: [
-        { "roles.endDate": null },
-        { "roles.endDate": { $gte: new Date() } }
-      ]
-    }
-  }
-)
-```
-
-### Function Attendees
-```javascript
-db.contacts.createIndex(
-  { 
-    "roles.contextId": 1,
-    "roles.context": 1
-  },
-  { 
-    partialFilterExpression: { 
-      "roles.context": "function",
-      "roles.role": "attendee"
-    },
-    name: "function_attendees"
-  }
-)
-```
-
-## Order Reference Indexes
-
-### Order History
-```javascript
-db.contacts.createIndex(
-  { "orderReferences.orderId": 1 },
+  { "registrations.role": 1 },
   { 
     sparse: true,
-    name: "order_history"
+    name: "registration_roles"
   }
 )
 ```
 
-### Purchaser Lookup
+### Organization Members
+```javascript
+db.contacts.createIndex(
+  { "organizations.organizationId": 1 },
+  { 
+    sparse: true,
+    name: "organization_members"
+  }
+)
+```
+
+### Active Organization Members
 ```javascript
 db.contacts.createIndex(
   { 
-    "orderReferences.orderNumber": 1,
-    "orderReferences.role": 1
+    "organizations.organizationId": 1,
+    "organizations.isCurrent": 1
   },
   { 
     sparse: true,
-    name: "purchaser_lookup"
+    partialFilterExpression: { "organizations.isCurrent": true },
+    name: "active_org_members"
   }
 )
 ```
 
-## Lodge Member Indexes
+### Event Hosts
+```javascript
+db.contacts.createIndex(
+  { "hosting.functionId": 1 },
+  { 
+    sparse: true,
+    name: "event_hosts"
+  }
+)
+```
+
+## Masonic Profile Indexes
 
 ### Lodge Members
 ```javascript
 db.contacts.createIndex(
-  { "masonicProfile.craft.lodge.organisationId": 1 },
+  { "masonicProfile.lodgeId": 1 },
   { 
     sparse: true,
     name: "lodge_members"
@@ -156,7 +138,7 @@ db.contacts.createIndex(
 ### Grand Lodge Members
 ```javascript
 db.contacts.createIndex(
-  { "masonicProfile.craft.grandLodge.name": 1 },
+  { "masonicProfile.grandLodgeId": 1 },
   { 
     sparse: true,
     name: "grand_lodge_members"
@@ -164,15 +146,44 @@ db.contacts.createIndex(
 )
 ```
 
-## Relationship Indexes
-
-### Contact Relationships
+### Masonic Rank
 ```javascript
 db.contacts.createIndex(
-  { "relationships.contactId": 1 },
+  { 
+    "masonicProfile.lodgeId": 1,
+    "masonicProfile.rank": 1
+  },
   { 
     sparse: true,
-    name: "relationship_contacts"
+    name: "lodge_rank_lookup"
+  }
+)
+```
+
+### Grand Officers
+```javascript
+db.contacts.createIndex(
+  { 
+    "masonicProfile.grandOfficer": 1,
+    "masonicProfile.grandLodgeId": 1
+  },
+  { 
+    sparse: true,
+    partialFilterExpression: { "masonicProfile.grandOfficer": true },
+    name: "grand_officers"
+  }
+)
+```
+
+## Relationship Indexes
+
+### Partner Relationships
+```javascript
+db.contacts.createIndex(
+  { "relationships.partners.contactId": 1 },
+  { 
+    sparse: true,
+    name: "partner_relationships"
   }
 )
 ```
@@ -180,11 +191,27 @@ db.contacts.createIndex(
 ### Emergency Contacts
 ```javascript
 db.contacts.createIndex(
-  { "relationships.isEmergencyContact": 1 },
+  { "relationships.emergencyContacts.contactId": 1 },
   { 
     sparse: true,
-    partialFilterExpression: { "relationships.isEmergencyContact": true },
     name: "emergency_contacts"
+  }
+)
+```
+
+## Full Text Search
+
+### Contact Search
+```javascript
+db.contacts.createIndex(
+  { 
+    "firstName": "text",
+    "lastName": "text",
+    "preferredName": "text",
+    "email": "text"
+  },
+  { 
+    name: "contact_text_search"
   }
 )
 ```
@@ -194,9 +221,8 @@ db.contacts.createIndex(
 ### Recent Updates
 ```javascript
 db.contacts.createIndex(
-  { "metadata.updatedAt": -1 },
+  { "updatedAt": -1 },
   { 
-    sparse: true,
     name: "recent_updates"
   }
 )
@@ -205,7 +231,7 @@ db.contacts.createIndex(
 ### Creation Date
 ```javascript
 db.contacts.createIndex(
-  { "metadata.createdAt": -1 },
+  { "createdAt": -1 },
   { 
     name: "creation_date"
   }
@@ -216,8 +242,8 @@ db.contacts.createIndex(
 ```javascript
 db.contacts.createIndex(
   { 
-    "metadata.source": 1,
-    "metadata.createdAt": -1
+    "source": 1,
+    "createdAt": -1
   },
   { 
     name: "source_tracking"
@@ -227,47 +253,47 @@ db.contacts.createIndex(
 
 ## Compound Indexes for Common Queries
 
-### Email and Roles
+### Function Attendees by Name
 ```javascript
 db.contacts.createIndex(
   { 
-    "profile.email": 1,
-    "roles.role": 1
+    "registrations.functionId": 1,
+    "lastName": 1,
+    "firstName": 1
   },
   { 
     sparse: true,
-    name: "email_role_lookup"
+    name: "function_attendees_by_name"
   }
 )
 ```
 
-### Lodge and Rank
+### Organization Contacts by Role
 ```javascript
 db.contacts.createIndex(
   { 
-    "masonicProfile.craft.lodge.organisationId": 1,
-    "masonicProfile.craft.rank": 1
+    "organizations.organizationId": 1,
+    "organizations.role": 1,
+    "organizations.isCurrent": 1
   },
   { 
     sparse: true,
-    name: "lodge_rank_lookup"
+    name: "org_contacts_by_role"
   }
 )
 ```
 
-### Active Organisation Members
+### Active Tags
 ```javascript
 db.contacts.createIndex(
   { 
-    "roles.contextId": 1,
-    "roles.context": 1,
-    "roles.endDate": 1
+    "tags": 1,
+    "isActive": 1
   },
   { 
-    partialFilterExpression: { 
-      "roles.context": "organisation"
-    },
-    name: "org_members"
+    sparse: true,
+    partialFilterExpression: { "isActive": true },
+    name: "active_tags"
   }
 )
 ```
@@ -275,9 +301,9 @@ db.contacts.createIndex(
 ## Performance Considerations
 
 1. **Sparse Indexes**: Used extensively for optional fields to save space
-2. **Partial Indexes**: Used for specific query patterns (active roles, emergency contacts)
+2. **Partial Indexes**: Used for specific query patterns (active members, grand officers)
 3. **Compound Indexes**: Ordered by selectivity (most selective field first)
-4. **Unique Constraints**: Contact number and user association must be unique
+4. **Unique Constraints**: contactId and email must be unique
 
 ## Index Maintenance
 
@@ -304,8 +330,8 @@ db.contacts.validate({ full: true })
 
 ## Index Strategy
 
-1. **Core Lookups**: Email, phone, and contact number for finding contacts
-2. **Role Queries**: Efficient filtering by role and context
-3. **Order History**: Quick access to purchase history
-4. **Relationships**: Support for contact networks
-5. **Analytics**: Metadata indexes for reporting
+1. **Core Lookups**: Email and phone for finding/deduplicating contacts
+2. **Context Queries**: Efficient filtering by registrations, organizations, hosting
+3. **Masonic Queries**: Lodge and grand lodge member lookups
+4. **Relationships**: Support for partner and emergency contact networks
+5. **Analytics**: Metadata indexes for reporting and tracking

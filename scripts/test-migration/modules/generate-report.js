@@ -2,8 +2,8 @@ const fs = require('fs').promises;
 const path = require('path');
 
 async function generateMigrationReport(migrationState) {
-  const reportPath = path.join(__dirname, '../../../test-migration-output/migration-logs/migration-report.md');
-  const jsonReportPath = path.join(__dirname, '../../../test-migration-output/migration-logs/migration-report.json');
+  const reportPath = path.join(__dirname, '../../../test-migration-output-v2/migration-logs/migration-report.md');
+  const jsonReportPath = path.join(__dirname, '../../../test-migration-output-v2/migration-logs/migration-report.json');
   
   // Generate markdown report
   const markdownReport = generateMarkdownReport(migrationState);

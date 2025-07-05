@@ -60,8 +60,36 @@ async function transformToJurisdiction(grandLodge, lodges, migrationState) {
   
   return {
     _id: jurisdictionId,
-    jurisdictionId: `JUR-CRAFT-${grandLodge.country_code_iso3 || grandLodge.countryCodeIso3 || 'XX'}-${new Date().getFullYear()}-${String(migrationState.stats.jurisdictions + 1).padStart(5, '0')}`,
+    jurisdictionId: grandLodge.grand_lodge_id || grandLodge.grandLodgeId || grandLodge._id.toString(),
     type: 'craft',
+    
+    grandLodge: {
+      id: grandLodge.grand_lodge_id || grandLodge.grandLodgeId,
+      name: grandLodge.name || 'Unknown Grand Lodge',
+      abbreviation: grandLodge.abbreviation || generateAbbreviation(grandLodge.name),
+      
+      country: grandLodge.country || '',
+      countryCode: grandLodge.country_code_iso3 || grandLodge.countryCodeIso3 || '',
+      stateRegion: grandLodge.state_region || grandLodge.stateRegion || '',
+      stateRegionCode: grandLodge.state_region_code || grandLodge.stateRegionCode || '',
+      
+      organisationId: grandLodge.organisation_id || grandLodge.organisationId || grandLodge.grand_lodge_id || grandLodge.grandLodgeId,
+      
+      address: {
+        addressLine1: grandLodge.address_line_1 || grandLodge.addressLine1 || '',
+        addressLine2: grandLodge.address_line_2 || grandLodge.addressLine2 || '',
+        city: grandLodge.city || '',
+        state: grandLodge.state || '',
+        postcode: grandLodge.postcode || '',
+        country: grandLodge.country || ''
+      },
+      
+      contact: {
+        phone: grandLodge.phone || '',
+        email: grandLodge.email || '',
+        website: grandLodge.website || ''
+      }
+    },
     
     definitions: {
       parentName: 'grandLodge',
@@ -70,17 +98,19 @@ async function transformToJurisdiction(grandLodge, lodges, migrationState) {
       childLabel: 'Lodges',
       
       ranks: [
-        { code: 'EA', name: 'Entered Apprentice', order: 1, abbreviation: 'EA' },
-        { code: 'FC', name: 'Fellow Craft', order: 2, abbreviation: 'FC' },
-        { code: 'MM', name: 'Master Mason', order: 3, abbreviation: 'MM' }
+        { code: 'EAF', name: 'Entered Apprentice Freemason', order: 1, abbreviation: 'EAF' },
+        { code: 'FCF', name: 'Fellow Craft Freemason', order: 2, abbreviation: 'FCF' },
+        { code: 'MM', name: 'Master Mason', order: 3, abbreviation: 'MM' },
+        { code: 'IM', name: 'Installed Master', order: 4, abbreviation: 'IM' },
+        { code: 'GL', name: 'Grand Lodge', order: 5, abbreviation: 'GL' }
       ],
       
       titles: [
-        { code: 'Bro', name: 'Brother', abbreviation: 'Bro.' },
-        { code: 'WBro', name: 'Worshipful Brother', abbreviation: 'W.Bro.' },
-        { code: 'VWBro', name: 'Very Worshipful Brother', abbreviation: 'V.W.Bro.' },
-        { code: 'RWBro', name: 'Right Worshipful Brother', abbreviation: 'R.W.Bro.' },
-        { code: 'MWBro', name: 'Most Worshipful Brother', abbreviation: 'M.W.Bro.' }
+        { code: 'Bro', name: 'Brother', abbreviation: 'Bro' },
+        { code: 'WBro', name: 'Worshipful Brother', abbreviation: 'W Bro' },
+        { code: 'VWBro', name: 'Very Worshipful Brother', abbreviation: 'VW Bro' },
+        { code: 'RWBro', name: 'Right Worshipful Brother', abbreviation: 'RW Bro' },
+        { code: 'MWBro', name: 'Most Worshipful Brother', abbreviation: 'MW Bro' }
       ],
       
       parentOffices: [
@@ -105,34 +135,7 @@ async function transformToJurisdiction(grandLodge, lodges, migrationState) {
       ]
     },
     
-    grandLodge: {
-      id: grandLodge.grand_lodge_id || grandLodge.grandLodgeId,
-      name: grandLodge.name || 'Unknown Grand Lodge',
-      abbreviation: grandLodge.abbreviation || generateAbbreviation(grandLodge.name),
-      
-      country: grandLodge.country || '',
-      countryCode: grandLodge.country_code_iso3 || grandLodge.countryCodeIso3 || '',
-      stateRegion: grandLodge.state_region || grandLodge.stateRegion || '',
-      stateRegionCode: grandLodge.state_region_code || grandLodge.stateRegionCode || '',
-      
-      organisationId: grandLodge.organisation_id || grandLodge.organisationId || null,
-      
-      address: {
-        addressLine1: grandLodge.address_line_1 || grandLodge.addressLine1 || '',
-        addressLine2: grandLodge.address_line_2 || grandLodge.addressLine2 || '',
-        city: grandLodge.city || '',
-        state: grandLodge.state || '',
-        postcode: grandLodge.postcode || '',
-        country: grandLodge.country || ''
-      },
-      
-      contact: {
-        phone: grandLodge.phone || '',
-        email: grandLodge.email || '',
-        website: grandLodge.website || ''
-      },
-      
-      lodges: lodges.map(lodge => ({
+    lodges: lodges.map(lodge => ({
         id: lodge.lodge_id || lodge.lodgeId,
         number: lodge.number || '',
         name: lodge.name || 'Unknown Lodge',
@@ -159,8 +162,7 @@ async function transformToJurisdiction(grandLodge, lodges, migrationState) {
             originalAreaType: lodge.area_type || lodge.areaType
           }
         }
-      }))
-    },
+      })),
     
     metadata: {
       source: 'migration',

@@ -1697,9 +1697,54 @@ app.post('/api/migration/process', async (req, res) => {
         break;
         
       case 'registrations':
+        // Auto-fetch event_tickets if not provided and registration contains event_ticket_ids
+        let enhancedRelatedDocs = relatedDocuments || {};
+        
+        // Check if registration has event_ticket_ids
+        const hasEventTicketIds = 
+          (sourceDocument.tickets && sourceDocument.tickets.some((t: any) => t.eventTicketId || t.event_ticket_id)) ||
+          (sourceDocument.registrationData?.attendees?.some((a: any) => a.eventTicketId || a.event_ticket_id));
+        
+        if (hasEventTicketIds && !enhancedRelatedDocs.event_tickets) {
+          // Extract all event_ticket_ids
+          const ticketIds: string[] = [];
+          
+          if (sourceDocument.tickets) {
+            sourceDocument.tickets.forEach((ticket: any) => {
+              if (ticket.eventTicketId || ticket.event_ticket_id) {
+                ticketIds.push(ticket.eventTicketId || ticket.event_ticket_id);
+              }
+            });
+          }
+          
+          if (sourceDocument.registrationData?.attendees) {
+            sourceDocument.registrationData.attendees.forEach((attendee: any) => {
+              if (attendee.eventTicketId || attendee.event_ticket_id) {
+                ticketIds.push(attendee.eventTicketId || attendee.event_ticket_id);
+              }
+            });
+          }
+          
+          // Fetch event_tickets from source database
+          if (ticketIds.length > 0) {
+            const uniqueTicketIds = [...new Set(ticketIds)];
+            const eventTickets = await sourceDb.collection('event_tickets')
+              .find({ 
+                $or: [
+                  { eventTicketId: { $in: uniqueTicketIds } },
+                  { event_ticket_id: { $in: uniqueTicketIds } }
+                ]
+              })
+              .toArray();
+            
+            enhancedRelatedDocs.event_tickets = eventTickets;
+            console.log(`Auto-fetched ${eventTickets.length} event tickets for registration`);
+          }
+        }
+        
         result = await migrationService.migrateRegistration(
           sourceDocument,
-          relatedDocuments || {},
+          enhancedRelatedDocs,
           mappings
         );
         break;

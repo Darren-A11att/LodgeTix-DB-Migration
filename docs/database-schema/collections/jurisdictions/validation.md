@@ -1,142 +1,91 @@
 # Jurisdictions Collection Validation
 
-## MongoDB Schema Validation Rules
-
-Due to the dynamic nature of field names in this collection, validation must be flexible. The following shows a base validation schema with examples for craft jurisdictions.
+## MongoDB Schema Validation
 
 ```javascript
 db.createCollection("jurisdictions", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["type", "definitions"],
+      required: ["jurisdictionId", "name", "type"],
       properties: {
         _id: {
           bsonType: "objectId"
         },
         jurisdictionId: {
           bsonType: "string",
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "Must be a valid UUID"
+        },
+        name: {
+          bsonType: "string",
           minLength: 1,
-          description: "Unique jurisdiction identifier"
+          maxLength: 200,
+          description: "Grand Lodge name"
+        },
+        abbreviation: {
+          bsonType: "string",
+          minLength: 1,
+          maxLength: 20,
+          description: "Short code"
         },
         type: {
           bsonType: "string",
+          enum: ["grand_lodge", "grand_chapter", "supreme_council"],
+          description: "Type of jurisdiction"
+        },
+        country: {
+          bsonType: "string",
           minLength: 1,
-          description: "Jurisdiction type (craft, mark & royal arch, etc.)"
+          maxLength: 100
         },
-        definitions: {
-          bsonType: "object",
-          required: ["parentName", "parentLabel", "childName", "childLabel"],
-          properties: {
-            parentName: {
-              bsonType: "string",
-              minLength: 1,
-              description: "Field name for parent entity"
-            },
-            parentLabel: {
-              bsonType: "string",
-              minLength: 1,
-              description: "Display label for parent entity"
-            },
-            childName: {
-              bsonType: "string",
-              minLength: 1,
-              description: "Field name for child entities"
-            },
-            childLabel: {
-              bsonType: "string",
-              minLength: 1,
-              description: "Display label for child entities"
-            },
-            ranks: {
-              bsonType: ["array", "null"],
-              items: {
-                bsonType: "object",
-                required: ["code", "name"],
-                properties: {
-                  code: { bsonType: "string" },
-                  name: { bsonType: "string" },
-                  order: { bsonType: ["number", "null"] },
-                  abbreviation: { bsonType: ["string", "null"] }
-                }
-              }
-            },
-            titles: {
-              bsonType: ["array", "null"],
-              items: {
-                bsonType: "object",
-                required: ["code", "name"],
-                properties: {
-                  code: { bsonType: "string" },
-                  name: { bsonType: "string" },
-                  abbreviation: { bsonType: ["string", "null"] }
-                }
-              }
-            },
-            parentOffices: {
-              bsonType: ["array", "null"],
-              items: {
-                bsonType: "object",
-                required: ["code", "name"],
-                properties: {
-                  code: { bsonType: "string" },
-                  name: { bsonType: "string" },
-                  order: { bsonType: ["number", "null"] },
-                  type: { 
-                    bsonType: ["string", "null"],
-                    enum: ["elected", "appointed", null]
-                  }
-                }
-              }
-            },
-            childOffices: {
-              bsonType: ["array", "null"],
-              items: {
-                bsonType: "object",
-                required: ["code", "name"],
-                properties: {
-                  code: { bsonType: "string" },
-                  name: { bsonType: "string" },
-                  order: { bsonType: ["number", "null"] },
-                  type: { 
-                    bsonType: ["string", "null"],
-                    enum: ["elected", "appointed", null]
-                  }
-                }
-              }
-            }
-          },
-          additionalProperties: false
+        countryCode: {
+          bsonType: "string",
+          pattern: "^[A-Z]{3}$",
+          description: "ISO 3-letter country code"
         },
-        metadata: {
-          bsonType: "object",
-          required: ["createdAt"],
-          properties: {
-            source: {
-              bsonType: ["string", "null"]
-            },
-            createdAt: {
-              bsonType: "date"
-            },
-            createdBy: {
-              bsonType: ["objectId", "null"]
-            },
-            updatedAt: {
-              bsonType: ["date", "null"]
-            },
-            updatedBy: {
-              bsonType: ["objectId", "null"]
-            },
-            version: {
-              bsonType: ["number", "null"],
-              minimum: 1
-            }
+        stateRegion: {
+          bsonType: ["string", "null"],
+          maxLength: 100
+        },
+        stateRegionCode: {
+          bsonType: ["string", "null"],
+          maxLength: 10
+        },
+        titles: {
+          bsonType: "array",
+          items: {
+            bsonType: "string"
           },
-          additionalProperties: false
+          description: "Array of masonic titles"
+        },
+        ranks: {
+          bsonType: "array",
+          items: {
+            bsonType: "string"
+          },
+          description: "Array of masonic ranks"
+        },
+        offices: {
+          bsonType: "array",
+          items: {
+            bsonType: "string"
+          },
+          description: "Array of officer positions"
+        },
+        organizationId: {
+          bsonType: ["string", "null"],
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "Link to organizations collection"
+        },
+        createdAt: {
+          bsonType: "date"
+        },
+        updatedAt: {
+          bsonType: "date"
         }
       },
-      // Allow additional properties for dynamic parent/child fields
-      additionalProperties: true
+      additionalProperties: false
     }
   },
   validationLevel: "moderate",
@@ -144,161 +93,99 @@ db.createCollection("jurisdictions", {
 })
 ```
 
-## Dynamic Field Validation
+# Lodges Collection Validation
 
-Since parent and child field names are defined in `definitions`, additional validation must be performed in application logic:
-
-### Validate Parent Entity Structure
 ```javascript
-function validateParentEntity(doc) {
-  const parentName = doc.definitions.parentName;
-  const parentEntity = doc[parentName];
-  
-  if (!parentEntity) {
-    throw new Error(`Missing required parent entity: ${parentName}`);
-  }
-  
-  // Required parent fields
-  const requiredFields = ['name'];
-  for (const field of requiredFields) {
-    if (!parentEntity[field]) {
-      throw new Error(`Missing required field: ${parentName}.${field}`);
+db.createCollection("lodges", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["lodgeId", "jurisdictionId", "name", "number"],
+      properties: {
+        _id: {
+          bsonType: "objectId"
+        },
+        lodgeId: {
+          bsonType: "string",
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "Must be a valid UUID"
+        },
+        jurisdictionId: {
+          bsonType: "string",
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "Must reference a valid jurisdiction"
+        },
+        name: {
+          bsonType: "string",
+          minLength: 1,
+          maxLength: 200,
+          description: "Lodge name"
+        },
+        number: {
+          bsonType: "string",
+          minLength: 1,
+          maxLength: 10,
+          description: "Lodge number"
+        },
+        displayName: {
+          bsonType: "string",
+          minLength: 1,
+          maxLength: 250,
+          description: "Full display name with number"
+        },
+        district: {
+          bsonType: ["string", "null"],
+          maxLength: 50
+        },
+        meetingPlace: {
+          bsonType: ["string", "null"],
+          maxLength: 200
+        },
+        areaType: {
+          bsonType: ["string", "null"],
+          enum: ["METRO", "COUNTRY", null],
+          description: "Metropolitan or Country area"
+        },
+        stateRegion: {
+          bsonType: ["string", "null"],
+          maxLength: 50
+        },
+        organizationId: {
+          bsonType: ["string", "null"],
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "Link to organizations collection"
+        },
+        createdAt: {
+          bsonType: "date"
+        },
+        updatedAt: {
+          bsonType: "date"
+        }
+      },
+      additionalProperties: false
     }
-  }
-  
-  // Validate geographic fields if present
-  if (parentEntity.countryCode && !/^[A-Z]{3}$/.test(parentEntity.countryCode)) {
-    throw new Error('Country code must be 3 uppercase letters (ISO3)');
-  }
-}
+  },
+  validationLevel: "moderate",
+  validationAction: "error"
+})
 ```
 
-### Validate Child Entities Structure
-```javascript
-function validateChildEntities(doc) {
-  const parentName = doc.definitions.parentName;
-  const childName = doc.definitions.childName;
-  const children = doc[parentName]?.[childName];
-  
-  if (!Array.isArray(children)) {
-    return; // Children are optional
-  }
-  
-  children.forEach((child, index) => {
-    // Required child fields
-    if (!child.name) {
-      throw new Error(`Missing name for ${childName}[${index}]`);
-    }
-    
-    // Validate status if present
-    const validStatuses = ['active', 'dormant', 'consecrating', 'amalgamated', 'closed'];
-    if (child.status && !validStatuses.includes(child.status)) {
-      throw new Error(`Invalid status for ${childName}[${index}]: ${child.status}`);
-    }
-    
-    // Validate area type if present
-    const validAreaTypes = ['METRO', 'COUNTRY', 'REGIONAL'];
-    if (child.areaType && !validAreaTypes.includes(child.areaType)) {
-      throw new Error(`Invalid area type for ${childName}[${index}]: ${child.areaType}`);
-    }
-  });
-}
-```
+## Validation Rules
 
-### Validate Jurisdiction Type Consistency
-```javascript
-function validateJurisdictionType(doc) {
-  const validTypes = {
-    'craft': {
-      parentName: 'grandLodge',
-      childName: 'lodges'
-    },
-    'mark & royal arch': {
-      parentName: 'grandChapter',
-      childName: 'chapters'
-    },
-    'scottish rite': {
-      parentName: 'supremeCouncil',
-      childName: 'valleys'
-    }
-  };
-  
-  const typeConfig = validTypes[doc.type];
-  if (typeConfig) {
-    // Validate that definitions match expected values for known types
-    if (doc.definitions.parentName !== typeConfig.parentName) {
-      console.warn(`Unexpected parent name for ${doc.type}: ${doc.definitions.parentName}`);
-    }
-    if (doc.definitions.childName !== typeConfig.childName) {
-      console.warn(`Unexpected child name for ${doc.type}: ${doc.definitions.childName}`);
-    }
-  }
-}
-```
+### Jurisdictions
+1. `jurisdictionId` must be a valid UUID
+2. `type` must be one of the allowed jurisdiction types
+3. `countryCode` must be 3 uppercase letters
+4. Arrays (titles, ranks, offices) can be empty but must be arrays
 
-### Validate Meeting Schedule
-```javascript
-function validateMeetingSchedule(schedule) {
-  if (!schedule) return;
-  
-  const validFrequencies = ['weekly', 'fortnightly', 'monthly', 'bi-monthly', 'quarterly'];
-  if (schedule.frequency && !validFrequencies.includes(schedule.frequency)) {
-    throw new Error(`Invalid meeting frequency: ${schedule.frequency}`);
-  }
-  
-  const validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  if (schedule.dayOfWeek && !validDays.includes(schedule.dayOfWeek)) {
-    throw new Error(`Invalid day of week: ${schedule.dayOfWeek}`);
-  }
-  
-  const validWeeks = ['first', 'second', 'third', 'fourth', 'last'];
-  if (schedule.weekOfMonth && !validWeeks.includes(schedule.weekOfMonth)) {
-    throw new Error(`Invalid week of month: ${schedule.weekOfMonth}`);
-  }
-  
-  // Validate time format (HH:MM)
-  if (schedule.time && !/^\d{2}:\d{2}$/.test(schedule.time)) {
-    throw new Error(`Invalid time format: ${schedule.time} (expected HH:MM)`);
-  }
-}
-```
+### Lodges
+1. `lodgeId` must be a valid UUID
+2. `jurisdictionId` must reference an existing jurisdiction
+3. `number` is required and stored as string (can be alphanumeric)
+4. `areaType` if present must be METRO or COUNTRY
 
-## Custom Validation Rules
-
-### No Duplicate Child Numbers
-```javascript
-function validateUniqueChildNumbers(doc) {
-  const parentName = doc.definitions.parentName;
-  const childName = doc.definitions.childName;
-  const children = doc[parentName]?.[childName] || [];
-  
-  const numbers = children.map(child => child.number).filter(num => num);
-  const uniqueNumbers = new Set(numbers);
-  
-  if (numbers.length !== uniqueNumbers.size) {
-    throw new Error(`Duplicate ${childName} numbers found`);
-  }
-}
-```
-
-### Valid Office Order
-```javascript
-function validateOfficeOrder(offices) {
-  if (!Array.isArray(offices)) return;
-  
-  const orders = offices.map(office => office.order).filter(order => order != null);
-  const uniqueOrders = new Set(orders);
-  
-  if (orders.length !== uniqueOrders.size) {
-    throw new Error('Duplicate office order values found');
-  }
-}
-```
-
-## Validation Notes
-
-1. **Flexible Schema**: The collection allows additional properties to accommodate dynamic field names
-2. **Application Validation**: Complex validation rules must be enforced at the application level
-3. **Type Safety**: Jurisdiction types should be validated against known configurations
-4. **Data Integrity**: Child entity arrays should be validated for consistency
-5. **Migration Support**: Validation is set to "moderate" to allow existing data during migration
+## Business Rules (Application Level)
+1. Lodge numbers must be unique within a jurisdiction
+2. Jurisdiction abbreviations should be unique globally
+3. When creating a lodge, verify the jurisdictionId exists
+4. Empty arrays for titles/ranks/offices are expected initially

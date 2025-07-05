@@ -1,14 +1,16 @@
 # Users Collection Schema
 
 ## Overview
-The `users` collection stores authentication-only information. All profile data is stored in the `contacts` collection to maintain separation of concerns between authentication and personal information.
+The `users` collection stores authentication and access control information. All profile data is stored in the `contacts` collection to maintain separation of concerns between authentication and personal information.
 
 ## Purpose
 - User authentication and authorization
-- Email-based login system
+- Email or phone-based login system
+- OAuth provider integration
 - Account status management
 - Multi-factor authentication support
 - Session tracking and security
+- Role-based access control
 
 ## Schema Structure
 
@@ -17,182 +19,243 @@ The `users` collection stores authentication-only information. All profile data 
 ```javascript
 {
   _id: ObjectId,
-  email: String,              // Required, unique, valid email format
-  password: String | null,    // Hashed password (bcrypt)
-  contactId: ObjectId | null, // Reference to contact for profile data
-  status: String,             // Required: active, inactive, suspended, pending
-  emailVerified: Boolean,     // Email verification status
-  authentication: {
-    lastLogin: Date | null,
-    lastLoginIp: String | null,
-    failedAttempts: Number,   // Min: 0, for rate limiting
-    lockedUntil: Date | null, // Account lockout timestamp
-    mfa: {
-      enabled: Boolean,
-      type: String | null,    // totp, sms, email
-      secret: String | null   // Encrypted MFA secret
+  userId: String,               // UUID v4
+  contactId: String,            // Required, UUID v4, links to contact
+  
+  // Authentication identifiers (at least one required)
+  email: String | null,         // From linked contact
+  phone: String | null,         // From linked contact, E.164 format
+  
+  // Password authentication
+  password: String | null,      // Hashed password (bcrypt)
+  
+  // OAuth providers
+  authProviders: {
+    google: {
+      id: String,
+      email: String | null
+    },
+    facebook: {
+      id: String,
+      email: String | null  
     }
   },
-  createdAt: Date,           // Required
-  updatedAt: Date | null
+  
+  // Access control
+  roles: [String],              // ["user", "admin", "host"]
+  permissions: [String],        // Specific permissions
+  
+  // Account status
+  status: String,               // active, suspended, deleted
+  emailVerified: Boolean,
+  phoneVerified: Boolean,
+  
+  // Security
+  lastLogin: Date | null,
+  loginCount: Number,
+  passwordResetToken: String | null,
+  passwordResetExpires: Date | null,
+  
+  // Metadata
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 
 ### Field Details
 
-#### email
+#### userId
 - **Type**: String
 - **Required**: Yes
 - **Unique**: Yes
+- **Pattern**: UUID v4
+- **Description**: Unique identifier for the user
+
+#### contactId
+- **Type**: String
+- **Required**: Yes
+- **Unique**: Yes
+- **Pattern**: UUID v4
+- **Description**: Links to contact record containing all profile information
+
+#### email
+- **Type**: String | null
+- **Required**: No (but email OR phone required)
 - **Pattern**: `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$`
-- **Description**: Primary authentication identifier
+- **Description**: Primary email for authentication (synced from contact)
+
+#### phone
+- **Type**: String | null
+- **Required**: No (but email OR phone required)
+- **Pattern**: `^\\+[1-9]\\d{1,14}$` (E.164 format)
+- **Description**: Phone number for authentication (synced from contact)
 
 #### password
 - **Type**: String | null
 - **Required**: No
-- **Description**: Bcrypt hashed password. Null for SSO or passwordless users
+- **Description**: Bcrypt hashed password. Null for OAuth or passwordless users
 
-#### contactId
-- **Type**: ObjectId | null
-- **Required**: No
-- **Unique**: Yes (when present)
-- **Description**: Links to contact record containing all profile information
+#### authProviders
+- **Type**: Object
+- **Description**: OAuth provider information
+- **Providers**:
+  - `google`: Google OAuth details
+  - `facebook`: Facebook OAuth details
+  - Additional providers can be added
+
+#### roles
+- **Type**: Array of Strings
+- **Default**: ["user"]
+- **Values**: 
+  - `user`: Basic user access
+  - `admin`: Administrative access
+  - `host`: Event hosting capabilities
+
+#### permissions
+- **Type**: Array of Strings
+- **Description**: Specific granular permissions
+- **Examples**: "manage_events", "view_reports", "manage_users"
 
 #### status
 - **Type**: String (enum)
 - **Required**: Yes
 - **Values**: 
   - `active`: Can log in normally
-  - `inactive`: Cannot log in, voluntary deactivation
   - `suspended`: Cannot log in, administrative action
-  - `pending`: Awaiting email verification
+  - `deleted`: Soft deleted, cannot log in
 
-#### emailVerified
-- **Type**: Boolean
-- **Default**: false
-- **Description**: Whether email address has been verified
-
-#### authentication
-- **Type**: Object
-- **Description**: Authentication metadata and security settings
-- **Fields**:
-  - `lastLogin`: Last successful login timestamp
-  - `lastLoginIp`: IP address of last login
-  - `failedAttempts`: Count for rate limiting (reset on successful login)
-  - `lockedUntil`: Temporary lockout expiry
-  - `mfa`: Multi-factor authentication configuration
+#### Security Fields
+- **lastLogin**: Last successful login timestamp
+- **loginCount**: Total number of successful logins
+- **passwordResetToken**: Token for password reset (hashed)
+- **passwordResetExpires**: Expiry time for reset token
 
 ## Relationships
 
 ### To Contacts (1:1)
-- Each user can have one associated contact record
+- Each user MUST have one associated contact record
 - Contact stores all personal/profile information
-- Relationship via `contactId` field
+- Relationship via `contactId` field (UUID v4)
+- Email and phone are synced from contact record
 
-## Validation Rules
+## Business Rules
 
-1. **Email Format**: Must be valid email address
-2. **Status Values**: Must be one of allowed enum values
-3. **Failed Attempts**: Cannot be negative
-4. **Contact Uniqueness**: One user per contact maximum
+### User Creation
+1. **Contact First**: Contact must exist before creating user
+2. **Authentication Method**: Must have either email or phone
+3. **Booking/Billing Contacts**: Automatically get user accounts
+4. **Default Role**: All users start with "user" role
+
+### Authentication Rules
+1. **Login Identifier**: Can use email OR phone to log in
+2. **Password Optional**: Not required if using OAuth or magic links
+3. **Verification**: Email/phone should be verified for security
+4. **Multi-factor**: Can be enforced for admin/host roles
+
+### Access Control
+1. **Role Hierarchy**: admin > host > user
+2. **Permission Based**: Check specific permissions for features
+3. **Context Aware**: Access to organizations/events via contact record
 
 ## Security Considerations
 
 1. **Password Storage**: Always bcrypt hashed, never plain text
-2. **MFA Secret**: Encrypted at rest
-3. **Rate Limiting**: Track failed attempts and lock accounts
-4. **Session Management**: Track last login for security auditing
+2. **Token Security**: Reset tokens are hashed and time-limited
+3. **OAuth Tokens**: Store only provider IDs, not access tokens
+4. **Session Management**: Track login history for security auditing
 5. **Minimal Data**: No PII stored, only authentication essentials
-
-## Migration from Legacy Model
-
-### Changes from Previous Version
-- Removed all profile fields (moved to contacts)
-- Removed name fields
-- Removed direct organisation relationships
-- Simplified to authentication-only focus
-- Added comprehensive authentication tracking
-- Added MFA support structure
-
-### Data Migration Strategy
-1. Create contact record for each user
-2. Move profile data to contact
-3. Update contactId reference
-4. Remove deprecated fields
 
 ## Example Documents
 
-### Basic User
+### Basic User (Email Auth)
 ```json
 {
   "_id": ObjectId("..."),
+  "userId": "550e8400-e29b-41d4-a716-446655440001",
+  "contactId": "550e8400-e29b-41d4-a716-446655440000",
   "email": "john.smith@example.com",
+  "phone": null,
   "password": "$2b$10$...",
-  "contactId": ObjectId("..."),
+  "authProviders": {},
+  "roles": ["user"],
+  "permissions": [],
   "status": "active",
   "emailVerified": true,
-  "authentication": {
-    "lastLogin": ISODate("2024-01-15T10:30:00Z"),
-    "lastLoginIp": "192.168.1.100",
-    "failedAttempts": 0,
-    "lockedUntil": null,
-    "mfa": {
-      "enabled": false,
-      "type": null,
-      "secret": null
-    }
-  },
+  "phoneVerified": false,
+  "lastLogin": ISODate("2024-01-15T10:30:00Z"),
+  "loginCount": 45,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
   "createdAt": ISODate("2023-06-01T12:00:00Z"),
   "updatedAt": ISODate("2024-01-15T10:30:00Z")
 }
 ```
 
-### User with MFA
+### OAuth User (Google)
 ```json
 {
   "_id": ObjectId("..."),
-  "email": "admin@lodge.org",
-  "password": "$2b$10$...",
-  "contactId": ObjectId("..."),
-  "status": "active",
-  "emailVerified": true,
-  "authentication": {
-    "lastLogin": ISODate("2024-01-20T08:00:00Z"),
-    "lastLoginIp": "10.0.0.50",
-    "failedAttempts": 0,
-    "lockedUntil": null,
-    "mfa": {
-      "enabled": true,
-      "type": "totp",
-      "secret": "encrypted_secret_here"
+  "userId": "550e8400-e29b-41d4-a716-446655440002",
+  "contactId": "550e8400-e29b-41d4-a716-446655440003",
+  "email": "jane.doe@gmail.com",
+  "phone": "+61 400 123 456",
+  "password": null,
+  "authProviders": {
+    "google": {
+      "id": "115894251626389074321",
+      "email": "jane.doe@gmail.com"
     }
   },
+  "roles": ["user", "host"],
+  "permissions": ["create_events", "manage_registrations"],
+  "status": "active",
+  "emailVerified": true,
+  "phoneVerified": true,
+  "lastLogin": ISODate("2024-01-20T08:00:00Z"),
+  "loginCount": 123,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
   "createdAt": ISODate("2022-01-01T00:00:00Z"),
   "updatedAt": ISODate("2024-01-20T08:00:00Z")
 }
 ```
 
-### Locked Account
+### Admin User (Phone Auth)
 ```json
 {
   "_id": ObjectId("..."),
-  "email": "suspicious@example.com",
+  "userId": "550e8400-e29b-41d4-a716-446655440004",
+  "contactId": "550e8400-e29b-41d4-a716-446655440005",
+  "email": null,
+  "phone": "+61 400 999 888",
   "password": "$2b$10$...",
-  "contactId": null,
+  "authProviders": {},
+  "roles": ["user", "admin"],
+  "permissions": ["manage_users", "view_reports", "manage_system"],
   "status": "active",
-  "emailVerified": true,
-  "authentication": {
-    "lastLogin": ISODate("2024-01-10T15:00:00Z"),
-    "lastLoginIp": "suspicious.ip.address",
-    "failedAttempts": 5,
-    "lockedUntil": ISODate("2024-01-20T16:30:00Z"),
-    "mfa": {
-      "enabled": false,
-      "type": null,
-      "secret": null
-    }
-  },
-  "createdAt": ISODate("2023-12-01T00:00:00Z"),
-  "updatedAt": ISODate("2024-01-20T16:00:00Z")
+  "emailVerified": false,
+  "phoneVerified": true,
+  "lastLogin": ISODate("2024-01-21T14:00:00Z"),
+  "loginCount": 89,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": ISODate("2021-06-01T00:00:00Z"),
+  "updatedAt": ISODate("2024-01-21T14:00:00Z")
 }
 ```
+
+## Migration Notes
+
+### From Current Users Collection
+1. Generate UUID v4 for userId
+2. Create contact records for existing users
+3. Move profile data to contacts
+4. Update contactId with UUID v4 reference
+5. Sync email/phone from contact
+6. Map existing roles/permissions
+
+### Required for Go-Live
+1. All booking contacts must have users
+2. All billing contacts must have users
+3. Organization key personnel should have users
+4. Event hosts must have users

@@ -7,56 +7,84 @@ db.createCollection("users", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["email", "status", "createdAt"],
+      required: ["userId", "contactId", "status", "createdAt"],
       properties: {
-        email: {
+        userId: {
           bsonType: "string",
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "UUID v4 for user identification"
+        },
+        contactId: {
+          bsonType: "string",
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          description: "UUID v4 reference to contact"
+        },
+        email: {
+          bsonType: ["string", "null"],
           pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-          description: "Valid email address for authentication"
+          description: "Email for authentication"
+        },
+        phone: {
+          bsonType: ["string", "null"],
+          pattern: "^\\+[1-9]\\d{1,14}$",
+          description: "E.164 format phone number"
         },
         password: {
           bsonType: ["string", "null"],
-          description: "Hashed password"
+          description: "Bcrypt hashed password"
         },
-        contactId: {
-          bsonType: ["objectId", "null"],
-          description: "Reference to contact for profile data"
+        authProviders: {
+          bsonType: ["object", "null"],
+          properties: {
+            google: {
+              bsonType: ["object", "null"],
+              properties: {
+                id: { bsonType: "string" },
+                email: { bsonType: ["string", "null"] }
+              }
+            },
+            facebook: {
+              bsonType: ["object", "null"],
+              properties: {
+                id: { bsonType: "string" },
+                email: { bsonType: ["string", "null"] }
+              }
+            }
+          }
+        },
+        roles: {
+          bsonType: "array",
+          items: {
+            bsonType: "string",
+            enum: ["user", "admin", "host"]
+          }
+        },
+        permissions: {
+          bsonType: ["array", "null"],
+          items: { bsonType: "string" }
         },
         status: {
           bsonType: "string",
-          enum: ["active", "inactive", "suspended", "pending"],
+          enum: ["active", "suspended", "deleted"],
           description: "Account status"
         },
         emailVerified: {
           bsonType: "bool",
           description: "Email verification status"
         },
-        authentication: {
-          bsonType: ["object", "null"],
-          properties: {
-            lastLogin: { bsonType: ["date", "null"] },
-            lastLoginIp: { bsonType: ["string", "null"] },
-            failedAttempts: { 
-              bsonType: "int", 
-              minimum: 0,
-              description: "Failed login attempts counter"
-            },
-            lockedUntil: { bsonType: ["date", "null"] },
-            mfa: {
-              bsonType: ["object", "null"],
-              properties: {
-                enabled: { bsonType: "bool" },
-                type: { 
-                  bsonType: ["string", "null"],
-                  enum: ["totp", "sms", "email", null]
-                },
-                secret: { bsonType: ["string", "null"] }
-              }
-            }
-          }
+        phoneVerified: {
+          bsonType: "bool",
+          description: "Phone verification status"
         },
+        lastLogin: { bsonType: ["date", "null"] },
+        loginCount: { 
+          bsonType: "int",
+          minimum: 0
+        },
+        passwordResetToken: { bsonType: ["string", "null"] },
+        passwordResetExpires: { bsonType: ["date", "null"] },
         createdAt: { bsonType: "date" },
-        updatedAt: { bsonType: ["date", "null"] }
+        updatedAt: { bsonType: "date" }
       }
     }
   },
@@ -67,15 +95,17 @@ db.createCollection("users", {
 
 ## Field Validation Rules
 
-### Email
-- **Required**: Yes
-- **Format**: Valid email address pattern
-- **Uniqueness**: Must be unique across collection
-- **Case**: Store as lowercase for consistency
-- **Max Length**: 255 characters
+### Core Identifiers
+- **userId**: Must be valid UUID v4
+- **contactId**: Must be valid UUID v4, required, links to contact
+
+### Authentication Fields
+- **email**: Valid email format, must be unique when present
+- **phone**: E.164 format (+1234567890), must be unique when present
+- **At least one required**: Must have email OR phone
 
 ### Password
-- **Required**: No (allows for SSO/passwordless)
+- **Required**: No (allows for OAuth/passwordless)
 - **Format**: Bcrypt hash (60 characters)
 - **Strength Requirements** (pre-hash):
   - Minimum 8 characters
@@ -88,14 +118,12 @@ db.createCollection("users", {
 - **Required**: Yes
 - **Values**: Must be one of:
   - `active`: Can log in
-  - `inactive`: Cannot log in (voluntary)
   - `suspended`: Cannot log in (administrative)
-  - `pending`: Awaiting email verification
+  - `deleted`: Soft deleted, cannot log in
 
-### Authentication Object
-- **failedAttempts**: Must be >= 0
-- **lockedUntil**: Must be future date when set
-- **mfa.type**: Must be valid MFA method when enabled
+### Roles & Permissions
+- **roles**: Array of strings, default ["user"]
+- **permissions**: Array of specific permission strings
 
 ## Business Rules
 
@@ -103,25 +131,134 @@ db.createCollection("users", {
 ```javascript
 // Validation for new user creation
 async function validateNewUser(userData) {
-  // Email must be unique
-  const existingUser = await db.users.findOne({ 
-    email: userData.email.toLowerCase() 
-  });
-  if (existingUser) {
-    throw new Error('Email already registered');
+  // Must have email or phone
+  if (!userData.email && !userData.phone) {
+    throw new Error('Email or phone required');
   }
   
-  // Set default values
-  userData.email = userData.email.toLowerCase();
-  userData.status = userData.status || 'pending';
+  // Contact must exist
+  const contact = await db.contacts.findOne({ 
+    contactId: userData.contactId 
+  });
+  if (!contact) {
+    throw new Error('Contact must exist before creating user');
+  }
+  
+  // Check email uniqueness
+  if (userData.email) {
+    const existingEmail = await db.users.findOne({ 
+      email: userData.email.toLowerCase() 
+    });
+    if (existingEmail) {
+      throw new Error('Email already registered');
+    }
+  }
+  
+  // Check phone uniqueness
+  if (userData.phone) {
+    const existingPhone = await db.users.findOne({ 
+      phone: userData.phone 
+    });
+    if (existingPhone) {
+      throw new Error('Phone already registered');
+    }
+  }
+  
+  // Set defaults
+  userData.userId = generateUUID();
+  userData.email = userData.email?.toLowerCase() || null;
+  userData.status = userData.status || 'active';
   userData.emailVerified = false;
+  userData.phoneVerified = false;
+  userData.roles = userData.roles || ['user'];
+  userData.permissions = userData.permissions || [];
+  userData.loginCount = 0;
   userData.createdAt = new Date();
+  userData.updatedAt = new Date();
   
   return userData;
 }
 ```
 
-### 2. Password Policy
+### 2. Contact Synchronization
+```javascript
+// Sync email/phone from contact
+async function syncContactInfo(userId) {
+  const user = await db.users.findOne({ userId });
+  const contact = await db.contacts.findOne({ contactId: user.contactId });
+  
+  if (!contact) {
+    throw new Error('Contact not found');
+  }
+  
+  const updates = {};
+  
+  // Update email if changed
+  if (contact.email !== user.email) {
+    // Check uniqueness before updating
+    if (contact.email) {
+      const existing = await db.users.findOne({ 
+        email: contact.email,
+        userId: { $ne: userId }
+      });
+      if (!existing) {
+        updates.email = contact.email;
+      }
+    }
+  }
+  
+  // Update phone if changed
+  if (contact.phone !== user.phone) {
+    // Check uniqueness before updating
+    if (contact.phone) {
+      const existing = await db.users.findOne({ 
+        phone: contact.phone,
+        userId: { $ne: userId }
+      });
+      if (!existing) {
+        updates.phone = contact.phone;
+      }
+    }
+  }
+  
+  if (Object.keys(updates).length > 0) {
+    await db.users.updateOne(
+      { userId },
+      { 
+        $set: {
+          ...updates,
+          updatedAt: new Date()
+        }
+      }
+    );
+  }
+}
+```
+
+### 3. OAuth Provider Validation
+```javascript
+// Validate OAuth provider
+async function validateOAuthProvider(provider, providerId, email) {
+  const validProviders = ['google', 'facebook'];
+  
+  if (!validProviders.includes(provider)) {
+    throw new Error('Invalid OAuth provider');
+  }
+  
+  // Check if provider ID already exists
+  const existing = await db.users.findOne({
+    [`authProviders.${provider}.id`]: providerId
+  });
+  
+  if (existing) {
+    return existing; // User already exists with this provider
+  }
+  
+  return null;
+}
+```
+
+### 4. Password Policy
 ```javascript
 // Validate password strength
 function validatePassword(password) {
@@ -143,136 +280,135 @@ function validatePassword(password) {
 }
 ```
 
-### 3. Account Lockout
-```javascript
-// Handle failed login attempts
-async function handleFailedLogin(email) {
-  const maxAttempts = 5;
-  const lockoutDuration = 30 * 60 * 1000; // 30 minutes
-  
-  const user = await db.users.findOne({ email: email.toLowerCase() });
-  if (!user) return;
-  
-  const newFailedAttempts = (user.authentication?.failedAttempts || 0) + 1;
-  
-  const update = {
-    'authentication.failedAttempts': newFailedAttempts
-  };
-  
-  // Lock account after max attempts
-  if (newFailedAttempts >= maxAttempts) {
-    update['authentication.lockedUntil'] = new Date(Date.now() + lockoutDuration);
-  }
-  
-  await db.users.updateOne(
-    { _id: user._id },
-    { $set: update }
-  );
-}
-
-// Reset on successful login
-async function handleSuccessfulLogin(userId) {
-  await db.users.updateOne(
-    { _id: userId },
-    { 
-      $set: {
-        'authentication.lastLogin': new Date(),
-        'authentication.failedAttempts': 0
-      },
-      $unset: {
-        'authentication.lockedUntil': ''
-      }
-    }
-  );
-}
-```
-
-### 4. Email Verification
-```javascript
-// Check if account needs verification
-function requiresEmailVerification(user) {
-  return user.status === 'pending' && !user.emailVerified;
-}
-
-// Verify email
-async function verifyEmail(userId) {
-  await db.users.updateOne(
-    { _id: userId },
-    { 
-      $set: {
-        emailVerified: true,
-        status: 'active'
-      }
-    }
-  );
-}
-```
-
-### 5. MFA Validation
-```javascript
-// Validate MFA setup
-function validateMFASetup(mfaData) {
-  const validTypes = ['totp', 'sms', 'email'];
-  
-  if (!validTypes.includes(mfaData.type)) {
-    throw new Error('Invalid MFA type');
-  }
-  
-  if (mfaData.type === 'totp' && !mfaData.secret) {
-    throw new Error('TOTP secret required');
-  }
-  
-  return true;
-}
-```
-
-## Data Integrity Rules
-
-### 1. Contact Reference Integrity
-- If `contactId` is set, it must reference a valid contact
-- One user maximum per contact
-- Cannot change `contactId` once set
-
-### 2. Status Transitions
-- `pending` → `active`: After email verification
-- `active` → `inactive`: User request
-- `active` → `suspended`: Admin action only
-- `suspended` → `active`: Admin action only
-- `inactive` → `active`: User reactivation
-
-### 3. Timestamp Consistency
-- `createdAt` cannot be modified after creation
-- `updatedAt` must be >= `createdAt`
-- `authentication.lastLogin` must be >= `createdAt`
-
-## Security Validations
-
-### 1. Login Security
+### 5. Login Validation
 ```javascript
 // Validate login attempt
-async function validateLogin(email, password, ipAddress) {
-  const user = await db.users.findOne({ 
-    email: email.toLowerCase() 
+async function validateLogin(identifier, password) {
+  // Find user by email or phone
+  const user = await db.users.findOne({
+    $or: [
+      { email: identifier.toLowerCase() },
+      { phone: normalizePhone(identifier) }
+    ]
   });
   
   if (!user || user.status !== 'active') {
     throw new Error('Invalid credentials');
   }
   
-  // Check lockout
-  if (user.authentication?.lockedUntil > new Date()) {
-    throw new Error('Account temporarily locked');
-  }
-  
-  // Verify password
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
-    await handleFailedLogin(email);
-    throw new Error('Invalid credentials');
+  // Verify password if using password auth
+  if (password && user.password) {
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      throw new Error('Invalid credentials');
+    }
   }
   
   // Update login info
-  await handleSuccessfulLogin(user._id);
+  await db.users.updateOne(
+    { userId: user.userId },
+    { 
+      $set: {
+        lastLogin: new Date(),
+        updatedAt: new Date()
+      },
+      $inc: {
+        loginCount: 1
+      }
+    }
+  );
+  
+  return user;
+}
+```
+
+### 6. Phone Number Normalization
+```javascript
+// Normalize phone to E.164 format
+function normalizePhone(phone, defaultCountryCode = '+61') {
+  if (!phone) return null;
+  
+  // Remove all non-digits
+  let cleaned = phone.replace(/\D/g, '');
+  
+  // Add country code if missing
+  if (!phone.startsWith('+')) {
+    if (cleaned.startsWith('0')) {
+      cleaned = cleaned.substring(1);
+    }
+    cleaned = defaultCountryCode.replace('+', '') + cleaned;
+  }
+  
+  return '+' + cleaned;
+}
+```
+
+## Data Integrity Rules
+
+### 1. Contact Reference Integrity
+- Contact must exist before creating user
+- One user maximum per contact
+- Cannot change `contactId` after creation
+
+### 2. Authentication Method
+- Must have at least one: email, phone, or OAuth provider
+- Email and phone must be unique across users
+- OAuth provider IDs must be unique
+
+### 3. Role Hierarchy
+- All users start with 'user' role
+- Admin role includes all user permissions
+- Host role includes event management permissions
+
+### 4. Required User Accounts
+- Booking contacts MUST have user accounts
+- Billing contacts MUST have user accounts
+- Organization key personnel should have users
+- Event hosts MUST have user accounts
+
+## Security Validations
+
+### 1. Password Reset Security
+```javascript
+// Generate secure reset token
+async function generatePasswordResetToken(userId) {
+  const token = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+  
+  const expires = new Date(Date.now() + 3600000); // 1 hour
+  
+  await db.users.updateOne(
+    { userId },
+    { 
+      $set: {
+        passwordResetToken: hashedToken,
+        passwordResetExpires: expires,
+        updatedAt: new Date()
+      }
+    }
+  );
+  
+  return token; // Return unhashed token to send to user
+}
+
+// Validate reset token
+async function validateResetToken(token) {
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+  
+  const user = await db.users.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: new Date() }
+  });
+  
+  if (!user) {
+    throw new Error('Invalid or expired reset token');
+  }
   
   return user;
 }
@@ -287,40 +423,15 @@ function isSessionValid(user) {
     return false;
   }
   
-  // Check if email is verified
-  if (!user.emailVerified) {
+  // Check if authentication method is verified
+  if (user.email && !user.emailVerified) {
+    return false;
+  }
+  
+  if (user.phone && !user.phoneVerified) {
     return false;
   }
   
   return true;
-}
-```
-
-## Audit Trail
-
-### 1. Track Changes
-```javascript
-// Log authentication events
-async function logAuthEvent(userId, eventType, metadata) {
-  await db.authLogs.insertOne({
-    userId,
-    eventType, // 'login', 'logout', 'password_change', 'mfa_enable'
-    timestamp: new Date(),
-    metadata
-  });
-}
-```
-
-### 2. Monitor Suspicious Activity
-```javascript
-// Check for suspicious patterns
-async function checkSuspiciousActivity(userId) {
-  const recentFailures = await db.authLogs.countDocuments({
-    userId,
-    eventType: 'failed_login',
-    timestamp: { $gte: new Date(Date.now() - 3600000) } // Last hour
-  });
-  
-  return recentFailures > 10;
 }
 ```

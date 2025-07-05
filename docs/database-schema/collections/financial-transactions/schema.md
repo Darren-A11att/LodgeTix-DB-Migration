@@ -1,290 +1,131 @@
 # Financial Transactions Collection Schema
 
 ## Overview
-The financial transactions collection serves as the single source of truth for all financial activities in the e-commerce system. It tracks payments, invoices, refunds, and reconciliation status for orders.
+The financial transactions collection tracks all payment activities including payments, refunds, and fees. Each transaction links to an order and provides detailed gateway information.
 
 ## Document Structure
 
 ```javascript
 {
-  _id: ObjectId,
-  transactionId: String,        // Unique transaction identifier (e.g., "TXN-2024-00123")
-  type: String,                 // Transaction type enum
+  "_id": ObjectId("..."),
+  "transactionId": "550e8400-e29b-41d4-a716-446655440000", // UUID v4
+  "orderId": "uuid",                                        // Link to order
+  "type": "payment",                                        // payment, refund, adjustment
+  "status": "succeeded",                                    // succeeded, pending, failed, cancelled
   
-  // Reference to related entity
-  reference: {
-    type: String,               // "order", "refund", "adjustment"
-    id: ObjectId,               // Order ID or other entity ID
-    number: String,             // Order number for quick reference
-    catalogObjectId: ObjectId,  // Catalog object for reporting
-    catalogName: String         // Denormalized for display
-  },
+  // Transaction amounts
+  "amount": {"$numberDecimal": "253.00"},                   // Total amount
+  "currency": "AUD",
   
-  // Transaction parties
-  parties: {
-    customer: {
-      type: String,             // "organisation", "contact", or "user"
-      id: ObjectId,             // Customer ID (organisationId, contactId, or userId)
-      name: String,             // Customer name (denormalized)
-      abn: String,              // ABN if applicable (for organisations)
-      email: String,            // Contact email
-      contact: {
-        name: String,
-        phone: String
+  // Payment gateway details
+  "gateway": {
+    "provider": "stripe",                                   // stripe, square, manual
+    "transactionId": "pi_3MQZqK2eZvKYlo2C0XqLKGqe",       // Gateway reference
+    "paymentMethodId": "pm_1MQZqJ2eZvKYlo2C8n4Kz6X8",     // Payment method
+    "customerId": "cus_NQZqKlo2CXqLKG",                    // Gateway customer
+    "fee": {"$numberDecimal": "6.90"},                     // Gateway fee
+    "net": {"$numberDecimal": "246.10"},                   // Net after fee
+    "metadata": {                                           // Gateway-specific data
+      "stripe_fee_details": {
+        "amount": 690,
+        "currency": "aud",
+        "description": "Stripe processing fees"
       }
-    },
-    supplier: {
-      name: String,             // Supplier legal name
-      abn: String,              // Supplier ABN
-      address: String           // Supplier address
     }
   },
   
-  // Financial amounts
-  amounts: {
-    gross: Decimal128,          // Subtotal before fees and tax
-    fees: Decimal128,           // Processing fees
-    tax: Decimal128,            // GST/tax amount
-    net: Decimal128,            // Net amount (gross - fees)
-    total: Decimal128,          // Total charged to customer
-    currency: String            // Currency code (e.g., "AUD")
+  // Platform fee (our commission)
+  "platformFee": {
+    "amount": {"$numberDecimal": "11.50"},                 // Platform fee amount
+    "percentage": 5,                                        // Fee percentage
+    "description": "Platform service fee"
   },
   
-  // Payment records (array for partial payments)
-  payments: [{
-    _id: ObjectId,
-    method: String,             // "credit_card", "bank_transfer", "cash"
-    gateway: String,            // "stripe", "square", "manual"
-    gatewayTransactionId: String, // External transaction ID
-    status: String,             // "pending", "succeeded", "failed", "refunded"
-    amount: Decimal128,         // Amount for this payment
-    processedAt: Date,          // When payment was processed
-    
-    // Card details (if applicable)
-    card: {
-      last4: String,
-      brand: String,            // "visa", "mastercard", etc.
-      expiryMonth: Number,
-      expiryYear: Number
-    },
-    
-    // Gateway fees
-    fees: {
-      amount: Decimal128,
-      rate: String,             // e.g., "1.75% + $0.30"
-      breakdown: {
-        percentage: Decimal128,
-        fixed: Decimal128
-      }
-    },
-    
-    // Gateway metadata
-    metadata: {
-      chargeId: String,
-      receiptUrl: String,
-      riskScore: Number,
-      // Additional gateway-specific fields
-    }
-  }],
-  
-  // Invoice records
-  invoices: {
-    // Customer invoice
-    customer: {
-      _id: ObjectId,
-      invoiceNumber: String,    // Sequential invoice number
-      type: String,             // "tax_invoice", "receipt", "proforma"
-      issuedDate: Date,
-      dueDate: Date,            // null if paid immediately
-      status: String,           // "draft", "sent", "paid", "overdue", "cancelled"
-      
-      // Line items
-      lineItems: [{
-        description: String,
-        productId: String,      // Product UUID from catalog
-        variationId: String,    // Variation UUID
-        productName: String,    // Denormalized
-        variationName: String,  // Denormalized
-        quantity: Number,
-        unitPrice: Decimal128,
-        total: Decimal128,
-        taxRate: Number,        // e.g., 0.10 for 10% GST
-        taxAmount: Decimal128
-      }],
-      
-      // Totals
-      totals: {
-        subtotal: Decimal128,
-        tax: Decimal128,
-        fees: Decimal128,
-        total: Decimal128
-      },
-      
-      // Delivery
-      pdfUrl: String,
-      emailedTo: [String],      // Email addresses
-      emailedAt: Date,
-      downloadCount: Number
-    },
-    
-    // Credit notes for refunds/adjustments
-    creditNotes: [{
-      _id: ObjectId,
-      creditNoteNumber: String,
-      originalInvoiceNumber: String,
-      issuedDate: Date,
-      amount: Decimal128,
-      reason: String,
-      status: String,
-      pdfUrl: String
-    }],
-    
-    // Supplier invoices (if tracking costs)
-    supplier: [{
-      _id: ObjectId,
-      invoiceNumber: String,
-      supplierName: String,
-      amount: Decimal128,
-      dueDate: Date,
-      status: String
-    }]
-  },
-  
-  // Remittance advice
-  remittance: {
-    required: Boolean,
-    sentDate: Date,
-    method: String,             // "email", "post"
-    recipient: String,
-    reference: String,
-    details: Mixed              // Flexible remittance details
-  },
-  
-  // Reconciliation tracking
-  reconciliation: {
-    status: String,             // "pending", "reconciled", "disputed", "exception"
-    reconciledDate: Date,
-    reconciledBy: String,       // User ID or "system"
-    bankStatementRef: String,
-    bankDate: Date,
-    notes: String
-  },
-  
-  // Accounting integration
-  accounting: {
-    exported: Boolean,
-    exportedAt: Date,
-    exportBatchId: String,
-    
-    // Double-entry bookkeeping
-    entries: [{
-      account: String,          // Account code
-      accountName: String,      // Account name
-      debit: Decimal128,
-      credit: Decimal128,
-      description: String
-    }],
-    
-    // External system references
-    externalReferences: {
-      xeroId: String,
-      myobId: String,
-      quickbooksId: String
+  // Payment method details
+  "paymentMethod": {
+    "type": "card",                                         // card, bank_transfer, cash
+    "card": {
+      "brand": "visa",
+      "last4": "4242",
+      "expMonth": 12,
+      "expYear": 2025,
+      "country": "AU"
     }
   },
   
-  // Refund tracking (if this is a refund)
-  refund: {
-    originalTransactionId: ObjectId,
-    reason: String,
-    requestedBy: ObjectId,
-    approvedBy: ObjectId,
-    items: [{                   // Partial refund support
-      description: String,
-      quantity: Number,
-      amount: Decimal128
-    }]
+  // For refunds
+  "refund": {
+    "originalTransactionId": "uuid",                        // Original payment transaction
+    "reason": "requested_by_customer",                      // Refund reason
+    "amount": {"$numberDecimal": "253.00"}
   },
   
-  // Audit trail
-  audit: {
-    createdAt: Date,
-    createdBy: String,          // User ID or "system"
-    updatedAt: Date,
-    updatedBy: String,
-    version: Number,            // For optimistic locking
-    
-    // Change history
-    changes: [{
-      timestamp: Date,
-      userId: String,
-      action: String,
-      field: String,
-      oldValue: Mixed,
-      newValue: Mixed,
-      reason: String
-    }],
-    
-    // Notes and comments
-    notes: [{
-      timestamp: Date,
-      userId: String,
-      note: String,
-      type: String              // "general", "dispute", "reconciliation"
-    }]
+  // Reconciliation
+  "reconciliation": {
+    "status": "pending",                                    // pending, reconciled, disputed
+    "reconciledAt": null,
+    "reference": "PAYOUT-2024-01-15"
+  },
+  
+  // Metadata
+  "metadata": {
+    "ipAddress": "203.0.113.0",
+    "userAgent": "Mozilla/5.0...",
+    "source": "checkout",                                   // checkout, admin, import
+    "createdAt": ISODate("2024-01-15T10:35:00Z"),
+    "createdBy": "uuid"                                     // User who processed
   }
 }
 ```
 
-## Field Constraints
+## Field Definitions
 
-### Required Fields
-- `transactionId` - Must be unique
-- `type` - Must be valid enum value
-- `reference.type` - Must be valid reference type
-- `reference.id` - Must reference existing entity
-- `parties.customer` - Must have complete customer information
-- `amounts` - All amount fields required
-- `payments` - At least one payment record
+### Core Fields
+- `transactionId`: UUID v4 for the transaction
+- `orderId`: Links to the order this payment is for
+- `type`: Type of transaction (payment, refund, adjustment)
+- `status`: Current transaction status
 
-### Enumerations
+### Gateway Details
+- `provider`: Payment gateway used
+- `transactionId`: Gateway's unique reference
+- `fee`: Amount charged by gateway
+- `net`: Amount after gateway fee
+- `metadata`: Gateway-specific data
 
-**Transaction Types:**
-- `order_payment` - Payment for order
-- `refund` - Full or partial refund
-- `adjustment` - Price adjustment or correction
-- `transfer` - Transfer between accounts
-- `cancellation_fee` - Cancellation charges
+### Platform Fee
+- `amount`: Our platform commission
+- `percentage`: Fee percentage applied
+- `description`: Fee description
 
-**Payment Status:**
-- `pending` - Awaiting processing
-- `processing` - Currently being processed
-- `succeeded` - Successfully completed
-- `failed` - Payment failed
-- `refunded` - Payment refunded
-- `partially_refunded` - Partial refund applied
+### Payment Method
+- Captures details of how payment was made
+- Card details for card payments
+- Bank details for transfers
 
-**Reconciliation Status:**
-- `pending` - Not yet reconciled
-- `reconciled` - Matched with bank statement
-- `disputed` - Under dispute
-- `exception` - Requires manual intervention
-- `void` - Transaction voided
+### Refund Details
+- Links to original payment transaction
+- Reason for refund
+- Refund amount (may be partial)
 
-## Patterns Used
+## Indexes
+```javascript
+db.financialTransactions.createIndex({ "transactionId": 1 }, { unique: true })
+db.financialTransactions.createIndex({ "orderId": 1 })
+db.financialTransactions.createIndex({ "gateway.transactionId": 1 })
+db.financialTransactions.createIndex({ "type": 1, "status": 1 })
+db.financialTransactions.createIndex({ "metadata.createdAt": -1 })
+db.financialTransactions.createIndex({ "reconciliation.status": 1 })
+```
 
-### Bucket Pattern
-Used for storing payment history - multiple payments can be stored in the `payments` array, useful for partial payments or payment plans.
+## Migration Notes
 
-### Attribute Pattern
-The `accounting.externalReferences` and `payments.metadata` objects use the attribute pattern to store varying gateway-specific or accounting system-specific fields.
-
-### Computed Pattern
-The `amounts` object contains computed values (net, total) that are calculated from other fields but stored for query performance.
-
-## Transaction Requirements
-This collection requires ACID transactions when:
-- Creating a financial transaction linked to an order
-- Processing refunds that affect multiple documents
-- Updating reconciliation status that affects accounting exports
-- Processing payments that update order status
+### From Payments Collection:
+- `payment_id` → `gateway.transactionId`
+- `registration_id` → lookup order → `orderId`
+- `amount` → `amount`
+- `status` → `status`
+- `payment_method` → `paymentMethod.type`
+- `stripe_payment_intent_id` → `gateway.transactionId`
+- `square_payment_id` → `gateway.transactionId`
+- Calculate fees from registration data

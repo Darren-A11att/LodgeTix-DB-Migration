@@ -1,254 +1,76 @@
 # Jurisdictions Collection Schema
 
 ## Overview
-The jurisdictions collection represents the hierarchical structure of different Masonic orders (craft, mark & royal arch, scottish rite, etc.). Each jurisdiction type can define its own organizational hierarchy, terminology, ranks, and offices. This flexible design allows the system to accommodate various Masonic traditions and their unique structures.
+Stores grand lodges and their field constants (titles, ranks, offices) for populating registration form dropdowns. This is ONLY for event ticketing - not membership management.
 
 ## Document Structure
-
 ```javascript
 {
-  _id: ObjectId,
-  jurisdictionId: String,                 // Unique identifier (e.g., "JUR-CRAFT-NSW-2024-00001")
-  type: String,                           // "craft", "mark & royal arch", "scottish rite", etc.
+  "_id": ObjectId("..."),
+  "jurisdictionId": "3e893fa6-2cc2-448c-be9c-e3858cc90e11", // UUID from existing data
   
-  // Definitions for this jurisdiction type
-  definitions: {
-    parentName: String,                   // e.g., "grandLodge" (field name)
-    parentLabel: String,                  // e.g., "Grand Lodge" (display name)
-    childName: String,                    // e.g., "lodges" (field name)
-    childLabel: String,                   // e.g., "Lodges" (display name)
-    
-    // Ranks and titles available in this jurisdiction
-    ranks: [{
-      code: String,                       // e.g., "EA", "FC", "MM"
-      name: String,                       // e.g., "Entered Apprentice"
-      order: Number,                      // Hierarchical order
-      abbreviation: String                // Short form
-    }],
-    
-    // Titles used in this jurisdiction
-    titles: [{
-      code: String,                       // e.g., "WBro", "VWBro"
-      name: String,                       // e.g., "Worshipful Brother"
-      abbreviation: String
-    }],
-    
-    // Offices available at parent level
-    parentOffices: [{
-      code: String,                       // e.g., "GM", "DGM"
-      name: String,                       // e.g., "Grand Master"
-      order: Number,                      // Order of precedence
-      type: String                        // "elected", "appointed"
-    }],
-    
-    // Offices available at child level
-    childOffices: [{
-      code: String,                       // e.g., "WM", "SW", "JW"
-      name: String,                       // e.g., "Worshipful Master"
-      order: Number,                      // Order of precedence
-      type: String                        // "elected", "appointed"
-    }]
-  },
+  // Core Identity
+  "name": "United Grand Lodge of New South Wales & Australian Capital Territory",
+  "abbreviation": "UGLNSWACT",
+  "type": "grand_lodge", // grand_lodge, grand_chapter, supreme_council
   
-  // The parent entity (dynamically named based on definitions.parentName)
-  // For craft jurisdictions, this would be "grandLodge"
-  [definitions.parentName]: {
-    id: String,                           // Legacy UUID from grand_lodges table
-    name: String,                         // e.g., "United Grand Lodge of NSW & ACT"
-    abbreviation: String,                 // e.g., "UGLNSW&ACT"
-    
-    // Geographic information
-    country: String,                      // Country name
-    countryCode: String,                  // ISO3 country code
-    stateRegion: String,                  // State/region if applicable
-    stateRegionCode: String,              // State/region code
-    
-    // Organisation link
-    organisationId: ObjectId,             // Reference to organisations collection
-    
-    // Contact information
-    address: {
-      addressLine1: String,
-      addressLine2: String,
-      city: String,
-      state: String,
-      postcode: String,
-      country: String
-    },
-    
-    contact: {
-      phone: String,
-      email: String,
-      website: String
-    },
-    
-    // The child entities array (dynamically named based on definitions.childName)
-    // For craft jurisdictions, this would be "lodges"
-    [definitions.childName]: [{
-      id: String,                         // Legacy UUID from lodges table
-      number: String,                     // e.g., "414"
-      name: String,                       // e.g., "Lodge Woronora"
-      displayName: String,                // e.g., "Lodge Woronora No. 414"
-      
-      // Location information
-      district: String,                   // District number/name
-      meetingPlace: String,               // Where they meet
-      areaType: String,                   // "METRO", "COUNTRY", etc.
-      stateRegion: String,                // State if different from parent
-      
-      // Organisation link
-      organisationId: ObjectId,           // Reference to organisations collection
-      
-      // Meeting information
-      meetingSchedule: {
-        frequency: String,                // "monthly", "bi-monthly", etc.
-        dayOfWeek: String,                // "Monday", "Tuesday", etc.
-        weekOfMonth: String,              // "first", "second", "third", "fourth", "last"
-        time: String,                     // "19:30"
-        notes: String                     // Additional meeting notes
-      },
-      
-      // Status
-      status: String,                     // "active", "dormant", "consecrating"
-      consecrationDate: Date,             // When lodge was consecrated
-      warrantsNumber: String,             // Warrant/charter number
-      
-      // Additional metadata
-      customFields: Map                   // Flexible fields for jurisdiction-specific data
-    }]
-  },
+  // Location (from existing data)
+  "country": "Australia", 
+  "countryCode": "AUS",
+  "stateRegion": "New South Wales and Australian Capital Territory",
+  "stateRegionCode": "NSW/ACT",
   
-  // System metadata
-  metadata: {
-    source: String,                       // Import source
-    createdAt: Date,
-    createdBy: ObjectId,
-    updatedAt: Date,
-    updatedBy: ObjectId,
-    version: Number
-  }
+  // Field Constants for Registration Forms
+  "titles": ["Bro", "W Bro", "VW Bro", "RW Bro", "MW Bro"],
+  "ranks": ["EAF", "FCF", "MM", "IM", "GL"],
+  "offices": ["WM", "SW", "JW", "Treasurer", "Secretary", "SD", "JD", "IG", "Tyler"]
+  
+  // Link to organization (if exists)
+  "organizationId": "3e893fa6-2cc2-448c-be9c-e3858cc90e11", // same as jurisdictionId usually
+  
+  // Metadata
+  "createdAt": ISODate("2024-01-01T00:00:00Z"),
+  "updatedAt": ISODate("2024-01-01T00:00:00Z")
 }
 ```
 
-## Field Constraints
-
-### Required Fields
-- `type` - Jurisdiction type
-- `definitions` - Must include parent/child naming
-- The dynamic parent field (e.g., `grandLodge` for craft)
-
-### Enumerations
-
-**Jurisdiction Types:**
-Common values (but not limited to):
-- `craft` - Craft Freemasonry
-- `mark & royal arch` - Mark Master and Royal Arch
-- `scottish rite` - Scottish Rite
-- `york rite` - York Rite
-- `shrine` - Shriners
-- Other types as defined by application
-
-**Area Types:**
-- `METRO` - Metropolitan area
-- `COUNTRY` - Country/rural area
-- `REGIONAL` - Regional center
-
-**Status:**
-- `active` - Currently active
-- `dormant` - Temporarily inactive
-- `consecrating` - Being formed
-- `amalgamated` - Merged with another
-- `closed` - Permanently closed
-
-## Indexes
-- `jurisdictionId` - Unique identifier
-- `type` - Jurisdiction type queries
-- `{parentName}.organisationId` - Organisation lookups
-- `{parentName}.{childName}.organisationId` - Child organisation lookups
-- `{parentName}.country, {parentName}.stateRegion` - Geographic queries
-- `{parentName}.{childName}.number` - Lodge number lookups
-
-## Business Rules
-
-### Jurisdiction ID Generation
-- Format depends on type and geography
-- Must be unique within collection
-- Include type identifier for clarity
-
-### Dynamic Field Naming
-- Parent and child field names are defined in `definitions`
-- Allows different terminology per jurisdiction type
-- Application must handle dynamic field access
-
-### Hierarchy Rules
-1. Each jurisdiction has one parent entity
-2. Parent can have multiple child entities
-3. Child entities belong to only one parent
-4. Jurisdiction types are independent hierarchies
-
-## Migration Notes
-
-### Source Data
-- Craft jurisdictions from `grand_lodges` and `lodges` tables
-- Other jurisdiction types to be defined
-
-### Field Mappings
-**From grand_lodges:**
-- `grand_lodge_id` → `grandLodge.id`
-- `name` → `grandLodge.name`
-- `abbreviation` → `grandLodge.abbreviation`
-- `country` → `grandLodge.country`
-- `organisation_id` → `grandLodge.organisationId`
-
-**From lodges:**
-- `lodge_id` → `grandLodge.lodges[].id`
-- `number` → `grandLodge.lodges[].number`
-- `name` → `grandLodge.lodges[].name`
-- `display_name` → `grandLodge.lodges[].displayName`
-- `organisation_id` → `grandLodge.lodges[].organisationId`
-
-## Examples
-
-### Craft Jurisdiction
+## Separate Lodges Collection
 ```javascript
 {
-  type: "craft",
-  definitions: {
-    parentName: "grandLodge",
-    parentLabel: "Grand Lodge",
-    childName: "lodges",
-    childLabel: "Lodges"
-  },
-  grandLodge: {
-    name: "United Grand Lodge of NSW & ACT",
-    lodges: [
-      {
-        number: "414",
-        name: "Lodge Woronora"
-      }
-    ]
-  }
+  "_id": ObjectId("..."),
+  "lodgeId": "7f4e9b2a-1234-5678-9012-3456789abcde", // UUID from existing data
+  "jurisdictionId": "3e893fa6-2cc2-448c-be9c-e3858cc90e11", // links to jurisdiction
+  
+  // Core Identity
+  "name": "Port Macquarie Daylight Lodge",
+  "number": "991",
+  "displayName": "Port Macquarie Daylight Lodge No. 991",
+  
+  // Location Info
+  "district": "13",
+  "meetingPlace": "Wauchope Masonic Centre", 
+  "areaType": "COUNTRY", // or "METRO"
+  "stateRegion": "NSW",
+  
+  // Link to organization (if exists)
+  "organizationId": "7f4e9b2a-1234-5678-9012-3456789abcde", // same as lodgeId usually
+  
+  // Metadata
+  "createdAt": ISODate("2024-01-01T00:00:00Z"),
+  "updatedAt": ISODate("2024-01-01T00:00:00Z")
 }
 ```
 
-### Mark & Royal Arch Jurisdiction
-```javascript
-{
-  type: "mark & royal arch",
-  definitions: {
-    parentName: "grandChapter",
-    parentLabel: "Grand Chapter",
-    childName: "chapters",
-    childLabel: "Chapters"
-  },
-  grandChapter: {
-    name: "Supreme Grand Chapter of NSW & ACT",
-    chapters: [
-      {
-        number: "1",
-        name: "Chapter Excellence"
-      }
-    ]
-  }
-}
-```
+## Purpose & Usage
+1. Jurisdictions populate the "Grand Lodge" dropdown in registration forms
+2. Lodges populate the "Lodge" dropdown after Grand Lodge is selected
+3. Titles/ranks/offices arrays populate other dropdowns (when data is provided)
+4. This is ONLY for event registration - not member management
+
+## What We DON'T Store Here
+- Member lists
+- Membership statistics  
+- Meeting schedules
+- Officer lists
+- Governance details
+- Any data not needed for event ticketing
