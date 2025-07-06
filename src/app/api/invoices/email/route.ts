@@ -43,12 +43,13 @@ export async function POST(request: NextRequest) {
       functionName: functionName || undefined
     });
 
-    // Update invoice with comprehensive email tracking information
+    // Update invoice, payment, and registration with comprehensive email tracking information
     try {
       const { db } = await connectMongoDB();
       
       // Only update customer invoices with email metadata
       if (invoice.invoiceType === 'customer') {
+        // Update invoice document
         await db.collection('invoices').updateOne(
           { invoiceNumber: invoice.invoiceNumber },
           { 
@@ -79,10 +80,44 @@ export async function POST(request: NextRequest) {
           }
         );
         console.log(`Updated invoice email tracking for invoice ${invoice.invoiceNumber}`);
+        
+        // Update payment document with email tracking
+        if (invoice.paymentId) {
+          await db.collection('payments').updateOne(
+            { _id: invoice.paymentId },
+            { 
+              $set: {
+                invoiceEmailSent: true,
+                invoiceEmailedTo: recipientEmail,
+                invoiceEmailedDateTime: emailMetadata.sent,
+                invoiceEmailIdempotencyKey: emailMetadata.idempotencyKey,
+                invoiceEmailId: emailMetadata.id
+              }
+            }
+          );
+          console.log(`Updated payment email tracking for payment ${invoice.paymentId}`);
+        }
+        
+        // Update registration document with email tracking
+        if (invoice.registrationId) {
+          await db.collection('registrations').updateOne(
+            { _id: invoice.registrationId },
+            { 
+              $set: {
+                invoiceEmailSent: true,
+                invoiceEmailedTo: recipientEmail,
+                invoiceEmailedDateTime: emailMetadata.sent,
+                invoiceEmailIdempotencyKey: emailMetadata.idempotencyKey,
+                invoiceEmailId: emailMetadata.id
+              }
+            }
+          );
+          console.log(`Updated registration email tracking for registration ${invoice.registrationId}`);
+        }
       }
     } catch (updateError) {
       // Log error but don't fail the email send response
-      console.error('Error updating invoice email tracking:', updateError);
+      console.error('Error updating email tracking:', updateError);
     }
 
     return NextResponse.json({
