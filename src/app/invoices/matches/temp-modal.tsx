@@ -23,25 +23,72 @@
                             // Get the mapping configuration
                             const mapping = fieldMappingStorage.getMapping(mappingId);
                             if (mapping) {
-                              // Store the mapping configuration
-                              setFieldMappingConfig(mapping.mappings);
-                              
                               // Apply the selected mapping
                               const mappedData = fieldMappingStorage.applyMapping(
                                 mappingId,
                                 effectivePayment,
-                                effectiveRegistration
+                                effectiveRegistration,
+                                relatedDocuments
                               );
                               
                               // Update the editable invoice with mapped data
-                              setEditableInvoice({
+                              const updatedInvoice = {
                                 ...editableInvoice,
                                 ...mappedData
-                              });
+                              };
+                              setEditableInvoice(updatedInvoice);
+                              
+                              // Update customer/supplier specific state based on invoice type
+                              if (editableInvoice.invoiceType === 'customer') {
+                                setCustomerInvoice(updatedInvoice);
+                                setCustomerSelectedMappingId(mappingId);
+                              } else {
+                                setSupplierInvoice(updatedInvoice);
+                                setSupplierSelectedMappingId(mappingId);
+                              }
+                              
+                              // Get the full saved mapping to extract line items and array mappings
+                              const savedMapping = savedMappings.find(m => m.id === mappingId);
+                              if (savedMapping) {
+                                // Set field mapping config including line items
+                                const fullConfig = {
+                                  ...savedMapping.mappings,
+                                  lineItems: savedMapping.lineItems
+                                };
+                                setFieldMappingConfig(fullConfig);
+                                
+                                // Update customer/supplier specific config
+                                if (editableInvoice.invoiceType === 'customer') {
+                                  setCustomerFieldMappingConfig(fullConfig);
+                                } else {
+                                  setSupplierFieldMappingConfig(fullConfig);
+                                }
+                                
+                                // Load array mappings
+                                if (savedMapping.arrayMappings) {
+                                  setArrayMappings(savedMapping.arrayMappings);
+                                  if (editableInvoice.invoiceType === 'customer') {
+                                    setCustomerArrayMappings(savedMapping.arrayMappings);
+                                  } else {
+                                    setSupplierArrayMappings(savedMapping.arrayMappings);
+                                  }
+                                }
+                              }
                             }
                           } else {
                             // Clear the mapping configuration if no mapping selected
                             setFieldMappingConfig({});
+                            setArrayMappings([]);
+                            
+                            if (editableInvoice.invoiceType === 'customer') {
+                              setCustomerFieldMappingConfig({});
+                              setCustomerArrayMappings([]);
+                              setCustomerSelectedMappingId(null);
+                            } else {
+                              setSupplierFieldMappingConfig({});
+                              setSupplierArrayMappings([]);
+                              setSupplierSelectedMappingId(null);
+                            }
                           }
                         }}
                         className="flex-1 text-sm px-3 py-2 border rounded"

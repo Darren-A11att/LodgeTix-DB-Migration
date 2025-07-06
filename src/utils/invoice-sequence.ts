@@ -1,10 +1,4 @@
-import { Db } from 'mongodb';
-
-/**
- * MongoDB Counter Collection Method
- * This is the most reliable way to generate sequential numbers in MongoDB
- * It uses a separate collection to store counters
- */
+import { Db, MongoClient } from 'mongodb';
 
 interface Counter {
   _id: string;
@@ -20,30 +14,25 @@ export class InvoiceSequence {
   }
 
   /**
-   * Initialize the counter if it doesn't exist
+   * Initialize the invoice sequence counter if it doesn't exist
    */
-  async initializeCounter(sequenceName: string = 'invoice_number', startValue: number = 1000): Promise<void> {
+  async initialize(): Promise<void> {
     const counters = this.db.collection<Counter>(this.counterCollection);
     
-    try {
+    // Check if the main invoice counter exists
+    const exists = await counters.findOne({ _id: 'invoice_number' });
+    
+    if (!exists) {
       await counters.insertOne({
-        _id: sequenceName,
-        sequence_value: startValue
+        _id: 'invoice_number',
+        sequence_value: 0
       });
-      console.log(`Initialized ${sequenceName} counter at ${startValue}`);
-    } catch (error: any) {
-      if (error.code === 11000) {
-        // Duplicate key error - counter already exists
-        console.log(`Counter ${sequenceName} already exists`);
-      } else {
-        throw error;
-      }
+      console.log('Initialized invoice number counter');
     }
   }
 
   /**
-   * Get the next sequence number atomically
-   * This uses findOneAndUpdate with $inc to ensure thread-safety
+   * Get the next sequence number and increment the counter
    */
   async getNextSequenceNumber(sequenceName: string = 'invoice_number'): Promise<number> {
     const counters = this.db.collection<Counter>(this.counterCollection);
@@ -62,6 +51,31 @@ export class InvoiceSequence {
     }
 
     return result.sequence_value;
+  }
+
+  /**
+   * Reserve a specific number of sequences
+   * Useful for batch operations
+   */
+  async reserveSequenceNumbers(count: number, sequenceName: string = 'invoice_number'): Promise<number[]> {
+    const counters = this.db.collection<Counter>(this.counterCollection);
+    
+    const result = await counters.findOneAndUpdate(
+      { _id: sequenceName },
+      { $inc: { sequence_value: count } },
+      { 
+        returnDocument: 'after',
+        upsert: true
+      }
+    );
+
+    if (!result) {
+      throw new Error('Failed to reserve sequence numbers');
+    }
+
+    // Return an array of the reserved numbers
+    const startNumber = result.sequence_value - count + 1;
+    return Array.from({ length: count }, (_, i) => startNumber + i);
   }
 
   /**
@@ -125,7 +139,7 @@ export class InvoiceSequence {
 
   /**
    * Generate a formatted invoice number using payment date
-   * Example: INV-250103001 (YY MM DD ###)
+   * Example: LTIV-250103001 (YY MM DD ###)
    */
   async generateInvoiceNumber(prefix: string = 'INV', paymentDate?: Date): Promise<string> {
     const date = paymentDate || new Date();
@@ -149,4 +163,27 @@ export class InvoiceSequence {
   async generateLodgeTixInvoiceNumber(paymentDate?: Date): Promise<string> {
     return this.generateInvoiceNumber('LTIV', paymentDate);
   }
+
+  /**
+   * Generate a supplier invoice number using payment date
+   * Example: LTSP-250103001 (YY MM DD ###)
+   */
+  async generateSupplierInvoiceNumber(paymentDate?: Date): Promise<string> {
+    return this.generateInvoiceNumber('LTSP', paymentDate);
+  }
+}
+
+/**
+ * Singleton instance management
+ */
+let invoiceSequenceInstance: InvoiceSequence | null = null;
+
+export async function getInvoiceSequence(client: MongoClient, dbName: string): Promise<InvoiceSequence> {
+  if (!invoiceSequenceInstance) {
+    const db = client.db(dbName);
+    invoiceSequenceInstance = new InvoiceSequence(db);
+    await invoiceSequenceInstance.initialize();
+  }
+  
+  return invoiceSequenceInstance;
 }

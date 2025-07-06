@@ -39,7 +39,11 @@ export default function FieldMappingSelector({
     if (!sourceDocuments) return null;
     
     try {
-      const allData = { ...sourceDocuments };
+      const allData = { 
+        payment: sourceDocuments.payments || sourceDocuments.payment,
+        registration: sourceDocuments.registrations || sourceDocuments.registration,
+        ...sourceDocuments 
+      };
       
       switch (computation.type) {
         case 'count': {
@@ -90,6 +94,57 @@ export default function FieldMappingSelector({
             }
           }
           return 0;
+        }
+
+        case 'expression': {
+          if (!computation.parameters?.expression || computation.parameters.expression.trim() === '') {
+            return 0;
+          }
+          
+          
+          // Replace field references with actual values
+          let expression = computation.parameters.expression;
+          const fieldPattern = /\{([^}]+)\}/g;
+          const matches = expression.match(fieldPattern);
+          
+          if (matches) {
+            matches.forEach(match => {
+              const fieldPath = match.slice(1, -1); // Remove { and }
+              let value = getValueByPath(allData, fieldPath);
+              
+              // Handle MongoDB $numberDecimal format
+              if (value && typeof value === 'object' && '$numberDecimal' in value) {
+                value = value.$numberDecimal;
+              }
+              
+              const numValue = parseFloat(value) || 0;
+              expression = expression.replace(match, numValue.toString());
+            });
+          }
+          
+          // Check if the expression is valid after replacements
+          expression = expression.trim();
+          
+          // Remove trailing operators
+          expression = expression.replace(/[\+\-\*\/]\s*$/, '').trim();
+          
+          if (!expression || expression === '') {
+            return 0;
+          }
+          
+          // Check for incomplete expressions (e.g., "5 + " or "10 - ")
+          if (/[\+\-\*\/]\s*$/.test(expression)) {
+            return 0;
+          }
+          
+          try {
+            // Safely evaluate the mathematical expression
+            const result = new Function('return ' + expression)();
+            return isNaN(result) ? 0 : result;
+          } catch (error) {
+            console.error('Error evaluating expression:', expression, error);
+            return 0;
+          }
         }
         
         case 'concat': {
@@ -153,7 +208,7 @@ export default function FieldMappingSelector({
       setIsCustom(true);
       setValueType('computed');
       setCustomValue(currentValue);
-      setShowComputationBuilder(true);
+      // Don't auto-show the computation builder, just calculate the result
       // Execute the computation to show the result
       const result = executeComputation(currentValue.$compute);
       setComputedValue(result);
@@ -172,12 +227,21 @@ export default function FieldMappingSelector({
     const matchingOption = allOptions.find(opt => opt.value === currentValue);
     if (matchingOption) {
       setSelectedPath(matchingOption.path);
+      setMappedSourcePath(matchingOption.displayPath);
       setIsCustom(false);
     } else if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
       setIsCustom(true);
       setCustomValue(currentValue);
     }
-  }, [currentValue, allOptions, sourceDocuments]);
+  }, [currentValue, allOptions]);
+
+  // Recalculate computed value when source documents change
+  useEffect(() => {
+    if (valueType === 'computed' && customValue?.$compute && sourceDocuments) {
+      const result = executeComputation(customValue.$compute);
+      setComputedValue(result);
+    }
+  }, [sourceDocuments, valueType, customValue]);
 
   const handleMappingSelect = (option: FieldOption) => {
     setSelectedPath(option.path);
@@ -290,9 +354,25 @@ export default function FieldMappingSelector({
       <div className="flex items-center gap-2 mb-2">
         <span className="text-sm text-gray-600">Current: </span>
         <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded flex items-center gap-2">
-          {isCustom && valueType === 'computed' ? `Computed: ${computedValue !== null ? computedValue : 'calculating...'}` : 
-           isCustom ? 'Manual entry' : 
-           (String(getDisplayValue() || 'Not set'))}
+          {(() => {
+            if (isCustom && valueType === 'computed') {
+              return computedValue !== null ? computedValue : 'Computed value';
+            }
+            if (isCustom && valueType === 'now') {
+              return 'Current date/time';
+            }
+            if (isCustom) {
+              return customValue || 'Manual entry';
+            }
+            const displayVal = getDisplayValue();
+            if (displayVal === null || displayVal === undefined || displayVal === '') {
+              return 'Not set';
+            }
+            if (typeof displayVal === 'object') {
+              return JSON.stringify(displayVal);
+            }
+            return String(displayVal);
+          })()}
           {(selectedPath || isCustom || mappedSourcePath) && (
             <button
               onClick={() => {
@@ -513,20 +593,30 @@ export default function FieldMappingSelector({
              valueType === 'computed' ? `Computed value: ${computedValue !== null ? computedValue : 'calculating...'}` :
              'Custom value'}
           </span>
-          <button
-            onClick={() => {
-              setIsCustom(false);
-              setSearchTerm('');
-              setSelectedPath('');
-              setValueType('manual');
-              setComputedValue(null);
-              setShowComputationBuilder(false);
-              onMappingChange(fieldPath, null, '');
-            }}
-            className="text-xs text-blue-600 hover:text-blue-800 underline"
-          >
-            Clear {valueType === 'computed' ? 'computation' : 'custom value'}
-          </button>
+          <div className="flex gap-2">
+            {valueType === 'computed' && !showComputationBuilder && (
+              <button
+                onClick={() => setShowComputationBuilder(true)}
+                className="text-xs text-blue-600 hover:text-blue-800 underline"
+              >
+                Edit computation
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setIsCustom(false);
+                setSearchTerm('');
+                setSelectedPath('');
+                setValueType('manual');
+                setComputedValue(null);
+                setShowComputationBuilder(false);
+                onMappingChange(fieldPath, null, '');
+              }}
+              className="text-xs text-blue-600 hover:text-blue-800 underline"
+            >
+              Clear {valueType === 'computed' ? 'computation' : 'custom value'}
+            </button>
+          </div>
         </div>
       )}
       
@@ -540,22 +630,20 @@ export default function FieldMappingSelector({
             onComputationChange={(computation) => {
               if (computation) {
                 const result = executeComputation(computation);
-                console.log('Computation result:', { 
-                  computation, 
-                  result, 
-                  sources: computation.sources,
-                  hasSourceDocuments: !!sourceDocuments,
-                  registrations: sourceDocuments?.registrations,
-                  payments: sourceDocuments?.payments 
-                });
                 setComputedValue(result);
                 
                 // Always store the computation definition, not just the result
                 onMappingChange(fieldPath, null, { $compute: computation });
                 setCustomValue({ $compute: computation });
                 setValueType('computed');
-                // Keep showing the computation builder unless explicitly closed
+                
+                // If this is triggered by the save button (computation has all required fields),
+                // hide the computation builder
+                if (computation.type && computation.sources !== undefined) {
+                  setShowComputationBuilder(false);
+                }
               } else {
+                // Remove computation
                 setShowComputationBuilder(false);
                 setIsCustom(false);
                 setComputedValue(null);

@@ -5,6 +5,7 @@ import FieldMappingSelector from './FieldMappingSelector';
 import ArrayRelationshipBuilder from './ArrayRelationshipBuilder';
 import { FieldOption, getValueByPath } from '@/utils/field-extractor';
 import { ArrayMapping } from '@/services/field-mapping-storage';
+import { ComputationDefinition } from './ComputationBuilder';
 import apiService from '@/lib/api';
 
 interface LineItem extends InvoiceItem {
@@ -85,6 +86,74 @@ export default function LineItemManager({
   const [editingArrayMapping, setEditingArrayMapping] = useState<ArrayMapping | null>(null);
   const [savedArrayMappings, setSavedArrayMappings] = useState<ArrayMapping[]>(arrayMappings);
 
+  // Execute computation for line items
+  const executeComputation = (computation: ComputationDefinition): any => {
+    if (!registrationData && !paymentData) return 0;
+    
+    try {
+      const allData = { 
+        payment: paymentData,
+        registration: registrationData,
+        payments: paymentData,
+        registrations: registrationData
+      };
+      
+      switch (computation.type) {
+        case 'expression': {
+          if (!computation.parameters?.expression || computation.parameters.expression.trim() === '') {
+            return 0;
+          }
+          
+          // Replace field references with actual values
+          let expression = computation.parameters.expression;
+          const fieldPattern = /\{([^}]+)\}/g;
+          const matches = expression.match(fieldPattern);
+          
+          if (matches) {
+            matches.forEach(match => {
+              const fieldPath = match.slice(1, -1); // Remove { and }
+              let value = getValueByPath(allData, fieldPath);
+              
+              // Handle MongoDB $numberDecimal format
+              if (value && typeof value === 'object' && '$numberDecimal' in value) {
+                value = value.$numberDecimal;
+              }
+              
+              const numValue = parseFloat(value) || 0;
+              expression = expression.replace(match, numValue.toString());
+            });
+          }
+          
+          // Check if the expression is valid after replacements
+          expression = expression.trim();
+          
+          // Remove trailing operators
+          expression = expression.replace(/[\+\-\*\/]\s*$/, '').trim();
+          
+          if (!expression || expression === '') {
+            return 0;
+          }
+          
+          try {
+            // Safely evaluate the mathematical expression
+            const result = new Function('return ' + expression)();
+            return isNaN(result) ? 0 : result;
+          } catch (error) {
+            console.error('Error evaluating expression in LineItemManager:', expression, error);
+            return 0;
+          }
+        }
+        
+        // Add other computation types as needed
+        default:
+          return 0;
+      }
+    } catch (error) {
+      console.error('Error executing computation in LineItemManager:', error);
+      return 0;
+    }
+  };
+
   // Sync array mappings from parent when they change
   useEffect(() => {
     setSavedArrayMappings(arrayMappings);
@@ -99,7 +168,9 @@ export default function LineItemManager({
     
     if (hasTemplateStructure && items.length > 0) {
       // These are regenerated items from a template, sync them
-      setLineItems(items.map((item, index) => ({
+      // But filter out array-type items as they will be regenerated from array mappings
+      const nonArrayItems = items.filter(item => item.type !== 'array');
+      setLineItems(nonArrayItems.map((item, index) => ({
         ...item,
         id: item.id || `item_${index}`,
         type: item.type || 'other',
@@ -248,7 +319,13 @@ export default function LineItemManager({
         const value = getValueByPath(sourceData, cleanPath);
         quantity = value !== undefined ? toNumber(value) : item.quantity;
       } else if (item.quantityMapping?.customValue !== undefined) {
-        quantity = toNumber(item.quantityMapping.customValue);
+        // Handle computation objects
+        if (typeof item.quantityMapping.customValue === 'object' && item.quantityMapping.customValue?.$compute) {
+          const result = executeComputation(item.quantityMapping.customValue.$compute);
+          quantity = typeof result === 'number' ? result : toNumber(result) || item.quantity;
+        } else {
+          quantity = toNumber(item.quantityMapping.customValue);
+        }
       }
         
       let price = item.price;
@@ -257,9 +334,16 @@ export default function LineItemManager({
         // Remove the source prefix (payment. or registration.) from the path
         const cleanPath = item.priceMapping.source.replace(/^(payment|registration)\./, '');
         const value = getValueByPath(sourceData, cleanPath);
+        console.log('Price mapping:', item.priceMapping.source, 'cleanPath:', cleanPath, 'value:', value, 'sourceData:', sourceData);
         price = value !== undefined ? toNumber(value) : item.price;
       } else if (item.priceMapping?.customValue !== undefined) {
-        price = toNumber(item.priceMapping.customValue);
+        // Handle computation objects
+        if (typeof item.priceMapping.customValue === 'object' && item.priceMapping.customValue?.$compute) {
+          const result = executeComputation(item.priceMapping.customValue.$compute);
+          price = typeof result === 'number' ? result : toNumber(result) || item.price;
+        } else {
+          price = toNumber(item.priceMapping.customValue);
+        }
       }
       
       // Add main item
@@ -342,8 +426,8 @@ export default function LineItemManager({
     } else if (item.priceMapping?.customValue !== undefined) {
       // Handle computation objects
       if (typeof item.priceMapping.customValue === 'object' && item.priceMapping.customValue?.$compute) {
-        // Return the default price for now - computation will be handled during migration
-        return item.price;
+        const result = executeComputation(item.priceMapping.customValue.$compute);
+        return typeof result === 'number' ? result : toNumber(result) || item.price;
       }
       return toNumber(item.priceMapping.customValue);
     }
@@ -361,8 +445,8 @@ export default function LineItemManager({
     } else if (item.quantityMapping?.customValue !== undefined) {
       // Handle computation objects
       if (typeof item.quantityMapping.customValue === 'object' && item.quantityMapping.customValue?.$compute) {
-        // Return the default quantity for now - computation will be handled during migration
-        return item.quantity;
+        const result = executeComputation(item.quantityMapping.customValue.$compute);
+        return typeof result === 'number' ? result : toNumber(result) || item.quantity;
       }
       return toNumber(item.quantityMapping.customValue);
     }
@@ -380,8 +464,8 @@ export default function LineItemManager({
     } else if (subItem.priceMapping?.customValue !== undefined) {
       // Handle computation objects
       if (typeof subItem.priceMapping.customValue === 'object' && subItem.priceMapping.customValue?.$compute) {
-        // Return the default price for now - computation will be handled during migration
-        return subItem.price;
+        const result = executeComputation(subItem.priceMapping.customValue.$compute);
+        return typeof result === 'number' ? result : toNumber(result) || subItem.price;
       }
       return toNumber(subItem.priceMapping.customValue);
     }
@@ -399,8 +483,8 @@ export default function LineItemManager({
     } else if (subItem.quantityMapping?.customValue !== undefined) {
       // Handle computation objects
       if (typeof subItem.quantityMapping.customValue === 'object' && subItem.quantityMapping.customValue?.$compute) {
-        // Return the default quantity for now - computation will be handled during migration
-        return subItem.quantity;
+        const result = executeComputation(subItem.quantityMapping.customValue.$compute);
+        return typeof result === 'number' ? result : toNumber(result) || subItem.quantity;
       }
       return toNumber(subItem.quantityMapping.customValue);
     }

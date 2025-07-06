@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FieldOption, extractNestedStructure, NestedField, getValueByPath } from '@/utils/field-extractor';
 
 export interface ComputationDefinition {
-  type: 'minDate' | 'maxDate' | 'sum' | 'count' | 'arithmetic' | 'concat' | 'lookup' | 'now';
+  type: 'minDate' | 'maxDate' | 'sum' | 'count' | 'arithmetic' | 'concat' | 'lookup' | 'now' | 'expression';
   sources: string[];
   parameters?: {
     operator?: '+' | '-' | '*' | '/';
@@ -12,6 +12,7 @@ export interface ComputationDefinition {
     lookupField?: string;
     returnField?: string;
     format?: string;
+    expression?: string;
   };
 }
 
@@ -34,7 +35,8 @@ const COMPUTATION_TYPES = {
   number: [
     { value: 'sum', label: 'Sum of fields', description: 'Add up multiple numeric fields' },
     { value: 'count', label: 'Count items', description: 'Count the number of items in an array' },
-    { value: 'arithmetic', label: 'Calculate', description: 'Perform arithmetic operations on a field' }
+    { value: 'arithmetic', label: 'Calculate', description: 'Perform arithmetic operations on a field' },
+    { value: 'expression', label: 'Expression', description: 'Build complex calculations with multiple fields' }
   ],
   text: [
     { value: 'concat', label: 'Concatenate', description: 'Join multiple text fields together' },
@@ -60,6 +62,7 @@ export default function ComputationBuilder({
   
   // State for drill-down navigation
   const [navigationPath, setNavigationPath] = useState<string[]>([]);
+  const [expressionFieldSearch, setExpressionFieldSearch] = useState('');
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
   const [showDrillDown, setShowDrillDown] = useState(false);
   
@@ -102,6 +105,9 @@ export default function ComputationBuilder({
         break;
       case 'arithmetic':
         newComputation.parameters = { operator: '+', operand: 0 };
+        break;
+      case 'expression':
+        newComputation.parameters = { expression: '' };
         break;
       case 'lookup':
         newComputation.parameters = { collection: '', lookupField: '', returnField: '' };
@@ -181,8 +187,8 @@ export default function ComputationBuilder({
         </p>
       </div>
 
-      {/* Source Fields Selection (except for 'now' type) */}
-      {computation.type !== 'now' && (
+      {/* Source Fields Selection (except for 'now' and 'expression' types) */}
+      {computation.type !== 'now' && computation.type !== 'expression' && (
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-600 mb-2">
             Source Fields {computation.type === 'count' ? '(Select array field)' : ''}
@@ -393,6 +399,108 @@ export default function ComputationBuilder({
         </div>
       )}
 
+      {computation.type === 'expression' && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Expression
+            <span className="text-xs text-gray-500 ml-2">Use {`{field.path}`} to reference fields</span>
+          </label>
+          <textarea
+            value={computation.parameters?.expression || ''}
+            onChange={(e) => handleParameterChange('expression', e.target.value)}
+            placeholder="e.g., {payment.grossAmount} - {payment.fees}"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+            rows={3}
+          />
+          
+          {/* Examples in a nice box */}
+          <div className="mt-3 bg-blue-50 border border-blue-200 rounded-md p-3">
+            <h4 className="text-xs font-semibold text-blue-900 mb-2">Expression Examples:</h4>
+            <div className="space-y-1 text-xs text-blue-800">
+              <div className="font-mono bg-white px-2 py-1 rounded">{`{payment.amount} * 0.1`} <span className="text-gray-600 ml-2">→ 10% of amount</span></div>
+              <div className="font-mono bg-white px-2 py-1 rounded">{`{payment.grossAmount} - {payment.fees}`} <span className="text-gray-600 ml-2">→ Net amount</span></div>
+              <div className="font-mono bg-white px-2 py-1 rounded">{`{registration.attendeeCount} * {registration.ticketPrice}`} <span className="text-gray-600 ml-2">→ Total ticket revenue</span></div>
+            </div>
+          </div>
+          
+          {/* Available fields with search */}
+          <details className="mt-3" open>
+            <summary className="cursor-pointer text-xs font-medium text-gray-600 hover:text-gray-800">
+              Available Fields
+            </summary>
+            <div className="mt-2 border rounded-md p-2">
+              {/* Search input */}
+              <div className="mb-2">
+                <input
+                  type="text"
+                  placeholder="Search fields..."
+                  value={expressionFieldSearch}
+                  onChange={(e) => setExpressionFieldSearch(e.target.value)}
+                  className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div className="max-h-48 overflow-y-auto">
+                <div className="space-y-2">
+                  {/* Group fields by source */}
+                  {['payment', 'registration', 'related'].map(source => {
+                    const sourceFields = allOptions.filter(opt => {
+                      if (typeof opt.value !== 'string') return false;
+                      if (!opt.value.startsWith(source + '.')) return false;
+                      
+                      // Apply search filter
+                      if (expressionFieldSearch) {
+                        const searchLower = expressionFieldSearch.toLowerCase();
+                        return opt.value.toLowerCase().includes(searchLower) || 
+                               opt.displayPath.toLowerCase().includes(searchLower);
+                      }
+                      return true;
+                    });
+                    
+                    if (sourceFields.length === 0) return null;
+                    
+                    return (
+                      <div key={source}>
+                        <p className="text-xs font-semibold text-gray-700 mb-1 capitalize">{source} Fields:</p>
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {sourceFields.map((option, index) => (
+                            <button
+                              key={`${option.value}-${index}`}
+                              type="button"
+                              onClick={() => {
+                                const currentExpr = computation.parameters?.expression || '';
+                                const newExpr = currentExpr + `{${option.value}}`;
+                                handleParameterChange('expression', newExpr);
+                              }}
+                              className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded font-mono"
+                              title={option.displayPath}
+                            >
+                              {option.value}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Show no results message if search has no matches */}
+                  {expressionFieldSearch && 
+                   !allOptions.some(opt => 
+                     typeof opt.value === 'string' &&
+                     (opt.value.toLowerCase().includes(expressionFieldSearch.toLowerCase()) ||
+                      opt.displayPath.toLowerCase().includes(expressionFieldSearch.toLowerCase()))
+                   ) && (
+                    <p className="text-xs text-gray-500 text-center py-2">
+                      No fields found matching "{expressionFieldSearch}"
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      )}
+
       {computation.type === 'lookup' && (
         <>
           <div className="mb-4">
@@ -446,6 +554,7 @@ export default function ComputationBuilder({
           {computation.type === 'concat' && `join(${selectedSources.join(', ')}, "${computation.parameters?.separator}")`}
           {computation.type === 'arithmetic' && selectedSources.length > 0 && 
             `${selectedSources[0]} ${computation.parameters?.operator} ${computation.parameters?.operand}`}
+          {computation.type === 'expression' && computation.parameters?.expression}
           {computation.type === 'lookup' && 
             `lookup(${computation.parameters?.collection}, ${computation.parameters?.lookupField}, ${computation.parameters?.returnField})`}
           {computation.type === 'now' && 'new Date()'}
@@ -457,12 +566,23 @@ export default function ComputationBuilder({
         )}
       </div>
 
-      <button
-        onClick={() => onComputationChange(null)}
-        className="mt-4 text-xs text-red-600 hover:text-red-800 underline"
-      >
-        Remove computation
-      </button>
+      <div className="mt-4 flex justify-between">
+        <button
+          onClick={() => onComputationChange(null)}
+          className="text-xs text-red-600 hover:text-red-800 underline"
+        >
+          Remove computation
+        </button>
+        <button
+          onClick={() => {
+            // Trigger the save and close the builder
+            onComputationChange(computation);
+          }}
+          className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Save computation
+        </button>
+      </div>
     </div>
   );
 }

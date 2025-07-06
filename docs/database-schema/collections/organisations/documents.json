@@ -1,0 +1,43 @@
+{
+  "_id": "ObjectId",
+  "organizationId": "organisations: organisation_id",
+  "name": "organisations: name",
+  "type": "organisations: type",
+  "status": "TODO: default to 'active'",
+  "abn": "organisations: abn",
+  "gstRegistered": "TODO: default to true",
+  "charityNumber": "TODO: null unless charity",
+  "contactName": "TODO: extract from contact data",
+  "contactRole": "TODO: Secretary or appropriate role",
+  "contactEmail": "organisations: email",
+  "contactPhone": "organisations: phone",
+  "billingEmail": "TODO: same as contactEmail or treasurer email",
+  "billingPhone": "TODO: same as contactPhone",
+  "address": {
+    "line1": "organisations: street_address",
+    "line2": "TODO: parse from street_address if multiline",
+    "city": "organisations: city",
+    "state": "organisations: state",
+    "postcode": "organisations: postal_code",
+    "country": "organisations: country"
+  },
+  "jurisdictionId": "TODO: map from grand_lodge_id for lodges",
+  "lodgeId": "TODO: map from lodge_id if type=lodge",
+  "paymentTerms": "TODO: default to 'net30'",
+  "preferredPaymentMethod": "TODO: default to 'invoice'",
+  "purchaseOrderRequired": "TODO: default to false",
+  "stripeAccountId": "organisations: stripe_onbehalfof",
+  "stripeAccountStatus": "organisations: stripe_account_status",
+  "stripePayoutsEnabled": "organisations: stripe_payouts_enabled",
+  "stripeDetailsSubmitted": "organisations: stripe_details_submitted",
+  "eventStats": {
+    "eventsHosted": "TODO: calculate from events",
+    "ticketsPurchased": "TODO: calculate from orders",
+    "lastPurchaseDate": "TODO: calculate from orders",
+    "totalSpent": "TODO: calculate from orders"
+  },
+  "createdAt": "organisations: created_at",
+  "updatedAt": "organisations: updated_at",
+  "createdBy": "TODO: system or user",
+  "updatedBy": "TODO: system or user"
+}

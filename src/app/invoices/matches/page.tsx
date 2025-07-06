@@ -325,11 +325,19 @@ export default function InvoiceMatchesPage() {
             invoiceNumber: customerInvoiceNumber,
             paymentId: payment._id,
             registrationId: registration?._id,
+            date: payment.timestamp || new Date().toISOString(),
+            dueDate: payment.timestamp || new Date().toISOString(),
+            status: 'paid' as const,
+            supplier: DEFAULT_INVOICE_SUPPLIER,
             billTo: {
               firstName: nameParts[0] || '',
               lastName: nameParts.slice(1).join(' ') || '',
               email: payment.customerEmail || registration?.customerEmail || '',
             },
+            items: [],
+            subtotal: 0,
+            processingFees: 0,
+            total: 0,
             payment: {
               method: 'credit_card',
               transactionId: payment.transactionId,
@@ -342,6 +350,7 @@ export default function InvoiceMatchesPage() {
           };
           
           setCustomerInvoice(initialCustomerInvoice);
+          setEditableInvoice(initialCustomerInvoice); // Set editable invoice to show the invoice number
           
           // Generate supplier invoice with the matching number
           if (customerInvoiceNumber) {
@@ -413,6 +422,7 @@ export default function InvoiceMatchesPage() {
           };
           
           setCustomerInvoice(initialCustomerInvoice);
+          setEditableInvoice(initialCustomerInvoice); // Set editable invoice to show the invoice number
           
           // Generate supplier invoice with the matching number
           if (customerInvoiceNumber) {
@@ -617,6 +627,7 @@ export default function InvoiceMatchesPage() {
         };
         
         setCustomerInvoice(initialCustomerInvoice);
+        setEditableInvoice(initialCustomerInvoice); // Set editable invoice to show the invoice number
         
         // Generate supplier invoice with the matching number
         if (customerInvoiceNumber) {
@@ -687,10 +698,10 @@ export default function InvoiceMatchesPage() {
         country: 'Australia'
       },
       supplier: supplierDetails, // LodgeTix as the supplier
-      items: customerInvoice.items || [], // Keep existing items or start with empty array
+      items: [], // Start with empty array - supplier items will be added separately
       processingFees: 0, // No additional fees on supplier invoice
-      subtotal: customerInvoice.subtotal || 0, // Keep existing subtotal
-      total: customerInvoice.subtotal || 0 // Total equals subtotal (no additional fees)
+      subtotal: 0, // Will be recalculated based on supplier items
+      total: 0 // Will be recalculated based on supplier items
     };
     
     return supplierInvoice;
@@ -1429,6 +1440,23 @@ export default function InvoiceMatchesPage() {
               )}
               <button
                 onClick={() => {
+                  console.log('Preview button clicked. customerInvoice:', customerInvoice);
+                  console.log('supplierInvoice:', supplierInvoice);
+                  
+                  // If we already have invoices, use them
+                  if (customerInvoice) {
+                    setEditableInvoice(customerInvoice);
+                    setActiveInvoiceType('customer');
+                    setShowInvoicePreviewModal(true);
+                    
+                    // Fetch related documents if we have a registration
+                    if (effectiveRegistration?._id) {
+                      fetchRelatedDocuments(effectiveRegistration._id);
+                    }
+                    return;
+                  }
+                  
+                  // Otherwise, create new invoices
                   // Extract name parts from payment or registration
                   const fullName = effectivePayment.customerName || effectiveRegistration?.customerName || effectiveRegistration?.primaryAttendee || 'Unknown Customer';
                   const nameParts = fullName.split(' ');
@@ -1495,7 +1523,7 @@ export default function InvoiceMatchesPage() {
                     status: 'paid', // Add default status
                     date: new Date().toISOString(),
                     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    invoiceNumber: invoiceData.invoiceNumber || '[To be assigned]',
+                    invoiceNumber: customerInvoice?.invoiceNumber || invoiceData.invoiceNumber || '[To be assigned]',
                     processingFees: 0,
                     items: [
                       {
@@ -2556,14 +2584,18 @@ export default function InvoiceMatchesPage() {
                 </div>
                 {/* A4 size container: 210mm x 297mm at 96dpi = 794px x 1123px */}
                 <div id="invoice-preview" className="bg-white shadow-lg" style={{ width: '794px', minHeight: '1123px' }}>
-                  <InvoiceComponent 
-                    invoice={{
-                      ...editableInvoice,
-                      billTo: fieldMappings.billTo || editableInvoice.billTo || {}
-                    }} 
-                    className="h-full"
-                    logoBase64={logoBase64}
-                  />
+                  {editableInvoice ? (
+                    <InvoiceComponent 
+                      invoice={{
+                        ...editableInvoice,
+                        billTo: fieldMappings.billTo || editableInvoice.billTo || {}
+                      }} 
+                      className="h-full"
+                      logoBase64={logoBase64}
+                    />
+                  ) : (
+                    <div className="p-8 text-gray-500">No invoice data available</div>
+                  )}
                 </div>
               </div>
 
@@ -2601,10 +2633,12 @@ export default function InvoiceMatchesPage() {
                   <LineItemManager
                     items={editableInvoice.items || []}
                     onItemsChange={(items) => {
+                      console.log('LineItemManager onItemsChange - items:', items);
                       // Note: LineItemManager already includes sub-items in the item price
                       const subtotal = items.reduce((sum, item) => {
                         const qty = typeof item.quantity === 'number' ? item.quantity : parseFloat(item.quantity) || 0;
                         const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+                        console.log('Item:', item.description, 'Qty:', qty, 'Price:', price);
                         return sum + (qty * price);
                       }, 0);
                       const processingFees = typeof editableInvoice.processingFees === 'number' ? editableInvoice.processingFees : parseFloat(editableInvoice.processingFees) || 0;

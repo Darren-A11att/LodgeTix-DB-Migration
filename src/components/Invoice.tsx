@@ -154,7 +154,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
             </span>
           </span>
           <span className="text-xs">
-            <span className="font-semibold">Invoice No:</span> {invoice.invoiceNumber ? `PREVIEW-${invoice.invoiceNumber}` : '[To be assigned]'}
+            <span className="font-semibold">Invoice No:</span> {invoice.invoiceNumber || '[To be assigned]'}
           </span>
         </div>
       </div>
