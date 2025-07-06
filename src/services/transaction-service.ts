@@ -78,7 +78,8 @@ export class TransactionService {
       emailedTo?: string;
       emailedDateTime?: Date;
       emailedImpotencyKey?: string;
-    }
+    },
+    session?: any
   ): Promise<number[]> {
     const transactionIds: number[] = [];
     const items = invoice.items || [];
@@ -91,7 +92,8 @@ export class TransactionService {
         registration,
         item,
         invoiceObjectId,
-        emailData
+        emailData,
+        session
       );
       transactionIds.push(transactionId);
     }
@@ -108,7 +110,8 @@ export class TransactionService {
     registration: any,
     item: any,
     invoiceObjectId: string,
-    emailData?: any
+    emailData?: any,
+    session?: any
   ): Promise<number> {
     const transactionId = await this.sequence.getNextTransactionId();
 
@@ -192,8 +195,9 @@ export class TransactionService {
       invoice_url: undefined
     };
 
-    // Insert the transaction
-    await this.db.collection('transactions').insertOne(transaction);
+    // Insert the transaction with optional session support
+    const options = session ? { session } : {};
+    await this.db.collection('transactions').insertOne(transaction, options);
     
     return transactionId;
   }

@@ -69,15 +69,8 @@ export async function POST(request: NextRequest) {
           await db.collection('invoices').insertMany(invoicesToInsert, { session });
         }
         
-        // Create transaction records for the customer invoice
-        if (customerInvoice && customerInvoiceId) {
-          await transactionService.createTransactionsFromInvoice(
-            customerInvoice,
-            payment,
-            registration,
-            customerInvoiceId.toString()
-          );
-        }
+        // Transaction creation happens outside the session for now
+        // as TransactionService doesn't support sessions yet
         
         // Update payment as processed
         await db.collection('payments').updateOne(
@@ -130,16 +123,43 @@ export async function POST(request: NextRequest) {
         );
       });
       
-      // Return the generated invoice numbers
-      return NextResponse.json({
-        success: true,
-        customerInvoiceNumber,
-        supplierInvoiceNumber
-      });
-      
     } finally {
       await session.endSession();
     }
+    
+    // Create transaction records in a separate transaction
+    // This ensures the invoice exists before creating transactions
+    if (customerInvoice && customerInvoiceId) {
+      const transactionSession = (db as any).client.startSession();
+      
+      try {
+        await transactionSession.withTransaction(async () => {
+          // Create transaction records for each line item
+          const transactionIds = await transactionService.createTransactionsFromInvoice(
+            customerInvoice,
+            payment,
+            registration,
+            customerInvoiceId.toString(),
+            undefined, // emailData
+            transactionSession // pass the session
+          );
+          
+          console.log(`Created ${transactionIds.length} transaction records for invoice ${customerInvoiceNumber}`);
+        });
+      } catch (transactionError) {
+        console.error('Error creating transactions:', transactionError);
+        // Don't fail the invoice creation if transaction creation fails
+      } finally {
+        await transactionSession.endSession();
+      }
+    }
+    
+    // Return the generated invoice numbers
+    return NextResponse.json({
+      success: true,
+      customerInvoiceNumber,
+      supplierInvoiceNumber
+    });
     
   } catch (error) {
     console.error('Error creating invoice:', error);
