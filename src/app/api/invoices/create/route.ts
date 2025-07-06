@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectMongoDB } from '@/lib/mongodb';
 import { InvoiceSequence } from '@/utils/invoice-sequence';
+import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,9 +30,12 @@ export async function POST(request: NextRequest) {
     
     // Prepare invoice documents with generated invoice numbers
     const invoicesToInsert = [];
+    let customerInvoiceId = null;
     
     if (customerInvoice) {
+      customerInvoiceId = new ObjectId();
       invoicesToInsert.push({
+        _id: customerInvoiceId,
         ...customerInvoice,
         invoiceNumber: customerInvoiceNumber,
         paymentId: payment._id,
@@ -43,6 +47,7 @@ export async function POST(request: NextRequest) {
     
     if (supplierInvoice) {
       invoicesToInsert.push({
+        _id: new ObjectId(),
         ...supplierInvoice,
         invoiceNumber: supplierInvoiceNumber,
         paymentId: payment._id,
@@ -67,12 +72,12 @@ export async function POST(request: NextRequest) {
           { _id: payment._id },
           { 
             $set: { 
-              processed: true,
-              processedAt: new Date(),
-              invoiceNumbers: {
-                customer: customerInvoiceNumber,
-                supplier: supplierInvoiceNumber
-              }
+              customerInvoiceNumber: customerInvoiceNumber,
+              supplierInvoiceNumber: supplierInvoiceNumber,
+              invoiceCreated: true,
+              invoiceCreatedAt: new Date(),
+              invoiceId: customerInvoiceId,
+              invoiceStatus: 'created'
             }
           },
           { session }
@@ -83,12 +88,12 @@ export async function POST(request: NextRequest) {
           { _id: registration._id },
           { 
             $set: { 
-              processed: true,
-              processedAt: new Date(),
-              invoiceNumbers: {
-                customer: customerInvoiceNumber,
-                supplier: supplierInvoiceNumber
-              }
+              customerInvoiceNumber: customerInvoiceNumber,
+              supplierInvoiceNumber: supplierInvoiceNumber,
+              invoiceCreated: true,
+              invoiceCreatedAt: new Date(),
+              invoiceId: customerInvoiceId,
+              invoiceStatus: 'created'
             }
           },
           { session }
