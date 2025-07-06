@@ -65,13 +65,14 @@ export class InvoiceSequence {
   }
 
   /**
-   * Get the next sequence number for a specific year/month
-   * This creates separate counters for each YYMM combination
+   * Get the next sequence number for a specific year/month/day
+   * This creates separate counters for each YYMMDD combination
    */
-  async getNextMonthlySequenceNumber(year: number, month: number): Promise<number> {
+  async getNextDailySequenceNumber(year: number, month: number, day: number): Promise<number> {
     const yy = year.toString().slice(-2);
     const mm = month.toString().padStart(2, '0');
-    const sequenceName = `invoice_${yy}${mm}`;
+    const dd = day.toString().padStart(2, '0');
+    const sequenceName = `invoice_${yy}${mm}${dd}`;
     
     const counters = this.db.collection<Counter>(this.counterCollection);
     
@@ -123,27 +124,29 @@ export class InvoiceSequence {
   }
 
   /**
-   * Generate a formatted invoice number
-   * Example: INV-25060001
+   * Generate a formatted invoice number using payment date
+   * Example: INV-250103001 (YY MM DD ###)
    */
-  async generateInvoiceNumber(prefix: string = 'INV'): Promise<string> {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1; // getMonth() returns 0-11
+  async generateInvoiceNumber(prefix: string = 'INV', paymentDate?: Date): Promise<string> {
+    const date = paymentDate || new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // getMonth() returns 0-11
+    const day = date.getDate();
     
-    const sequenceNumber = await this.getNextMonthlySequenceNumber(year, month);
+    const sequenceNumber = await this.getNextDailySequenceNumber(year, month, day);
     const yy = year.toString().slice(-2);
     const mm = month.toString().padStart(2, '0');
-    const paddedNumber = sequenceNumber.toString().padStart(4, '0');
+    const dd = day.toString().padStart(2, '0');
+    const paddedNumber = sequenceNumber.toString().padStart(3, '0');
     
-    return `${prefix}-${yy}${mm}${paddedNumber}`;
+    return `${prefix}-${yy}${mm}${dd}${paddedNumber}`;
   }
 
   /**
-   * Generate a LodgeTix invoice number
-   * Example: LTIV-25060001
+   * Generate a LodgeTix invoice number using payment date
+   * Example: LTIV-250103001 (YY MM DD ###)
    */
-  async generateLodgeTixInvoiceNumber(): Promise<string> {
-    return this.generateInvoiceNumber('LTIV');
+  async generateLodgeTixInvoiceNumber(paymentDate?: Date): Promise<string> {
+    return this.generateInvoiceNumber('LTIV', paymentDate);
   }
 }

@@ -5,24 +5,25 @@ export interface ArrayItemConfig {
     type: 'field' | 'text';
     value: string;
   }>;
-  quantity: { type: 'fixed' | 'field'; value: string | number };
-  unitPrice: { type: 'fixed' | 'field'; value: string | number };
+  quantity: { type: 'fixed' | 'field' | 'blank'; value: string | number | null };
+  unitPrice: { type: 'fixed' | 'field' | 'blank'; value: string | number | null };
 }
 
 export interface ArrayChildMapping {
   path: string; // e.g., "registrationData.selectedTickets"
   relationshipKey: string; // e.g., "attendeeId" - field that matches parent
   parentKey: string; // e.g., "attendeeId" - field in parent to match against
+  isNested?: boolean; // true for arrays within parent items, false for related arrays
   
   lookups?: Array<{
     localField: string; // e.g., "event_ticket_id"
-    collection: string; // e.g., "event_tickets"
-    foreignField: string; // e.g., "_id"
-    includeFields: string[]; // e.g., ["name", "price"]
+    collection: string; // e.g., "eventTickets"
+    foreignField: string; // e.g., "eventTicketId"
+    includeFields: string[]; // e.g., ["name", "price", "description"]
   }>;
   
   itemConfig: ArrayItemConfig & {
-    unitPrice: { type: 'fixed' | 'field' | 'lookup'; value: string | number };
+    unitPrice: { type: 'fixed' | 'field' | 'lookup' | 'blank'; value: string | number | null; lookupField?: string };
   };
 }
 
@@ -204,9 +205,9 @@ class FieldMappingStorageService {
       result.lineItems = mapping.lineItems;
     }
     
-    // Include line items if present in the mapping
-    if (mapping.items) {
-      result.items = mapping.items;
+    // Regenerate line items from mapping configuration
+    if (mapping.lineItems) {
+      result.items = this.regenerateLineItems(mapping.lineItems, paymentData, registrationData, relatedDocuments);
     }
     
     // Include array mappings if present
@@ -215,6 +216,203 @@ class FieldMappingStorageService {
     }
     
     return result;
+  }
+
+  /**
+   * Regenerate line items from mapping configuration
+   */
+  private regenerateLineItems(
+    lineItemMappings: Record<string, any>,
+    paymentData: any,
+    registrationData: any,
+    relatedDocuments?: any
+  ): any[] {
+    const items: any[] = [];
+    
+    Object.entries(lineItemMappings).forEach(([itemId, itemMapping]: [string, any]) => {
+      // Skip if this is a sub-item
+      if (itemId.includes('_sub_')) return;
+      
+      // Generate description from segments
+      let description = '';
+      if (itemMapping.descriptionSegments) {
+        description = itemMapping.descriptionSegments.map((segment: any) => {
+          if (segment.type === 'text') {
+            // Static text - use as is
+            return segment.value;
+          } else if (segment.type === 'field') {
+            // Mapped field - extract value from data
+            const [source, ...pathParts] = segment.value.split('.');
+            const path = pathParts.join('.');
+            
+            let value = '';
+            switch (source) {
+              case 'payment':
+                value = this.getNestedValue(paymentData, path) || '';
+                break;
+              case 'registration':
+                value = this.getNestedValue(registrationData, path) || '';
+                break;
+              case 'related':
+                if (relatedDocuments) {
+                  const [docType, ...docPath] = path.split('.');
+                  value = this.getNestedValue(relatedDocuments[docType], docPath.join('.')) || '';
+                }
+                break;
+            }
+            return value;
+          }
+          return '';
+        }).join('');
+      }
+      
+      // Get quantity
+      let quantity = 1;
+      if (itemMapping.quantityMapping) {
+        if (itemMapping.quantityMapping.customValue !== undefined) {
+          quantity = Number(itemMapping.quantityMapping.customValue) || 1;
+        } else if (itemMapping.quantityMapping.source) {
+          const value = this.extractValueFromSource(
+            itemMapping.quantityMapping.source,
+            paymentData,
+            registrationData,
+            relatedDocuments
+          );
+          quantity = Number(value) || 1;
+        }
+      }
+      
+      // Get price
+      let price = 0;
+      if (itemMapping.priceMapping) {
+        if (itemMapping.priceMapping.customValue !== undefined) {
+          price = Number(itemMapping.priceMapping.customValue) || 0;
+        } else if (itemMapping.priceMapping.source) {
+          const value = this.extractValueFromSource(
+            itemMapping.priceMapping.source,
+            paymentData,
+            registrationData,
+            relatedDocuments
+          );
+          price = Number(value) || 0;
+        }
+      }
+      
+      // Create the line item with sub-items array
+      const lineItem: any = {
+        id: itemId,
+        description,
+        quantity,
+        price,
+        descriptionSegments: itemMapping.descriptionSegments,
+        quantityMapping: itemMapping.quantityMapping,
+        priceMapping: itemMapping.priceMapping,
+        type: itemMapping.type || 'other',
+        subItems: []
+      };
+      
+      // Process sub-items and add them to the lineItem
+      if (itemMapping.subItems) {
+        Object.entries(itemMapping.subItems).forEach(([subItemId, subItemMapping]: [string, any]) => {
+          let subDescription = '';
+          if (subItemMapping.descriptionSegments) {
+            subDescription = subItemMapping.descriptionSegments.map((segment: any) => {
+              if (segment.type === 'text') return segment.value;
+              if (segment.type === 'field') {
+                const [source, ...pathParts] = segment.value.split('.');
+                const path = pathParts.join('.');
+                let value = '';
+                switch (source) {
+                  case 'payment':
+                    value = this.getNestedValue(paymentData, path) || '';
+                    break;
+                  case 'registration':
+                    value = this.getNestedValue(registrationData, path) || '';
+                    break;
+                  case 'related':
+                    if (relatedDocuments) {
+                      const [docType, ...docPath] = path.split('.');
+                      value = this.getNestedValue(relatedDocuments[docType], docPath.join('.')) || '';
+                    }
+                    break;
+                }
+                return value;
+              }
+              return '';
+            }).join('');
+          }
+          
+          // Get sub-item quantity and price
+          let subQuantity = 1;
+          if (subItemMapping.quantityMapping?.customValue !== undefined) {
+            subQuantity = Number(subItemMapping.quantityMapping.customValue) || 1;
+          } else if (subItemMapping.quantityMapping?.source) {
+            const value = this.extractValueFromSource(
+              subItemMapping.quantityMapping.source,
+              paymentData,
+              registrationData,
+              relatedDocuments
+            );
+            subQuantity = Number(value) || 1;
+          }
+          
+          let subPrice = 0;
+          if (subItemMapping.priceMapping?.customValue !== undefined) {
+            subPrice = Number(subItemMapping.priceMapping.customValue) || 0;
+          } else if (subItemMapping.priceMapping?.source) {
+            const value = this.extractValueFromSource(
+              subItemMapping.priceMapping.source,
+              paymentData,
+              registrationData,
+              relatedDocuments
+            );
+            subPrice = Number(value) || 0;
+          }
+          
+          // Add sub-item to the parent's subItems array
+          lineItem.subItems.push({
+            id: subItemId,
+            description: subDescription,
+            descriptionSegments: subItemMapping.descriptionSegments,
+            quantity: subQuantity,
+            quantityMapping: subItemMapping.quantityMapping,
+            price: subPrice,
+            priceMapping: subItemMapping.priceMapping
+          });
+        });
+      }
+      
+      items.push(lineItem);
+    });
+    
+    return items;
+  }
+  
+  /**
+   * Extract value from source path
+   */
+  private extractValueFromSource(
+    source: string,
+    paymentData: any,
+    registrationData: any,
+    relatedDocuments?: any
+  ): any {
+    const [dataSource, ...pathParts] = source.split('.');
+    const path = pathParts.join('.');
+    
+    switch (dataSource) {
+      case 'payment':
+        return this.getNestedValue(paymentData, path);
+      case 'registration':
+        return this.getNestedValue(registrationData, path);
+      case 'related':
+        if (relatedDocuments) {
+          const [docType, ...docPath] = path.split('.');
+          return this.getNestedValue(relatedDocuments[docType], docPath.join('.'));
+        }
+        break;
+    }
+    return null;
   }
 
   /**

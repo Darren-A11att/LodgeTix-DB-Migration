@@ -37,6 +37,9 @@ export async function generatePDF(
       </html>
     `;
 
+    console.log('Sending PDF generation request for:', filename);
+    console.log('HTML content length:', html.length);
+    
     // Send to server for PDF generation
     const response = await fetch('/api/invoices/generate-pdf', {
       method: 'POST',
@@ -47,7 +50,9 @@ export async function generatePDF(
     });
 
     if (!response.ok) {
-      throw new Error('Failed to generate PDF');
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      console.error('PDF generation failed:', response.status, errorData);
+      throw new Error(`Failed to generate PDF: ${errorData.error || response.statusText}`);
     }
 
     return await response.blob();

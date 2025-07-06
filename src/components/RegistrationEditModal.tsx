@@ -187,6 +187,13 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
     return { $numberDecimal: num.toFixed(2) };
   };
 
+  // Create sourceDocuments object for FieldMappingSelector
+  const sourceDocuments = {
+    registrations: editedData,
+    payments: paymentData,
+    ...(relatedDocuments || {})
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
@@ -237,6 +244,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('confirmationNumber') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -249,6 +257,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div>
@@ -293,6 +302,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('squarePaymentId') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -305,6 +315,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('functionName') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -317,6 +328,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('eventId') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -329,6 +341,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
               </div>
@@ -349,6 +362,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('customerEmail') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -361,6 +375,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('primaryAttendee') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -373,6 +388,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('customerId') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -385,6 +401,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('organisationName') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -397,6 +414,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('organisationNumber') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -409,6 +427,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
               </div>
@@ -429,6 +448,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('totalAmount') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -441,6 +461,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('subtotal') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -453,6 +474,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('stripeFee') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -465,6 +487,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('squareFee') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -477,6 +500,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('platformFeeAmount') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -489,6 +513,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('totalPricePaid') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -501,6 +526,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div>
@@ -535,6 +561,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.lastName') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -547,6 +574,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.email') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -559,6 +587,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.emailAddress') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -571,6 +600,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.phone') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -583,6 +613,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.mobileNumber') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -595,6 +626,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.addressLine1') ? 'ring-2 ring-red-500 rounded col-span-2' : 'col-span-2'}>
@@ -607,6 +639,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.city') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -619,6 +652,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.stateProvince') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -631,6 +665,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.postalCode') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -643,6 +678,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
                 <div className={highlightedFields.includes('registrationData.bookingContact.country') ? 'ring-2 ring-red-500 rounded' : ''}>
@@ -655,6 +691,7 @@ export default function RegistrationEditModal({ registration, onSave, onClose, p
                       ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
                     ]}
                     onMappingChange={handleFieldMappingChange}
+                    sourceDocuments={sourceDocuments}
                   />
                 </div>
               </div>

@@ -86,6 +86,15 @@ class ApiService {
     return response.data;
   }
 
+  async searchInvoicesByPaymentId(paymentId: string): Promise<any> {
+    // Use relative URL to hit the Next.js API route
+    const response = await axios.get(
+      `/api/invoices/search`,
+      { params: { paymentId } }
+    );
+    return response.data;
+  }
+
   async updateRegistration(id: string, updates: any): Promise<any> {
     const response = await axios.patch(
       `${API_BASE_URL}/registrations/${id}`,

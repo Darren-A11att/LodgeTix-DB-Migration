@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FieldOption, getSmartSuggestions } from '@/utils/field-extractor';
+import { FieldOption, getSmartSuggestions, getValueByPath } from '@/utils/field-extractor';
+import ComputationBuilder, { ComputationDefinition } from './ComputationBuilder';
 
 interface FieldMappingSelectorProps {
   fieldName: string;
@@ -9,6 +10,7 @@ interface FieldMappingSelectorProps {
   onMappingChange: (fieldPath: string, sourcePath: string | null, customValue?: any) => void;
   fieldType?: 'text' | 'number' | 'date' | 'select';
   selectOptions?: { value: string; label: string }[];
+  sourceDocuments?: Record<string, any>;
 }
 
 export default function FieldMappingSelector({
@@ -18,7 +20,8 @@ export default function FieldMappingSelector({
   allOptions,
   onMappingChange,
   fieldType = 'text',
-  selectOptions
+  selectOptions,
+  sourceDocuments
 }: FieldMappingSelectorProps) {
   const [isCustom, setIsCustom] = useState(false);
   const [customValue, setCustomValue] = useState(currentValue || '');
@@ -27,6 +30,108 @@ export default function FieldMappingSelector({
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [valueType, setValueType] = useState<'manual' | 'now' | 'computed'>('manual');
+  const [showComputationBuilder, setShowComputationBuilder] = useState(false);
+  const [computedValue, setComputedValue] = useState<any>(null);
+
+  // Execute computation to show preview
+  const executeComputation = (computation: ComputationDefinition): any => {
+    if (!sourceDocuments) return null;
+    
+    try {
+      const allData = { ...sourceDocuments };
+      
+      switch (computation.type) {
+        case 'count': {
+          if (computation.sources.length > 0) {
+            const arrayPath = computation.sources[0];
+            // Fix path to handle both 'registration' and 'registrations'
+            let value = getValueByPath(allData, arrayPath);
+            
+            // If not found, try with 's' appended to the source
+            if (value === undefined && arrayPath.startsWith('registration.')) {
+              const alternativePath = arrayPath.replace('registration.', 'registrations.');
+              value = getValueByPath(allData, alternativePath);
+            } else if (value === undefined && arrayPath.startsWith('payment.')) {
+              const alternativePath = arrayPath.replace('payment.', 'payments.');
+              value = getValueByPath(allData, alternativePath);
+            }
+            
+            return Array.isArray(value) ? value.length : 0;
+          }
+          return 0;
+        }
+        
+        case 'sum': {
+          let sum = 0;
+          computation.sources.forEach(source => {
+            const value = getValueByPath(allData, source);
+            if (Array.isArray(value)) {
+              sum += value.reduce((acc, item) => acc + (typeof item === 'number' ? item : 0), 0);
+            } else if (typeof value === 'number') {
+              sum += value;
+            }
+          });
+          return sum;
+        }
+        
+        case 'arithmetic': {
+          if (computation.sources.length > 0) {
+            const value = getValueByPath(allData, computation.sources[0]);
+            const numValue = typeof value === 'number' ? value : parseFloat(value) || 0;
+            const operand = computation.parameters?.operand || 0;
+            
+            switch (computation.parameters?.operator) {
+              case '+': return numValue + operand;
+              case '-': return numValue - operand;
+              case '*': return numValue * operand;
+              case '/': return operand !== 0 ? numValue / operand : 0;
+              default: return numValue;
+            }
+          }
+          return 0;
+        }
+        
+        case 'concat': {
+          const values: string[] = [];
+          computation.sources.forEach(source => {
+            const value = getValueByPath(allData, source);
+            if (value !== null && value !== undefined) {
+              values.push(String(value));
+            }
+          });
+          return values.join(computation.parameters?.separator || ' ');
+        }
+        
+        case 'now':
+          return new Date().toISOString();
+          
+        case 'minDate':
+        case 'maxDate': {
+          const dates = computation.sources
+            .map(source => {
+              const value = getValueByPath(allData, source);
+              return value ? new Date(value) : null;
+            })
+            .filter(date => date && !isNaN(date.getTime()));
+            
+          if (dates.length === 0) return null;
+          
+          const timestamp = computation.type === 'minDate' 
+            ? Math.min(...dates.map(d => d!.getTime()))
+            : Math.max(...dates.map(d => d!.getTime()));
+            
+          return new Date(timestamp).toISOString();
+        }
+        
+        default:
+          return null;
+      }
+    } catch (error) {
+      console.error('Error executing computation:', error);
+      return null;
+    }
+  };
 
   // Get smart suggestions for this field
   const suggestions = getSmartSuggestions(fieldPath.split('.').pop() || '', allOptions);
@@ -43,6 +148,26 @@ export default function FieldMappingSelector({
     // Don't override if we already have a selected path
     if (selectedPath) return;
     
+    // Check if current value is a computation
+    if (typeof currentValue === 'object' && currentValue?.$compute) {
+      setIsCustom(true);
+      setValueType('computed');
+      setCustomValue(currentValue);
+      setShowComputationBuilder(true);
+      // Execute the computation to show the result
+      const result = executeComputation(currentValue.$compute);
+      setComputedValue(result);
+      return;
+    }
+    
+    // Check if current value is a "now" marker
+    if (typeof currentValue === 'object' && currentValue?.$now) {
+      setIsCustom(true);
+      setValueType('now');
+      setCustomValue('Current date/time');
+      return;
+    }
+    
     // Check if current value matches any option
     const matchingOption = allOptions.find(opt => opt.value === currentValue);
     if (matchingOption) {
@@ -52,7 +177,7 @@ export default function FieldMappingSelector({
       setIsCustom(true);
       setCustomValue(currentValue);
     }
-  }, [currentValue, allOptions]);
+  }, [currentValue, allOptions, sourceDocuments]);
 
   const handleMappingSelect = (option: FieldOption) => {
     setSelectedPath(option.path);
@@ -74,6 +199,16 @@ export default function FieldMappingSelector({
       const finalValue = isNaN(numericValue) ? 0 : numericValue;
       setCustomValue(finalValue);
       onMappingChange(fieldPath, null, finalValue);
+    } else if (fieldType === 'date' && valueType === 'now') {
+      // For "now" dates, store a special marker
+      const nowValue = { $now: true };
+      setCustomValue('Current date/time');
+      onMappingChange(fieldPath, null, nowValue);
+    } else if (fieldType === 'date' && value) {
+      // For date fields, ensure proper ISO format
+      const dateValue = new Date(value).toISOString();
+      setCustomValue(value);
+      onMappingChange(fieldPath, null, dateValue);
     } else {
       setCustomValue(value);
       onMappingChange(fieldPath, null, value);
@@ -101,7 +236,17 @@ export default function FieldMappingSelector({
 
   const getDisplayValue = () => {
     if (isCustom) {
-      return customValue;
+      if (typeof customValue === 'object' && customValue?.$compute) {
+        return computedValue !== null ? String(computedValue) : 'Computed value';
+      }
+      if (typeof customValue === 'object' && customValue?.$now) {
+        return 'Current date/time';
+      }
+      // Ensure we never return an object
+      if (typeof customValue === 'object' && customValue !== null) {
+        return JSON.stringify(customValue);
+      }
+      return String(customValue || '');
     }
     if (mappedSourcePath) {
       // Show the mapped path even if value is empty
@@ -125,6 +270,12 @@ export default function FieldMappingSelector({
     
     // Handle currentValue
     if (typeof currentValue === 'object' && currentValue !== null) {
+      if (currentValue.$compute) {
+        return computedValue !== null ? computedValue : 'Computed value';
+      }
+      if (currentValue.$now) {
+        return 'Current date/time';
+      }
       return JSON.stringify(currentValue);
     }
     return currentValue;
@@ -139,7 +290,9 @@ export default function FieldMappingSelector({
       <div className="flex items-center gap-2 mb-2">
         <span className="text-sm text-gray-600">Current: </span>
         <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded flex items-center gap-2">
-          {isCustom ? 'Manual entry' : (String(getDisplayValue() || 'Not set'))}
+          {isCustom && valueType === 'computed' ? `Computed: ${computedValue !== null ? computedValue : 'calculating...'}` : 
+           isCustom ? 'Manual entry' : 
+           (String(getDisplayValue() || 'Not set'))}
           {(selectedPath || isCustom || mappedSourcePath) && (
             <button
               onClick={() => {
@@ -207,6 +360,72 @@ export default function FieldMappingSelector({
                   </button>
                 )}
                 
+                {/* For date fields, show special options */}
+                {fieldType === 'date' && !searchTerm && (
+                  <>
+                    <button
+                      className="w-full text-left px-3 py-2 hover:bg-green-50 border-b"
+                      onClick={() => {
+                        setIsCustom(true);
+                        setValueType('now');
+                        setSelectedPath('');
+                        setShowDropdown(false);
+                        handleCustomValueChange(new Date().toISOString());
+                      }}
+                    >
+                      <div className="text-sm font-medium text-green-600">Use current date/time</div>
+                      <div className="text-xs text-gray-600">Set to now when migrating</div>
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 hover:bg-purple-50 border-b"
+                      onClick={() => {
+                        setIsCustom(true);
+                        setValueType('manual');
+                        setSelectedPath('');
+                        setShowDropdown(false);
+                        setIsEditing(true);
+                      }}
+                    >
+                      <div className="text-sm font-medium text-purple-600">Enter specific date</div>
+                      <div className="text-xs text-gray-600">Choose a date manually</div>
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 hover:bg-blue-50 border-b"
+                      onClick={() => {
+                        setIsCustom(true);
+                        setValueType('computed');
+                        setSelectedPath('');
+                        setShowDropdown(false);
+                        setShowComputationBuilder(true);
+                      }}
+                    >
+                      <div className="text-sm font-medium text-blue-600">Compute from other fields</div>
+                      <div className="text-xs text-gray-600">Calculate earliest/latest date from events</div>
+                    </button>
+                  </>
+                )}
+                
+                {/* Show computed option for all field types */}
+                {!searchTerm && fieldType !== 'select' && (
+                  <button
+                    className="w-full text-left px-3 py-2 hover:bg-blue-50 border-b"
+                    onClick={() => {
+                      setIsCustom(true);
+                      setValueType('computed');
+                      setSelectedPath('');
+                      setShowDropdown(false);
+                      setShowComputationBuilder(true);
+                    }}
+                  >
+                    <div className="text-sm font-medium text-blue-600">Compute value</div>
+                    <div className="text-xs text-gray-600">
+                      {fieldType === 'number' ? 'Sum, count, or calculate' : 
+                       fieldType === 'text' ? 'Concatenate or lookup' : 
+                       'Define a computation'}
+                    </div>
+                  </button>
+                )}
+                
                 {filteredOptions.length === 0 && !searchTerm ? (
                   <div className="px-3 py-2 text-sm text-gray-500">No matching fields found</div>
                 ) : (
@@ -249,7 +468,20 @@ export default function FieldMappingSelector({
               className="w-full px-3 py-2 border rounded-md bg-white cursor-pointer hover:bg-gray-50"
               onClick={() => setIsEditing(true)}
             >
-              <span className="text-gray-700">{customValue || `Click to enter ${fieldName.toLowerCase()}`}</span>
+              <span className="text-gray-700">
+                {(() => {
+                  if (typeof customValue === 'object' && customValue?.$compute) {
+                    return computedValue !== null ? String(computedValue) : 'Computed value';
+                  }
+                  if (typeof customValue === 'object' && customValue?.$now) {
+                    return 'Current date/time';
+                  }
+                  if (typeof customValue === 'object' && customValue !== null) {
+                    return JSON.stringify(customValue);
+                  }
+                  return customValue || `Click to enter ${fieldName.toLowerCase()}`;
+                })()}
+              </span>
             </div>
           )
         )}
@@ -258,23 +490,97 @@ export default function FieldMappingSelector({
       {(selectedPath || mappedSourcePath) && !isCustom && (
         <div className="mt-1 text-xs text-gray-600">
           Mapped to: <span className="font-mono">{mappedSourcePath || allOptions.find(opt => opt.path === selectedPath)?.displayPath || selectedPath}</span>
+          {(() => {
+            const option = allOptions.find(opt => opt.displayPath === mappedSourcePath || opt.path === selectedPath);
+            if (option && option.value !== undefined) {
+              const valueStr = typeof option.value === 'object' ? 
+                JSON.stringify(option.value) : String(option.value);
+              return (
+                <span className="text-gray-500 ml-2">
+                  (Current: {valueStr.length > 50 ? valueStr.substring(0, 50) + '...' : valueStr})
+                </span>
+              );
+            }
+            return null;
+          })()}
         </div>
       )}
       
       {isCustom && !isEditing && (
         <div className="mt-1 flex items-center justify-between">
-          <span className="text-xs text-purple-600">Custom value</span>
+          <span className="text-xs text-purple-600">
+            {valueType === 'now' ? 'Current date/time' : 
+             valueType === 'computed' ? `Computed value: ${computedValue !== null ? computedValue : 'calculating...'}` :
+             'Custom value'}
+          </span>
           <button
             onClick={() => {
               setIsCustom(false);
               setSearchTerm('');
               setSelectedPath('');
+              setValueType('manual');
+              setComputedValue(null);
+              setShowComputationBuilder(false);
               onMappingChange(fieldPath, null, '');
             }}
             className="text-xs text-blue-600 hover:text-blue-800 underline"
           >
-            Clear custom value
+            Clear {valueType === 'computed' ? 'computation' : 'custom value'}
           </button>
+        </div>
+      )}
+      
+      {/* Computation Builder */}
+      {showComputationBuilder && (
+        <div>
+          <ComputationBuilder
+            fieldName={fieldName}
+            fieldType={fieldType}
+            allOptions={allOptions}
+            onComputationChange={(computation) => {
+              if (computation) {
+                const result = executeComputation(computation);
+                console.log('Computation result:', { 
+                  computation, 
+                  result, 
+                  sources: computation.sources,
+                  hasSourceDocuments: !!sourceDocuments,
+                  registrations: sourceDocuments?.registrations,
+                  payments: sourceDocuments?.payments 
+                });
+                setComputedValue(result);
+                
+                // Always store the computation definition, not just the result
+                onMappingChange(fieldPath, null, { $compute: computation });
+                setCustomValue({ $compute: computation });
+                setValueType('computed');
+                // Keep showing the computation builder unless explicitly closed
+              } else {
+                setShowComputationBuilder(false);
+                setIsCustom(false);
+                setComputedValue(null);
+                setValueType('manual');
+                onMappingChange(fieldPath, null, '');
+              }
+            }}
+            initialComputation={
+              typeof customValue === 'object' && customValue?.$compute 
+                ? customValue.$compute 
+                : undefined
+            }
+            registrationData={sourceDocuments?.registrations || sourceDocuments?.registration}
+            paymentData={sourceDocuments?.payments || sourceDocuments?.payment}
+          />
+          {computedValue !== null && (
+            <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
+              <span className="text-green-800">Current result: <strong>{computedValue}</strong></span>
+              {valueType === 'computed' && typeof customValue === 'object' && customValue?.$compute?.type === 'count' && (
+                <span className="text-xs text-green-600 ml-2">
+                  (This will be recalculated for each document when the mapping is applied)
+                </span>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

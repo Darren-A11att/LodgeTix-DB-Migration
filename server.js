@@ -82,6 +82,14 @@ async function writeEnvFile(webPort, apiPort) {
   envVars['NEXT_PUBLIC_WEB_PORT'] = webPort;
   envVars['NEXT_PUBLIC_API_URL'] = `http://localhost:${apiPort}/api`;
   
+  // Add MongoDB variables if they don't exist - use production database
+  if (!envVars['MONGODB_URI']) {
+    envVars['MONGODB_URI'] = 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix';
+  }
+  if (!envVars['MONGODB_DB']) {
+    envVars['MONGODB_DB'] = 'LodgeTix';
+  }
+  
   // Reconstruct the env file content
   const newContent = Object.entries(envVars)
     .map(([key, value]) => `${key}=${value}`)

@@ -40,6 +40,7 @@ export default function DataMigrationPage() {
   const [sourceDocuments, setSourceDocuments] = useState<Record<string, any>>({});
   
   // Destination collection states
+  const [destinationCollections, setDestinationCollections] = useState<CollectionInfo[]>([]);
   const [primaryDestination, setPrimaryDestination] = useState<string>('');
   const [additionalDestinations, setAdditionalDestinations] = useState<string[]>([]);
   const [destinationSchemas, setDestinationSchemas] = useState<Record<string, any>>({});
@@ -73,6 +74,7 @@ export default function DataMigrationPage() {
   // Load collections on mount
   useEffect(() => {
     loadCollections();
+    loadDestinationCollections();
     loadSavedMappings();
   }, []);
   
@@ -113,6 +115,15 @@ export default function DataMigrationPage() {
       console.error('Failed to load collections:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const loadDestinationCollections = async () => {
+    try {
+      const response = await apiService.get('/migration/destination/collections');
+      setDestinationCollections(response);
+    } catch (error) {
+      console.error('Failed to load destination collections:', error);
     }
   };
   
@@ -268,18 +279,31 @@ export default function DataMigrationPage() {
       if (current === null || current === undefined) return;
       
       if (Array.isArray(current)) {
+        // First, add the array field itself as an option
+        fields.push({
+          label: path,
+          value: path,
+          type: 'array',
+          sampleValue: current,
+          arrayLength: current.length
+        });
+        
+        // Then traverse array items
         current.forEach((item, index) => {
           traverse(item, `${path}[${index}]`);
         });
       } else if (typeof current === 'object' && !(current instanceof Date)) {
         Object.entries(current).forEach(([key, value]) => {
           const fullPath = `${path}.${key}`;
-          fields.push({
-            label: fullPath,
-            value: fullPath,
-            type: Array.isArray(value) ? 'array' : typeof value,
-            sampleValue: value
-          });
+          // Don't add array fields here - they'll be added when we traverse into them
+          if (!Array.isArray(value)) {
+            fields.push({
+              label: fullPath,
+              value: fullPath,
+              type: typeof value,
+              sampleValue: value
+            });
+          }
           traverse(value, fullPath);
         });
       }
@@ -433,7 +457,17 @@ export default function DataMigrationPage() {
               }
             }
           } else if (mapping?.customValue !== undefined) {
-            setNestedValue(resultObj, fullPath, mapping.customValue);
+            // Handle special values like date markers and computations
+            if (typeof mapping.customValue === 'object' && mapping.customValue.$now) {
+              setNestedValue(resultObj, fullPath, new Date().toISOString());
+            } else if (typeof mapping.customValue === 'object' && mapping.customValue.$compute) {
+              const computedValue = executeComputation(mapping.customValue.$compute);
+              if (computedValue !== null) {
+                setNestedValue(resultObj, fullPath, computedValue);
+              }
+            } else {
+              setNestedValue(resultObj, fullPath, mapping.customValue);
+            }
           } else {
             // Try default mapping
             const defaultValue = getNestedValue(defaultMapping, fullPath) || schemaValue;
@@ -478,6 +512,108 @@ export default function DataMigrationPage() {
     }
     
     return null;
+  };
+  
+  const executeComputation = (computation: any): any => {
+    if (!computation || !computation.type) return null;
+    
+    const getValuesFromSources = (sources: string[]): any[] => {
+      const values: any[] = [];
+      
+      sources.forEach(source => {
+        const [collection, ...pathParts] = source.split('.');
+        const sourceDoc = sourceDocuments[collection];
+        
+        if (sourceDoc) {
+          // Handle array fields (e.g., events.dates.eventStart)
+          if (pathParts[0] && Array.isArray(sourceDoc[pathParts[0]])) {
+            const arrayField = pathParts.shift();
+            const remainingPath = pathParts.join('.');
+            
+            sourceDoc[arrayField].forEach((item: any) => {
+              const value = remainingPath ? getValueByPath(item, remainingPath) : item;
+              if (value !== undefined && value !== null) {
+                values.push(value);
+              }
+            });
+          } else {
+            const value = Array.isArray(sourceDoc)
+              ? getValueByPath(sourceDoc[0], pathParts.join('.'))
+              : getValueByPath(sourceDoc, pathParts.join('.'));
+            if (value !== undefined && value !== null) {
+              values.push(value);
+            }
+          }
+        }
+      });
+      
+      return values;
+    };
+    
+    switch (computation.type) {
+      case 'minDate': {
+        const dates = getValuesFromSources(computation.sources)
+          .map(d => new Date(d))
+          .filter(d => !isNaN(d.getTime()));
+        return dates.length > 0 
+          ? new Date(Math.min(...dates.map(d => d.getTime()))).toISOString()
+          : null;
+      }
+      
+      case 'maxDate': {
+        const dates = getValuesFromSources(computation.sources)
+          .map(d => new Date(d))
+          .filter(d => !isNaN(d.getTime()));
+        return dates.length > 0 
+          ? new Date(Math.max(...dates.map(d => d.getTime()))).toISOString()
+          : null;
+      }
+      
+      case 'sum': {
+        const numbers = getValuesFromSources(computation.sources)
+          .map(n => parseFloat(n))
+          .filter(n => !isNaN(n));
+        return numbers.reduce((sum, n) => sum + n, 0);
+      }
+      
+      case 'count': {
+        const values = getValuesFromSources(computation.sources);
+        return values.length;
+      }
+      
+      case 'arithmetic': {
+        const values = getValuesFromSources(computation.sources);
+        if (values.length === 0) return 0;
+        
+        const firstValue = parseFloat(values[0]) || 0;
+        const operand = computation.parameters?.operand || 0;
+        
+        switch (computation.parameters?.operator) {
+          case '+': return firstValue + operand;
+          case '-': return firstValue - operand;
+          case '*': return firstValue * operand;
+          case '/': return operand !== 0 ? firstValue / operand : 0;
+          default: return firstValue;
+        }
+      }
+      
+      case 'concat': {
+        const values = getValuesFromSources(computation.sources);
+        return values.join(computation.parameters?.separator || ' ');
+      }
+      
+      case 'now': {
+        return new Date().toISOString();
+      }
+      
+      // Lookup would require async operation and access to destination DB
+      case 'lookup': {
+        return `[Lookup: ${computation.parameters?.collection}.${computation.parameters?.returnField}]`;
+      }
+      
+      default:
+        return null;
+    }
   };
   
   const processCurrent = async () => {
@@ -821,15 +957,11 @@ export default function DataMigrationPage() {
                 className="w-full p-2 border rounded"
               >
                 <option value="">Select primary destination...</option>
-                <option value="functions">functions</option>
-                <option value="registrations">registrations</option>
-                <option value="attendees">attendees</option>
-                <option value="tickets">tickets</option>
-                <option value="financial-transactions">financial-transactions</option>
-                <option value="organisations">organisations</option>
-                <option value="contacts">contacts</option>
-                <option value="users">users</option>
-                <option value="jurisdictions">jurisdictions</option>
+                {destinationCollections.map(col => (
+                  <option key={col.name} value={col.name}>
+                    {col.name} ({col.count} documents)
+                  </option>
+                ))}
               </select>
             </div>
             
@@ -850,15 +982,11 @@ export default function DataMigrationPage() {
                       className="flex-1 p-2 border rounded"
                     >
                       <option value="">Select collection...</option>
-                      <option value="functions">functions</option>
-                      <option value="registrations">registrations</option>
-                      <option value="attendees">attendees</option>
-                      <option value="tickets">tickets</option>
-                      <option value="financial-transactions">financial-transactions</option>
-                      <option value="organisations">organisations</option>
-                      <option value="contacts">contacts</option>
-                      <option value="users">users</option>
-                      <option value="jurisdictions">jurisdictions</option>
+                      {destinationCollections.map(col => (
+                        <option key={col.name} value={col.name}>
+                          {col.name} ({col.count} documents)
+                        </option>
+                      ))}
                     </select>
                     <button
                       onClick={() => {
@@ -1397,6 +1525,7 @@ function MappingFields({
             { value: 'true', label: 'True' },
             { value: 'false', label: 'False' }
           ] : undefined}
+          sourceDocuments={sourceDocuments}
         />
         <div className="text-xs text-gray-500 mt-1">
           {getSchemaDisplayText(defaultValue)}

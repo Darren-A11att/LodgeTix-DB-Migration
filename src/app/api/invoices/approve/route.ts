@@ -18,9 +18,10 @@ export async function POST(request: NextRequest) {
     // Connect to MongoDB
     const { db } = await connectMongoDB();
 
-    // Generate final invoice number
+    // Generate final invoice number using payment date
     const invoiceSequence = new InvoiceSequence(db);
-    const invoiceNumber = await invoiceSequence.generateLodgeTixInvoiceNumber();
+    const paymentDate = invoicePreview.payment?.paidDate ? new Date(invoicePreview.payment.paidDate) : new Date();
+    const invoiceNumber = await invoiceSequence.generateLodgeTixInvoiceNumber(paymentDate);
 
     // Create final invoice
     const finalInvoice = {
@@ -84,6 +85,7 @@ export async function POST(request: NextRequest) {
       matchConfidence: body.matchConfidence,
       matchMethod: body.matchMethod
     });
+
 
     return NextResponse.json({
       success: true,

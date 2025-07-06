@@ -95,6 +95,10 @@ export default function InvoiceMatchesPage() {
   const [showRegistrationEditModal, setShowRegistrationEditModal] = useState(false);
   const [showRelatedDocuments, setShowRelatedDocuments] = useState(false);
   
+  // Invoice processing status states
+  const [processedInvoices, setProcessedInvoices] = useState<any[]>([]);
+  const [loadingInvoiceStatus, setLoadingInvoiceStatus] = useState(false);
+  
   // Field mapping states
   const [savedMappings, setSavedMappings] = useState<FieldMapping[]>([]);
   const [selectedMappingId, setSelectedMappingId] = useState<string | null>(null);
@@ -170,6 +174,63 @@ export default function InvoiceMatchesPage() {
       setRegistrationNullFields([]);
     }
   }, [currentMatch, selectedRegistration, selectedPayment, relatedDocuments]);
+
+  // Fetch invoice processing status when payment changes
+  useEffect(() => {
+    const fetchInvoiceStatus = async () => {
+      const effectivePayment = selectedPayment || currentMatch?.payment;
+      if (!effectivePayment?._id) return;
+      
+      setLoadingInvoiceStatus(true);
+      try {
+        const result = await apiService.searchInvoicesByPaymentId(effectivePayment._id);
+        setProcessedInvoices(result.invoices || []);
+      } catch (error) {
+        console.error('Error fetching invoice status:', error);
+        setProcessedInvoices([]);
+      } finally {
+        setLoadingInvoiceStatus(false);
+      }
+    };
+    
+    fetchInvoiceStatus();
+  }, [selectedPayment, currentMatch]);
+
+  const generateInvoiceNumbers = async (paymentDate: Date) => {
+    try {
+      const response = await fetch('/api/invoices/generate-number', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentDate })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error('Invoice generation failed:', data);
+        throw new Error(data.details || 'Failed to generate invoice numbers');
+      }
+      
+      return {
+        customerInvoiceNumber: data.customerInvoiceNumber,
+        supplierInvoiceNumber: data.supplierInvoiceNumber
+      };
+    } catch (error) {
+      console.error('Error generating invoice numbers:', error);
+      // Fallback to local generation if API fails
+      const date = new Date(paymentDate);
+      const yy = date.getFullYear().toString().slice(-2);
+      const mm = (date.getMonth() + 1).toString().padStart(2, '0');
+      const dd = date.getDate().toString().padStart(2, '0');
+      const tempSequence = Math.floor(Math.random() * 900) + 100;
+      const paddedSequence = tempSequence.toString().padStart(3, '0');
+      
+      return {
+        customerInvoiceNumber: `LTIV-${yy}${mm}${dd}${paddedSequence}`,
+        supplierInvoiceNumber: `LTSP-${yy}${mm}${dd}${paddedSequence}`
+      };
+    }
+  };
 
   const fetchCurrentPayment = async () => {
     try {
@@ -253,8 +314,15 @@ export default function InvoiceMatchesPage() {
           const fullName = payment.customerName || registration?.customerName || registration?.primaryAttendee || 'Unknown Customer';
           const nameParts = fullName.split(' ');
           
+          // Generate invoice numbers based on payment date
+          const paymentDate = new Date(payment.timestamp);
+          const { customerInvoiceNumber, supplierInvoiceNumber } = await generateInvoiceNumbers(paymentDate);
+          
+          console.log('Generated invoice numbers:', { customerInvoiceNumber, supplierInvoiceNumber });
+          
           const initialCustomerInvoice = {
             invoiceType: 'customer' as const,
+            invoiceNumber: customerInvoiceNumber,
             paymentId: payment._id,
             registrationId: registration?._id,
             billTo: {
@@ -274,6 +342,17 @@ export default function InvoiceMatchesPage() {
           };
           
           setCustomerInvoice(initialCustomerInvoice);
+          
+          // Generate supplier invoice with the matching number
+          if (customerInvoiceNumber) {
+            const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, payment);
+            if (supplierInvoiceData) {
+              setSupplierInvoice({
+                ...supplierInvoiceData,
+                invoiceNumber: supplierInvoiceNumber
+              });
+            }
+          }
         }
       } else {
         // Fallback to index-based fetching
@@ -288,9 +367,14 @@ export default function InvoiceMatchesPage() {
           const fullName = match.payment.customerName || match.registration?.customerName || match.registration?.primaryAttendee || 'Unknown Customer';
           const nameParts = fullName.split(' ');
           
+          // Generate invoice numbers based on payment date
+          const paymentDate = new Date(match.payment.timestamp);
+          const { customerInvoiceNumber, supplierInvoiceNumber } = await generateInvoiceNumbers(paymentDate);
+          
           const initialCustomerInvoice = {
             ...match.invoice,
             invoiceType: 'customer' as const,
+            invoiceNumber: customerInvoiceNumber,
             paymentId: match.payment._id,
             registrationId: match.registration?._id,
             billTo: {
@@ -329,6 +413,17 @@ export default function InvoiceMatchesPage() {
           };
           
           setCustomerInvoice(initialCustomerInvoice);
+          
+          // Generate supplier invoice with the matching number
+          if (customerInvoiceNumber) {
+            const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, match.payment);
+            if (supplierInvoiceData) {
+              setSupplierInvoice({
+                ...supplierInvoiceData,
+                invoiceNumber: supplierInvoiceNumber
+              });
+            }
+          }
         }
         } else {
           setCurrentMatch(null);
@@ -474,10 +569,14 @@ export default function InvoiceMatchesPage() {
           }))
         });
         
+        // Generate invoice numbers based on payment date
+        const paymentDate = new Date(manualMatchPayment.timestamp);
+        const { customerInvoiceNumber, supplierInvoiceNumber } = await generateInvoiceNumbers(paymentDate);
+        
         // Create initial customer invoice for the new match
         const initialCustomerInvoice = {
           invoiceType: 'customer' as const,
-          invoiceNumber: '',
+          invoiceNumber: customerInvoiceNumber,
           date: new Date().toISOString(),
           dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           billTo: {
@@ -518,6 +617,17 @@ export default function InvoiceMatchesPage() {
         };
         
         setCustomerInvoice(initialCustomerInvoice);
+        
+        // Generate supplier invoice with the matching number
+        if (customerInvoiceNumber) {
+          const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, manualMatchPayment);
+          if (supplierInvoiceData) {
+            setSupplierInvoice({
+              ...supplierInvoiceData,
+              invoiceNumber: supplierInvoiceNumber
+            });
+          }
+        }
       }
       
       alert('Payment and registration successfully matched!');
@@ -881,12 +991,22 @@ export default function InvoiceMatchesPage() {
       const subtotal = fieldPath === 'subtotal' ? value : (currentInvoice.subtotal || 0);
       const total = fieldPath === 'total' ? value : (currentInvoice.total || 0);
       
-      // Ensure both values are numbers
-      const subtotalNum = typeof subtotal === 'number' ? subtotal : parseFloat(subtotal) || 0;
-      const totalNum = typeof total === 'number' ? total : parseFloat(total) || 0;
+      // Ensure both values are numbers, handling currency symbols
+      const parseCurrency = (value: any): number => {
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+          // Remove currency symbols and commas
+          const cleanValue = value.replace(/[$,]/g, '').trim();
+          return parseFloat(cleanValue) || 0;
+        }
+        return 0;
+      };
       
-      // Calculate processing fees as total - subtotal
-      const processingFees = totalNum - subtotalNum;
+      const subtotalNum = parseCurrency(subtotal);
+      const totalNum = parseCurrency(total);
+      
+      // Calculate processing fees as total - subtotal, rounded to 2 decimal places
+      const processingFees = Math.round((totalNum - subtotalNum) * 100) / 100;
       
       // Update the invoice with calculated processing fees
       const invoiceWithFees = {
@@ -1042,6 +1162,56 @@ export default function InvoiceMatchesPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Invoice Processing Status */}
+        {(loadingInvoiceStatus || processedInvoices.length > 0) && (
+          <div className="bg-blue-50 px-4 py-3 border-b border-gray-300">
+            <div className="text-sm">
+              <span className="font-semibold text-gray-700">Invoice Processing Status:</span>
+              {loadingInvoiceStatus ? (
+                <div className="mt-2 text-gray-600">Loading invoice status...</div>
+              ) : processedInvoices.length > 0 ? (
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center gap-2 text-green-700">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="font-semibold">Payment has been processed</span>
+                  </div>
+                  {processedInvoices.map((invoice, index) => (
+                    <div key={index} className="ml-7 space-y-1 text-xs">
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-600">Invoice #:</span>
+                        <span className="font-mono font-semibold">{invoice.invoiceNumber}</span>
+                        <span className="text-gray-600">Type:</span>
+                        <span className="font-semibold capitalize">{invoice.invoiceType}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-600">Date:</span>
+                        <span>{new Date(invoice.date).toLocaleDateString()}</span>
+                        <span className="text-gray-600">Total:</span>
+                        <span className="font-semibold">{formatMoney(invoice.total)}</span>
+                      </div>
+                      {invoice.billTo && (
+                        <div className="flex items-center gap-4">
+                          <span className="text-gray-600">Billed to:</span>
+                          <span>{invoice.billTo.businessName || `${invoice.billTo.firstName} ${invoice.billTo.lastName}`}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-2 flex items-center gap-2 text-amber-700">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Payment not yet processed - no invoice created</span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1281,13 +1451,30 @@ export default function InvoiceMatchesPage() {
                     );
                     invoiceData = { ...invoiceData, ...mappedData };
                     
-                    // Load array mappings if present
+                    // Load array mappings and line item mappings if present
                     const selectedMapping = savedMappings.find(m => m.id === selectedMappingId);
-                    if (selectedMapping?.arrayMappings) {
-                      setArrayMappings(selectedMapping.arrayMappings);
+                    if (selectedMapping) {
+                      // Set field mapping config including line items
+                      const fullConfig = {
+                        ...selectedMapping.mappings,
+                        lineItems: selectedMapping.lineItems
+                      };
+                      setFieldMappingConfig(fullConfig);
+                      setCustomerFieldMappingConfig(fullConfig);
+                      
+                      // Load array mappings
+                      if (selectedMapping.arrayMappings) {
+                        setArrayMappings(selectedMapping.arrayMappings);
+                        setCustomerArrayMappings(selectedMapping.arrayMappings);
+                      }
                     }
                   } else {
-                    // Use default mapping
+                    // Use default mapping - clear any previous template data
+                    setFieldMappingConfig({});
+                    setCustomerFieldMappingConfig({});
+                    setArrayMappings([]);
+                    setCustomerArrayMappings([]);
+                    
                     invoiceData.billTo = {
                       businessName: effectiveRegistration?.businessName || '',
                       businessNumber: effectiveRegistration?.businessNumber || '',
@@ -1308,7 +1495,7 @@ export default function InvoiceMatchesPage() {
                     status: 'paid', // Add default status
                     date: new Date().toISOString(),
                     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    invoiceNumber: invoiceData.invoiceNumber || '',
+                    invoiceNumber: invoiceData.invoiceNumber || '[To be assigned]',
                     processingFees: 0,
                     items: [
                       {
@@ -1371,9 +1558,13 @@ export default function InvoiceMatchesPage() {
                       const customerInvoiceWithMapping = { ...customerInvoiceData, ...mappedData };
                       setEditableInvoice(customerInvoiceWithMapping);
                       setCustomerInvoice(customerInvoiceWithMapping);
-                      // Store the mapping configuration
-                      setFieldMappingConfig(autoMapping.mappings);
-                      setCustomerFieldMappingConfig(autoMapping.mappings);
+                      // Store the mapping configuration including line items
+                      const fullConfig = {
+                        ...autoMapping.mappings,
+                        lineItems: autoMapping.lineItems
+                      };
+                      setFieldMappingConfig(fullConfig);
+                      setCustomerFieldMappingConfig(fullConfig);
                       
                       // Load array mappings if present
                       if (autoMapping.arrayMappings) {
@@ -1708,6 +1899,13 @@ export default function InvoiceMatchesPage() {
           ...(relatedDocuments ? extractRelatedDocumentFields(relatedDocuments) : [])
         ];
         
+        // Create sourceDocuments object for FieldMappingSelector
+        const sourceDocuments = {
+          registrations: effectiveRegistration,
+          payments: effectivePayment,
+          ...(relatedDocuments || {})
+        };
+        
         return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg h-[90vh] flex flex-col" style={{ width: 'fit-content' }}>
@@ -1999,6 +2197,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.businessName}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Business Number (ABN)"
@@ -2006,6 +2205,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.businessNumber}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="First Name"
@@ -2013,6 +2213,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.firstName}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Last Name"
@@ -2020,6 +2221,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.lastName}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Email"
@@ -2027,6 +2229,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.email}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Address Line 1"
@@ -2034,6 +2237,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.addressLine1}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="City"
@@ -2041,6 +2245,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.city}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Postal Code"
@@ -2048,6 +2253,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.postalCode}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="State/Province"
@@ -2055,6 +2261,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.stateProvince}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Country"
@@ -2062,6 +2269,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.billTo?.country}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                     </div>
                     
@@ -2090,6 +2298,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.transactionId}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Paid Date"
@@ -2113,6 +2322,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.currency}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Card Last 4"
@@ -2120,6 +2330,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.last4}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Card Brand"
@@ -2127,6 +2338,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.cardBrand}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Receipt URL"
@@ -2134,6 +2346,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.receiptUrl}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Payment Status"
@@ -2155,6 +2368,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.source}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Statement Descriptor"
@@ -2162,6 +2376,7 @@ export default function InvoiceMatchesPage() {
                         currentValue={editableInvoice.payment?.statementDescriptor}
                         allOptions={allFieldOptions}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                     </div>
                   </div>
@@ -2322,7 +2537,9 @@ export default function InvoiceMatchesPage() {
                           await new Promise(resolve => setTimeout(resolve, 100));
                           
                           const { downloadPDF } = await import('@/utils/pdf-generator');
-                          await downloadPDF(invoiceElement, editableInvoice.invoiceNumber);
+                          const filename = editableInvoice.invoiceNumber || `invoice_${Date.now()}`;
+                          console.log('Downloading PDF with filename:', filename);
+                          await downloadPDF(invoiceElement, filename);
                         } catch (error) {
                           console.error('Error downloading PDF:', error);
                           alert('Failed to download PDF. Please try again.');
@@ -2750,10 +2967,10 @@ export default function InvoiceMatchesPage() {
                     return;
                   }
                   
-                  // Create a complete mapping object including items
+                  // Create a complete mapping object WITHOUT resolved items
                   const mappingToSave = {
-                    ...fieldMappingConfig,
-                    items: editableInvoice.items // Include current line items
+                    ...fieldMappingConfig
+                    // Don't include items - they will be regenerated from mappings
                   };
                   
                   // Use the actual field mapping configuration that was tracked

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendInvoiceEmail } from '@/services/email-service';
 import { Invoice } from '@/types/invoice';
+import { connectMongoDB } from '@/lib/mongodb';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,14 +34,56 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await pdfFile.arrayBuffer();
     const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
 
-    // Send email with attachment
-    await sendInvoiceEmail({
+    // Send email with attachment and get metadata
+    const emailMetadata = await sendInvoiceEmail({
       invoice,
       pdfBlob: blob,
       recipientEmail,
       recipientName,
       functionName: functionName || undefined
     });
+
+    // Update invoice with comprehensive email tracking information
+    try {
+      const { db } = await connectMongoDB();
+      
+      // Only update customer invoices with email metadata
+      if (invoice.invoiceType === 'customer') {
+        await db.collection('invoices').updateOne(
+          { invoiceNumber: invoice.invoiceNumber },
+          { 
+            $set: {
+              emailSent: true,
+              emailedTo: recipientEmail,
+              emailedDateTime: emailMetadata.sent,
+              emailedImpotencyKey: emailMetadata.idempotencyKey,
+              // Add comprehensive email object
+              email: {
+                id: emailMetadata.id,
+                idempotencyKey: emailMetadata.idempotencyKey,
+                service: emailMetadata.service,
+                from: emailMetadata.from,
+                sent: emailMetadata.sent,
+                scheduled_at: emailMetadata.scheduled_at,
+                to: emailMetadata.to,
+                cc: emailMetadata.cc,
+                bcc: emailMetadata.bcc,
+                reply_to: emailMetadata.reply_to,
+                subject: emailMetadata.subject,
+                attachments: emailMetadata.attachments,
+                tags: emailMetadata.tags,
+                plainContent: emailMetadata.plainContent,
+                htmlContent: emailMetadata.htmlContent
+              }
+            }
+          }
+        );
+        console.log(`Updated invoice email tracking for invoice ${invoice.invoiceNumber}`);
+      }
+    } catch (updateError) {
+      // Log error but don't fail the email send response
+      console.error('Error updating invoice email tracking:', updateError);
+    }
 
     return NextResponse.json({
       success: true,

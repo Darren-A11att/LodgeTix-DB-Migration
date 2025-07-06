@@ -6,12 +6,13 @@ const dbName = process.env.MONGODB_DB || 'lodgetix';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { functionId: string } }
+  { params }: { params: Promise<{ functionId: string }> }
 ) {
   let client: MongoClient | null = null;
 
   try {
-    const { functionId } = params;
+    // Await params as required in Next.js 15
+    const { functionId } = await params;
     
     if (!functionId) {
       return NextResponse.json(

@@ -154,7 +154,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
             </span>
           </span>
           <span className="text-xs">
-            <span className="font-semibold">Invoice No:</span> {invoice.invoiceNumber}
+            <span className="font-semibold">Invoice No:</span> {invoice.invoiceNumber ? `PREVIEW-${invoice.invoiceNumber}` : '[To be assigned]'}
           </span>
         </div>
       </div>
@@ -175,14 +175,24 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
             {invoice.items.map((item, index) => {
               // Check if this is a sub-item (starts with spaces or -)
               const isSubItem = item.description.startsWith('  ') || item.description.startsWith('-');
+              
+              // Check if both quantity and price are "not set" (0 or falsy)
+              const hideAmounts = toNumber(item.quantity) === 0 && toNumber(item.price) === 0;
+              
               return (
                 <tr key={index} className="border-b border-gray-200" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#e5e7eb' }}>
                   <td className={`py-2 text-xs ${isSubItem ? 'pl-4' : ''}`}>
                     {item.description}
                   </td>
-                  <td className="text-right py-2 text-xs">{toNumber(item.quantity)}</td>
-                  <td className="text-right py-2 text-xs">{formatCurrency(item.price)}</td>
-                  <td className="text-right py-2 text-xs">{formatCurrency(toNumber(item.price) * toNumber(item.quantity))}</td>
+                  <td className="text-right py-2 text-xs">
+                    {hideAmounts ? '' : toNumber(item.quantity)}
+                  </td>
+                  <td className="text-right py-2 text-xs">
+                    {hideAmounts ? '' : formatCurrency(item.price)}
+                  </td>
+                  <td className="text-right py-2 text-xs">
+                    {hideAmounts ? '' : formatCurrency(toNumber(item.price) * toNumber(item.quantity))}
+                  </td>
                 </tr>
               );
             })}
@@ -222,7 +232,10 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
                 <span className="text-gray-600" style={styles.textGray600}>Method: </span>
                 <span className="font-medium">
                   {invoice.payment.cardBrand ? `${invoice.payment.cardBrand} ` : ''}
-                  {invoice.payment.method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {invoice.payment.method ? 
+                    invoice.payment.method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
+                    'Unknown Method'
+                  }
                   {invoice.payment.last4 ? ` ending in ${invoice.payment.last4}` : ''}
                 </span>
               </div>

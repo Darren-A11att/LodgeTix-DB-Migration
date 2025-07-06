@@ -6,16 +6,19 @@ const DATABASE_NAME = process.env.DATABASE_NAME || 'LodgeTix-migration-test-1';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
   const client = new MongoClient(MONGODB_URI);
   
   try {
     const query = await request.json();
     
+    // Await params as required in Next.js 15
+    const { name } = await params;
+    
     await client.connect();
     const db = client.db(DATABASE_NAME);
-    const collection = db.collection(params.name);
+    const collection = db.collection(name);
     
     // Build MongoDB query from provided criteria
     const mongoQuery: any = {};

@@ -21,6 +21,24 @@ interface SendInvoiceEmailParams {
   functionName?: string;
 }
 
+interface EmailMetadata {
+  id: string;
+  idempotencyKey: string;
+  service: string;
+  from: string;
+  sent: Date;
+  scheduled_at?: string;
+  to: string;
+  cc?: string;
+  bcc?: string;
+  reply_to?: string;
+  subject: string;
+  attachments: string[];
+  tags?: Array<{ name: string; value: string }>;
+  plainContent: object;
+  htmlContent: object;
+}
+
 /**
  * Convert a Blob to Base64 string (works in Node.js environment)
  */
@@ -44,7 +62,7 @@ export async function sendInvoiceEmail({
   recipientEmail,
   recipientName,
   functionName
-}: SendInvoiceEmailParams): Promise<void> {
+}: SendInvoiceEmailParams): Promise<EmailMetadata> {
   if (!resend) {
     throw new Error('RESEND_API_KEY is not configured');
   }
@@ -172,24 +190,33 @@ This is a transactional email. Need help? Email: support@lodgetix.io or Phone: 0
       </html>
     `;
 
-    // Send the email
+    // Build email options
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'invoices@lodgetix.io';
+    const fromName = 'LodgeTix as Agent for UGL NSW & ACT';
+    const fromFormatted = `${fromName} <${fromEmail}>`;
+    const toFormatted = `${recipientName} <${recipientEmail}>`;
+    const subject = `Tax Invoice ${invoice.invoiceNumber} for ${eventName}`;
+    const attachmentFilename = `${invoice.invoiceNumber}.pdf`;
+    
     const emailOptions: any = {
-      from: `LodgeTix as Agent for UGL NSW & ACT <${process.env.RESEND_FROM_EMAIL || 'invoices@lodgetix.io'}>`,
-      to: recipientEmail,
-      subject: `Tax Invoice ${invoice.invoiceNumber} for ${eventName}`,
+      from: fromFormatted,
+      to: toFormatted,
+      subject: subject,
       html: emailHtml,
-      text: emailText, // Add plain text version
+      text: emailText,
       attachments: [
         {
-          filename: `${invoice.invoiceNumber}.pdf`,
+          filename: attachmentFilename,
           content: base64Content
         }
       ]
     };
 
     // Add BCC if configured
+    let bccFormatted: string | undefined;
     if (process.env.RESEND_BCC_EMAIL) {
-      emailOptions.bcc = process.env.RESEND_BCC_EMAIL;
+      bccFormatted = process.env.RESEND_BCC_EMAIL;
+      emailOptions.bcc = bccFormatted;
     }
 
     // Generate idempotency key using invoice number and type
@@ -207,6 +234,27 @@ This is a transactional email. Need help? Email: support@lodgetix.io or Phone: 0
     }
 
     console.log('Email sent successfully:', data, 'with idempotency key:', idempotencyKey);
+    
+    // Build and return email metadata
+    const emailMetadata: EmailMetadata = {
+      id: data?.id || '',
+      idempotencyKey: idempotencyKey,
+      service: 'resend',
+      from: fromFormatted,
+      sent: new Date(),
+      scheduled_at: undefined, // Not using scheduled emails
+      to: toFormatted,
+      cc: undefined, // Not using CC
+      bcc: bccFormatted,
+      reply_to: undefined, // Using default reply-to
+      subject: subject,
+      attachments: [attachmentFilename],
+      tags: undefined, // Not using tags
+      plainContent: { text: emailText },
+      htmlContent: { html: emailHtml }
+    };
+    
+    return emailMetadata;
   } catch (error) {
     console.error('Failed to send invoice email:', error);
     throw error;

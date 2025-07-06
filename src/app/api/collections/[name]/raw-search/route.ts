@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
   try {
     const { searchText, limit = 50 } = await request.json();
+    
+    // Await params as required in Next.js 15
+    const { name: collection } = await params;
     
     if (!searchText || searchText.trim().length === 0) {
       return NextResponse.json(
@@ -16,7 +19,6 @@ export async function POST(
 
     // Get the API port from the port config or use default
     const apiPort = process.env.API_PORT || '3006';
-    const collection = params.name;
     
     // First, get all documents from the collection (with a reasonable limit)
     const docsUrl = `http://localhost:${apiPort}/api/collections/${collection}/documents?limit=1000`;

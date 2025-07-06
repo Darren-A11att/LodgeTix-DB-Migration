@@ -6,11 +6,15 @@ export async function POST(request: NextRequest) {
     const { html, filename } = await request.json();
 
     if (!html || !filename) {
+      console.error('Missing required fields:', { html: !!html, filename: !!filename });
       return NextResponse.json(
         { error: 'HTML content and filename are required' },
         { status: 400 }
       );
     }
+    
+    console.log('Generating PDF for:', filename);
+    console.log('HTML length:', html.length);
 
     // Launch Puppeteer
     const browser = await puppeteer.launch({
@@ -56,8 +60,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error generating PDF:', error);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
     return NextResponse.json(
-      { error: 'Failed to generate PDF' },
+      { error: 'Failed to generate PDF', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

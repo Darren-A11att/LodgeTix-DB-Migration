@@ -85,6 +85,56 @@ export default function LineItemManager({
   const [editingArrayMapping, setEditingArrayMapping] = useState<ArrayMapping | null>(null);
   const [savedArrayMappings, setSavedArrayMappings] = useState<ArrayMapping[]>(arrayMappings);
 
+  // Sync array mappings from parent when they change
+  useEffect(() => {
+    setSavedArrayMappings(arrayMappings);
+  }, [arrayMappings]);
+
+  // Sync items from parent when they change significantly (e.g., template load)
+  useEffect(() => {
+    // Check if items have descriptionSegments (indicates they're from a saved template)
+    const hasTemplateStructure = items.some(item => 
+      item.descriptionSegments && item.descriptionSegments.length > 0
+    );
+    
+    if (hasTemplateStructure && items.length > 0) {
+      // These are regenerated items from a template, sync them
+      setLineItems(items.map((item, index) => ({
+        ...item,
+        id: item.id || `item_${index}`,
+        type: item.type || 'other',
+        descriptionSegments: item.descriptionSegments || [],
+        subItems: item.subItems || []
+      })));
+    }
+  }, [items]);
+
+  // Process array mappings when data changes
+  useEffect(() => {
+    // Only process if we have data and mappings
+    if (!registrationData && !paymentData) return;
+    if (savedArrayMappings.length === 0) return;
+    
+    // Clear existing array-generated items first
+    setLineItems(prevItems => prevItems.filter(item => item.type !== 'array'));
+    
+    // Process all enabled array mappings
+    const processAllMappings = async () => {
+      for (const mapping of savedArrayMappings) {
+        if (mapping.enabled) {
+          await processArrayMapping(mapping);
+        }
+      }
+    };
+    
+    processAllMappings();
+  }, [registrationData, paymentData, savedArrayMappings.length]); // Include length to trigger on changes
+
+  // Update parent when line items change
+  useEffect(() => {
+    updateParentItems(lineItems);
+  }, [lineItems]);
+
   const addLineItem = (type: LineItem['type']) => {
     if (type === 'array') {
       setShowArrayBuilder(true);
@@ -290,6 +340,11 @@ export default function LineItemManager({
       const value = getValueByPath(sourceData, cleanPath);
       return value !== undefined ? toNumber(value) : item.price;
     } else if (item.priceMapping?.customValue !== undefined) {
+      // Handle computation objects
+      if (typeof item.priceMapping.customValue === 'object' && item.priceMapping.customValue?.$compute) {
+        // Return the default price for now - computation will be handled during migration
+        return item.price;
+      }
       return toNumber(item.priceMapping.customValue);
     }
     return item.price;
@@ -304,6 +359,11 @@ export default function LineItemManager({
       const value = getValueByPath(sourceData, cleanPath);
       return value !== undefined ? toNumber(value) : item.quantity;
     } else if (item.quantityMapping?.customValue !== undefined) {
+      // Handle computation objects
+      if (typeof item.quantityMapping.customValue === 'object' && item.quantityMapping.customValue?.$compute) {
+        // Return the default quantity for now - computation will be handled during migration
+        return item.quantity;
+      }
       return toNumber(item.quantityMapping.customValue);
     }
     return item.quantity;
@@ -318,6 +378,11 @@ export default function LineItemManager({
       const value = getValueByPath(sourceData, cleanPath);
       return value !== undefined ? toNumber(value) : subItem.price;
     } else if (subItem.priceMapping?.customValue !== undefined) {
+      // Handle computation objects
+      if (typeof subItem.priceMapping.customValue === 'object' && subItem.priceMapping.customValue?.$compute) {
+        // Return the default price for now - computation will be handled during migration
+        return subItem.price;
+      }
       return toNumber(subItem.priceMapping.customValue);
     }
     return subItem.price;
@@ -332,6 +397,11 @@ export default function LineItemManager({
       const value = getValueByPath(sourceData, cleanPath);
       return value !== undefined ? toNumber(value) : subItem.quantity;
     } else if (subItem.quantityMapping?.customValue !== undefined) {
+      // Handle computation objects
+      if (typeof subItem.quantityMapping.customValue === 'object' && subItem.quantityMapping.customValue?.$compute) {
+        // Return the default quantity for now - computation will be handled during migration
+        return subItem.quantity;
+      }
       return toNumber(subItem.quantityMapping.customValue);
     }
     return subItem.quantity;
@@ -357,12 +427,23 @@ export default function LineItemManager({
   const processArrayMapping = async (mapping: ArrayMapping) => {
     if (!mapping.enabled) return;
     
-    const allData = { registration: registrationData, payment: paymentData };
+    
+    // Support both singular and plural forms
+    const allData = { 
+      registration: registrationData, 
+      registrations: registrationData,
+      payment: paymentData,
+      payments: paymentData 
+    };
     const parentArray = getValueByPath(allData, mapping.parentArray.path);
     
-    if (!Array.isArray(parentArray)) return;
+    
+    if (!Array.isArray(parentArray)) {
+      return;
+    }
     
     const generatedItems: LineItem[] = [];
+    const lookupCache = new Map<string, any>(); // Cache for lookup results
     
     for (const parentItem of parentArray) {
       // Process template for parent item
@@ -372,13 +453,23 @@ export default function LineItemManager({
       );
       
       // Get quantity and price for parent
-      const parentQuantity = mapping.parentArray.itemConfig.quantity.type === 'fixed'
-        ? toNumber(mapping.parentArray.itemConfig.quantity.value)
-        : toNumber(parentItem[mapping.parentArray.itemConfig.quantity.value as string] || 0);
+      let parentQuantity: number;
+      if (mapping.parentArray.itemConfig.quantity.type === 'blank') {
+        parentQuantity = 0; // Will not display in invoice when both are 0
+      } else if (mapping.parentArray.itemConfig.quantity.type === 'fixed') {
+        parentQuantity = toNumber(mapping.parentArray.itemConfig.quantity.value);
+      } else {
+        parentQuantity = toNumber(parentItem[mapping.parentArray.itemConfig.quantity.value as string] || 0);
+      }
         
-      const parentPrice = mapping.parentArray.itemConfig.unitPrice.type === 'fixed'
-        ? toNumber(mapping.parentArray.itemConfig.unitPrice.value)
-        : toNumber(parentItem[mapping.parentArray.itemConfig.unitPrice.value as string] || 0);
+      let parentPrice: number;
+      if (mapping.parentArray.itemConfig.unitPrice.type === 'blank') {
+        parentPrice = 0; // Will not display in invoice when both are 0
+      } else if (mapping.parentArray.itemConfig.unitPrice.type === 'fixed') {
+        parentPrice = toNumber(mapping.parentArray.itemConfig.unitPrice.value);
+      } else {
+        parentPrice = toNumber(parentItem[mapping.parentArray.itemConfig.unitPrice.value as string] || 0);
+      }
       
       const parentLineItem: LineItem = {
         id: `array_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -393,14 +484,32 @@ export default function LineItemManager({
       // Process child arrays
       if (mapping.childArrays) {
         for (const childConfig of mapping.childArrays) {
-          const childArray = getValueByPath(allData, childConfig.path);
-          if (!Array.isArray(childArray)) continue;
+          let relatedChildren = [];
           
-          // Filter children by relationship
-          const parentKeyValue = parentItem[mapping.parentArray.keyField];
-          const relatedChildren = childArray.filter(
-            child => child[childConfig.relationshipKey] === parentKeyValue
-          );
+          // Check if this is a nested array
+          if (childConfig.isNested) {
+            // This is a nested array within the parent item
+            const nestedPath = childConfig.path.includes('[]') 
+              ? childConfig.path.split('[]')[1].replace(/^\./, '')
+              : childConfig.path.split('.').pop() || '';
+            const nestedArray = parentItem[nestedPath];
+            if (Array.isArray(nestedArray)) {
+              relatedChildren = nestedArray; // All items in nested array belong to this parent
+            }
+          } else {
+            // This is a related array - filter by relationship key
+            const childArray = getValueByPath(allData, childConfig.path);
+            
+            if (!Array.isArray(childArray)) {
+              continue;
+            }
+            
+            const parentKeyValue = parentItem[mapping.parentArray.keyField];
+            
+            relatedChildren = childArray.filter(
+              child => child[childConfig.relationshipKey] === parentKeyValue
+            );
+          }
           
           for (const childItem of relatedChildren) {
             let enrichedChild = { ...childItem };
@@ -410,15 +519,54 @@ export default function LineItemManager({
               for (const lookup of childConfig.lookups) {
                 try {
                   const lookupValue = childItem[lookup.localField];
+                  
                   if (lookupValue) {
-                    // Call API to fetch related data
-                    const response = await apiService.get(
-                      `/lookup/${lookup.collection}/${lookupValue}`
-                    );
-                    if (response.data) {
-                      lookup.includeFields.forEach(field => {
-                        enrichedChild[field] = response.data[field];
+                    const cacheKey = `${lookup.collection}:${lookupValue}`;
+                    
+                    // Check cache first
+                    let lookupData = lookupCache.get(cacheKey);
+                    
+                    if (!lookupData) {
+                      // Always use collections API for lookups
+                      try {
+                        const docsResponse = await fetch(`/api/collections/${lookup.collection}/documents?limit=100`);
+                        if (docsResponse.ok) {
+                          const { documents } = await docsResponse.json();
+                          // Find matching document
+                          lookupData = documents.find((doc: any) => {
+                            const fieldValue = doc[lookup.foreignField];
+                            // Handle comma-separated values
+                            if (typeof fieldValue === 'string' && fieldValue.includes(',')) {
+                              const values = fieldValue.split(',').map(v => v.trim());
+                              return values.includes(lookupValue);
+                            }
+                            return fieldValue === lookupValue;
+                          });
+                          if (lookupData) {
+                            lookupCache.set(cacheKey, lookupData);
+                            console.log(`Found ${lookup.collection} document:`, lookupData);
+                          } else {
+                            console.log(`No ${lookup.collection} document found matching ${lookup.foreignField}=${lookupValue}`);
+                          }
+                        }
+                      } catch (error) {
+                        console.error('Lookup error:', error);
+                      }
+                    }
+                    
+                    if (lookupData) {
+                      console.log('Adding lookup data:', lookupData);
+                      // Add all fields from the lookup document with collection prefix
+                      Object.entries(lookupData).forEach(([field, value]) => {
+                        // Skip internal MongoDB fields
+                        if (!field.startsWith('_')) {
+                          const key = `${lookup.collection}.${field}`;
+                          enrichedChild[key] = value;
+                          console.log(`Added ${key} = ${value}`);
+                        }
                       });
+                    } else {
+                      console.log('No lookup data found');
                     }
                   }
                 } catch (error) {
@@ -428,25 +576,39 @@ export default function LineItemManager({
             }
             
             // Process child description
+            console.log('Processing child template:', childConfig.itemConfig.descriptionTemplate);
+            console.log('Enriched child data:', enrichedChild);
             const childDescription = processTemplate(
               childConfig.itemConfig.descriptionTemplate,
               enrichedChild
             );
             
             // Get quantity and price for child
-            const childQuantity = childConfig.itemConfig.quantity.type === 'fixed'
-              ? toNumber(childConfig.itemConfig.quantity.value)
-              : toNumber(enrichedChild[childConfig.itemConfig.quantity.value as string] || 0);
+            let childQuantity = 0;
+            if (childConfig.itemConfig.quantity.type === 'blank') {
+              childQuantity = 0; // Will not display in invoice when both are 0
+            } else if (childConfig.itemConfig.quantity.type === 'fixed') {
+              childQuantity = toNumber(childConfig.itemConfig.quantity.value);
+            } else {
+              childQuantity = toNumber(enrichedChild[childConfig.itemConfig.quantity.value as string] || 0);
+            }
               
-            const childPrice = childConfig.itemConfig.unitPrice.type === 'fixed'
-              ? toNumber(childConfig.itemConfig.unitPrice.value)
-              : childConfig.itemConfig.unitPrice.type === 'field'
-              ? toNumber(enrichedChild[childConfig.itemConfig.unitPrice.value as string] || 0)
-              : toNumber(enrichedChild[childConfig.itemConfig.unitPrice.value as string] || 0); // lookup
+            let childPrice = 0;
+            if (childConfig.itemConfig.unitPrice.type === 'blank') {
+              childPrice = 0; // Will not display in invoice when both are 0
+            } else if (childConfig.itemConfig.unitPrice.type === 'fixed') {
+              childPrice = toNumber(childConfig.itemConfig.unitPrice.value);
+            } else if (childConfig.itemConfig.unitPrice.type === 'field') {
+              childPrice = toNumber(enrichedChild[childConfig.itemConfig.unitPrice.value as string] || 0);
+            } else if (childConfig.itemConfig.unitPrice.type === 'lookup') {
+              // For lookup type, use the lookupField if specified
+              const lookupField = childConfig.itemConfig.unitPrice.lookupField || childConfig.itemConfig.unitPrice.value as string;
+              childPrice = toNumber(enrichedChild[lookupField] || 0);
+            }
             
             parentLineItem.subItems?.push({
               id: `sub_array_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-              description: childDescription,
+              description: childDescription.startsWith('-') ? `  ${childDescription}` : `  - ${childDescription}`, // Avoid double dash
               quantity: childQuantity,
               price: childPrice
             });
@@ -457,10 +619,18 @@ export default function LineItemManager({
       generatedItems.push(parentLineItem);
     }
     
+    console.log(`Generated ${generatedItems.length} line items from array mapping`);
+    generatedItems.forEach(item => {
+      console.log(`- ${item.description} (${item.subItems?.length || 0} sub-items)`);
+    });
+    
     // Add generated items to line items
-    const updatedItems = [...lineItems, ...generatedItems];
-    setLineItems(updatedItems);
-    updateParentItems(updatedItems);
+    // First remove any existing items from this mapping to avoid duplicates
+    setLineItems(prevItems => {
+      const filteredItems = prevItems.filter(item => item.arrayMappingId !== mapping.id);
+      const updatedItems = [...filteredItems, ...generatedItems];
+      return updatedItems;
+    });
   };
 
   // Process template string with data
@@ -468,6 +638,13 @@ export default function LineItemManager({
     if (!template || !data) return template;
     
     return template.replace(/\{([^}]+)\}/g, (match, fieldPath) => {
+      // First, try to get the value using the full path as a key
+      // This handles lookup fields that are stored as 'collection.field'
+      if (data[fieldPath] !== undefined) {
+        return data[fieldPath]?.toString() || '';
+      }
+      
+      // If not found, try to traverse the path parts
       const parts = fieldPath.split('.');
       let value = data;
       
@@ -475,11 +652,17 @@ export default function LineItemManager({
         if (value && typeof value === 'object' && part in value) {
           value = value[part];
         } else {
-          return ''; // Return empty string if field not found
+          // If traversal fails, check if the full path exists as a key
+          // This handles cases where lookup data is stored with dot notation
+          const remainingPath = parts.slice(parts.indexOf(part)).join('.');
+          if (data[remainingPath] !== undefined) {
+            return data[remainingPath]?.toString() || '';
+          }
+          return '-'; // Return dash if field not found (better than empty string)
         }
       }
       
-      return value?.toString() || '';
+      return value?.toString() || '-';
     });
   };
 
@@ -599,37 +782,69 @@ export default function LineItemManager({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-gray-700">
-                  Line Item {index + 1}
+                  {item.type === 'array' ? (
+                    <span className="flex items-center gap-2">
+                      <span className="text-purple-600">Array:</span>
+                      {item.description}
+                    </span>
+                  ) : (
+                    `Line Item ${index + 1}`
+                  )}
                 </label>
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove
-                </button>
+                {item.type !== 'array' && (
+                  <button
+                    onClick={() => deleteItem(item.id)}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
               
-              <CompoundDescriptionBuilder
-                fieldName="Description"
-                segments={item.descriptionSegments || []}
-                onSegmentsChange={(segments) => updateItem(item.id, 'descriptionSegments', segments)}
-                allOptions={allOptions}
-                paymentData={paymentData}
-                registrationData={registrationData}
-                relatedDocuments={relatedDocuments}
-                loadingRelatedDocs={loadingRelatedDocs}
-              />
+              {item.type === 'array' ? (
+                <div className="bg-purple-50 p-3 rounded-md">
+                  <p className="text-sm text-gray-600">Generated from array mapping</p>
+                  <p className="text-xs text-gray-500 mt-1">Template-based description</p>
+                </div>
+              ) : (
+                <CompoundDescriptionBuilder
+                  fieldName="Description"
+                  segments={item.descriptionSegments || []}
+                  onSegmentsChange={(segments) => updateItem(item.id, 'descriptionSegments', segments)}
+                  allOptions={allOptions}
+                  paymentData={paymentData}
+                  registrationData={registrationData}
+                  relatedDocuments={relatedDocuments}
+                  loadingRelatedDocs={loadingRelatedDocs}
+                />
+              )}
               
               <div className="grid grid-cols-2 gap-3">
-                <FieldMappingSelector
-                  fieldName="Quantity"
-                  fieldPath={`lineItem.${item.id}.quantity`}
-                  currentValue={getResolvedQuantity(item)}
-                  allOptions={allOptions}
-                  onMappingChange={(field, source, customValue) => {
+                {item.type === 'array' ? (
+                  <>
+                    <div className="bg-gray-50 p-2 rounded">
+                      <span className="text-xs text-gray-500">Quantity</span>
+                      <p className="text-sm font-medium">{item.quantity}</p>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded">
+                      <span className="text-xs text-gray-500">Price</span>
+                      <p className="text-sm font-medium">${item.price.toFixed(2)}</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FieldMappingSelector
+                      fieldName="Quantity"
+                      fieldPath={`lineItem.${item.id}.quantity`}
+                      currentValue={getResolvedQuantity(item)}
+                      allOptions={allOptions}
+                      onMappingChange={(field, source, customValue) => {
                     updateItem(item.id, 'quantityMapping', { source, customValue });
                     if (customValue !== undefined) {
-                      updateItem(item.id, 'quantity', toNumber(customValue));
+                      // Don't try to convert computation objects to numbers
+                      if (typeof customValue !== 'object' || !customValue?.$compute) {
+                        updateItem(item.id, 'quantity', toNumber(customValue));
+                      }
                     } else if (source) {
                       const sourceData = source.includes('payment') ? paymentData : registrationData;
                       const cleanPath = source.replace(/^(payment|registration)\./, '');
@@ -638,6 +853,7 @@ export default function LineItemManager({
                     }
                   }}
                   fieldType="number"
+                  sourceDocuments={{ registrations: registrationData, payments: paymentData }}
                 />
                 <FieldMappingSelector
                   fieldName="Price"
@@ -647,7 +863,10 @@ export default function LineItemManager({
                   onMappingChange={(field, source, customValue) => {
                     updateItem(item.id, 'priceMapping', { source, customValue });
                     if (customValue !== undefined) {
-                      updateItem(item.id, 'price', toNumber(customValue));
+                      // Don't try to convert computation objects to numbers
+                      if (typeof customValue !== 'object' || !customValue?.$compute) {
+                        updateItem(item.id, 'price', toNumber(customValue));
+                      }
                     } else if (source) {
                       const sourceData = source.includes('payment') ? paymentData : registrationData;
                       const cleanPath = source.replace(/^(payment|registration)\./, '');
@@ -656,7 +875,10 @@ export default function LineItemManager({
                     }
                   }}
                   fieldType="number"
+                  sourceDocuments={{ registrations: registrationData, payments: paymentData }}
                 />
+                  </>
+                )}
               </div>
               
               <div className="text-sm text-gray-600">
@@ -671,29 +893,46 @@ export default function LineItemManager({
                   <div key={subItem.id} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="block text-xs font-medium text-gray-600">
-                        Sub-item {subIndex + 1}
+                        {item.type === 'array' ? subItem.description : `Sub-item ${subIndex + 1}`}
                       </label>
-                      <button
-                        onClick={() => deleteSubItem(item.id, subItem.id)}
-                        className="text-red-500 hover:text-red-700 text-xs"
-                      >
-                        Remove
-                      </button>
+                      {item.type !== 'array' && (
+                        <button
+                          onClick={() => deleteSubItem(item.id, subItem.id)}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                     
-                    <CompoundDescriptionBuilder
-                      fieldName="Sub-item Description"
-                      segments={subItem.descriptionSegments || []}
-                      onSegmentsChange={(segments) => updateSubItem(item.id, subItem.id, 'descriptionSegments', segments)}
-                      allOptions={allOptions}
-                      paymentData={paymentData}
-                      registrationData={registrationData}
-                      relatedDocuments={relatedDocuments}
-                      loadingRelatedDocs={loadingRelatedDocs}
-                    />
+                    {item.type !== 'array' && (
+                      <CompoundDescriptionBuilder
+                        fieldName="Sub-item Description"
+                        segments={subItem.descriptionSegments || []}
+                        onSegmentsChange={(segments) => updateSubItem(item.id, subItem.id, 'descriptionSegments', segments)}
+                        allOptions={allOptions}
+                        paymentData={paymentData}
+                        registrationData={registrationData}
+                        relatedDocuments={relatedDocuments}
+                        loadingRelatedDocs={loadingRelatedDocs}
+                      />
+                    )}
                     
                     <div className="grid grid-cols-2 gap-2">
-                      <FieldMappingSelector
+                      {item.type === 'array' ? (
+                        <>
+                          <div className="bg-gray-50 p-1 rounded">
+                            <span className="text-xs text-gray-500">Qty</span>
+                            <p className="text-xs font-medium">{subItem.quantity}</p>
+                          </div>
+                          <div className="bg-gray-50 p-1 rounded">
+                            <span className="text-xs text-gray-500">Price</span>
+                            <p className="text-xs font-medium">${subItem.price.toFixed(2)}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <FieldMappingSelector
                         fieldName="Qty"
                         fieldPath={`subItem.${subItem.id}.quantity`}
                         currentValue={getResolvedSubQuantity(subItem)}
@@ -701,7 +940,10 @@ export default function LineItemManager({
                         onMappingChange={(field, source, customValue) => {
                           updateSubItem(item.id, subItem.id, 'quantityMapping', { source, customValue });
                           if (customValue !== undefined) {
-                            updateSubItem(item.id, subItem.id, 'quantity', toNumber(customValue));
+                            // Don't try to convert computation objects to numbers
+                            if (typeof customValue !== 'object' || !customValue?.$compute) {
+                              updateSubItem(item.id, subItem.id, 'quantity', toNumber(customValue));
+                            }
                           } else if (source) {
                             const sourceData = source.includes('payment') ? paymentData : registrationData;
                             const cleanPath = source.replace(/^(payment|registration)\./, '');
@@ -710,6 +952,7 @@ export default function LineItemManager({
                           }
                         }}
                         fieldType="number"
+                        sourceDocuments={{ registrations: registrationData, payments: paymentData }}
                       />
                       <FieldMappingSelector
                         fieldName="Price"
@@ -719,7 +962,10 @@ export default function LineItemManager({
                         onMappingChange={(field, source, customValue) => {
                           updateSubItem(item.id, subItem.id, 'priceMapping', { source, customValue });
                           if (customValue !== undefined) {
-                            updateSubItem(item.id, subItem.id, 'price', toNumber(customValue));
+                            // Don't try to convert computation objects to numbers
+                            if (typeof customValue !== 'object' || !customValue?.$compute) {
+                              updateSubItem(item.id, subItem.id, 'price', toNumber(customValue));
+                            }
                           } else if (source) {
                             const sourceData = source.includes('payment') ? paymentData : registrationData;
                             const cleanPath = source.replace(/^(payment|registration)\./, '');
@@ -728,7 +974,10 @@ export default function LineItemManager({
                           }
                         }}
                         fieldType="number"
+                        sourceDocuments={{ registrations: registrationData, payments: paymentData }}
                       />
+                        </>
+                      )}
                     </div>
                     <div className="text-xs text-gray-600 mt-1">
                       Total: ${(getResolvedSubQuantity(subItem) * getResolvedSubPrice(subItem)).toFixed(2)}
@@ -739,12 +988,14 @@ export default function LineItemManager({
             )}
 
             {/* Add Sub-item Button */}
-            <button
-              onClick={() => addSubItem(item.id)}
-              className="ml-6 text-sm text-blue-600 hover:text-blue-800"
-            >
-              + Add sub-item
-            </button>
+            {item.type !== 'array' && (
+              <button
+                onClick={() => addSubItem(item.id)}
+                className="ml-6 text-sm text-blue-600 hover:text-blue-800"
+              >
+                + Add sub-item
+              </button>
+            )}
             
             {index < lineItems.length - 1 && <hr className="my-4" />}
           </div>

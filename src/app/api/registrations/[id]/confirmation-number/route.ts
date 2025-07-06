@@ -4,10 +4,11 @@ import { generateConfirmationNumber, isValidConfirmationNumber } from '@/utils/c
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    // Await params as required in Next.js 15
+    const { id } = await params;
     const body = await request.json();
     const { confirmationNumber, registrationType } = body;
     

@@ -151,32 +151,59 @@ export default function InvoicesListPage() {
         const paymentEmail = findEmailInPayment(payment);
         
         // Try to find a registration match
-        const registrationQuery = {
-          $or: [
-            { stripePaymentIntentId: payment.transactionId },
-            { confirmationNumber: payment.transactionId },
-            { 'paymentInfo.transactionId': payment.transactionId },
-            ...(paymentEmail ? [
-              { customerEmail: paymentEmail },
-              { email: paymentEmail }
-            ] : [])
-          ]
-        };
-        
         let registration = null;
         let matchConfidence = 0;
+        let invoiceData = null;
+        
+        // If payment has been processed, fetch the invoice data
+        if (payment.invoiceCreated && payment.invoiceId) {
+          try {
+            invoiceData = await apiService.getDocument('invoices', payment.invoiceId);
+          } catch (err) {
+            console.error('Error fetching invoice for payment:', payment._id, err);
+          }
+        }
         
         try {
-          const regData = await apiService.searchDocuments('registrations', registrationQuery);
-          if (regData.documents && regData.documents.length > 0) {
-            registration = regData.documents[0];
-            // Simple confidence calculation
-            if (payment.transactionId && registration.stripePaymentIntentId === payment.transactionId) {
-              matchConfidence = 100;
-            } else if (paymentEmail && (registration.customerEmail === paymentEmail || registration.email === paymentEmail)) {
-              matchConfidence = 80;
-            } else {
-              matchConfidence = 50;
+          // First check if there's a linked registration from manual matching
+          if (payment.linkedRegistrationId) {
+            console.log(`Payment ${payment._id} has linkedRegistrationId:`, payment.linkedRegistrationId);
+            try {
+              registration = await apiService.getDocument('registrations', payment.linkedRegistrationId);
+              if (registration) {
+                console.log(`Found linked registration:`, registration._id, registration.confirmationNumber);
+                matchConfidence = 100; // Manual matches have 100% confidence
+              }
+            } catch (err) {
+              console.error('Error fetching linked registration:', err);
+            }
+          }
+          
+          // If no linked registration, try automatic matching
+          if (!registration) {
+            const registrationQuery = {
+              $or: [
+                { stripePaymentIntentId: payment.transactionId },
+                { confirmationNumber: payment.transactionId },
+                { 'paymentInfo.transactionId': payment.transactionId },
+                ...(paymentEmail ? [
+                  { customerEmail: paymentEmail },
+                  { email: paymentEmail }
+                ] : [])
+              ]
+            };
+            
+            const regData = await apiService.searchDocuments('registrations', registrationQuery);
+            if (regData.documents && regData.documents.length > 0) {
+              registration = regData.documents[0];
+              // Simple confidence calculation
+              if (payment.transactionId && registration.stripePaymentIntentId === payment.transactionId) {
+                matchConfidence = 100;
+              } else if (paymentEmail && (registration.customerEmail === paymentEmail || registration.email === paymentEmail)) {
+                matchConfidence = 80;
+              } else {
+                matchConfidence = 50;
+              }
             }
           }
         } catch (err) {
@@ -196,6 +223,12 @@ export default function InvoicesListPage() {
           return 'unknown';
         };
         
+        // If we have invoice data, use registration from invoice
+        if (invoiceData && invoiceData.registration) {
+          registration = invoiceData.registration;
+          matchConfidence = 100; // Processed invoices have confirmed matches
+        }
+        
         return {
           payment: {
             ...payment,
@@ -206,7 +239,7 @@ export default function InvoicesListPage() {
             paymentStatus: getPaymentStatus()
           },
           registration,
-          invoice: null,
+          invoice: invoiceData,
           matchConfidence,
           isProcessed: payment.invoiceCreated || false,
           isDeclined: payment.invoiceDeclined || false
@@ -255,6 +288,16 @@ export default function InvoicesListPage() {
     if (matches.length > 0 && !window.matchDetailsLogged) {
       console.log('Sample match object:', matches[0]);
       window.matchDetailsLogged = true;
+    }
+    
+    // Check if this is from a processed invoice
+    if (match.invoice && match.registration) {
+      return 'Invoice Match';
+    }
+    
+    // Check if this is a manual match (has linkedRegistrationId)
+    if (match.payment?.linkedRegistrationId && match.registration) {
+      return 'Manual Match';
     }
     
     if (!match.matchDetails || !Array.isArray(match.matchDetails) || match.matchDetails.length === 0) {
@@ -635,7 +678,14 @@ export default function InvoicesListPage() {
                       {match.payment.transactionId || match.payment.paymentId || match.payment._id || 'N/A'}
                     </div>
                     <div className="text-sm text-gray-500 break-words">
-                      {match.payment.customerEmail || findEmailInPayment(match.payment) || 'No email'}
+                      {(() => {
+                        // If we have invoice data, use the email from there
+                        if (match.invoice?.customerInvoice?.billTo?.email) {
+                          return match.invoice.customerInvoice.billTo.email;
+                        }
+                        // Otherwise fall back to payment email search
+                        return match.payment.customerEmail || findEmailInPayment(match.payment) || 'No email';
+                      })()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

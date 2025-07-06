@@ -114,18 +114,47 @@ export default function TemplateBuilder({
             </div>
             <div className="max-h-48 overflow-y-auto">
               {filteredFields.length > 0 ? (
-                filteredFields.map((field) => (
-                  <button
-                    key={field}
-                    onClick={() => insertField(field)}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center justify-between group"
-                  >
-                    <span className="font-mono text-xs break-words whitespace-normal">{field}</span>
-                    <span className="text-gray-400 group-hover:text-gray-600 break-words whitespace-normal">
-                      {`{${field}}`}
-                    </span>
-                  </button>
-                ))
+                filteredFields.map((field) => {
+                  // Check if this is a lookup field
+                  const isLookupField = field.includes('.');
+                  const [collection, fieldName] = isLookupField ? field.split('.') : [null, field];
+                  
+                  return (
+                    <button
+                      key={field}
+                      onClick={() => insertField(field)}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs break-words whitespace-normal">
+                          {isLookupField ? (
+                            <>
+                              <span className="text-blue-600">{collection}.</span>
+                              <span>{fieldName}</span>
+                            </>
+                          ) : (
+                            field
+                          )}
+                        </span>
+                        <span className="text-gray-400 group-hover:text-gray-600 text-xs">
+                          {`{${field}}`}
+                        </span>
+                      </div>
+                      {sampleData && sampleData[field] !== undefined && (
+                        <div className="text-xs text-gray-500 mt-1 truncate">
+                          Value: {typeof sampleData[field] === 'object' ? 
+                            JSON.stringify(sampleData[field]).substring(0, 50) + '...' : 
+                            String(sampleData[field]).substring(0, 50) + (String(sampleData[field]).length > 50 ? '...' : '')}
+                        </div>
+                      )}
+                      {isLookupField && (
+                        <div className="text-xs text-blue-500 mt-0.5">
+                          From external lookup
+                        </div>
+                      )}
+                    </button>
+                  );
+                })
               ) : (
                 <div className="px-3 py-2 text-sm text-gray-500">
                   No fields found

@@ -4,6 +4,17 @@ export interface FieldOption {
   source: 'payment' | 'registration' | 'related';
   displayPath: string;
   dataType: 'string' | 'number' | 'date' | 'boolean' | 'object';
+  type?: 'array' | 'object' | 'string' | 'number' | 'boolean'; // Optional type field for better type identification
+}
+
+export interface NestedField {
+  name: string;
+  path: string;
+  displayPath: string;
+  type: 'object' | 'array' | 'primitive';
+  value?: any;
+  children?: NestedField[];
+  arrayLength?: number;
 }
 
 /**
@@ -37,13 +48,24 @@ function extractFieldsFromObject(
         value: '',
         source,
         displayPath,
-        dataType: 'string'
+        dataType: 'string',
+        type: 'string'
       });
       return;
     }
 
     // Handle arrays
     if (Array.isArray(value)) {
+      // First, add the array field itself
+      fields.push({
+        path,
+        value,
+        source,
+        displayPath,
+        dataType: 'object', // Arrays are objects in JavaScript
+        type: 'array' // Explicitly mark as array type
+      });
+      
       if (value.length > 0) {
         // For arrays of objects, extract from first item
         if (typeof value[0] === 'object') {
@@ -53,14 +75,7 @@ function extractFieldsFromObject(
             fields.push(...extractFieldsFromObject(item, source, arrayPath, arrayDisplayPath));
           });
         } else {
-          // Array of primitives
-          fields.push({
-            path,
-            value: value.join(', '),
-            source,
-            displayPath,
-            dataType: 'string'
-          });
+          // Array of primitives - already added above as the array itself
         }
       }
     } 
@@ -80,7 +95,10 @@ function extractFieldsFromObject(
         value,
         source,
         displayPath,
-        dataType
+        dataType,
+        type: typeof value === 'number' ? 'number' : 
+              typeof value === 'boolean' ? 'boolean' :
+              value instanceof Date ? 'string' : 'string'
       });
     }
   });
@@ -113,14 +131,16 @@ export function extractAllFieldOptions(payment: any, registration: any): FieldOp
         value: nameParts[0],
         source: 'payment',
         displayPath: 'payment.customerName (first)',
-        dataType: 'string'
+        dataType: 'string',
+        type: 'string'
       });
       fields.push({
         path: 'customerName.lastName',
         value: nameParts.slice(1).join(' '),
         source: 'payment',
         displayPath: 'payment.customerName (last)',
-        dataType: 'string'
+        dataType: 'string',
+        type: 'string'
       });
     }
   }
@@ -133,14 +153,16 @@ export function extractAllFieldOptions(payment: any, registration: any): FieldOp
         value: nameParts[0],
         source: 'registration',
         displayPath: 'registration.primaryAttendee (first)',
-        dataType: 'string'
+        dataType: 'string',
+        type: 'string'
       });
       fields.push({
         path: 'primaryAttendee.lastName',
         value: nameParts.slice(1).join(' '),
         source: 'registration',
         displayPath: 'registration.primaryAttendee (last)',
-        dataType: 'string'
+        dataType: 'string',
+        type: 'string'
       });
     }
   }
@@ -255,6 +277,65 @@ export function getSmartSuggestions(
     .sort((a: any, b: any) => b.score - a.score)
     .slice(0, 10)
     .map(({ score, ...option }: any) => option);
+}
+
+/**
+ * Extract nested structure from data for hierarchical navigation
+ */
+export function extractNestedStructure(
+  data: any,
+  source: 'payment' | 'registration',
+  basePath: string = '',
+  baseDisplayPath: string = ''
+): NestedField[] {
+  const fields: NestedField[] = [];
+  
+  if (!data || typeof data !== 'object') {
+    return fields;
+  }
+
+  // Skip certain fields that shouldn't be navigated
+  const skipFields = ['_id', '__v', 'createdAt', 'updatedAt', 'timestamp', '$numberDecimal'];
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (skipFields.includes(key)) return;
+
+    const path = basePath ? `${basePath}.${key}` : key;
+    const displayPath = baseDisplayPath ? `${baseDisplayPath}.${key}` : `${source}.${key}`;
+
+    if (Array.isArray(value)) {
+      fields.push({
+        name: key,
+        path,
+        displayPath,
+        type: 'array',
+        arrayLength: value.length,
+        value: value
+      });
+    } else if (value && typeof value === 'object' && !value.$numberDecimal) {
+      // Recursively extract children for objects
+      const children = extractNestedStructure(value, source, path, displayPath);
+      fields.push({
+        name: key,
+        path,
+        displayPath,
+        type: 'object',
+        children,
+        value: value
+      });
+    } else {
+      // Primitive value
+      fields.push({
+        name: key,
+        path,
+        displayPath,
+        type: 'primitive',
+        value: value?.$numberDecimal || value
+      });
+    }
+  });
+
+  return fields;
 }
 
 /**

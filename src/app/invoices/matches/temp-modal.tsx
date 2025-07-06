@@ -65,6 +65,14 @@
                     </div>
                   </div>
                   
+                  {/* Create sourceDocuments object for FieldMappingSelector */}
+                  {(() => {
+                    const sourceDocuments = {
+                      registrations: effectiveRegistration,
+                      payments: effectivePayment
+                    };
+                    
+                    return (
                   <div className="space-y-6">
                     {/* Invoice Details Section */}
                     <div>
@@ -102,6 +110,7 @@
                         currentValue={editableInvoice.billTo?.businessName}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Business Number (ABN)"
@@ -109,6 +118,7 @@
                         currentValue={editableInvoice.billTo?.businessNumber}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="First Name"
@@ -116,6 +126,7 @@
                         currentValue={editableInvoice.billTo?.firstName}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Last Name"
@@ -123,6 +134,7 @@
                         currentValue={editableInvoice.billTo?.lastName}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Email"
@@ -130,6 +142,7 @@
                         currentValue={editableInvoice.billTo?.email}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Address Line 1"
@@ -137,6 +150,7 @@
                         currentValue={editableInvoice.billTo?.addressLine1}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="City"
@@ -144,6 +158,7 @@
                         currentValue={editableInvoice.billTo?.city}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Postal Code"
@@ -151,6 +166,7 @@
                         currentValue={editableInvoice.billTo?.postalCode}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="State/Province"
@@ -158,6 +174,7 @@
                         currentValue={editableInvoice.billTo?.stateProvince}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                       <FieldMappingSelector
                         fieldName="Country"
@@ -165,9 +182,12 @@
                         currentValue={editableInvoice.billTo?.country}
                         allOptions={extractAllFieldOptions(effectivePayment, effectiveRegistration)}
                         onMappingChange={handleFieldMappingChange}
+                        sourceDocuments={sourceDocuments}
                       />
                     </div>
                   </div>
+                );
+                })()}
                 </div>
               </div>
 
