@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Migration Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .migration-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #34495e;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            background: #efe;
+            color: #3a3;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .document-preview {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .related-docs {
+            margin-top: 20px;
+        }
+        
+        .related-doc-item {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .related-doc-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .related-doc-count {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        #destinationStats {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Migration Tool</h1>
+        
+        <!-- Source Selection -->
+        <div class="migration-section">
+            <div class="section-title">1. Select Source Document</div>
+            
+            <div class="form-group">
+                <label for="sourceCollection">Source Collection:</label>
+                <select id="sourceCollection" onchange="loadSourceDocuments()">
+                    <option value="">Select a collection...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="documentSearch">Search Document:</label>
+                <input type="text" id="documentSearch" placeholder="Enter ID or search term..." />
+                <button class="btn-secondary" onclick="searchDocuments()" style="margin-top: 10px;">Search</button>
+            </div>
+            
+            <div id="documentList" style="max-height: 200px; overflow-y: auto; margin-top: 10px;"></div>
+            
+            <div id="sourcePreview" style="display: none;">
+                <h4>Selected Document:</h4>
+                <div class="document-preview" id="sourceDocumentPreview"></div>
+            </div>
+        </div>
+        
+        <!-- Related Documents -->
+        <div class="migration-section" id="relatedSection" style="display: none;">
+            <div class="section-title">2. Related Documents</div>
+            <div id="relatedDocuments"></div>
+        </div>
+        
+        <!-- Destination Selection -->
+        <div class="migration-section" id="destinationSection" style="display: none;">
+            <div class="section-title">3. Select Destination</div>
+            
+            <div class="form-group">
+                <label for="destinationCollection">Primary Destination Collection:</label>
+                <select id="destinationCollection" onchange="loadDefaultMappings()">
+                    <option value="">Select destination collection...</option>
+                </select>
+            </div>
+            
+            <div class="info" id="mappingInfo" style="display: none;">
+                Default mappings loaded. Review and adjust as needed.
+            </div>
+        </div>
+        
+        <!-- Process Migration -->
+        <div class="migration-section" id="processSection" style="display: none;">
+            <div class="section-title">4. Process Migration</div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="previewMigration()">Preview Migration</button>
+                <button class="btn-success" onclick="processMigration()">Process Migration</button>
+            </div>
+            
+            <div id="migrationResult" style="margin-top: 20px;"></div>
+        </div>
+        
+        <!-- Destination Stats -->
+        <div class="migration-section">
+            <div class="section-title">Destination Database Status</div>
+            <div id="destinationStats">
+                <div class="loading">Loading destination stats...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedDocument = null;
+        let relatedDocs = {};
+        let currentCollection = null;
+        
+        // Load collections on page load
+        window.onload = async () => {
+            await loadSourceCollections();
+            await loadDestinationCollections();
+            await loadDestinationStats();
+        };
+        
+        async function loadSourceCollections() {
+            try {
+                const response = await fetch('/api/collections');
+                const collections = await response.json();
+                
+                const select = document.getElementById('sourceCollection');
+                select.innerHTML = '<option value="">Select a collection...</option>';
+                
+                collections.forEach(col => {
+                    const option = document.createElement('option');
+                    option.value = col.name;
+                    option.textContent = `${col.name} (${col.count} documents)`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading source collections:', error);
+            }
+        }
+        
+        async function loadDestinationCollections() {
+            try {
+                const response = await fetch('/api/migration/destination/collections');
+                const collections = await response.json();
+                
+                const select = document.getElementById('destinationCollection');
+                select.innerHTML = '<option value="">Select destination collection...</option>';
+                
+                collections.forEach(col => {
+                    const option = document.createElement('option');
+                    option.value = col.name;
+                    option.textContent = `${col.name} (${col.count} documents)`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading destination collections:', error);
+                // Show error message
+                const select = document.getElementById('destinationCollection');
+                select.innerHTML = '<option value="">Error loading destination collections</option>';
+            }
+        }
+        
+        async function loadSourceDocuments() {
+            currentCollection = document.getElementById('sourceCollection').value;
+            if (!currentCollection) return;
+            
+            try {
+                const response = await fetch(`/api/collections/${currentCollection}/documents?limit=10`);
+                const data = await response.json();
+                
+                const listDiv = document.getElementById('documentList');
+                listDiv.innerHTML = '';
+                
+                data.documents.forEach(doc => {
+                    const item = document.createElement('div');
+                    item.className = 'related-doc-item';
+                    item.innerHTML = `
+                        <strong>ID:</strong> ${doc._id}<br>
+                        ${doc.name ? `<strong>Name:</strong> ${doc.name}` : ''}
+                        ${doc.confirmationNumber ? `<strong>Confirmation:</strong> ${doc.confirmationNumber}` : ''}
+                    `;
+                    item.onclick = () => selectDocument(doc);
+                    listDiv.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading documents:', error);
+            }
+        }
+        
+        async function searchDocuments() {
+            const collection = document.getElementById('sourceCollection').value;
+            const searchTerm = document.getElementById('documentSearch').value;
+            
+            if (!collection || !searchTerm) return;
+            
+            try {
+                const response = await fetch(`/api/collections/${collection}/documents?search=${encodeURIComponent(searchTerm)}&limit=10`);
+                const data = await response.json();
+                
+                const listDiv = document.getElementById('documentList');
+                listDiv.innerHTML = '';
+                
+                if (data.documents.length === 0) {
+                    listDiv.innerHTML = '<div class="error">No documents found</div>';
+                    return;
+                }
+                
+                data.documents.forEach(doc => {
+                    const item = document.createElement('div');
+                    item.className = 'related-doc-item';
+                    item.innerHTML = `
+                        <strong>ID:</strong> ${doc._id}<br>
+                        ${doc.name ? `<strong>Name:</strong> ${doc.name}` : ''}
+                        ${doc.confirmationNumber ? `<strong>Confirmation:</strong> ${doc.confirmationNumber}` : ''}
+                    `;
+                    item.onclick = () => selectDocument(doc);
+                    listDiv.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error searching documents:', error);
+            }
+        }
+        
+        async function selectDocument(doc) {
+            selectedDocument = doc;
+            
+            // Show document preview
+            document.getElementById('sourceDocumentPreview').textContent = JSON.stringify(doc, null, 2);
+            document.getElementById('sourcePreview').style.display = 'block';
+            
+            // Load related documents
+            await loadRelatedDocuments(doc._id);
+            
+            // Show next sections
+            document.getElementById('relatedSection').style.display = 'block';
+            document.getElementById('destinationSection').style.display = 'block';
+            document.getElementById('processSection').style.display = 'block';
+        }
+        
+        async function loadRelatedDocuments(documentId) {
+            const collection = document.getElementById('sourceCollection').value;
+            
+            try {
+                const response = await fetch(`/api/collections/${collection}/documents/${documentId}/related`);
+                relatedDocs = await response.json();
+                
+                const relatedDiv = document.getElementById('relatedDocuments');
+                relatedDiv.innerHTML = '';
+                
+                Object.entries(relatedDocs).forEach(([collectionName, docs]) => {
+                    if (docs.length > 0) {
+                        const section = document.createElement('div');
+                        section.className = 'related-docs';
+                        section.innerHTML = `
+                            <h4>${collectionName} <span class="related-doc-count">(${docs.length} documents)</span></h4>
+                            <div class="document-preview" style="max-height: 200px;">
+                                ${JSON.stringify(docs, null, 2)}
+                            </div>
+                        `;
+                        relatedDiv.appendChild(section);
+                    }
+                });
+                
+                if (Object.keys(relatedDocs).length === 0) {
+                    relatedDiv.innerHTML = '<div class="info">No related documents found</div>';
+                }
+            } catch (error) {
+                console.error('Error loading related documents:', error);
+            }
+        }
+        
+        async function loadDefaultMappings() {
+            const destinationCollection = document.getElementById('destinationCollection').value;
+            if (!destinationCollection) return;
+            
+            try {
+                const response = await fetch(`/api/migration/mappings/${destinationCollection}`);
+                if (response.ok) {
+                    const mappings = await response.json();
+                    document.getElementById('mappingInfo').style.display = 'block';
+                    console.log('Default mappings loaded:', mappings);
+                }
+            } catch (error) {
+                console.error('Error loading default mappings:', error);
+            }
+        }
+        
+        async function previewMigration() {
+            // This would show a preview of the transformed document
+            alert('Preview functionality to be implemented');
+        }
+        
+        async function processMigration() {
+            const sourceCollection = document.getElementById('sourceCollection').value;
+            const destinationCollection = document.getElementById('destinationCollection').value;
+            
+            if (!selectedDocument || !destinationCollection) {
+                alert('Please select both source document and destination collection');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('migrationResult');
+            resultDiv.innerHTML = '<div class="loading">Processing migration...</div>';
+            
+            try {
+                const response = await fetch('/api/migration/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sourceDocument: selectedDocument,
+                        relatedDocuments: relatedDocs,
+                        destinationCollection: destinationCollection,
+                        mappings: {
+                            [destinationCollection]: {}  // Would include actual mappings
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">${result.message}</div>`;
+                    await loadDestinationStats();
+                } else {
+                    resultDiv.innerHTML = `<div class="error">Error: ${result.error}<br>Details: ${result.details}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error processing migration: ${error.message}</div>`;
+            }
+        }
+        
+        async function loadDestinationStats() {
+            try {
+                const response = await fetch('/api/migration/destination/stats');
+                const stats = await response.json();
+                
+                const statsDiv = document.getElementById('destinationStats');
+                const statsGrid = Object.entries(stats).map(([collection, data]) => `
+                    <div class="stat-item">
+                        <div class="stat-label">${collection}</div>
+                        <div class="stat-value">${data.total}</div>
+                        <div style="font-size: 12px; color: #666;">
+                            ${data.migrated} migrated
+                        </div>
+                    </div>
+                `).join('');
+                
+                statsDiv.innerHTML = `
+                    <h4>Collections in Destination Database (LodgeTix)</h4>
+                    <div class="stats-grid">${statsGrid}</div>
+                `;
+            } catch (error) {
+                console.error('Error loading destination stats:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -53,9 +53,19 @@ export default function Home() {
     try {
       const response = await fetch(`/api/migration/records?type=${type}`)
       const data = await response.json()
-      setRecords(data)
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setRecords(data)
+      } else if (data && Array.isArray(data.records)) {
+        // Handle case where data might be wrapped in an object
+        setRecords(data.records)
+      } else {
+        console.error('Invalid data format:', data)
+        setRecords([])
+      }
     } catch (error) {
       console.error('Error fetching records:', error)
+      setRecords([])
     } finally {
       setLoading(false)
     }
@@ -142,7 +152,7 @@ export default function Home() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {records.map(record => (
+                    {Array.isArray(records) && records.map(record => (
                       <tr key={record._id} className="hover:bg-gray-50">
                         <td className="px-4 py-2 text-sm text-gray-900">
                           {record._id}
@@ -165,7 +175,7 @@ export default function Home() {
                     ))}
                   </tbody>
                 </table>
-                {records.length === 0 && (
+                {(!Array.isArray(records) || records.length === 0) && (
                   <p className="text-center py-8 text-gray-500">No records found</p>
                 )}
               </div>

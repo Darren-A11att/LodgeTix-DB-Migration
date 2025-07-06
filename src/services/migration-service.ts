@@ -81,7 +81,17 @@ export class MigrationService {
           result[field] = value;
         }
       } else if (fieldMapping?.customValue !== undefined) {
-        result[field] = fieldMapping.customValue;
+        // Handle special values like date markers and computations
+        if (typeof fieldMapping.customValue === 'object' && fieldMapping.customValue?.$now) {
+          result[field] = new Date();
+        } else if (typeof fieldMapping.customValue === 'object' && fieldMapping.customValue?.$compute) {
+          const computedValue = this.executeComputation(fieldMapping.customValue.$compute, sourceData);
+          if (computedValue !== null) {
+            result[field] = computedValue;
+          }
+        } else {
+          result[field] = fieldMapping.customValue;
+        }
       }
     }
     
@@ -121,9 +131,135 @@ export class MigrationService {
   }
   
   /**
+   * Execute a computation definition
+   */
+  private executeComputation(computation: any, sourceData: any): any {
+    if (!computation || !computation.type) return null;
+    
+    const getValuesFromSources = (sources: string[]): any[] => {
+      const values: any[] = [];
+      
+      sources.forEach(source => {
+        // Handle array fields (e.g., events.dates.eventStart)
+        const parts = source.split('.');
+        
+        // Check if we're dealing with an array field
+        let current = sourceData;
+        let isArrayField = false;
+        let arrayValues: any[] = [];
+        
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          
+          if (current === null || current === undefined) break;
+          
+          if (Array.isArray(current[part])) {
+            // We've hit an array, collect values from remaining path
+            isArrayField = true;
+            const remainingPath = parts.slice(i + 1).join('.');
+            
+            current[part].forEach((item: any) => {
+              if (remainingPath) {
+                const value = this.getValueByPath(item, remainingPath);
+                if (value !== undefined && value !== null) {
+                  arrayValues.push(value);
+                }
+              } else {
+                arrayValues.push(item);
+              }
+            });
+            break;
+          } else {
+            current = current[part];
+          }
+        }
+        
+        if (isArrayField) {
+          values.push(...arrayValues);
+        } else {
+          const value = this.getValueByPath(sourceData, source);
+          if (value !== undefined && value !== null) {
+            values.push(value);
+          }
+        }
+      });
+      
+      return values;
+    };
+    
+    switch (computation.type) {
+      case 'minDate': {
+        const dates = getValuesFromSources(computation.sources)
+          .map(d => new Date(d))
+          .filter(d => !isNaN(d.getTime()));
+        return dates.length > 0 
+          ? new Date(Math.min(...dates.map(d => d.getTime())))
+          : null;
+      }
+      
+      case 'maxDate': {
+        const dates = getValuesFromSources(computation.sources)
+          .map(d => new Date(d))
+          .filter(d => !isNaN(d.getTime()));
+        return dates.length > 0 
+          ? new Date(Math.max(...dates.map(d => d.getTime())))
+          : null;
+      }
+      
+      case 'sum': {
+        const numbers = getValuesFromSources(computation.sources)
+          .map(n => parseFloat(n))
+          .filter(n => !isNaN(n));
+        return numbers.reduce((sum, n) => sum + n, 0);
+      }
+      
+      case 'count': {
+        const values = getValuesFromSources(computation.sources);
+        return values.length;
+      }
+      
+      case 'arithmetic': {
+        const values = getValuesFromSources(computation.sources);
+        if (values.length === 0) return 0;
+        
+        const firstValue = parseFloat(values[0]) || 0;
+        const operand = computation.parameters?.operand || 0;
+        
+        switch (computation.parameters?.operator) {
+          case '+': return firstValue + operand;
+          case '-': return firstValue - operand;
+          case '*': return firstValue * operand;
+          case '/': return operand !== 0 ? firstValue / operand : 0;
+          default: return firstValue;
+        }
+      }
+      
+      case 'concat': {
+        const values = getValuesFromSources(computation.sources);
+        return values.join(computation.parameters?.separator || ' ');
+      }
+      
+      case 'now': {
+        return new Date();
+      }
+      
+      // Note: Lookup operations would require async and access to destination DB
+      // For now, we'll return a placeholder
+      case 'lookup': {
+        console.warn('Lookup operations not yet supported in migration service');
+        return null;
+      }
+      
+      default:
+        console.warn(`Unknown computation type: ${computation.type}`);
+        return null;
+    }
+  }
+  
+  /**
    * Migrate a function with events (ACID transaction)
    */
-  async migrateFunction(sourceDoc: any, mappings: Record<string, any>): Promise<any> {
+  async migrateFunction(sourceDoc: any, mappings: Record<string, any>, relatedDocs?: Record<string, any>): Promise<any> {
     return executeMigrationTransaction(async (session) => {
       const destinationDb = getDestinationDb();
       
@@ -152,10 +288,13 @@ export class MigrationService {
         .insertOne(functionDoc, { session });
       
       // If there are related products to create
-      if (mappings.products && Array.isArray(sourceDoc.events)) {
+      // Use related events if provided, otherwise fall back to sourceDoc.events
+      const eventsToProcess = relatedDocs?.events || sourceDoc.events || [];
+      
+      if (mappings.products && Array.isArray(eventsToProcess)) {
         const products = [];
         
-        for (const event of sourceDoc.events) {
+        for (const event of eventsToProcess) {
           // Create ticket products for each event
           const productMapping = mappings.products;
           const product = this.applyMapping(event, productMapping, this.getDefaultMapping('products'));

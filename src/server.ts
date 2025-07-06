@@ -4,7 +4,8 @@ import { connectMongoDB, disconnectMongoDB } from './connections/mongodb';
 import { 
   connectBothDBs, 
   disconnectBothDBs,
-  getDestinationDb
+  getDestinationDb,
+  getSourceDb
 } from './connections/dual-mongodb';
 import { MigrationService } from './services/migration-service';
 import path from 'path';
@@ -1530,7 +1531,9 @@ app.post('/api/invoices/create', async (req, res) => {
           supplierInvoiceNumber: supplierInvoice ? supplierInvoiceNumber : null,
           invoiceStatus: 'created',
           invoiceId: insertResult.insertedId,
-          invoiceCreatedAt: new Date()
+          invoiceCreatedAt: new Date(),
+          // Save the linked registration ID for manual matches
+          linkedRegistrationId: registration?._id ? registration._id.toString() : null
         }
       }
     );
@@ -1690,56 +1693,32 @@ app.post('/api/migration/process', async (req, res) => {
     } = req.body;
     
     let result;
+    const sourceDb = getSourceDb();
     
     switch (destinationCollection) {
       case 'functions':
-        result = await migrationService.migrateFunction(sourceDocument, mappings);
+        // Always auto-fetch ALL events as related documents for functions
+        let functionRelatedDocs = relatedDocuments || {};
+        
+        if (!functionRelatedDocs.events) {
+          // Fetch ALL events from source database
+          const events = await sourceDb.collection('events').find({}).toArray();
+          functionRelatedDocs.events = events;
+          console.log(`Auto-fetched ${events.length} events as related documents for function`);
+        }
+        
+        result = await migrationService.migrateFunction(sourceDocument, mappings, functionRelatedDocs);
         break;
         
       case 'registrations':
-        // Auto-fetch event_tickets if not provided and registration contains event_ticket_ids
+        // Always auto-fetch ALL event_tickets as related documents for registrations
         let enhancedRelatedDocs = relatedDocuments || {};
         
-        // Check if registration has event_ticket_ids
-        const hasEventTicketIds = 
-          (sourceDocument.tickets && sourceDocument.tickets.some((t: any) => t.eventTicketId || t.event_ticket_id)) ||
-          (sourceDocument.registrationData?.attendees?.some((a: any) => a.eventTicketId || a.event_ticket_id));
-        
-        if (hasEventTicketIds && !enhancedRelatedDocs.event_tickets) {
-          // Extract all event_ticket_ids
-          const ticketIds: string[] = [];
-          
-          if (sourceDocument.tickets) {
-            sourceDocument.tickets.forEach((ticket: any) => {
-              if (ticket.eventTicketId || ticket.event_ticket_id) {
-                ticketIds.push(ticket.eventTicketId || ticket.event_ticket_id);
-              }
-            });
-          }
-          
-          if (sourceDocument.registrationData?.attendees) {
-            sourceDocument.registrationData.attendees.forEach((attendee: any) => {
-              if (attendee.eventTicketId || attendee.event_ticket_id) {
-                ticketIds.push(attendee.eventTicketId || attendee.event_ticket_id);
-              }
-            });
-          }
-          
-          // Fetch event_tickets from source database
-          if (ticketIds.length > 0) {
-            const uniqueTicketIds = [...new Set(ticketIds)];
-            const eventTickets = await sourceDb.collection('event_tickets')
-              .find({ 
-                $or: [
-                  { eventTicketId: { $in: uniqueTicketIds } },
-                  { event_ticket_id: { $in: uniqueTicketIds } }
-                ]
-              })
-              .toArray();
-            
-            enhancedRelatedDocs.event_tickets = eventTickets;
-            console.log(`Auto-fetched ${eventTickets.length} event tickets for registration`);
-          }
+        if (!enhancedRelatedDocs.event_tickets) {
+          // Fetch ALL event_tickets from source database
+          const eventTickets = await sourceDb.collection('event_tickets').find({}).toArray();
+          enhancedRelatedDocs.event_tickets = eventTickets;
+          console.log(`Auto-fetched ${eventTickets.length} event tickets as related documents for registration`);
         }
         
         result = await migrationService.migrateRegistration(
@@ -1793,6 +1772,35 @@ app.get('/api/migration/status/:collection/:sourceId', async (req, res) => {
   }
 });
 
+// Get destination collections
+app.get('/api/migration/destination/collections', async (_, res) => {
+  try {
+    await connectBothDBs();
+    const destinationDb = getDestinationDb();
+    
+    const collections = await destinationDb.listCollections().toArray();
+    
+    // Get document count for each collection
+    const collectionsWithCount = await Promise.all(
+      collections.map(async (col) => ({
+        name: col.name,
+        count: await destinationDb.collection(col.name).countDocuments()
+      }))
+    );
+    
+    // Sort collections by name
+    collectionsWithCount.sort((a, b) => a.name.localeCompare(b.name));
+    
+    res.json(collectionsWithCount);
+  } catch (error) {
+    console.error('Error fetching destination collections:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch destination collections',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // Get destination database stats
 app.get('/api/migration/destination/stats', async (_, res) => {
   try {
@@ -1828,9 +1836,13 @@ app.get('/api/migration/destination/stats', async (_, res) => {
   }
 });
 
-// Serve the HTML page
+// Serve the HTML pages
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+app.get('/migration', (_req, res) => {
+  res.sendFile(path.join(__dirname, '../public/migration.html'));
 });
 
 // Write port configuration to file for mongodb-explorer
