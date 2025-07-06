@@ -77,7 +77,16 @@ export async function POST(request: NextRequest) {
               invoiceCreated: true,
               invoiceCreatedAt: new Date(),
               invoiceId: customerInvoiceId,
-              invoiceStatus: 'created'
+              invoiceStatus: 'created',
+              // Store the complete invoice objects with all mapped values
+              customerInvoice: customerInvoice ? {
+                ...customerInvoice,
+                invoiceNumber: customerInvoiceNumber
+              } : null,
+              supplierInvoice: supplierInvoice ? {
+                ...supplierInvoice,
+                invoiceNumber: supplierInvoiceNumber
+              } : null
             }
           },
           { session }
@@ -93,7 +102,16 @@ export async function POST(request: NextRequest) {
               invoiceCreated: true,
               invoiceCreatedAt: new Date(),
               invoiceId: customerInvoiceId,
-              invoiceStatus: 'created'
+              invoiceStatus: 'created',
+              // Store the complete invoice objects with all mapped values
+              customerInvoice: customerInvoice ? {
+                ...customerInvoice,
+                invoiceNumber: customerInvoiceNumber
+              } : null,
+              supplierInvoice: supplierInvoice ? {
+                ...supplierInvoice,
+                invoiceNumber: supplierInvoiceNumber
+              } : null
             }
           },
           { session }
