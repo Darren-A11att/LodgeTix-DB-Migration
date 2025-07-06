@@ -148,11 +148,11 @@ export class TransactionService {
       billTo_postalCode: invoice.billTo?.postalCode,
       billTo_stateProvince: invoice.billTo?.stateProvince,
       
-      // Supplier fields (flattened)
-      supplier_name: invoice.supplier?.name,
-      supplier_abn: invoice.supplier?.abn,
-      supplier_address: invoice.supplier?.address,
-      supplier_issuedBy: invoice.supplier?.issuedBy,
+      // Supplier fields (flattened) - check both supplier and billFrom
+      supplier_name: invoice.supplier?.name || invoice.billFrom?.name,
+      supplier_abn: invoice.supplier?.abn || invoice.billFrom?.abn,
+      supplier_address: invoice.supplier?.address || invoice.billFrom?.address,
+      supplier_issuedBy: invoice.supplier?.issuedBy || invoice.billFrom?.issuedBy || invoice.issuedBy,
       
       // Item fields
       item_description: item.description || item.name,
