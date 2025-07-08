@@ -163,19 +163,19 @@ export default function LineItemManager({
   useEffect(() => {
     // Check if items have descriptionSegments (indicates they're from a saved template)
     const hasTemplateStructure = items.some(item => 
-      item.descriptionSegments && item.descriptionSegments.length > 0
+      (item as any).descriptionSegments && (item as any).descriptionSegments.length > 0
     );
     
     if (hasTemplateStructure && items.length > 0) {
       // These are regenerated items from a template, sync them
       // But filter out array-type items as they will be regenerated from array mappings
-      const nonArrayItems = items.filter(item => item.type !== 'array');
+      const nonArrayItems = items.filter(item => (item as any).type !== 'array');
       setLineItems(nonArrayItems.map((item, index) => ({
         ...item,
-        id: item.id || `item_${index}`,
-        type: item.type || 'other',
-        descriptionSegments: item.descriptionSegments || [],
-        subItems: item.subItems || []
+        id: (item as any).id || `item_${index}`,
+        type: (item as any).type || 'other',
+        descriptionSegments: (item as any).descriptionSegments || [],
+        subItems: (item as any).subItems || []
       })));
     }
   }, [items]);

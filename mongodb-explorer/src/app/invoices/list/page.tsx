@@ -17,6 +17,9 @@ interface InvoiceMatch {
   invoice: any;
   matchConfidence: number;
   matchDetails?: any[];
+  matchMethod?: string;
+  isProcessed?: boolean;
+  isDeclined?: boolean;
 }
 
 interface MatchesResponse {
@@ -32,7 +35,7 @@ const toNumber = (value: number | { $numberDecimal: string } | undefined): numbe
   if (value === undefined) return 0;
   return typeof value === 'object' && value.$numberDecimal 
     ? parseFloat(value.$numberDecimal)
-    : value;
+    : value as number;
 };
 
 export default function InvoicesListPage() {
@@ -309,7 +312,7 @@ export default function InvoicesListPage() {
     const primaryMatch = sortedDetails[0];
     
     // Create display based on value type
-    const typeDisplayMap = {
+    const typeDisplayMap: Record<string, string> = {
       'paymentId': 'Payment ID',
       'registrationId': 'Registration ID',
       'confirmationNumber': 'Confirmation Number',
@@ -380,7 +383,8 @@ export default function InvoicesListPage() {
       return true;
     })
     .sort((a, b) => {
-      let aValue, bValue;
+      let aValue: number = 0;
+      let bValue: number = 0;
       
       if (sortBy === 'date') {
         aValue = new Date(a.payment.timestamp || a.payment.createdAt).getTime();

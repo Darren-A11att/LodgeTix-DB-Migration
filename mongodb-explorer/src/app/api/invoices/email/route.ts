@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
                 emailId: emailMetadata.id,
                 idempotencyKey: emailMetadata.idempotencyKey
               }
-            }
+            } as any
           }
         );
         console.log(`Updated invoice email tracking for invoice ${invoice.invoiceNumber}`);

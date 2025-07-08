@@ -16,7 +16,7 @@ import { extractAllFieldOptions, extractRelatedDocumentFields, getSmartSuggestio
 import { fieldMappingStorage, FieldMapping, ArrayMapping } from '@/services/field-mapping-storage';
 import { registrationMappingStorage } from '@/services/registration-mapping-storage';
 import apiService from '@/lib/api';
-import { getSupplierInvoiceSupplier, DEFAULT_INVOICE_SUPPLIER } from '@/constants/invoice';
+import { getSupplierInvoiceSupplier, DEFAULT_INVOICE_SUPPLIER } from '../../../constants/invoice';
 import { loadLogoAsBase64 } from '@/utils/logo-base64';
 import { getMonetaryValue, formatMoney } from '@/utils/monetary';
 

@@ -17,8 +17,18 @@ export async function GET(request: NextRequest) {
     const matcher = new PaymentRegistrationMatcher(db);
     const previewGenerator = new InvoicePreviewGenerator(db);
 
-    // Get all unmatched payments
-    const matchResults = await matcher.matchAllPayments();
+    // Get all unprocessed payments
+    const unprocessedPayments = await db.collection('payments')
+      .find({ 
+        $or: [
+          { invoiceCreated: { $ne: true } },
+          { invoiceCreated: { $exists: false } }
+        ]
+      })
+      .toArray();
+    
+    // Match each payment
+    const matchResults = await matcher.matchPayments(unprocessedPayments as any);
 
     // Filter by confidence
     const filteredResults = matchResults.filter(
@@ -38,8 +48,15 @@ export async function GET(request: NextRequest) {
     // Generate previews
     const previews = await previewGenerator.generatePreviews(paginatedResults);
 
-    // Get statistics
-    const stats = await matcher.getMatchStatistics();
+    // Calculate statistics
+    const stats = {
+      totalPayments: unprocessedPayments.length,
+      matchedPayments: matchResults.filter(r => r.registration !== null).length,
+      unmatchedPayments: matchResults.filter(r => r.registration === null).length,
+      highConfidence: matchResults.filter(r => r.matchConfidence >= 80).length,
+      mediumConfidence: matchResults.filter(r => r.matchConfidence >= 50 && r.matchConfidence < 80).length,
+      lowConfidence: matchResults.filter(r => r.matchConfidence > 0 && r.matchConfidence < 50).length
+    };
 
     return NextResponse.json({
       success: true,

@@ -33,7 +33,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
   const toNumber = (value: number | { $numberDecimal: string }): number => {
     return typeof value === 'object' && value.$numberDecimal 
       ? parseFloat(value.$numberDecimal)
-      : value;
+      : value as number;
   };
 
   const formatCurrency = (amount: number | { $numberDecimal: string }) => {

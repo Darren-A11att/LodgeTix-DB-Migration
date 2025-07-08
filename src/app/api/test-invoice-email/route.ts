@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendInvoiceEmail } from '@/services/email-service';
-import { Invoice } from '@/types/invoice';
+import { Invoice } from '../../../types/invoice';
 
 export async function POST(request: NextRequest) {
   try {

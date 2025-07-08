@@ -1246,16 +1246,19 @@ function ChildArrayConfig({
                 <div className="flex gap-1">
                   <select
                     value={child.itemConfig.unitPrice.type}
-                    onChange={(e) => onChange({
-                      itemConfig: {
-                        ...child.itemConfig,
-                        unitPrice: {
-                          type: e.target.value as 'fixed' | 'field' | 'lookup' | 'blank',
-                          value: e.target.value === 'fixed' ? 0 : e.target.value === 'blank' ? null : '',
-                          lookupField: undefined
+                    onChange={(e) => {
+                      const newType = e.target.value as 'fixed' | 'field' | 'lookup' | 'blank';
+                      onChange({
+                        itemConfig: {
+                          ...child.itemConfig,
+                          unitPrice: {
+                            type: newType,
+                            value: newType === 'fixed' ? 0 : newType === 'blank' ? null : '',
+                            lookupField: newType === 'lookup' ? '' : undefined
+                          } as any
                         }
-                      }
-                    })}
+                      })
+                    }}
                     className="w-20 px-1 py-0.5 border border-gray-300 rounded-md text-xs"
                   >
                     <option value="fixed">Fixed</option>
@@ -1280,15 +1283,15 @@ function ChildArrayConfig({
                     />
                   ) : (
                     <select
-                      value={child.itemConfig.unitPrice.type === 'lookup' 
-                        ? child.itemConfig.unitPrice.lookupField || ''
+                      value={(child.itemConfig.unitPrice as any).type === 'lookup' 
+                        ? (child.itemConfig.unitPrice as any).lookupField || ''
                         : child.itemConfig.unitPrice.value as string}
                       onChange={(e) => onChange({
                         itemConfig: {
                           ...child.itemConfig,
                           unitPrice: {
                             ...child.itemConfig.unitPrice,
-                            ...(child.itemConfig.unitPrice.type === 'lookup' 
+                            ...((child.itemConfig.unitPrice as any).type === 'lookup' 
                               ? { lookupField: e.target.value }
                               : { value: e.target.value })
                           }

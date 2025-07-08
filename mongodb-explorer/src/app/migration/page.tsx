@@ -110,7 +110,12 @@ export default function DataMigrationPage() {
   const loadCollections = async () => {
     try {
       const response = await apiService.getCollections();
-      setCollections(response);
+      // Convert Collection[] to CollectionInfo[] by adding empty sampleDocument
+      const collectionsWithSample: CollectionInfo[] = response.map(col => ({
+        ...col,
+        sampleDocument: null
+      }));
+      setCollections(collectionsWithSample);
     } catch (error) {
       console.error('Failed to load collections:', error);
     } finally {
@@ -530,12 +535,14 @@ export default function DataMigrationPage() {
             const arrayField = pathParts.shift();
             const remainingPath = pathParts.join('.');
             
-            sourceDoc[arrayField].forEach((item: any) => {
-              const value = remainingPath ? getValueByPath(item, remainingPath) : item;
-              if (value !== undefined && value !== null) {
-                values.push(value);
-              }
-            });
+            if (arrayField && sourceDoc[arrayField]) {
+              sourceDoc[arrayField].forEach((item: any) => {
+                const value = remainingPath ? getValueByPath(item, remainingPath) : item;
+                if (value !== undefined && value !== null) {
+                  values.push(value);
+                }
+              });
+            }
           } else {
             const value = Array.isArray(sourceDoc)
               ? getValueByPath(sourceDoc[0], pathParts.join('.'))
@@ -1286,11 +1293,15 @@ function MappingFields({
   
   // Convert fieldOptions to the format expected by FieldMappingSelector
   const convertedOptions = fieldOptions.map(opt => ({
-    source: opt.label.split('.')[0],
+    source: opt.label.split('.')[0] as 'payment' | 'registration' | 'related',
     path: opt.value,
     displayPath: opt.label,
     value: opt.sampleValue,
-    type: opt.type
+    type: opt.type,
+    dataType: (opt.type === 'string' ? 'string' : 
+              opt.type === 'number' ? 'number' : 
+              opt.type === 'boolean' ? 'boolean' : 
+              opt.type === 'date' ? 'date' : 'object') as 'string' | 'number' | 'date' | 'boolean' | 'object'
   }));
   
   // Get nested value from object using dot notation

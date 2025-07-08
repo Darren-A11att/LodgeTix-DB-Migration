@@ -21,7 +21,7 @@ import { loadLogoAsBase64 } from '@/utils/logo-base64';
 import { getMonetaryValue, formatMoney } from '@/utils/monetary';
 
 interface MatchDetail {
-  valueType: 'paymentId' | 'registrationId' | 'confirmationNumber' | 'email' | 'amount' | 'accountId' | 'name' | 'address' | 'timestamp';
+  valueType: 'paymentId' | 'registrationId' | 'confirmationNumber' | 'email' | 'amount' | 'accountId' | 'name' | 'address' | 'timestamp' | 'manual';
   paymentField: string;
   registrationPaths: string[];
   value: any;
@@ -81,15 +81,15 @@ export default function InvoiceMatchesPage() {
   const [logoBase64, setLogoBase64] = useState<string>('');
   const [editableInvoice, setEditableInvoice] = useState<any>(null);
   const [fieldMappings, setFieldMappings] = useState<Record<string, string>>({});
-  const [fieldMappingConfig, setFieldMappingConfig] = useState<Record<string, { source: string | null; customValue?: any }>>({});
+  const [fieldMappingConfig, setFieldMappingConfig] = useState<Record<string, any>>({});
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
   
   // Invoice type states
   const [activeInvoiceType, setActiveInvoiceType] = useState<'customer' | 'supplier'>('customer');
   const [customerInvoice, setCustomerInvoice] = useState<any>(null);
   const [supplierInvoice, setSupplierInvoice] = useState<any>(null);
-  const [customerFieldMappingConfig, setCustomerFieldMappingConfig] = useState<Record<string, { source: string | null; customValue?: any }>>({});
-  const [supplierFieldMappingConfig, setSupplierFieldMappingConfig] = useState<Record<string, { source: string | null; customValue?: any }>>({});
+  const [customerFieldMappingConfig, setCustomerFieldMappingConfig] = useState<Record<string, any>>({});
+  const [supplierFieldMappingConfig, setSupplierFieldMappingConfig] = useState<Record<string, any>>({});
   
   // Registration edit modal states
   const [showRegistrationEditModal, setShowRegistrationEditModal] = useState(false);
@@ -259,7 +259,7 @@ export default function InvoiceMatchesPage() {
             console.log('Manual match search result:', manualMatchData);
             
             // The search API returns { results: [...] } not { documents: [...] }
-            const documents = manualMatchData.results || manualMatchData.documents || [];
+            const documents = (manualMatchData as any).results || (manualMatchData as any).documents || [];
             
             if (documents.length > 0) {
               // Found a manually matched registration
@@ -462,7 +462,7 @@ export default function InvoiceMatchesPage() {
         const results = await apiService.rawTextSearch('registrations', registrationSearchQuery);
         
         // Transform results to match expected format
-        const registrationResults = results.matches && results.matches.length > 0 
+        const registrationResults = (results as any).matches && (results as any).matches.length > 0 
           ? (results as any).matches.map((match: any) => ({
               collection: 'registrations',
               document: match.document,
@@ -1487,8 +1487,8 @@ export default function InvoiceMatchesPage() {
                         ...selectedMapping.mappings,
                         lineItems: selectedMapping.lineItems
                       };
-                      setFieldMappingConfig(fullConfig);
-                      setCustomerFieldMappingConfig(fullConfig);
+                      setFieldMappingConfig(selectedMapping.mappings);
+                      setCustomerFieldMappingConfig(selectedMapping.mappings);
                       
                       // Load array mappings
                       if (selectedMapping.arrayMappings) {
@@ -1591,8 +1591,8 @@ export default function InvoiceMatchesPage() {
                         ...autoMapping.mappings,
                         lineItems: autoMapping.lineItems
                       };
-                      setFieldMappingConfig(fullConfig);
-                      setCustomerFieldMappingConfig(fullConfig);
+                      setFieldMappingConfig(autoMapping.mappings);
+                      setCustomerFieldMappingConfig(autoMapping.mappings);
                       
                       // Load array mappings if present
                       if (autoMapping.arrayMappings) {
@@ -1685,7 +1685,7 @@ export default function InvoiceMatchesPage() {
                       price: calculateSoftwareUtilizationFee({ total: effectivePayment?.amount || 0 })
                     }
                   ];
-                  const subtotal = defaultSupplierInvoice.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+                  const subtotal = defaultSupplierInvoice.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
                   defaultSupplierInvoice.subtotal = subtotal;
                   defaultSupplierInvoice.total = subtotal;
                 }
@@ -2007,7 +2007,7 @@ export default function InvoiceMatchesPage() {
                         }
                         
                         // Recalculate totals
-                        const subtotal = newSupplierInvoice.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+                        const subtotal = newSupplierInvoice.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
                         newSupplierInvoice.subtotal = subtotal;
                         newSupplierInvoice.total = subtotal;
                         
@@ -2090,8 +2090,8 @@ export default function InvoiceMatchesPage() {
                             // Get the mapping configuration
                             const mapping = fieldMappingStorage.getMapping(mappingId);
                             console.log('Selected mapping:', mapping);
-                            console.log('Mapping has items?', mapping.items);
-                            console.log('Mapping has arrayMappings?', mapping.arrayMappings);
+                            console.log('Mapping has items?', mapping?.items);
+                            console.log('Mapping has arrayMappings?', mapping?.arrayMappings);
                             console.log('Current invoice items:', editableInvoice.items);
                             
                             if (mapping) {
@@ -2445,7 +2445,7 @@ export default function InvoiceMatchesPage() {
                               ? `$${editableInvoice.processingFees.toFixed(2)}` 
                               : '$0.00'}
                           </div>
-                          {fieldMappingConfig.processingFees?.isCalculated && (
+                          {(fieldMappingConfig.processingFees as any)?.isCalculated && (
                             <div className="text-xs text-gray-500 mt-1">
                               Automatically calculated from mapped values
                             </div>

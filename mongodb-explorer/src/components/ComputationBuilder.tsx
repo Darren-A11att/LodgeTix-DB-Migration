@@ -41,6 +41,9 @@ const COMPUTATION_TYPES = {
   text: [
     { value: 'concat', label: 'Concatenate', description: 'Join multiple text fields together' },
     { value: 'lookup', label: 'Lookup from collection', description: 'Fetch a value from another collection' }
+  ],
+  select: [
+    { value: 'lookup', label: 'Lookup from collection', description: 'Fetch a value from another collection' }
   ]
 };
 
@@ -74,7 +77,7 @@ export default function ComputationBuilder({
       path: '',
       displayPath: 'registrations',
       type: 'object',
-      children: extractNestedStructure(registrationData, 'registrations'),
+      children: extractNestedStructure(registrationData, 'registration'),
       value: registrationData
     });
   }
@@ -84,7 +87,7 @@ export default function ComputationBuilder({
       path: '',
       displayPath: 'payments',
       type: 'object',
-      children: extractNestedStructure(paymentData, 'payments'),
+      children: extractNestedStructure(paymentData, 'payment'),
       value: paymentData
     });
   }

@@ -36,9 +36,9 @@ export default function ExternalFieldSelector({
         customers: true,
         bookingContacts: true,
         functions: true
-      };
+      } as Record<string, boolean>;
     }
-    return {};
+    return {} as Record<string, boolean>;
   });
 
   useEffect(() => {
@@ -177,9 +177,11 @@ export default function ExternalFieldSelector({
 
           {isExpanded && (isObject || isArray) && (
             <div>
-              {isArray && value.length > 0 && typeof value[0] === 'object'
-                ? renderFieldTree(value[0], `${currentPath}[0]`, level + 1, docType, docIndex)
-                : isObject && renderFieldTree(value, currentPath, level + 1, docType, docIndex)}
+              {isArray && value.length > 0 && typeof value[0] === 'object' ? (
+                renderFieldTree(value[0], `${currentPath}[0]`, level + 1, docType, docIndex)
+              ) : isObject ? (
+                renderFieldTree(value, currentPath, level + 1, docType, docIndex)
+              ) : null}
             </div>
           )}
         </div>

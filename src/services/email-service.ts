@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { Invoice } from '@/types/invoice';
+import { Invoice } from '../types/invoice';
 
 // Initialize Resend client only if API key is available
 let resend: Resend | null = null;
