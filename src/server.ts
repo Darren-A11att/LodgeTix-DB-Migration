@@ -701,21 +701,127 @@ app.get('/api/reports/proclamation-banquet', async (_req, res) => {
   try {
     const { db } = await connectMongoDB();
     const registrationsCollection = db.collection('registrations');
+    const eventTicketsCollection = db.collection('eventTickets');
     
-    // Find all lodge registrations
-    const lodgeRegistrations = await registrationsCollection.find({
-      registrationType: 'lodge'
+    // Find all banquet-related event ticket IDs
+    const banquetTickets = await eventTicketsCollection.find({
+      name: { $regex: /banquet/i }
     }).toArray();
     
-    // Calculate total attendees
-    const totalAttendees = lodgeRegistrations.reduce((sum, reg) => {
-      return sum + (reg.attendeeCount || 0);
+    const banquetTicketIds = banquetTickets.map(ticket => 
+      ticket.eventTicketId || ticket.event_ticket_id
+    );
+    
+    // Find all registrations (not just lodge)
+    const allRegistrations = await registrationsCollection.find({}).toArray();
+    
+    // Filter registrations that have banquet tickets
+    const banquetRegistrations: any[] = [];
+    const lodgeRegistrations: any[] = [];
+    const individualRegistrations: any[] = [];
+    
+    allRegistrations.forEach(reg => {
+      const regData = reg.registrationData || reg.registration_data;
+      let hasBanquetTicket = false;
+      
+      if (regData && regData.selectedTickets) {
+        hasBanquetTicket = regData.selectedTickets.some((ticket: any) => {
+          const ticketId = ticket.eventTicketId || ticket.event_ticket_id;
+          return banquetTicketIds.includes(ticketId);
+        });
+      }
+      
+      if (hasBanquetTicket) {
+        banquetRegistrations.push(reg);
+        
+        const regType = reg.registrationType || reg.registration_type;
+        if (regType === 'lodge') {
+          lodgeRegistrations.push(reg);
+        } else if (regType === 'individuals') {
+          individualRegistrations.push(reg);
+        }
+      }
+    });
+    
+    // Calculate totals
+    const calculateAttendees = (regs: any[]) => regs.reduce((sum: number, reg: any) => {
+      return sum + (reg.attendeeCount || reg.attendee_count || 0);
     }, 0);
     
+    const totalAttendees = calculateAttendees(banquetRegistrations);
+    const lodgeAttendees = calculateAttendees(lodgeRegistrations);
+    const individualAttendees = calculateAttendees(individualRegistrations);
+    
+    // Group by ticket type
+    const ticketBreakdown: { [key: string]: any } = {};
+    banquetTickets.forEach(ticket => {
+      const price = ticket.price;
+      let priceValue = 0;
+      
+      // Handle MongoDB Decimal128 objects
+      if (price && price.constructor && price.constructor.name === 'Decimal128') {
+        priceValue = parseFloat(price.toString());
+      } else if (price && typeof price === 'object' && '$numberDecimal' in price) {
+        priceValue = parseFloat(price.$numberDecimal);
+      } else if (typeof price === 'number') {
+        priceValue = price;
+      } else if (typeof price === 'string') {
+        priceValue = parseFloat(price);
+      }
+      
+      ticketBreakdown[ticket.name] = {
+        ticketId: ticket.eventTicketId || ticket.event_ticket_id,
+        price: priceValue,
+        registrationCount: 0,
+        attendeeCount: 0
+      };
+    });
+    
+    banquetRegistrations.forEach(reg => {
+      const regData = reg.registrationData || reg.registration_data;
+      if (regData && regData.selectedTickets) {
+        regData.selectedTickets.forEach((ticket: any) => {
+          const ticketId = ticket.eventTicketId || ticket.event_ticket_id;
+          const banquetTicket = banquetTickets.find(bt => 
+            (bt.eventTicketId || bt.event_ticket_id) === ticketId
+          );
+          if (banquetTicket && ticketBreakdown[banquetTicket.name]) {
+            ticketBreakdown[banquetTicket.name].attendeeCount++;
+          }
+        });
+        
+        // Count unique tickets per registration
+        const uniqueTickets = new Set();
+        regData.selectedTickets.forEach((ticket: any) => {
+          const ticketId = ticket.eventTicketId || ticket.event_ticket_id;
+          if (banquetTicketIds.includes(ticketId)) {
+            uniqueTickets.add(ticketId);
+          }
+        });
+        
+        uniqueTickets.forEach(ticketId => {
+          const banquetTicket = banquetTickets.find(bt => 
+            (bt.eventTicketId || bt.event_ticket_id) === ticketId
+          );
+          if (banquetTicket && ticketBreakdown[banquetTicket.name]) {
+            ticketBreakdown[banquetTicket.name].registrationCount++;
+          }
+        });
+      }
+    });
+    
     res.json({
-      registrations: lodgeRegistrations,
+      registrations: lodgeRegistrations, // Keep backward compatibility
+      allBanquetRegistrations: banquetRegistrations,
+      lodgeRegistrations,
+      individualRegistrations,
       totalAttendees,
-      total: lodgeRegistrations.length
+      lodgeAttendees,
+      individualAttendees,
+      total: lodgeRegistrations.length,
+      totalBanquetRegistrations: banquetRegistrations.length,
+      ticketBreakdown,
+      banquetTickets
     });
   } catch (error) {
     console.error('Error fetching proclamation banquet data:', error);

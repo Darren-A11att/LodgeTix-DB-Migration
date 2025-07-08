@@ -1,31 +1,46 @@
 {
-  "name": "mongodb-explorer",
-  "version": "0.1.0",
-  "private": true,
+  "name": "lodgetix---reconcile",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "dev": "node server.js",
-    "dev:next": "next dev -p 3005",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "build": "tsc",
+    "dev": "node scripts/start-dev.js",
+    "dev:concurrent": "concurrently \"npm run server\" \"npm run mongodb-explorer\"",
+    "start": "node dist/index.js",
+    "migrate": "ts-node src/migrate.ts",
+    "import-payments": "ts-node src/import-payments.ts",
+    "server": "ts-node src/server.ts",
+    "server:dev": "nodemon --exec ts-node src/server.ts --watch src",
+    "mongodb-explorer": "cd mongodb-explorer && npm run dev",
+    "migration-viewer": "cd migration-viewer && npm run dev",
+    "start:all": "node scripts/start-dev.js",
+    "dev:all": "concurrently \"npm run server:dev\" \"npm run mongodb-explorer\" \"npm run migration-viewer\"",
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.0.4",
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.4",
-    "@supabase/supabase-js": "^2.50.2",
-    "axios": "^1.10.0",
-    "dotenv": "^17.0.1",
-    "next": "15.3.4",
-    "puppeteer": "^24.11.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "resend": "^4.6.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@supabase/supabase-js": "^2.50.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/pg": "^8.15.4",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.6.0",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "mongodb": "^6.17.0",
+    "pg": "^8.16.2",
+    "uuid": "^11.1.0"
   }
 }
