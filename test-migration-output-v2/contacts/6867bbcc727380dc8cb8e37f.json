@@ -1,0 +1,59 @@
+{
+  "_id": "6867bbcc727380dc8cb8e37f",
+  "contactId": "ef48d894-2f85-4917-82ef-6393de0786bc",
+  "firstName": "David",
+  "lastName": "Baker",
+  "preferredName": null,
+  "title": null,
+  "email": "david@icucameras.com.au",
+  "phone": "+61404021551",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "12A Appleberry Close, Bomaderry NSW, Australia",
+    "line2": null,
+    "city": "BOMADERRY, NSW, 2541",
+    "state": "New South Wales",
+    "postcode": "2541",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc5c": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 10,
+      "registeredAt": "2025-06-23T07:59:44.144150Z"
+    },
+    "685beba0b2fa6b693adabc60": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 10,
+      "registeredAt": "2025-06-23T08:21:11.992371Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-23T07:59:44.144150Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

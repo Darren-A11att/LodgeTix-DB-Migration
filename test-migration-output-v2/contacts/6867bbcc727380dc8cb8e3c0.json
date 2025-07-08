@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3c0",
+  "contactId": "535d31cf-f674-45e2-8c64-762b0aa794c4",
+  "firstName": "Peter",
+  "lastName": "Stoneman",
+  "preferredName": null,
+  "title": null,
+  "email": "peter@stoneman.id.au",
+  "phone": "+61428464605",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "84 Hughes St",
+    "line2": null,
+    "city": "Kelso",
+    "state": "New South Wales",
+    "postcode": "2795",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc7b": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-19T22:26:20.540698Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-19T22:26:20.540698Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

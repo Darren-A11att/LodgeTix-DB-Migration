@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e412",
+  "userId": "92d4313d-4278-4bf9-b975-6b65a88e4fc6",
+  "contactId": "3e700b66-ba87-48cf-bec3-5df618700198",
+  "email": "harrisbnp@gmail.com",
+  "phone": "+61439898700",
+  "password": "$2b$10$PG9ouU2/wCYBgqo9lnKpJ.y52NsCm6zBkzdlzOpH68oJF1S.2aZI6",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-20T04:19:14.418396Z",
+  "updatedAt": "2025-07-04T11:32:31.653Z"
+}

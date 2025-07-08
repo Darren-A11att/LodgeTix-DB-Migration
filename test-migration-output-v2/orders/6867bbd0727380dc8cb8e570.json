@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e570",
+  "orderId": "61fbeb30-fdc0-4761-8573-549bec7b8d7f",
+  "orderNumber": "IND-401063XD",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "535d31cf-f674-45e2-8c64-762b0aa794c4",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "535d31cf-f674-45e2-8c64-762b0aa794c4",
+    "name": "Peter Stoneman",
+    "email": "peter@stoneman.id.au",
+    "phone": "+61428464605"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e571",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "45f15547-0429-4fac-a0b0-b72a9e9bcbcf"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "45f15547-0429-4fac-a0b0-b72a9e9bcbcf",
+      "contactId": null,
+      "firstName": "Peter",
+      "lastName": "Stoneman",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e571",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1.00"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.47"
+    },
+    "balance": {
+      "$numberDecimal": "-1.4699999999999989"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Peter Stoneman",
+    "email": "peter@stoneman.id.au",
+    "phone": "+61428464605",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-19T22:26:20.540698Z",
+    "createdBy": "60861b27-ee45-4413-a860-e8ec62d0a6e3",
+    "updatedAt": "2025-06-19T22:26:23.586000Z",
+    "updatedBy": null
+  }
+}

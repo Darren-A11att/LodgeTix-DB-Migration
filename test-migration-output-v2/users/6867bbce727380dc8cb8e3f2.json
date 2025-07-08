@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e3f2",
+  "userId": "1559af8a-d885-40b7-9680-6ec6e620a5cc",
+  "contactId": "2485213e-6a89-4c6e-b43f-35d58f721295",
+  "email": "ian@sybmore.com.au",
+  "phone": null,
+  "password": "$2b$10$jKlZhcgWlRkhvif4WXIXn./dltXHc1KFg1kL.PhAF0gb2.FyulP7m",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-25T06:58:07.571933Z",
+  "updatedAt": "2025-07-04T11:32:30.065Z"
+}

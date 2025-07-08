@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e469",
+  "orderId": "19e4d8a0-a4e7-4c7b-b7f8-c6005be09cc8",
+  "orderNumber": "IND-996479KN",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "5b747a0a-8a9b-4bcb-9a34-cceb0c7fa8a2",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "5b747a0a-8a9b-4bcb-9a34-cceb0c7fa8a2",
+    "name": "Stan Allatt",
+    "email": "stan@allatt.me",
+    "phone": "+61418231401"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e46a",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "5f9e36b0-40d4-4b40-9ef8-2e2061716f6d"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "5f9e36b0-40d4-4b40-9ef8-2e2061716f6d",
+      "contactId": null,
+      "firstName": "Stan",
+      "lastName": "Allatt",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e46a",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "1.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.34"
+    },
+    "platformFee": {
+      "$numberDecimal": "0.05"
+    },
+    "total": {
+      "$numberDecimal": "1"
+    },
+    "paid": {
+      "$numberDecimal": "2.34"
+    },
+    "balance": {
+      "$numberDecimal": "-1.3399999999999999"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Stan Allatt",
+    "email": "stan@allatt.me",
+    "phone": "+61418231401",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T02:24:47.093005Z",
+    "createdBy": "350f7622-51c6-4632-85af-a89d55d2731a",
+    "updatedAt": "2025-06-17T02:24:54.107000Z",
+    "updatedBy": null
+  }
+}

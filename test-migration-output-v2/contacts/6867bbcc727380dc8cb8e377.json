@@ -1,0 +1,45 @@
+{
+  "_id": "6867bbcc727380dc8cb8e377",
+  "contactId": "6583a79f-077a-475d-b5a2-146fbfd40db0",
+  "firstName": "Nelson",
+  "lastName": "Montalbo",
+  "preferredName": null,
+  "title": "Bro",
+  "email": "liza_jeanl@hotmail.com",
+  "phone": null,
+  "mobile": "+61416399034",
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc4a": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 0,
+      "registeredAt": "2025-06-09T12:05:40.255348Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-09T12:05:40.255348Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

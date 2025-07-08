@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3d9",
+  "userId": "999adc55-5f7e-4c85-9fad-8765916d8be2",
+  "contactId": "a04f8908-ec4c-41e8-b2c8-6a3099418530",
+  "email": "jrmelville1@outlook.com",
+  "phone": "+61467596643",
+  "password": "$2b$10$hjaJ4S84s0LHkl3bu0EaFOZJYQOEMcve1ywUiXSHwLmkrmnJl6PYi",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-21T01:01:23.916874Z",
+  "updatedAt": "2025-07-04T11:32:28.793Z"
+}

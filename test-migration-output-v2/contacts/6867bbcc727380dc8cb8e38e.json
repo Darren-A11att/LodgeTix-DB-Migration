@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e38e",
+  "contactId": "1ac50710-9762-4630-b03f-51a749c156c5",
+  "firstName": "Emmanuel",
+  "lastName": "Rivera",
+  "preferredName": null,
+  "title": null,
+  "email": "aporivera@yahoo.com",
+  "phone": "+61434895908",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "9/80",
+    "line2": null,
+    "city": "Old Pittwater Road brookvake",
+    "state": "",
+    "postcode": "2100",
+    "country": "Australia"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc3c": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 5,
+      "registeredAt": "2025-06-18T04:46:20.170540Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-18T04:46:20.170540Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

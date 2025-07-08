@@ -1,0 +1,45 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3a8",
+  "contactId": "8821fcdc-eb0a-4d6c-bd87-07b1339e874e",
+  "firstName": "Franciscuss",
+  "lastName": "Sunga",
+  "preferredName": null,
+  "title": "RW Bro",
+  "email": "lodgehoracethompsonryde134@gmail.com",
+  "phone": null,
+  "mobile": "+61400956671",
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc23": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 0,
+      "registeredAt": "2025-06-17T03:14:09.211544Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T03:14:09.211544Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3cf",
+  "userId": "979d9df9-617f-49b1-9af9-d841a6ea8fbb",
+  "contactId": "25e9997e-ff44-4552-9514-18bdc34a60d1",
+  "email": "test@allatt.me",
+  "phone": "+61438871124",
+  "password": "$2b$10$Jb5Y75mtzZASrRJc.8KUbOb8bKOqnJMnJu4WW0R8CmYDu.bMUoqZS",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-12T23:08:58.687360Z",
+  "updatedAt": "2025-07-04T11:32:28.287Z"
+}

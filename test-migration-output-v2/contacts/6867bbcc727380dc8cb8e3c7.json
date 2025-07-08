@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3c7",
+  "contactId": "ae7ab202-1bce-4889-87dd-2406ff1e40bc",
+  "firstName": "John",
+  "lastName": "Riomalos",
+  "preferredName": null,
+  "title": null,
+  "email": "johnlegisllb@icloud.com",
+  "phone": "+61475606805",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "5 Burke Road",
+    "line2": null,
+    "city": "Lalor Park",
+    "state": "New South Wales",
+    "postcode": "2147",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc64": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-23T12:42:06.147696Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-23T12:42:06.147696Z",
+  "updatedAt": "2025-07-04T11:32:28.124Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

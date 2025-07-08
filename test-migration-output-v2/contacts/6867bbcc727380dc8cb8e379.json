@@ -1,0 +1,59 @@
+{
+  "_id": "6867bbcc727380dc8cb8e379",
+  "contactId": "ce18361a-2ceb-41b4-ae56-72de19e95516",
+  "firstName": "Justin",
+  "lastName": "Dorward",
+  "preferredName": null,
+  "title": null,
+  "email": "dory_1982@hotmail.com",
+  "phone": "+61418266924",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "10/4 Lamond Drv",
+    "line2": null,
+    "city": "Turramurra",
+    "state": "New South Wales",
+    "postcode": "2074",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc34": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-17T04:53:01.957925Z"
+    },
+    "685beba0b2fa6b693adabc29": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-17T04:50:18.133483Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T04:53:01.957925Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

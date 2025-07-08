@@ -1,0 +1,81 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4cd",
+  "orderId": "fa9818c8-503f-4e73-9b98-c69ad4517f3d",
+  "orderNumber": "LDG-875720VU",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "organisation",
+    "contactId": "a1454084-7326-4b64-bdb6-e475cc1625c2",
+    "organisationId": "78e21d2d-a69e-494e-b3c0-0b25f952a238"
+  },
+  "booking": {
+    "contactId": "a1454084-7326-4b64-bdb6-e475cc1625c2",
+    "name": "Joe Corrigan",
+    "email": "joecorrigan@mac.com",
+    "phone": "+61416042338"
+  },
+  "lineItems": [],
+  "attendees": [],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "0"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "20.54"
+    },
+    "platformFee": {
+      "$numberDecimal": "20.00"
+    },
+    "total": {
+      "$numberDecimal": "1150"
+    },
+    "paid": {
+      "$numberDecimal": "1190.54"
+    },
+    "balance": {
+      "$numberDecimal": "-40.539999999999964"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Joe Corrigan",
+    "email": "joecorrigan@mac.com",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": "The Prince Charles Edward Stuart Lodge No. 1745"
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T06:38:05.437377Z",
+    "createdBy": null,
+    "updatedAt": "2025-06-17T06:38:05.437377Z",
+    "updatedBy": null
+  }
+}

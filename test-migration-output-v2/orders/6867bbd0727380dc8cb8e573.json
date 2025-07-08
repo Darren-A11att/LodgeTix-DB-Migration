@@ -1,0 +1,92 @@
+{
+  "_id": "6867bbd0727380dc8cb8e573",
+  "orderId": "a26b1635-21ab-443b-a6f3-4f65a16f54eb",
+  "orderNumber": "LDG-643031YX",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "organisation",
+    "contactId": null,
+    "organisationId": "78e21d2d-a69e-494e-b3c0-0b25f952a238"
+  },
+  "booking": null,
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e574",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "1150"
+      },
+      "totalPrice": {
+        "$numberDecimal": "1150"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "1150.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "3.45"
+    },
+    "total": {
+      "$numberDecimal": "1150"
+    },
+    "paid": {
+      "$numberDecimal": "1179.4"
+    },
+    "balance": {
+      "$numberDecimal": "-29.40000000000009"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-22T15:22:42.159507Z",
+    "createdBy": null,
+    "updatedAt": "2025-06-22T15:22:42.159507Z",
+    "updatedBy": null
+  }
+}

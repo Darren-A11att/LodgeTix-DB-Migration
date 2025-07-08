@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e486",
+  "orderId": "c042abf8-6b46-46f9-99e9-b96d3462cf84",
+  "orderNumber": "IND-722590NM",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "ecf333cc-497a-4650-be06-971e18084af7",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "ecf333cc-497a-4650-be06-971e18084af7",
+    "name": "Neil Milton",
+    "email": "neil.milton637@gmail.com",
+    "phone": "+61497073942"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e487",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "80f84769-f0e7-4e2a-b561-4705d046cb30"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "80f84769-f0e7-4e2a-b561-4705d046cb30",
+      "contactId": null,
+      "firstName": "Neil",
+      "lastName": "Milton",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e487",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Neil Milton",
+    "email": "neil.milton637@gmail.com",
+    "phone": "+61497073942",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T06:11:54.093143Z",
+    "createdBy": "c28311fd-fc4f-4a3a-b55a-f794caa46724",
+    "updatedAt": "2025-06-17T06:12:01.125000Z",
+    "updatedBy": null
+  }
+}

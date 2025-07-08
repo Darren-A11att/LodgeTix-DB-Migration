@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4fb",
+  "orderId": "58769e43-878b-43b9-bb81-25149737e314",
+  "orderNumber": "IND-570051EQ",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "c023b4ff-66c3-4df2-a715-f9a9624aca38",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "c023b4ff-66c3-4df2-a715-f9a9624aca38",
+    "name": "KAAN OZER",
+    "email": "hkaanozer@gmail.com",
+    "phone": "+61413213333"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4fc",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "420bfa09-33bd-4224-a8d3-19847cf57ddc"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "420bfa09-33bd-4224-a8d3-19847cf57ddc",
+      "contactId": null,
+      "firstName": "KAAN",
+      "lastName": "OZER",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4fc",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "KAAN OZER",
+    "email": "hkaanozer@gmail.com",
+    "phone": "+61413213333",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T05:04:07.624475Z",
+    "createdBy": "64e70d83-87bb-4729-af58-7412b544fbea",
+    "updatedAt": "2025-06-17T05:04:14.556000Z",
+    "updatedBy": null
+  }
+}

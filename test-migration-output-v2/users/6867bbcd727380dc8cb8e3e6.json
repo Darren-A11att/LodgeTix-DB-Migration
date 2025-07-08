@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcd727380dc8cb8e3e6",
+  "userId": "2abd2ae9-abb3-4b03-8af4-8cab7cbc2a4d",
+  "contactId": "5a6e6ac3-f485-49de-aa23-4ee61f4fb6f8",
+  "email": "kristonfabul028@gmail.com",
+  "phone": "+61414960426",
+  "password": "$2b$10$7N0Xupwrk0vA7.6XQSONHOnJ1.tnEHM.6ZAXEgPN6QR7wnpEYDQaG",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T22:42:17.583401Z",
+  "updatedAt": "2025-07-04T11:32:29.443Z"
+}

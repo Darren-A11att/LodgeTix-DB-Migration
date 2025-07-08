@@ -1,0 +1,130 @@
+{
+  "_id": "6867bbd0727380dc8cb8e566",
+  "orderId": "73d6efeb-a9bd-4981-acad-882728655de2",
+  "orderNumber": "IND-044917YO",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "650337d9-b57e-48ec-943d-26a488fa2947",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "650337d9-b57e-48ec-943d-26a488fa2947",
+    "name": "Rod  Cohen",
+    "email": "rod@cohenco.com.au",
+    "phone": "+6141426616"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e567",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "05f4c9cf-884b-4b9c-8189-341c74a2f202"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e568",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "05f4c9cf-884b-4b9c-8189-341c74a2f202",
+      "contactId": null,
+      "firstName": "Rod",
+      "lastName": "Cohen",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e567",
+      "dietaryRequirements": [
+        "No Garlic, No Onon, No Lactose"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "90.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "2.88"
+    },
+    "platformFee": {
+      "$numberDecimal": "4.5"
+    },
+    "total": {
+      "$numberDecimal": "90"
+    },
+    "paid": {
+      "$numberDecimal": "92.88"
+    },
+    "balance": {
+      "$numberDecimal": "-2.8799999999999955"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Rod  Cohen",
+    "email": "rod@cohenco.com.au",
+    "phone": "+6141426616",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-18T06:47:38.689210Z",
+    "createdBy": "7611cd7e-ba81-46e2-900e-3d20b67d28c7",
+    "updatedAt": "2025-06-18T06:47:44.923000Z",
+    "updatedBy": null
+  }
+}

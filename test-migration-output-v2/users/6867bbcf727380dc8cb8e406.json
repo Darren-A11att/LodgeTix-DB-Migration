@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e406",
+  "userId": "d11b6e4f-c778-4661-9dfe-4510f61b344e",
+  "contactId": "ff405cb0-ab8d-4944-b1da-4be46cd2cae0",
+  "email": "brontmed@tpg.com.au",
+  "phone": "+61412876029",
+  "password": "$2b$10$A41u16xJzrC273ToO7lSLOAbKxFoeINAFIbS/s9D7eZ4q3f1ZS4FO",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T23:52:35.489353Z",
+  "updatedAt": "2025-07-04T11:32:31.058Z"
+}

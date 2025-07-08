@@ -1,0 +1,97 @@
+{
+  "_id": "6867bbd0727380dc8cb8e459",
+  "orderId": "31a01f72-cb8d-47e3-9140-d1af850d6ed6",
+  "orderNumber": "LDG-499228VV",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "organisation",
+    "contactId": "d9b089a7-eab0-4c46-ad71-4d2a9ea002a0",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "d9b089a7-eab0-4c46-ad71-4d2a9ea002a0",
+    "name": "Val Moran",
+    "email": "valm0716@gmail.com",
+    "phone": "+61431281332"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e45a",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 10,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "0.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "0"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "0"
+    },
+    "balance": {
+      "$numberDecimal": "0"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Val Moran",
+    "email": "valm0716@gmail.com",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": "Lodge Celebration of Fairfield No. 345"
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-09T00:10:16.893944Z",
+    "createdBy": "9f314f40-81ca-4add-af47-fa79c05091d5",
+    "updatedAt": "2025-06-09T00:10:16.893944Z",
+    "updatedBy": null
+  }
+}

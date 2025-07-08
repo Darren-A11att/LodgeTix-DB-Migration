@@ -1,0 +1,127 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4be",
+  "orderId": "56dd7885-7d87-47ea-8f13-756b9167489f",
+  "orderNumber": "IND-674554ID",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "65cb0e6f-7b09-4d51-ba1d-cecd36c76b29",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "65cb0e6f-7b09-4d51-ba1d-cecd36c76b29",
+    "name": "Brian Harvey",
+    "email": "brian.harvey1@bigpond.com",
+    "phone": "+61419411976"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4bf",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "a29251b8-e8aa-434b-a3b8-737f7b3e2da4",
+        "cc124eb5-4d9f-4cf8-8c65-567d6e448c42"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "a29251b8-e8aa-434b-a3b8-737f7b3e2da4",
+      "contactId": null,
+      "firstName": "Brian",
+      "lastName": "Harvey",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4bf",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "cc124eb5-4d9f-4cf8-8c65-567d6e448c42",
+      "contactId": null,
+      "firstName": "Catherine",
+      "lastName": "Harvey",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4bf",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "40.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "2.01"
+    },
+    "platformFee": {
+      "$numberDecimal": "2"
+    },
+    "total": {
+      "$numberDecimal": "40"
+    },
+    "paid": {
+      "$numberDecimal": "42.01"
+    },
+    "balance": {
+      "$numberDecimal": "-2.009999999999998"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Brian Harvey",
+    "email": "brian.harvey1@bigpond.com",
+    "phone": "+61419411976",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T22:32:59.318368Z",
+    "createdBy": "d72c47a9-40c7-4bfb-aad7-ed9263e3218e",
+    "updatedAt": "2025-06-17T22:34:30.413000Z",
+    "updatedBy": null
+  }
+}

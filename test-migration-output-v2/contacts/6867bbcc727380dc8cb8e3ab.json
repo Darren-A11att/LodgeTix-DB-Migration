@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3ab",
+  "contactId": "9d1cf732-c60f-436a-aa25-ad3c263119cf",
+  "firstName": "Janice ",
+  "lastName": "Cruz ",
+  "preferredName": null,
+  "title": null,
+  "email": "jajamlava@yahoo.com",
+  "phone": "+61439780501",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "49 Louis street ",
+    "line2": null,
+    "city": "Granville ",
+    "state": "New South Wales",
+    "postcode": "2142",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc58": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 5,
+      "registeredAt": "2025-06-21T04:32:10.239267Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-21T04:32:10.239267Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

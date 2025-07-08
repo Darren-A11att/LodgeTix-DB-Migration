@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3d0",
+  "userId": "db1a0a40-58f7-42b4-bc9f-34810391adc0",
+  "contactId": "6583a79f-077a-475d-b5a2-146fbfd40db0",
+  "email": "liza_jeanl@hotmail.com",
+  "phone": null,
+  "password": "$2b$10$BuD7uXyTb6NN8n7SKcz9aOBA8X0vhD0qmR3zitk6BsvyzPr2V82FS",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-09T12:05:40.255348Z",
+  "updatedAt": "2025-07-04T11:32:28.344Z"
+}

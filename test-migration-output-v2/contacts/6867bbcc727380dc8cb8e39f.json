@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e39f",
+  "contactId": "67f46b84-a3b6-4b2c-9344-28b85478179a",
+  "firstName": "Amitava",
+  "lastName": "Sen",
+  "preferredName": null,
+  "title": null,
+  "email": "amit@sen.id.au",
+  "phone": "+61418446824",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "251 Marsden Road",
+    "line2": null,
+    "city": "Carlingford",
+    "state": "New South Wales",
+    "postcode": "2118",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc51": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-17T07:24:13.362398Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T07:24:13.362398Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

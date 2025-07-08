@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcd727380dc8cb8e3e9",
+  "userId": "ff958988-c96d-43a2-8a83-0fea65976f7e",
+  "contactId": "8b73afaf-c5d6-4996-9100-01efad53daec",
+  "email": "potts53@hotmail.com",
+  "phone": "+61438472927",
+  "password": "$2b$10$M/9V9TQha.Hz89uYgFM06ezOXYl6VCIs5KAlQphB7m6lCFKxMSLY2",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T07:07:48.559866Z",
+  "updatedAt": "2025-07-04T11:32:29.601Z"
+}

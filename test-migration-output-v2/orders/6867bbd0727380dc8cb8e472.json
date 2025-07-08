@@ -1,0 +1,105 @@
+{
+  "_id": "6867bbd0727380dc8cb8e472",
+  "orderId": "9fa97e59-2636-4d23-b85b-6e5db0a79725",
+  "orderNumber": "IND-013387DT",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "8f5301eb-455d-4161-bcde-e441a6a1a33b",
+      "contactId": "3c3375e7-df21-4244-9a5b-28df997a516f",
+      "firstName": "Ross",
+      "lastName": "Mylonas",
+      "email": "rmylonas@hotmail.com",
+      "phone": "+61403277443",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "d259f8bd-79f9-4887-be07-8f8b07e66d78",
+      "contactId": null,
+      "firstName": "Sofia",
+      "lastName": "Mylonas",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [
+        "vegetarian"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "270.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "5.07"
+    },
+    "platformFee": {
+      "$numberDecimal": "13.5"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "280.47"
+    },
+    "balance": {
+      "$numberDecimal": "-280.47"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-10T01:14:55.093572Z",
+    "createdBy": "084c7102-7277-4f56-bd72-55348ace0d2e",
+    "updatedAt": "2025-06-10T01:15:34.979000Z",
+    "updatedBy": null
+  }
+}

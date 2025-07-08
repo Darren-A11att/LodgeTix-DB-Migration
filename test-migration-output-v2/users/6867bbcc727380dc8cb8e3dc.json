@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3dc",
+  "userId": "76223338-15fc-484f-ac1a-54443e4c7593",
+  "contactId": "45b68e4d-e2cc-49fc-b36b-8da9367cbb77",
+  "email": "alexparker8@bigpond.com",
+  "phone": "+61402393345",
+  "password": "$2b$10$lF3zdPkXFWMzhlesQZv/8uh4trj.E3Rbc6NIeOdwX/kkuBnIdVojO",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-14T00:56:06.321196Z",
+  "updatedAt": "2025-07-04T11:32:28.941Z"
+}

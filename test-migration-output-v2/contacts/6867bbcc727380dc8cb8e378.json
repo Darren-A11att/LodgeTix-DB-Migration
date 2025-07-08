@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e378",
+  "contactId": "b4f4455e-8ba1-4a49-9a95-f93bfc0d4a0b",
+  "firstName": "Lucas",
+  "lastName": "Tomic",
+  "preferredName": null,
+  "title": null,
+  "email": "ltb4489@gmail.com",
+  "phone": null,
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "162/122 Culloden rd",
+    "line2": null,
+    "city": "Marsfield",
+    "state": "",
+    "postcode": "2122",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc2c": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-13T01:56:47.910055Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-13T01:56:47.910055Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

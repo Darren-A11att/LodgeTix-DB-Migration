@@ -1,0 +1,107 @@
+{
+  "_id": "6867bbd0727380dc8cb8e452",
+  "orderId": "fb50644a-0db7-48bf-a486-aac416f95939",
+  "orderNumber": "IND-269036DU",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "996a8194-8746-44c6-9a80-f1f82b488f45",
+      "contactId": null,
+      "firstName": "Ruth",
+      "lastName": "Loopez",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [
+        "Lamb & Beef Only Well Done No Blood No Gravy No Sauce No Pork No Chicken"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "3ee8f373-2aff-42da-84e9-f63e2f9aaad5",
+      "contactId": "696502d3-b7fd-4d26-9933-828aa7425e00",
+      "firstName": "Emmanuel",
+      "lastName": "Konitopoulos",
+      "email": "arheabexley@gmail.com",
+      "phone": "+61411724313",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [
+        "Lamb & Beef Only Well Done No Blood No Gravy No Sauce No Pork No Chicken"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "270.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "5.07"
+    },
+    "platformFee": {
+      "$numberDecimal": "13.5"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "280.47"
+    },
+    "balance": {
+      "$numberDecimal": "-280.47"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-08T08:38:57.545773Z",
+    "createdBy": "03cd5f87-aab6-4ebf-943f-fe39ec3a0a5c",
+    "updatedAt": "2025-06-08T08:39:02.468000Z",
+    "updatedBy": null
+  }
+}

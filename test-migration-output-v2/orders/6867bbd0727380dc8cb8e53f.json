@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e53f",
+  "orderId": "4d7d0d40-9b60-4422-884e-42413dbb661c",
+  "orderNumber": "IND-135650VH",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "a31237e3-f61d-42ff-b966-7eb214d90777",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "a31237e3-f61d-42ff-b966-7eb214d90777",
+    "name": "George Marcelino",
+    "email": "georgejrmarcelino19@yahoo.com",
+    "phone": "+61450234631"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e540",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "94f98a1a-5a09-48e8-85d7-cca0cdc3acb0"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "94f98a1a-5a09-48e8-85d7-cca0cdc3acb0",
+      "contactId": null,
+      "firstName": "George",
+      "lastName": "Marcelino",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e540",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "George Marcelino",
+    "email": "georgejrmarcelino19@yahoo.com",
+    "phone": "+61450234631",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-18T02:23:29.168802Z",
+    "createdBy": "9728ab29-419b-4125-87b9-90979270ce39",
+    "updatedAt": "2025-06-18T02:23:35.453000Z",
+    "updatedBy": null
+  }
+}

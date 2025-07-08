@@ -1,0 +1,270 @@
+{
+  "_id": "6867bbd0727380dc8cb8e44d",
+  "orderId": "3946914e-8bf0-4989-8c45-0b32cd2309f7",
+  "orderNumber": "IND-128022YC",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "ef48d894-2f85-4917-82ef-6393de0786bc",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "ef48d894-2f85-4917-82ef-6393de0786bc",
+    "name": "David Baker",
+    "email": "david@icucameras.com.au",
+    "phone": "+61404021551"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e44e",
+      "productId": "567fa008-40de-4f87-89f5-900933f898b2",
+      "productName": "Event",
+      "variationId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+      "variationName": "Standard Ticket",
+      "quantity": 8,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "6519c601-1a8f-4be9-b16a-6f14cf8af2fe",
+        "9970bc6f-25b8-4974-b818-fef36ff2efef",
+        "fdd1edb5-3389-46dc-ad0a-c2ac71979aca",
+        "4f74ad12-7edd-4abe-854b-1229332c3b4b",
+        "cd34126b-9221-4698-9580-6d359707d429",
+        "92b26200-7af4-45e3-a3b8-1a86ae41f91f",
+        "49a747cf-1459-424a-b8b6-9441d85b377a",
+        "dd4520f6-9ce3-4a60-86e5-b805115b7415"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e44f",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 10,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "76562929-987f-4e2f-aa05-56cc4324978d",
+        "53389bf4-a17b-4f09-8b61-782bedd21a38"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e450",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 10,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "6519c601-1a8f-4be9-b16a-6f14cf8af2fe",
+      "contactId": null,
+      "firstName": "David",
+      "lastName": "Baker",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "9970bc6f-25b8-4974-b818-fef36ff2efef",
+      "contactId": null,
+      "firstName": "Ory",
+      "lastName": "Purhonen",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "fdd1edb5-3389-46dc-ad0a-c2ac71979aca",
+      "contactId": null,
+      "firstName": "Ash",
+      "lastName": "Bright",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "4f74ad12-7edd-4abe-854b-1229332c3b4b",
+      "contactId": null,
+      "firstName": "Brad",
+      "lastName": "Scotcher",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "cd34126b-9221-4698-9580-6d359707d429",
+      "contactId": null,
+      "firstName": "Jen",
+      "lastName": "Scotcher",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "92b26200-7af4-45e3-a3b8-1a86ae41f91f",
+      "contactId": null,
+      "firstName": "Annastasia",
+      "lastName": "Hall",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "49a747cf-1459-424a-b8b6-9441d85b377a",
+      "contactId": null,
+      "firstName": "Sally",
+      "lastName": "Bridgford",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "dd4520f6-9ce3-4a60-86e5-b805115b7415",
+      "contactId": null,
+      "firstName": "Kane",
+      "lastName": "Hall",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "76562929-987f-4e2f-aa05-56cc4324978d",
+      "contactId": null,
+      "firstName": "Len",
+      "lastName": "Hambleton",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "53389bf4-a17b-4f09-8b61-782bedd21a38",
+      "contactId": null,
+      "firstName": "Anthony",
+      "lastName": "Guttang",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e44f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "1950.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "5.85"
+    },
+    "total": {
+      "$numberDecimal": "1950"
+    },
+    "paid": {
+      "$numberDecimal": "1999.85"
+    },
+    "balance": {
+      "$numberDecimal": "-49.84999999999991"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "David Baker",
+    "email": "david@icucameras.com.au",
+    "phone": "+61404021551",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-23T07:59:44.144150Z",
+    "createdBy": "53f30e08-b3b4-4887-98c9-e1c86d668107",
+    "updatedAt": "2025-06-23T07:59:47.885000Z",
+    "updatedBy": null
+  }
+}

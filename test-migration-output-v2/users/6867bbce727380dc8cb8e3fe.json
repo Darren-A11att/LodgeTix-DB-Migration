@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e3fe",
+  "userId": "3b1ca3e7-a1ae-411f-bd8e-35df7df85762",
+  "contactId": "666155e2-22de-46d1-ab8b-619db3c78401",
+  "email": "jonbonjovi.macaraeg@gmail.com",
+  "phone": "+61456899334",
+  "password": "$2b$10$0SWtNc0ObcqfxsPwmWwLheblg5yeTrwgc17/P0EbT9mZyP8oKX31q",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-18T07:35:52.315247Z",
+  "updatedAt": "2025-07-04T11:32:30.661Z"
+}

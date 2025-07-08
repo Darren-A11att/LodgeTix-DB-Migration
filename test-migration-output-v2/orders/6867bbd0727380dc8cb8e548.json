@@ -1,0 +1,115 @@
+{
+  "_id": "6867bbd0727380dc8cb8e548",
+  "orderId": "51eacbd7-fa5b-420c-a489-2a13759dc91d",
+  "orderNumber": "IND-681795EL",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "e96aa14a-5807-4ed3-9f38-6faeb05348d7",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "e96aa14a-5807-4ed3-9f38-6faeb05348d7",
+    "name": "Sean Hogan",
+    "email": "sdhogan33@hotmail.com",
+    "phone": "+61438691050"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e549",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "975c4174-c5eb-47b3-bb1c-b070a2f227b6"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "975c4174-c5eb-47b3-bb1c-b070a2f227b6",
+      "contactId": null,
+      "firstName": "Sean",
+      "lastName": "Hogan",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e549",
+      "dietaryRequirements": [
+        "dairy-free"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1.00"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.47"
+    },
+    "balance": {
+      "$numberDecimal": "-1.4699999999999989"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Sean Hogan",
+    "email": "sdhogan33@hotmail.com",
+    "phone": "+61438691050",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-19T23:14:42.240587Z",
+    "createdBy": "33b839c2-57ef-4490-88b4-1da8eae8e845",
+    "updatedAt": "2025-06-19T23:14:45.027000Z",
+    "updatedBy": null
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e530",
+  "orderId": "541c6e6c-4a46-4794-96a5-9cb89d167f15",
+  "orderNumber": "ORD-1751628752239",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "3128a88c-dd71-47dc-97a6-b7622eaad02c",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "3128a88c-dd71-47dc-97a6-b7622eaad02c",
+    "name": "Darren Allatt",
+    "email": "darren@allatt.me",
+    "phone": "+61438871124"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e531",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "6dab2dfd-9803-4340-b8e3-b58589c8ac41"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "6dab2dfd-9803-4340-b8e3-b58589c8ac41",
+      "contactId": null,
+      "firstName": "Darren",
+      "lastName": "Allatt",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e531",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "20"
+    },
+    "balance": {
+      "$numberDecimal": "0"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Darren Allatt",
+    "email": "darren@allatt.me",
+    "phone": "+61438871124",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-19T13:24:55.446544Z",
+    "createdBy": "c4191ab0-eb94-4850-b607-4bcff8f7ab84",
+    "updatedAt": "2025-06-19T13:24:55.446544Z",
+    "updatedBy": null
+  }
+}

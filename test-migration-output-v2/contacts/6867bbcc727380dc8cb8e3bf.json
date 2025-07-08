@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3bf",
+  "contactId": "8c961ed0-26a2-4900-a7e3-67af3a874212",
+  "firstName": "Andrew",
+  "lastName": "Earney",
+  "preferredName": null,
+  "title": null,
+  "email": "earneyfamily@bigpond.com",
+  "phone": "+61406743182",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "486 Slimbridge Road",
+    "line2": null,
+    "city": "Bedgerabong",
+    "state": "New South Wales",
+    "postcode": "2871",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc79": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-19T21:49:29.648640Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-19T21:49:29.648640Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

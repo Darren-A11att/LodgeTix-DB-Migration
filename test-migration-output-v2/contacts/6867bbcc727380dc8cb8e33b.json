@@ -1,0 +1,56 @@
+{
+  "_id": "6867bbcc727380dc8cb8e33b",
+  "contactId": "e37dd032-b585-43f2-9320-85cda4d6e230",
+  "firstName": "Paul",
+  "lastName": "Schultz ",
+  "preferredName": null,
+  "title": null,
+  "email": "paulkschultz@gmail.com",
+  "phone": "+61407136823",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc2b": {
+      "role": "attendee",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "eventId": null,
+      "eventName": null,
+      "tableNumber": null,
+      "seatNumber": null,
+      "registeredAt": "2025-06-12T23:08:58.687360Z",
+      "registeredBy": null
+    },
+    "685beba0b2fa6b693adabc40": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 0,
+      "registeredAt": "2025-06-07T15:22:39.444756Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "attendee",
+  "createdAt": "2025-06-07T15:33:14.086772Z",
+  "updatedAt": "2025-06-07T15:33:14.086772Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

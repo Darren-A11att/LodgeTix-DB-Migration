@@ -1,0 +1,45 @@
+{
+  "_id": "6867bbcc727380dc8cb8e381",
+  "contactId": "d9b089a7-eab0-4c46-ad71-4d2a9ea002a0",
+  "firstName": "Val",
+  "lastName": "Moran",
+  "preferredName": null,
+  "title": "VW Bro",
+  "email": "valm0716@gmail.com",
+  "phone": null,
+  "mobile": "+61431281332",
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc12": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 0,
+      "registeredAt": "2025-06-09T00:10:16.893944Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-09T00:10:16.893944Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

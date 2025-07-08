@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3c9",
+  "contactId": "742c53d8-b37a-4160-8fe2-0b0953754061",
+  "firstName": "Eric",
+  "lastName": "Amador",
+  "preferredName": null,
+  "title": null,
+  "email": "ericamador05@gmail.com",
+  "phone": null,
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "19 Olive Street",
+    "line2": null,
+    "city": "Asquith",
+    "state": "New South Wales",
+    "postcode": "2077",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc7a": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-22T13:17:42.189957Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-22T13:17:42.189957Z",
+  "updatedAt": "2025-07-04T11:32:28.124Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

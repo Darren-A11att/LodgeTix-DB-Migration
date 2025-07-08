@@ -1,0 +1,103 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4c6",
+  "orderId": "9c7945f9-1786-45bd-a093-8224449c3ef1",
+  "orderNumber": "IND-175407QT",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "c48ce04f-f90c-48da-8bcb-806e9ce40d67",
+      "contactId": "f652b8a9-3aee-4418-981b-a016c13081be",
+      "firstName": "John ",
+      "lastName": "Lazarou ",
+      "email": "lazaroujohn@yahoo.com.au",
+      "phone": "+61400300480",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "dfbdda54-a41e-4da2-bf00-850fc2c8b1bc",
+      "contactId": "f652b8a9-3aee-4418-981b-a016c13081be",
+      "firstName": "Athanasia",
+      "lastName": "Lazarou",
+      "email": "lazaroujohn@yahoo.com.au",
+      "phone": "+61400300480",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "Na",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "250.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "9.56"
+    },
+    "platformFee": {
+      "$numberDecimal": "12.5"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "264.56"
+    },
+    "balance": {
+      "$numberDecimal": "-264.56"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-10T03:53:38.073448Z",
+    "createdBy": "6b6b3bb8-7035-4c5e-bf56-13295149adbd",
+    "updatedAt": "2025-06-10T03:54:43.148000Z",
+    "updatedBy": null
+  }
+}

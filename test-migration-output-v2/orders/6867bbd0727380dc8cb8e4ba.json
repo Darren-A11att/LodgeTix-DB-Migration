@@ -1,0 +1,142 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4ba",
+  "orderId": "55b6f6ec-9664-41dd-8f62-fa4fde0ac58b",
+  "orderNumber": "IND-626222LS",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "8b73afaf-c5d6-4996-9100-01efad53daec",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "8b73afaf-c5d6-4996-9100-01efad53daec",
+    "name": "Reg Potter",
+    "email": "potts53@hotmail.com",
+    "phone": "+61438472927"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4bb",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "e1e41dba-0af4-406f-898d-e4609cfe88b8",
+        "dad19186-76d8-4bc4-b34a-d72396cc0e55"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4bc",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "e1e41dba-0af4-406f-898d-e4609cfe88b8",
+      "contactId": null,
+      "firstName": "Reg",
+      "lastName": "Potter",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4bb",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "dad19186-76d8-4bc4-b34a-d72396cc0e55",
+      "contactId": null,
+      "firstName": "Mandy",
+      "lastName": "Potter",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4bb",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "270.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "7.72"
+    },
+    "platformFee": {
+      "$numberDecimal": "13.5"
+    },
+    "total": {
+      "$numberDecimal": "270"
+    },
+    "paid": {
+      "$numberDecimal": "277.72"
+    },
+    "balance": {
+      "$numberDecimal": "-7.720000000000027"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Reg Potter",
+    "email": "potts53@hotmail.com",
+    "phone": "+61438472927",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T07:07:48.559866Z",
+    "createdBy": "6a1b244d-e069-452e-9644-135041db1ad7",
+    "updatedAt": "2025-06-17T07:07:55.310000Z",
+    "updatedBy": null
+  }
+}

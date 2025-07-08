@@ -1,0 +1,143 @@
+{
+  "_id": "6867bbd0727380dc8cb8e47a",
+  "orderId": "eb6e024f-0b87-4dbe-9afb-89545af6282d",
+  "orderNumber": "ORD-1751628752213",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "45b68e4d-e2cc-49fc-b36b-8da9367cbb77",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "45b68e4d-e2cc-49fc-b36b-8da9367cbb77",
+    "name": "Alexander  Parker",
+    "email": "alexparker8@bigpond.com",
+    "phone": "+61402393345"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e47b",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "bcf7c969-0248-4e01-81c6-c676b738cd5b"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e47c",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "b19d006d-6fe2-4436-ae94-0c448b0d7b4c"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "bcf7c969-0248-4e01-81c6-c676b738cd5b",
+      "contactId": null,
+      "firstName": "Cheryl ",
+      "lastName": "Parker ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e47b",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "b19d006d-6fe2-4436-ae94-0c448b0d7b4c",
+      "contactId": null,
+      "firstName": "Alexander",
+      "lastName": "Parker",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e47c",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "270.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "13.5"
+    },
+    "total": {
+      "$numberDecimal": "270"
+    },
+    "paid": {
+      "$numberDecimal": "270"
+    },
+    "balance": {
+      "$numberDecimal": "0"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Alexander  Parker",
+    "email": "alexparker8@bigpond.com",
+    "phone": "+61402393345",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-14T00:56:06.321196Z",
+    "createdBy": "7f6f24e6-5d81-4b05-b7f5-5b74d2c40b5d",
+    "updatedAt": "2025-06-14T00:56:06.321196Z",
+    "updatedBy": null
+  }
+}

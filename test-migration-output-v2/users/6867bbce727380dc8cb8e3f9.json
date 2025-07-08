@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e3f9",
+  "userId": "1a42ddc9-7081-4d00-aabb-a565ee9baafb",
+  "contactId": "93b51d13-8f0b-4654-8570-1f3288720012",
+  "email": "merrywood37@gmail.com",
+  "phone": "+61417200535",
+  "password": "$2b$10$feyOy0UwldI9jc19eAa/8ObXguGK/AH24FhIB9GdqRXPNIua1Poci",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T06:40:42.191730Z",
+  "updatedAt": "2025-07-04T11:32:30.415Z"
+}

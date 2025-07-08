@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3a0",
+  "contactId": "4cb0eaff-3002-4d5d-b37a-c80f31deb829",
+  "firstName": "Erwin ",
+  "lastName": "Maza",
+  "preferredName": null,
+  "title": null,
+  "email": "rowie1232003@yahoo.com",
+  "phone": "+61424562620",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "33 Darlington Dr",
+    "line2": null,
+    "city": "Buttaba",
+    "state": "New South Wales",
+    "postcode": "2283",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc53": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 2,
+      "registeredAt": "2025-06-21T01:25:34.930326Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-21T01:25:34.930326Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

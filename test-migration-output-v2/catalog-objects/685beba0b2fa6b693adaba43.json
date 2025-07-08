@@ -1,0 +1,385 @@
+{
+  "_id": "685beba0b2fa6b693adaba43",
+  "catalogId": "eebddef5-6833-43e3-8d32-700508b1c089",
+  "name": "Grand Proclamation 2025",
+  "description": "The formal Proclamation ceremony of the Grand Master and officers of the United Grand Lodge of NSW & ACT. This prestigious weekend brings together Freemasons from around the world for a series of ceremonial and social events.",
+  "slug": "grand-proclamation-2025",
+  "type": "function",
+  "status": "draft",
+  "organizer": {
+    "type": "organisation",
+    "id": "3e893fa6-2cc2-448c-be9c-e3858cc90e11",
+    "name": ""
+  },
+  "createdBy": null,
+  "dates": {
+    "publishedDate": "2025-07-04T11:32:13.297Z",
+    "onSaleDate": "2025-07-04T11:32:13.297Z",
+    "closedDate": null,
+    "startDate": "2025-09-19T19:00:00.000Z",
+    "endDate": "2025-09-21T15:00:00.000Z",
+    "createdAt": "2025-06-01T04:51:02.679686Z",
+    "updatedAt": "2025-06-08T15:25:05.479016Z"
+  },
+  "products": [
+    {
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "name": "Grand Proclamation Banquet",
+      "description": "A formal black-tie dinner celebrating the Grand Proclamation. The evening will include fine dining, entertainment, and addresses from distinguished guests.",
+      "category": "event",
+      "slug": "grand-proclamation-gala-dinner",
+      "status": "inactive",
+      "attributes": {
+        "eventType": "Social",
+        "eventStart": "2025-09-20T18:30:00.000000Z",
+        "eventEnd": "2025-09-20T23:00:00.000000Z",
+        "location": {},
+        "inclusions": [
+          "Pre-dinner drinks and canapés",
+          "Three-course gourmet dinner",
+          "Premium beverage package",
+          "Live entertainment and dancing",
+          "Distinguished guest speakers",
+          "Commemorative menu card"
+        ],
+        "images": [
+          "https://sydneymasoniccentre.com.au/wp-content/uploads/2023/02/SMC_0616-resized.jpg"
+        ]
+      },
+      "dependencies": [],
+      "variations": [
+        {
+          "variationId": "a1b2c3d4-e5f6-4789-abcd-ef1234567890",
+          "name": "Grand Proclamation Banquet - Marble Foyer",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "115"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        },
+        {
+          "variationId": "c3d4e5f6-a7b8-4923-cdef-345678901234",
+          "name": "Grand Proclamation Banquet - 3rd Floor",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "115"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        },
+        {
+          "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "name": "Proclamation Banquet - Best Available",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "115"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        },
+        {
+          "variationId": "b2c3d4e5-f6a7-4891-bcde-f23456789012",
+          "name": "Grand Proclamation Banquet - Mezzanine",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "115"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        }
+      ]
+    },
+    {
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "name": "Meet & Greet Cocktail Party",
+      "description": "Start your Grand Proclamation weekend with a casual welcome reception. Meet and greet fellow attendees from around the world in a relaxed atmosphere.",
+      "category": "event",
+      "slug": "welcome-reception",
+      "status": "inactive",
+      "attributes": {
+        "eventType": "Social",
+        "eventStart": "2025-09-19T19:00:00.000000Z",
+        "eventEnd": "2025-09-19T21:00:00.000000Z",
+        "location": {},
+        "inclusions": [
+          "Welcome drinks and canapés",
+          "Cash bar available",
+          "Light entertainment",
+          "Networking opportunities"
+        ],
+        "images": [
+          "https://sydneymasoniccentre.com.au/wp-content/uploads/2023/02/20221129_183121-scaled.jpg"
+        ]
+      },
+      "dependencies": [],
+      "variations": [
+        {
+          "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+          "name": "Meet & Greet Cocktail Party",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "70"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        }
+      ]
+    },
+    {
+      "productId": "567fa008-40de-4f87-89f5-900933f898b2",
+      "name": "Farewell Cruise Luncheon",
+      "description": "Conclude your Grand Proclamation weekend with a relaxed lunch. Share memories and farewells with new and old friends before departing.",
+      "category": "event",
+      "slug": "farewell-lunch",
+      "status": "inactive",
+      "attributes": {
+        "eventType": "Social",
+        "eventStart": "2025-09-21T11:00:00.000000Z",
+        "eventEnd": "2025-09-21T15:00:00.000000Z",
+        "location": {},
+        "inclusions": [
+          "Sydney Harbour cruise",
+          "Buffet luncheon",
+          "Beverages included",
+          "Commentary on harbour landmarks",
+          "Indoor and outdoor deck access"
+        ],
+        "images": [
+          "https://www.magisticcruises.com.au/resources/images/category/webp/lunch.webp"
+        ]
+      },
+      "dependencies": [],
+      "variations": [
+        {
+          "variationId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+          "name": "Farewell Cruise Luncheon",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "75"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        }
+      ]
+    },
+    {
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "name": "Grand Proclamation Ceremony",
+      "description": "The formal ceremony for the Proclamation of the Grand Master and his officers. This is the main event of the weekend featuring traditional Masonic ritual and pageantry.",
+      "category": "event",
+      "slug": "grand-proclamation-ceremony",
+      "status": "inactive",
+      "attributes": {
+        "eventType": "Ceremony",
+        "eventStart": "2025-09-20T14:45:00.000000Z",
+        "eventEnd": "2025-09-20T17:00:00.000000Z",
+        "location": {},
+        "inclusions": [
+          "Formal ceremonial proceedings",
+          "Installation of Grand Master",
+          "Investiture of Grand Officers",
+          "Musical interludes",
+          "Commemorative program booklet"
+        ],
+        "images": [
+          "https://api.lodgetix.io/storage/v1/object/public/public-events/website/Ceremony%20p2%20socmed-469.jpg"
+        ]
+      },
+      "dependencies": [],
+      "variations": [
+        {
+          "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+          "name": "Grand Proclamation Ceremony",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "20"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        }
+      ]
+    },
+    {
+      "productId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Ladies Brunch",
+      "description": "A delightful morning event for the ladies during the Grand Proclamation weekend. Enjoy good company and conversation in a relaxed setting.",
+      "category": "event",
+      "slug": "ladies-brunch",
+      "status": "inactive",
+      "attributes": {
+        "eventType": "Social",
+        "eventStart": "2025-09-20T10:15:00.000000Z",
+        "eventEnd": "2025-09-20T12:00:00.000000Z",
+        "location": {},
+        "inclusions": [
+          "Morning brunch buffet",
+          "Tea and coffee service",
+          "Light entertainment",
+          "Networking opportunities",
+          "Welcome gift"
+        ],
+        "images": [
+          "https://sydneymasoniccentre.com.au/wp-content/uploads/2022/02/Breakfast-Menu-800x600-1.jpg"
+        ]
+      },
+      "dependencies": [],
+      "variations": [
+        {
+          "variationId": "d4e5f6a7-b8c9-4567-def0-456789012345",
+          "name": "Ladies Brunch",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "50"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        }
+      ]
+    },
+    {
+      "productId": "d19d0c78-bf04-48a3-b8c5-7b9724079451",
+      "name": "Quarterly Communication",
+      "description": "The Quarterly Communication of the United Grand Lodge of NSW & ACT. This formal meeting includes reports, business matters, and important announcements for the jurisdiction.",
+      "category": "event",
+      "slug": "september-quarterly-communication",
+      "status": "inactive",
+      "attributes": {
+        "eventType": "Meeting",
+        "eventStart": "2025-09-20T13:00:00.000000Z",
+        "eventEnd": "2025-09-20T14:00:00.000000Z",
+        "location": {},
+        "inclusions": [
+          "Formal business session",
+          "Reports and announcements",
+          "Voting on motions (if applicable)",
+          "Light refreshments during break"
+        ],
+        "images": [
+          "https://api.lodgetix.io/storage/v1/object/public/public-events/website/497823095_2516520078682749_380286867154399734_n.jpg"
+        ]
+      },
+      "dependencies": [],
+      "variations": [
+        {
+          "variationId": "be94ef03-6647-48d5-97ea-f98c862e30e6",
+          "name": "Quarterly Communication",
+          "description": "",
+          "attributes": {},
+          "price": {
+            "amount": {
+              "$numberDecimal": "0"
+            },
+            "currency": "AUD"
+          },
+          "inventory": {
+            "method": "allocated",
+            "quantity_total": 100,
+            "quantity_sold": 0,
+            "quantity_reserved": 0,
+            "quantity_available": 100
+          },
+          "status": "inactive"
+        }
+      ]
+    }
+  ],
+  "inventory": {
+    "totalCapacity": 900,
+    "totalSold": 0,
+    "totalAvailable": 900,
+    "totalRevenue": {
+      "$numberDecimal": "0"
+    }
+  },
+  "settings": {
+    "registration_types": [
+      "individual",
+      "lodge"
+    ],
+    "payment_gateways": [
+      "stripe"
+    ],
+    "allow_partial_registrations": false
+  }
+}

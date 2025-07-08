@@ -1,0 +1,81 @@
+{
+  "_id": "6867bbd0727380dc8cb8e45c",
+  "orderId": "05442fff-631f-40a2-8522-17e07d7350a8",
+  "orderNumber": "LDG-600084JM",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "organisation",
+    "contactId": "1c89d894-5a95-4bc3-9535-ffcfe7b246db",
+    "organisationId": "06df7c94-6377-426e-9834-c0ab38072303"
+  },
+  "booking": {
+    "contactId": "1c89d894-5a95-4bc3-9535-ffcfe7b246db",
+    "name": "Collin Jennings",
+    "email": "collin.jennings1@yahoo.com.au",
+    "phone": "+61413472189"
+  },
+  "lineItems": [],
+  "attendees": [],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "0"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "20.54"
+    },
+    "platformFee": {
+      "$numberDecimal": "20.00"
+    },
+    "total": {
+      "$numberDecimal": "1150"
+    },
+    "paid": {
+      "$numberDecimal": "1190.54"
+    },
+    "balance": {
+      "$numberDecimal": "-40.539999999999964"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Collin Jennings",
+    "email": "collin.jennings1@yahoo.com.au",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": "Lodge Antiquity No. 1"
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T04:46:11.199218Z",
+    "createdBy": null,
+    "updatedAt": "2025-06-17T04:46:11.199218Z",
+    "updatedBy": null
+  }
+}

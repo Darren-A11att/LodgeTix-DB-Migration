@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3d5",
+  "userId": "b1e74a83-3926-430c-ab3e-2e7e71ac03b7",
+  "contactId": "ef48d894-2f85-4917-82ef-6393de0786bc",
+  "email": "david@icucameras.com.au",
+  "phone": "+61404021551",
+  "password": "$2b$10$5n92ziYcup6/uVzSSMwcoe7uoI.3E1ul7t8zsao6w1ZHe2QMTCh/e",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-23T07:59:44.144150Z",
+  "updatedAt": "2025-07-04T11:32:28.594Z"
+}

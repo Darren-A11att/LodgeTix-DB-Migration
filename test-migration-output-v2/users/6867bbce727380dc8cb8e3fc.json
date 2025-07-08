@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e3fc",
+  "userId": "b596e136-70dc-4c0e-84a9-42a5491e7661",
+  "contactId": "255e7a6c-cf86-453c-958d-e0005b40e2ed",
+  "email": "benjaminmacabante26@gmail.com",
+  "phone": "+61451150326",
+  "password": "$2b$10$AdXImYh3eFLUR0hyr.ruz.yCn904w8Nf/faj8jCN0RmvpRWT84X8S",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-21T04:51:39.427004Z",
+  "updatedAt": "2025-07-04T11:32:30.563Z"
+}

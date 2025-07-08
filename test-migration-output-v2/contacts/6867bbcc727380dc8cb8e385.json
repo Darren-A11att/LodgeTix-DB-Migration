@@ -1,0 +1,59 @@
+{
+  "_id": "6867bbcc727380dc8cb8e385",
+  "contactId": "5b747a0a-8a9b-4bcb-9a34-cceb0c7fa8a2",
+  "firstName": "Stan",
+  "lastName": "Allatt",
+  "preferredName": null,
+  "title": null,
+  "email": "stan@allatt.me",
+  "phone": "+61418231401",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "100 Harris Street",
+    "line2": null,
+    "city": "Sydney",
+    "state": "New South Wales",
+    "postcode": "2009",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc16": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-17T02:24:47.093005Z"
+    },
+    "685beba0b2fa6b693adabc2e": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-13T02:23:23.295040Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T02:24:47.093005Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

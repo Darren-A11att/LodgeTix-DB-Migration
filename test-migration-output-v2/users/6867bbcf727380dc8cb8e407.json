@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e407",
+  "userId": "8f97f104-6cc1-4293-8e17-004de8b807b9",
+  "contactId": "977db68e-4c12-4b5d-8fa9-bdaec81f3502",
+  "email": "jojolaquian@gmail.com",
+  "phone": "+61409155657",
+  "password": "$2b$10$cS7Cq2BE3l2ohj76Ll/CCeysltsf/5LRXi1zdY2mNqw53ylSggOKu",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-18T00:27:24.108758Z",
+  "updatedAt": "2025-07-04T11:32:31.108Z"
+}

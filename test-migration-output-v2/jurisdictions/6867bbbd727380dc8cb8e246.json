@@ -1,0 +1,449 @@
+{
+  "_id": "6867bbbd727380dc8cb8e246",
+  "jurisdictionId": "0ce8e42a-e50f-46f8-bcee-c5e9eb97086b",
+  "type": "craft",
+  "grandLodge": {
+    "id": "0ce8e42a-e50f-46f8-bcee-c5e9eb97086b",
+    "name": "Most Worshipful Grand Lodge of Philippines",
+    "abbreviation": "GLP",
+    "country": "Philippines",
+    "countryCode": "PHL",
+    "stateRegion": "",
+    "stateRegionCode": "",
+    "organisationId": "0ce8e42a-e50f-46f8-bcee-c5e9eb97086b",
+    "address": {
+      "addressLine1": "",
+      "addressLine2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Philippines"
+    },
+    "contact": {
+      "phone": "",
+      "email": "",
+      "website": ""
+    }
+  },
+  "definitions": {
+    "parentName": "grandLodge",
+    "parentLabel": "Grand Lodge",
+    "childName": "lodges",
+    "childLabel": "Lodges",
+    "ranks": [
+      {
+        "code": "EAF",
+        "name": "Entered Apprentice Freemason",
+        "order": 1,
+        "abbreviation": "EAF"
+      },
+      {
+        "code": "FCF",
+        "name": "Fellow Craft Freemason",
+        "order": 2,
+        "abbreviation": "FCF"
+      },
+      {
+        "code": "MM",
+        "name": "Master Mason",
+        "order": 3,
+        "abbreviation": "MM"
+      },
+      {
+        "code": "IM",
+        "name": "Installed Master",
+        "order": 4,
+        "abbreviation": "IM"
+      },
+      {
+        "code": "GL",
+        "name": "Grand Lodge",
+        "order": 5,
+        "abbreviation": "GL"
+      }
+    ],
+    "titles": [
+      {
+        "code": "Bro",
+        "name": "Brother",
+        "abbreviation": "Bro"
+      },
+      {
+        "code": "WBro",
+        "name": "Worshipful Brother",
+        "abbreviation": "W Bro"
+      },
+      {
+        "code": "VWBro",
+        "name": "Very Worshipful Brother",
+        "abbreviation": "VW Bro"
+      },
+      {
+        "code": "RWBro",
+        "name": "Right Worshipful Brother",
+        "abbreviation": "RW Bro"
+      },
+      {
+        "code": "MWBro",
+        "name": "Most Worshipful Brother",
+        "abbreviation": "MW Bro"
+      }
+    ],
+    "parentOffices": [
+      {
+        "code": "GM",
+        "name": "Grand Master",
+        "order": 1,
+        "type": "elected"
+      },
+      {
+        "code": "DGM",
+        "name": "Deputy Grand Master",
+        "order": 2,
+        "type": "elected"
+      },
+      {
+        "code": "AGM",
+        "name": "Assistant Grand Master",
+        "order": 3,
+        "type": "appointed"
+      },
+      {
+        "code": "GSW",
+        "name": "Grand Senior Warden",
+        "order": 4,
+        "type": "elected"
+      },
+      {
+        "code": "GJW",
+        "name": "Grand Junior Warden",
+        "order": 5,
+        "type": "elected"
+      },
+      {
+        "code": "GS",
+        "name": "Grand Secretary",
+        "order": 6,
+        "type": "appointed"
+      },
+      {
+        "code": "GT",
+        "name": "Grand Treasurer",
+        "order": 7,
+        "type": "elected"
+      }
+    ],
+    "childOffices": [
+      {
+        "code": "WM",
+        "name": "Worshipful Master",
+        "order": 1,
+        "type": "elected"
+      },
+      {
+        "code": "IPM",
+        "name": "Immediate Past Master",
+        "order": 2,
+        "type": "automatic"
+      },
+      {
+        "code": "SW",
+        "name": "Senior Warden",
+        "order": 3,
+        "type": "elected"
+      },
+      {
+        "code": "JW",
+        "name": "Junior Warden",
+        "order": 4,
+        "type": "elected"
+      },
+      {
+        "code": "S",
+        "name": "Secretary",
+        "order": 5,
+        "type": "appointed"
+      },
+      {
+        "code": "T",
+        "name": "Treasurer",
+        "order": 6,
+        "type": "elected"
+      },
+      {
+        "code": "SD",
+        "name": "Senior Deacon",
+        "order": 7,
+        "type": "appointed"
+      },
+      {
+        "code": "JD",
+        "name": "Junior Deacon",
+        "order": 8,
+        "type": "appointed"
+      }
+    ]
+  },
+  "lodges": [
+    {
+      "id": "367bec85-fe0a-98fb-cb62-a290c4c2bf86",
+      "number": {
+        "$numberDecimal": "1"
+      },
+      "name": "Manila Lodge",
+      "displayName": "Manila Lodge No 1",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "367bec85-fe0a-98fb-cb62-a290c4c2bf86",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "6e805569-3e5a-4cf3-a0b0-5dad8dc81ee8",
+      "number": {
+        "$numberDecimal": "22"
+      },
+      "name": "Jose Rizal",
+      "displayName": "Jose Rizal No. 22",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "c71c6e34-50ac-46e1-988d-d626cb332f2d",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "f1a040c0-d296-4e47-8e2b-f2b20351b817",
+      "number": {
+        "$numberDecimal": "16"
+      },
+      "name": "SINUKUAN LODGE",
+      "displayName": "SINUKUAN LODGE No. 16",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "bbd86d82-cd90-4779-928f-5a3861b5f284",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "778211f5-d6af-46da-abc7-94445b3cbd97",
+      "number": {
+        "$numberDecimal": "22"
+      },
+      "name": "Jose Rizal Lodge",
+      "displayName": "Jose Rizal Lodge No. 22",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "38fd87a9-a788-4d2c-9d1b-c5c22d346044",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "825184ff-9537-40cd-aeab-61875b7fb66f",
+      "number": {
+        "$numberDecimal": "358"
+      },
+      "name": "Norberto S Amoranto lodge ",
+      "displayName": "Norberto S Amoranto lodge  No. 358",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "18c5844a-a22f-4fa1-a45a-4a3761ccb453",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "45725dca-910f-49e1-b832-f3eda72fb320",
+      "number": {
+        "$numberDecimal": "510"
+      },
+      "name": "Luneta Masonic Lodge",
+      "displayName": "Luneta Masonic Lodge No. 510",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "79595e70-5af0-4a2b-8152-a8dff1fb0e60",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "4588fdbd-533f-4b24-a18e-9987c10eddef",
+      "number": {
+        "$numberDecimal": "358"
+      },
+      "name": "Norberto S Amoranto",
+      "displayName": "Norberto S Amoranto No. 358",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "2b05426d-c1a7-4de7-b314-9faf99e8ad12",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "64e10f4e-904d-458c-90b7-13b1cdf58331",
+      "number": {
+        "$numberDecimal": "17"
+      },
+      "name": "Bagong buhay lodge ",
+      "displayName": "Bagong buhay lodge  No. 17",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "adca62d0-cd63-4cae-a1b0-7fdb20354173",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    },
+    {
+      "id": "f2cdc042-731c-4aa1-8ca5-4eac81d5ea49",
+      "number": {
+        "$numberDecimal": "130"
+      },
+      "name": "Mt. Malindang Lodge ",
+      "displayName": "Mt. Malindang Lodge  No. 130",
+      "district": "",
+      "meetingPlace": "",
+      "areaType": "REGIONAL",
+      "stateRegion": "",
+      "organisationId": "5b7a4207-04b0-4365-bb8f-de771873328b",
+      "meetingSchedule": {
+        "frequency": "monthly",
+        "dayOfWeek": "",
+        "weekOfMonth": "",
+        "time": "19:30",
+        "notes": ""
+      },
+      "status": "active",
+      "consecrationDate": null,
+      "warrantsNumber": "",
+      "customFields": {
+        "legacyData": {
+          "originalAreaType": null
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "source": "migration",
+    "createdAt": "2025-07-04T11:32:13.404Z",
+    "createdBy": null,
+    "updatedAt": "2025-07-04T11:32:13.404Z",
+    "updatedBy": null,
+    "version": 1
+  }
+}

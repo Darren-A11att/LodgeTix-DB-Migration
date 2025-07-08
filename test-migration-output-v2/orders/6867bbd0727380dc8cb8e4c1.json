@@ -1,0 +1,145 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4c1",
+  "orderId": "539395af-97f7-43ec-a6fc-f297723b1d50",
+  "orderNumber": "IND-832475RH",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "cf8e2a4d-f744-4693-8b00-385a9e1a4583",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "cf8e2a4d-f744-4693-8b00-385a9e1a4583",
+    "name": "Andrew Stewart",
+    "email": "astewart@stewartlaw.com.au",
+    "phone": "+61415308529"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4c2",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "d4fb1bee-7521-400e-8097-36255ace3c9a"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4c3",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4c4",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "d4fb1bee-7521-400e-8097-36255ace3c9a",
+      "contactId": null,
+      "firstName": "Andrew",
+      "lastName": "Stewart",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4c2",
+      "dietaryRequirements": [
+        "None"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "205.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "5.94"
+    },
+    "platformFee": {
+      "$numberDecimal": "10.25"
+    },
+    "total": {
+      "$numberDecimal": "205"
+    },
+    "paid": {
+      "$numberDecimal": "210.94"
+    },
+    "balance": {
+      "$numberDecimal": "-5.939999999999998"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Andrew Stewart",
+    "email": "astewart@stewartlaw.com.au",
+    "phone": "+61415308529",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T23:43:46.123792Z",
+    "createdBy": "f4128048-4de7-4e40-9b15-c9d18384766d",
+    "updatedAt": "2025-06-17T23:43:52.457000Z",
+    "updatedBy": null
+  }
+}

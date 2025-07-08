@@ -1,0 +1,115 @@
+{
+  "_id": "6867bbd0727380dc8cb8e53c",
+  "orderId": "c0a764c7-8d71-4c44-bea7-13aaa7b2a1c5",
+  "orderNumber": "IND-918733AD",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "228509e9-3d08-4e8a-9636-3a10bcadfba8",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "228509e9-3d08-4e8a-9636-3a10bcadfba8",
+    "name": "Bob Hurndell",
+    "email": "rdell@aussiebroadband.com.au",
+    "phone": "+61414382035"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e53d",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "747771d0-be6b-4a3a-8f5b-2aaa65185353"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "747771d0-be6b-4a3a-8f5b-2aaa65185353",
+      "contactId": null,
+      "firstName": "Bob",
+      "lastName": "Hurndell",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e53d",
+      "dietaryRequirements": [
+        "No special diet."
+      ],
+      "specialNeeds": "No special needs.",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "70.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "2.53"
+    },
+    "platformFee": {
+      "$numberDecimal": "3.5"
+    },
+    "total": {
+      "$numberDecimal": "70"
+    },
+    "paid": {
+      "$numberDecimal": "72.53"
+    },
+    "balance": {
+      "$numberDecimal": "-2.530000000000001"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Bob Hurndell",
+    "email": "rdell@aussiebroadband.com.au",
+    "phone": "+61414382035",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-18T02:04:33.594378Z",
+    "createdBy": "8fd193fd-815e-489e-b856-6b3637ef1f05",
+    "updatedAt": "2025-06-18T02:04:39.100000Z",
+    "updatedBy": null
+  }
+}

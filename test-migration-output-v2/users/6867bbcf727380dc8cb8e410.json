@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e410",
+  "userId": "92ba9f45-478a-4c3f-94d8-d2a28dfc7df7",
+  "contactId": "9a9760cd-39eb-4fdc-9389-dc08a441e75d",
+  "email": "stoyandimitrov80@yahoo.com",
+  "phone": "+61452664871",
+  "password": "$2b$10$yjvDIN.omaJTQBdX2kTE..EdYygRwTwfZHSZOS5ep/sJEszUY1Luu",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-22T10:02:18.947048Z",
+  "updatedAt": "2025-07-04T11:32:31.552Z"
+}

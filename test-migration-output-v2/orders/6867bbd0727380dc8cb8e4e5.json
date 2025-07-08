@@ -1,0 +1,90 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4e5",
+  "orderId": "6e2993fd-54c9-424a-bcbf-3718b778f186",
+  "orderNumber": "IND-672238HE",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "211a894e-7512-4e83-b625-b49b0b307d59",
+      "contactId": "cdf73794-605d-4bee-9517-576bb3f6734c",
+      "firstName": "Nathan ",
+      "lastName": "Taleb ",
+      "email": "nathan.taleb@icloud.com",
+      "phone": "+61420400000",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "135.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "5.31"
+    },
+    "platformFee": {
+      "$numberDecimal": "6.75"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "143.01"
+    },
+    "balance": {
+      "$numberDecimal": "-143.01"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-09T07:50:23.220610Z",
+    "createdBy": "c4d6940f-41f5-44f1-aafc-6b3aa154e76d",
+    "updatedAt": "2025-06-09T07:50:28.826000Z",
+    "updatedBy": null
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcd727380dc8cb8e3e3",
+  "userId": "ff9068e6-357f-4166-8628-092801ed2050",
+  "contactId": "04e5fd04-90d8-4755-a40c-ffe6d1a2e5a3",
+  "email": "milpoldave@hotmail.com",
+  "phone": "+618108098204134",
+  "password": "$2b$10$x1S6t0EDsmzId5omJrJL6ez/wB5qABvGIcdUiYJeXmmCHcitP18Om",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-15T04:34:17.921564Z",
+  "updatedAt": "2025-07-04T11:32:29.290Z"
+}

@@ -1,0 +1,45 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3a4",
+  "contactId": "9f94979a-3876-41c1-8ce0-5303fbd0db22",
+  "firstName": "Peter",
+  "lastName": "Goodridge",
+  "preferredName": null,
+  "title": "RW Bro",
+  "email": "petergoodridge@hotmail.com",
+  "phone": null,
+  "mobile": "+61459672800",
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc3e": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 0,
+      "registeredAt": "2025-06-17T05:11:26.708437Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T05:11:26.708437Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

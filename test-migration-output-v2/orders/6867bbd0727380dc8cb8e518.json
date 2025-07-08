@@ -1,0 +1,115 @@
+{
+  "_id": "6867bbd0727380dc8cb8e518",
+  "orderId": "8f5d6df8-c513-4606-b0d1-feed41dde8ef",
+  "orderNumber": "IND-198120LX",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "f08ddc6a-622b-4569-8383-38d9ef351d47",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "f08ddc6a-622b-4569-8383-38d9ef351d47",
+    "name": "Eric Okely",
+    "email": "thecotswolds@bigpond.au",
+    "phone": "+61413805646"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e519",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "55f455c9-22ba-4c1a-876d-d1875ff9cdbe"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "55f455c9-22ba-4c1a-876d-d1875ff9cdbe",
+      "contactId": null,
+      "firstName": "Eric",
+      "lastName": "Okely",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e519",
+      "dietaryRequirements": [
+        "None"
+      ],
+      "specialNeeds": "None",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1.00"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.47"
+    },
+    "balance": {
+      "$numberDecimal": "-1.4699999999999989"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Eric Okely",
+    "email": "thecotswolds@bigpond.au",
+    "phone": "+61413805646",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-23T02:58:38.595310Z",
+    "createdBy": "e4ec50b7-d8b2-49e3-a82c-2c6b2edf6414",
+    "updatedAt": "2025-06-23T02:58:42.975000Z",
+    "updatedBy": null
+  }
+}

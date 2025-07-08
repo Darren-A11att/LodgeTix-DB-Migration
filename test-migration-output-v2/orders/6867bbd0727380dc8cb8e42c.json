@@ -1,0 +1,131 @@
+{
+  "_id": "6867bbd0727380dc8cb8e42c",
+  "orderId": "331e8a86-87d9-420d-afe8-98448cfbcd4e",
+  "orderNumber": "IND-134890AT",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "a7072d12-7cd5-457c-bd23-573d7deb1855",
+      "contactId": "92e3b9e1-0fb2-4e00-a567-e3a14aa90c7e",
+      "firstName": "Richard",
+      "lastName": "Anderson",
+      "email": "rickandrsn@gmail.com",
+      "phone": "+61406622221",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "4b86589f-4591-47fc-b936-04339ffa5139",
+      "contactId": null,
+      "firstName": "Christina",
+      "lastName": "Amexander",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [
+        "gluten-free"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "6cae2355-0dbc-4410-b5c6-91607837f3b3",
+      "contactId": "7f491df0-a684-438b-84ee-7de3f4b121b6",
+      "firstName": "David",
+      "lastName": "Atherton",
+      "email": "david.ac001@me.com",
+      "phone": "+61491169320",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "9538c01e-108c-4ea5-b102-cc444c4765b4",
+      "contactId": null,
+      "firstName": "Elisabeth",
+      "lastName": "McConville",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "80.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.69"
+    },
+    "platformFee": {
+      "$numberDecimal": "4"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "81.69"
+    },
+    "balance": {
+      "$numberDecimal": "-81.69"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-07T22:35:52.375445Z",
+    "createdBy": "0b015ad1-cf37-4c8d-be6a-c495f9b4bbae",
+    "updatedAt": "2025-06-07T22:35:59.797000Z",
+    "updatedBy": null
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e527",
+  "orderId": "49d3bb01-557f-4e33-9f40-2aa3e9651de6",
+  "orderNumber": "IND-666183NB",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "48441c35-6dcc-44db-a685-8f56ade70016",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "48441c35-6dcc-44db-a685-8f56ade70016",
+    "name": "ram tugay",
+    "email": "ramtugay04@gmail.com",
+    "phone": "+61450149492"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e528",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "9b95c094-01c5-4c97-bfe3-7a8af2c3a85d"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "9b95c094-01c5-4c97-bfe3-7a8af2c3a85d",
+      "contactId": null,
+      "firstName": "Ram Micheal",
+      "lastName": "tugay",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e528",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "ram tugay",
+    "email": "ramtugay04@gmail.com",
+    "phone": "+61450149492",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-18T02:28:55.834766Z",
+    "createdBy": "375935e7-4028-41b8-80c3-6e20a339f1bb",
+    "updatedAt": "2025-06-18T02:29:01.945000Z",
+    "updatedBy": null
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "_id": "6867bbd0727380dc8cb8e51e",
+  "orderId": "e18c01e6-8710-4c68-a35a-57fcce53b5bf",
+  "orderNumber": "IND-387357PU",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "9d1cf732-c60f-436a-aa25-ad3c263119cf",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "9d1cf732-c60f-436a-aa25-ad3c263119cf",
+    "name": "Janice  Cruz",
+    "email": "jajamlava@yahoo.com",
+    "phone": "+61439780501"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e51f",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 5,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "d302a133-7ee2-457d-b51f-61360e27d391",
+        "4e3ded8d-ea23-47fc-ae1b-b6a3d6728e5d",
+        "4f4e4802-aabc-4476-88ac-dfb9ccdf2ddb",
+        "491a9edc-629c-42e3-8e36-d2d228afd653",
+        "30a85979-0ff4-4ae4-aa9e-b3524688b280"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "d302a133-7ee2-457d-b51f-61360e27d391",
+      "contactId": null,
+      "firstName": "Mark ",
+      "lastName": "Dera ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e51f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "4e3ded8d-ea23-47fc-ae1b-b6a3d6728e5d",
+      "contactId": null,
+      "firstName": "Janice ",
+      "lastName": "Cruz ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e51f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "4f4e4802-aabc-4476-88ac-dfb9ccdf2ddb",
+      "contactId": null,
+      "firstName": "Schedar joyce ",
+      "lastName": "Umandap ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e51f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "491a9edc-629c-42e3-8e36-d2d228afd653",
+      "contactId": null,
+      "firstName": "Crisanto Rafaelito ",
+      "lastName": "Gualberto V ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e51f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "30a85979-0ff4-4ae4-aa9e-b3524688b280",
+      "contactId": null,
+      "firstName": "Allan ",
+      "lastName": "Umandap ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e51f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "100.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1.00"
+    },
+    "total": {
+      "$numberDecimal": "100"
+    },
+    "paid": {
+      "$numberDecimal": "103.27"
+    },
+    "balance": {
+      "$numberDecimal": "-3.269999999999996"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Janice  Cruz",
+    "email": "jajamlava@yahoo.com",
+    "phone": "+61439780501",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-21T04:32:10.239267Z",
+    "createdBy": "57a77e89-806a-44f7-a66a-971a18c06427",
+    "updatedAt": "2025-06-21T04:32:13.622000Z",
+    "updatedBy": null
+  }
+}

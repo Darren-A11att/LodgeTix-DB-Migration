@@ -1,0 +1,145 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4b0",
+  "orderId": "51578c5b-02c0-409e-bbd8-b9c2702d43e4",
+  "orderNumber": "IND-410816YY",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "a1454084-7326-4b64-bdb6-e475cc1625c2",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "a1454084-7326-4b64-bdb6-e475cc1625c2",
+    "name": "Joe Corrigan",
+    "email": "joecorrigan@mac.com",
+    "phone": "+61416042338"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4b1",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "6058594c-951b-4aa0-a546-19779ccace1e"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4b2",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4b3",
+      "productId": "567fa008-40de-4f87-89f5-900933f898b2",
+      "productName": "Event",
+      "variationId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "6058594c-951b-4aa0-a546-19779ccace1e",
+      "contactId": null,
+      "firstName": "Joe",
+      "lastName": "Corrigan",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4b1",
+      "dietaryRequirements": [
+        "No fish"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "165.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "4.84"
+    },
+    "platformFee": {
+      "$numberDecimal": "8.25"
+    },
+    "total": {
+      "$numberDecimal": "165"
+    },
+    "paid": {
+      "$numberDecimal": "169.84"
+    },
+    "balance": {
+      "$numberDecimal": "-4.840000000000003"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Joe Corrigan",
+    "email": "joecorrigan@mac.com",
+    "phone": "+61416042338",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T06:33:46.350021Z",
+    "createdBy": "c302adc8-9553-436a-bd9e-d861ceadb1ab",
+    "updatedAt": "2025-06-17T06:33:57.590000Z",
+    "updatedBy": null
+  }
+}

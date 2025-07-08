@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e40f",
+  "userId": "7c020d2e-4bb9-440b-8af1-2f27db8407f0",
+  "contactId": "ae7ab202-1bce-4889-87dd-2406ff1e40bc",
+  "email": "johnlegisllb@icloud.com",
+  "phone": "+61475606805",
+  "password": "$2b$10$H66g0UA1cConig/6AgTKqOvZd4luWqYfFmSLxWnwQF1XMUcNr9X..",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-23T12:42:06.147696Z",
+  "updatedAt": "2025-07-04T11:32:31.503Z"
+}

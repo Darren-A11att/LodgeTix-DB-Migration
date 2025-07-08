@@ -1,0 +1,298 @@
+{
+  "_id": "685beba0b2fa6b693adabb72",
+  "organisationId": "b5c66ed7-49cf-a358-0e72-12864e15f1c3",
+  "profile": {
+    "name": "Lodge Woronora No. 414",
+    "displayName": "Lodge Woronora No. 414",
+    "type": "lodge",
+    "registration": {
+      "number": {
+        "$numberDecimal": "414"
+      },
+      "registeredName": "Lodge Woronora No. 414",
+      "abn": "",
+      "acn": "",
+      "taxId": "",
+      "gstRegistered": false,
+      "charityStatus": false,
+      "charityNumber": ""
+    },
+    "contact": {
+      "primary": {
+        "name": "",
+        "role": "Secretary",
+        "email": "",
+        "phone": ""
+      },
+      "billing": {
+        "name": "",
+        "email": "",
+        "phone": ""
+      },
+      "events": {
+        "name": "",
+        "email": "",
+        "phone": ""
+      },
+      "general": {
+        "email": "",
+        "phone": "",
+        "website": "",
+        "socialMedia": {
+          "facebook": "",
+          "twitter": "",
+          "linkedin": "",
+          "instagram": ""
+        }
+      }
+    },
+    "addresses": {
+      "physical": {
+        "addressLine1": "",
+        "addressLine2": "",
+        "city": "",
+        "state": "",
+        "postcode": "",
+        "country": "Australia",
+        "venue": {
+          "name": "",
+          "capacity": null,
+          "facilities": [],
+          "directions": ""
+        }
+      },
+      "postal": {
+        "addressLine1": "",
+        "addressLine2": "",
+        "city": "",
+        "state": "",
+        "postcode": "",
+        "country": "Australia"
+      },
+      "billing": {
+        "sameAsPostal": true,
+        "addressLine1": "",
+        "addressLine2": "",
+        "city": "",
+        "state": "",
+        "postcode": "",
+        "country": "Australia"
+      }
+    },
+    "details": {
+      "founded": null,
+      "description": "",
+      "mission": "",
+      "lodge": {
+        "district": "35",
+        "grandLodge": "",
+        "meetingSchedule": "",
+        "meetingTime": "19:30",
+        "dresscode": "Formal"
+      },
+      "size": {
+        "memberCount": 0,
+        "activeMembers": 0,
+        "category": "small"
+      }
+    }
+  },
+  "membership": {
+    "members": [],
+    "officers": [],
+    "rules": {
+      "approvalRequired": true,
+      "approvalQuorum": 1,
+      "votingRights": {
+        "minimumTenure": 0,
+        "requiresDuesPaid": true
+      },
+      "eligibility": {
+        "minAge": 18,
+        "maxAge": null,
+        "gender": [],
+        "requiresInvitation": true,
+        "requiresSponsor": true,
+        "otherRequirements": []
+      }
+    }
+  },
+  "financial": {
+    "banking": {
+      "accountName": "",
+      "bsb": "",
+      "accountNumber": "",
+      "bankName": "",
+      "preferredMethod": "invoice",
+      "terms": "net30"
+    },
+    "credit": {
+      "limit": {
+        "$numberDecimal": "0"
+      },
+      "used": {
+        "$numberDecimal": "0"
+      },
+      "available": {
+        "$numberDecimal": "0"
+      },
+      "rating": "good",
+      "lastReview": null,
+      "onTimePayments": 0,
+      "latePayments": 0,
+      "averageDaysToPayment": 30
+    },
+    "invoicing": {
+      "consolidated": false,
+      "frequency": "immediate",
+      "format": "pdf",
+      "purchaseOrderRequired": false,
+      "costCenters": []
+    },
+    "tax": {
+      "exemptStatus": false,
+      "exemptionCertificate": null
+    }
+  },
+  "events": {
+    "defaults": {
+      "registrationType": "lodge",
+      "paymentMethod": "invoice",
+      "bulkBooking": {
+        "minimumAttendees": 1,
+        "defaultAllocation": 10,
+        "autoAssignMembers": false
+      },
+      "seating": {
+        "preferTogether": true,
+        "specialRequirements": [],
+        "vipMembers": []
+      }
+    },
+    "history": {
+      "eventsAttended": 0,
+      "totalAttendees": 0,
+      "totalSpent": {
+        "$numberDecimal": "0"
+      },
+      "lastEventDate": null,
+      "favoriteEvents": [],
+      "eventsHosted": []
+    },
+    "arrangements": {
+      "cateringPreferences": {
+        "provider": "",
+        "restrictions": [],
+        "notes": ""
+      },
+      "transportArrangements": {
+        "required": false,
+        "details": ""
+      },
+      "accommodationPreferences": {
+        "preferredHotels": [],
+        "roomTypes": [],
+        "specialNeeds": []
+      }
+    }
+  },
+  "jurisdictionId": null,
+  "relationships": {
+    "parent": null,
+    "children": [],
+    "affiliations": [],
+    "reciprocal": []
+  },
+  "documents": {
+    "constitution": {
+      "uploaded": false,
+      "uploadedAt": null,
+      "documentUrl": "",
+      "version": ""
+    },
+    "insurance": {
+      "publicLiability": null,
+      "professionalIndemnity": null
+    },
+    "compliance": [],
+    "agreements": []
+  },
+  "communications": {
+    "notifications": {
+      "newEvents": {
+        "enabled": true,
+        "channels": [
+          "email"
+        ],
+        "recipients": [
+          "secretary",
+          "events"
+        ]
+      },
+      "reminders": {
+        "enabled": true,
+        "daysBefore": [
+          30,
+          14,
+          7,
+          1
+        ],
+        "channels": [
+          "email"
+        ]
+      },
+      "announcements": {
+        "enabled": true,
+        "channels": [
+          "email"
+        ],
+        "allMembers": false
+      }
+    },
+    "bulkCommunication": {
+      "requireApproval": true,
+      "approvers": [],
+      "blackoutDates": []
+    }
+  },
+  "settings": {
+    "privacy": {
+      "listPublicly": false,
+      "showMemberCount": false,
+      "allowMemberDirectory": false,
+      "shareContactDetails": false
+    },
+    "features": {
+      "onlineVoting": false,
+      "memberPortal": false,
+      "eventHosting": true,
+      "fundraising": false
+    },
+    "branding": {
+      "logo": null,
+      "colors": {
+        "primary": "#000080",
+        "secondary": "#FFD700"
+      },
+      "customDomain": ""
+    }
+  },
+  "status": "active",
+  "verification": {
+    "verified": false,
+    "verifiedAt": null,
+    "verifiedBy": null,
+    "documents": []
+  },
+  "metadata": {
+    "source": "migration",
+    "tags": [],
+    "createdAt": "2025-07-04T11:32:19.244Z",
+    "createdBy": null,
+    "updatedAt": "2025-07-04T11:32:19.244Z",
+    "updatedBy": null,
+    "importBatchId": "test-migration",
+    "legacyId": "b5c66ed7-49cf-a358-0e72-12864e15f1c3",
+    "migrationNotes": "Migrated from legacy system"
+  }
+}

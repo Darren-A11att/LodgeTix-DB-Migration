@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e563",
+  "orderId": "f217500c-b4f7-451d-802f-556aad910ab1",
+  "orderNumber": "IND-787853TU",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "68747426-f2d3-4399-891a-393e31ce7c57",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "68747426-f2d3-4399-891a-393e31ce7c57",
+    "name": "Marcelo III  Caguioa",
+    "email": "marcelocaguioa@yahoo.com",
+    "phone": "+61437696938"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e564",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "07aef37b-772c-40bc-910c-4561eee0dd37"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "07aef37b-772c-40bc-910c-4561eee0dd37",
+      "contactId": null,
+      "firstName": "Marcelo III ",
+      "lastName": "Caguioa",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e564",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Marcelo III  Caguioa",
+    "email": "marcelocaguioa@yahoo.com",
+    "phone": "+61437696938",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-18T02:58:39.708669Z",
+    "createdBy": "2de6ed19-65d1-48d4-b0eb-910e21dbab97",
+    "updatedAt": "2025-06-18T02:58:46.198000Z",
+    "updatedBy": null
+  }
+}

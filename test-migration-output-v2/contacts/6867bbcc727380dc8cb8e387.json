@@ -1,0 +1,45 @@
+{
+  "_id": "6867bbcc727380dc8cb8e387",
+  "contactId": "3f20099c-d72c-4134-a328-5ee887697107",
+  "firstName": "Kent",
+  "lastName": "Tomas",
+  "preferredName": null,
+  "title": null,
+  "email": "kenttomas66@yahoo.com.au",
+  "phone": "+61423421612",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc37": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-18T02:18:46.920531Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-18T02:18:46.920531Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

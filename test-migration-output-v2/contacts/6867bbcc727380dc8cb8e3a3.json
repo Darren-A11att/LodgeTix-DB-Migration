@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3a3",
+  "contactId": "2ccb4657-7b69-4fd6-a43a-08eae646726a",
+  "firstName": "Phillip ",
+  "lastName": "Robertson ",
+  "preferredName": null,
+  "title": null,
+  "email": "pcrobbo4@bigpond.com",
+  "phone": "+61434926359",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "5 Vera Drive ",
+    "line2": null,
+    "city": "Coffs Harbour ",
+    "state": "New South Wales",
+    "postcode": "2450",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc3a": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-17T05:08:26.878415Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T05:08:26.878415Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

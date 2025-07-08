@@ -1,0 +1,42 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4e1",
+  "transactionId": "3a64d5ea-aa5c-46e9-972e-995f8cf219d0",
+  "orderId": "89469b57-89a5-462f-9738-7e150a703f95",
+  "type": "payment",
+  "status": "pending",
+  "amount": {
+    "$numberDecimal": "40"
+  },
+  "currency": "AUD",
+  "gateway": {
+    "provider": "stripe",
+    "transactionId": "pi_3RatabHDfNBUEWUu0iv2yhbP",
+    "fee": {
+      "$numberDecimal": "2.01"
+    },
+    "net": {
+      "$numberDecimal": "37.99"
+    }
+  },
+  "platformFee": {
+    "amount": {
+      "$numberDecimal": "2"
+    },
+    "percentage": 5,
+    "description": "Platform service fee"
+  },
+  "paymentMethod": {
+    "type": "card"
+  },
+  "reconciliation": {
+    "status": "pending",
+    "reconciledAt": null,
+    "reference": null
+  },
+  "metadata": {
+    "ipAddress": "",
+    "source": "checkout",
+    "createdAt": "2025-06-17T07:05:48.646795Z",
+    "createdBy": "ea215f38-321d-400f-8c05-d17ec092bb6a"
+  }
+}

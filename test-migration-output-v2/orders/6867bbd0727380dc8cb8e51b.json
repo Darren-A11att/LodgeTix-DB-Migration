@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e51b",
+  "orderId": "488deace-d519-4180-aa56-eea57b4d4c7f",
+  "orderNumber": "IND-798968FI",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "93b51d13-8f0b-4654-8570-1f3288720012",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "93b51d13-8f0b-4654-8570-1f3288720012",
+    "name": "Victor Brangwin",
+    "email": "merrywood37@gmail.com",
+    "phone": "+61417200535"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e51c",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "476387c8-0aa0-4ec7-bf83-2477ad3ee4de"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "476387c8-0aa0-4ec7-bf83-2477ad3ee4de",
+      "contactId": null,
+      "firstName": "Victor",
+      "lastName": "Brangwin",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e51c",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Victor Brangwin",
+    "email": "merrywood37@gmail.com",
+    "phone": "+61417200535",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T06:40:42.191730Z",
+    "createdBy": "44c46e4d-c80e-4f63-83b2-d945c169f7ea",
+    "updatedAt": "2025-06-17T06:40:48.806000Z",
+    "updatedBy": null
+  }
+}

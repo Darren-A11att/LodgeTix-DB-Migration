@@ -1,0 +1,127 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4df",
+  "orderId": "89469b57-89a5-462f-9738-7e150a703f95",
+  "orderNumber": "IND-407561BF",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "b0c0981e-126a-49e3-abca-c2fdf17a1921",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "b0c0981e-126a-49e3-abca-c2fdf17a1921",
+    "name": "Michael Hoblos",
+    "email": "hoblos@outlook.com",
+    "phone": "+61450552229"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4e0",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "0652d81b-899d-41ac-87fb-6d273b6f7649",
+        "99687f48-547a-4935-a1b4-9964327d2492"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "0652d81b-899d-41ac-87fb-6d273b6f7649",
+      "contactId": null,
+      "firstName": "Michael",
+      "lastName": "Hoblos",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4e0",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "99687f48-547a-4935-a1b4-9964327d2492",
+      "contactId": null,
+      "firstName": "Aya",
+      "lastName": "Hamdar",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4e0",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "40.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "2.01"
+    },
+    "platformFee": {
+      "$numberDecimal": "2"
+    },
+    "total": {
+      "$numberDecimal": "40"
+    },
+    "paid": {
+      "$numberDecimal": "42.01"
+    },
+    "balance": {
+      "$numberDecimal": "-2.009999999999998"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Michael Hoblos",
+    "email": "hoblos@outlook.com",
+    "phone": "+61450552229",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T07:05:48.646795Z",
+    "createdBy": "ea215f38-321d-400f-8c05-d17ec092bb6a",
+    "updatedAt": "2025-06-17T07:05:54.912000Z",
+    "updatedBy": null
+  }
+}

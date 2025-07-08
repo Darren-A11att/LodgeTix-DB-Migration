@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcd727380dc8cb8e3f1",
+  "userId": "4e8a5c45-f444-4b1c-b514-e0dfc16f3240",
+  "contactId": "4cb0eaff-3002-4d5d-b37a-c80f31deb829",
+  "email": "rowie1232003@yahoo.com",
+  "phone": "+61424562620",
+  "password": "$2b$10$hV9SnhHyrs3dRhpFaPJbheuUNij7DUh9k3GmpKz1i1OVeQK5PF2VS",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-21T01:25:34.930326Z",
+  "updatedAt": "2025-07-04T11:32:30.015Z"
+}

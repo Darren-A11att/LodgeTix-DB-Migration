@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e409",
+  "userId": "1df3143f-e49b-40d2-9691-280bc3412b55",
+  "contactId": "650337d9-b57e-48ec-943d-26a488fa2947",
+  "email": "rod@cohenco.com.au",
+  "phone": "+6141426616",
+  "password": "$2b$10$6/TOc1xAQ3CZlr3N/.tXSeQBbb19MMJAQEeeXuBbaSJC0kSST7oB6",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-18T06:47:38.689210Z",
+  "updatedAt": "2025-07-04T11:32:31.207Z"
+}

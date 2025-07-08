@@ -1,0 +1,103 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4a7",
+  "orderId": "4dd7fb6a-3f42-4312-aa62-65d9b331a25c",
+  "orderNumber": "IND-776340BK",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "5f400ad5-e3cf-4845-baef-dd45c9314249",
+      "contactId": "3dfdfcf6-ad1c-4c8b-8caf-52cf7583a0fa",
+      "firstName": "Jennifer",
+      "lastName": "Weightman",
+      "email": "jennifer@driveaboatcanada.ca",
+      "phone": "+615149638781",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "0228e3ff-bd82-4926-bb7f-328dd445fdd0",
+      "contactId": "cb4cd8dd-6b46-4f42-bfbf-8e89ebc54ed6",
+      "firstName": "Marc",
+      "lastName": "David",
+      "email": "g.sec@glquebec.ca",
+      "phone": "+6115149451895",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "475.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "17.88"
+    },
+    "platformFee": {
+      "$numberDecimal": "23.75"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "502.38"
+    },
+    "balance": {
+      "$numberDecimal": "-502.38"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-08T19:37:22.974126Z",
+    "createdBy": "9b13a4f8-f783-4515-ad1e-4e1ff080048a",
+    "updatedAt": "2025-06-08T19:39:49.297000Z",
+    "updatedBy": null
+  }
+}

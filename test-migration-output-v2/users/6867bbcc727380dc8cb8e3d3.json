@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3d3",
+  "userId": "6baa336d-c2a3-46d2-a027-6630969b7938",
+  "contactId": "a4a3b75f-0685-46b2-8ddf-c08c3a4120a6",
+  "email": "lenkearns@bigpond.com",
+  "phone": "+61418285658",
+  "password": "$2b$10$0TnJFlACeWW0QpXNMseKROmEMkW53VJ0LIfDgq3Hw31BBAzhJEZu.",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-25T09:59:56.482295Z",
+  "updatedAt": "2025-07-04T11:32:28.495Z"
+}

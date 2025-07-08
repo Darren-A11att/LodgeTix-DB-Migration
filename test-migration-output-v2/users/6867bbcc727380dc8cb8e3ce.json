@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3ce",
+  "userId": "b1193c2d-c7bc-4009-938a-987547b2f47a",
+  "contactId": "e37dd032-b585-43f2-9320-85cda4d6e230",
+  "email": "paulkschultz@gmail.com",
+  "phone": "+61407136823",
+  "password": "$2b$10$coFj3z.KH9KU.CQYzbtthedRnyPbD707FfMkolR4i479iDEhluNWm",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-07T15:33:14.086772Z",
+  "updatedAt": "2025-07-04T11:32:28.238Z"
+}

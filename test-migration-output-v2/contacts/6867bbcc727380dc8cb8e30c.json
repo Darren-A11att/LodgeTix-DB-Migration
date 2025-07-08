@@ -1,0 +1,49 @@
+{
+  "_id": "6867bbcc727380dc8cb8e30c",
+  "contactId": "6a1cef3b-0024-4ce6-80ea-36baa29d1ce3",
+  "firstName": "George",
+  "lastName": "Shenouda ",
+  "preferredName": null,
+  "title": null,
+  "email": "shenoudag859@gmail.com",
+  "phone": "+61411579009",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc2b": {
+      "role": "attendee",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "eventId": null,
+      "eventName": null,
+      "tableNumber": null,
+      "seatNumber": null,
+      "registeredAt": "2025-06-12T23:08:58.687360Z",
+      "registeredBy": null
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [
+      "None"
+    ],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": false,
+  "isActive": true,
+  "tags": [],
+  "source": "attendee",
+  "createdAt": "2025-06-09T08:52:36.873199Z",
+  "updatedAt": "2025-06-09T08:52:36.873199Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

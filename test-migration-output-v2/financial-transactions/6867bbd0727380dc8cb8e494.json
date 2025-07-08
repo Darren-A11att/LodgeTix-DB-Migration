@@ -1,0 +1,42 @@
+{
+  "_id": "6867bbd0727380dc8cb8e494",
+  "transactionId": "e7230856-d05d-4bf6-b39f-8acd6b88cfaf",
+  "orderId": "4a90fd5c-3a12-4a43-8f6a-e45c6b2b24e4",
+  "type": "payment",
+  "status": "pending",
+  "amount": {
+    "$numberDecimal": "0"
+  },
+  "currency": "AUD",
+  "gateway": {
+    "provider": "square",
+    "transactionId": "LHxgeL0CTWu0cwrU0T4zWBCDK8JZY",
+    "fee": {
+      "$numberDecimal": "0.00"
+    },
+    "net": {
+      "$numberDecimal": "0"
+    }
+  },
+  "platformFee": {
+    "amount": {
+      "$numberDecimal": "11.50"
+    },
+    "percentage": 5,
+    "description": "Platform service fee"
+  },
+  "paymentMethod": {
+    "type": "card"
+  },
+  "reconciliation": {
+    "status": "pending",
+    "reconciledAt": null,
+    "reference": null
+  },
+  "metadata": {
+    "ipAddress": "",
+    "source": "checkout",
+    "createdAt": "2025-06-21T00:42:47.296693Z",
+    "createdBy": null
+  }
+}

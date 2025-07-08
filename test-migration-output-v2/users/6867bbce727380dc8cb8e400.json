@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e400",
+  "userId": "6f0a78d3-c068-42a6-aabd-65510f47a0a7",
+  "contactId": "f510bf31-bff6-4bc4-a486-639978e4b4a7",
+  "email": "dazza6@outlook.com",
+  "phone": "+61407018369",
+  "password": "$2b$10$3nsDUH5IuzNn3FkScE9XgeGIsGNZkv9vxkDFoQLLqvP/SFDepmY8a",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-18T01:45:13.354165Z",
+  "updatedAt": "2025-07-04T11:32:30.760Z"
+}

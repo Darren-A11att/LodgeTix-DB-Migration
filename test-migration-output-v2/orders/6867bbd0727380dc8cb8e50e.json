@@ -1,0 +1,128 @@
+{
+  "_id": "6867bbd0727380dc8cb8e50e",
+  "orderId": "42aa78bf-944f-41a1-837c-41c69eaf05f8",
+  "orderNumber": "IND-296416RL",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "af82a738-4e0f-40a4-9a0a-9f50d5fb7787",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "af82a738-4e0f-40a4-9a0a-9f50d5fb7787",
+    "name": "Randall Wilson",
+    "email": "ranwilson9@gmail.com",
+    "phone": "+61402233844"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e50f",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "a7c6ac91-08e4-4362-a939-5406b4c00367"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e510",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "a7c6ac91-08e4-4362-a939-5406b4c00367",
+      "contactId": null,
+      "firstName": "Randall",
+      "lastName": "Wilson",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e50f",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "135.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1.00"
+    },
+    "total": {
+      "$numberDecimal": "135"
+    },
+    "paid": {
+      "$numberDecimal": "139.06"
+    },
+    "balance": {
+      "$numberDecimal": "-4.060000000000002"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Randall Wilson",
+    "email": "ranwilson9@gmail.com",
+    "phone": "+61402233844",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-23T06:21:25.917763Z",
+    "createdBy": "83daf099-173b-4357-9552-79e4f38af36c",
+    "updatedAt": "2025-06-23T06:21:29.203000Z",
+    "updatedBy": null
+  }
+}

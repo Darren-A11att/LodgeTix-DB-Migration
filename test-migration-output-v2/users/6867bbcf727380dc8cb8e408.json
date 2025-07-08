@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcf727380dc8cb8e408",
+  "userId": "49127396-2cbd-4ec7-97fe-9d566d60b5c2",
+  "contactId": "68747426-f2d3-4399-891a-393e31ce7c57",
+  "email": "marcelocaguioa@yahoo.com",
+  "phone": "+61437696938",
+  "password": "$2b$10$ofdwmB84SqSscx3CncMXI.tfwGrCZLaBTN5c/l9OsEpdAf9L6IBbG",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-18T02:58:39.708669Z",
+  "updatedAt": "2025-07-04T11:32:31.157Z"
+}

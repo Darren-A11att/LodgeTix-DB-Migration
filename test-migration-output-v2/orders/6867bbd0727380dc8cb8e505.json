@@ -1,0 +1,81 @@
+{
+  "_id": "6867bbd0727380dc8cb8e505",
+  "orderId": "4678f6de-e272-43ae-93fc-403ec2ad330c",
+  "orderNumber": "LDG-744471CY",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "organisation",
+    "contactId": "2746f428-9c26-4200-b498-e374dfe520f9",
+    "organisationId": "abd1bb4e-0e29-468e-95a2-dd590ab07155"
+  },
+  "booking": {
+    "contactId": "2746f428-9c26-4200-b498-e374dfe520f9",
+    "name": "Paul Hamer",
+    "email": "paulanthonyhamer@hotmail.com",
+    "phone": "+61419281805"
+  },
+  "lineItems": [],
+  "attendees": [],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "0"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "40.43"
+    },
+    "platformFee": {
+      "$numberDecimal": "20.00"
+    },
+    "total": {
+      "$numberDecimal": "2300"
+    },
+    "paid": {
+      "$numberDecimal": "2360.43"
+    },
+    "balance": {
+      "$numberDecimal": "-60.429999999999836"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Paul Hamer",
+    "email": "paulanthonyhamer@hotmail.com",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": "Lodge Alpha No. 970"
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T07:02:25.208767Z",
+    "createdBy": null,
+    "updatedAt": "2025-06-17T07:02:25.208767Z",
+    "updatedBy": null
+  }
+}

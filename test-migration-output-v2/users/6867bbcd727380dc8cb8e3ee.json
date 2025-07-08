@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcd727380dc8cb8e3ee",
+  "userId": "1e6c6faf-bc21-4ca7-97ee-255746f1a868",
+  "contactId": "c023b4ff-66c3-4df2-a715-f9a9624aca38",
+  "email": "hkaanozer@gmail.com",
+  "phone": null,
+  "password": "$2b$10$T0RCHpPI1WJYQNSMxj1t/O4XD/yQzoqgSH3J/QDLEgL.NWdLdaMjG",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-18T01:48:48.377024Z",
+  "updatedAt": "2025-07-04T11:32:29.864Z"
+}

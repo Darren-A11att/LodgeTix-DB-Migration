@@ -1,0 +1,47 @@
+{
+  "_id": "6867bbcc727380dc8cb8e30e",
+  "contactId": "f652b8a9-3aee-4418-981b-a016c13081be",
+  "firstName": "John ",
+  "lastName": "Lazarou ",
+  "preferredName": null,
+  "title": null,
+  "email": "lazaroujohn@yahoo.com.au",
+  "phone": "+61400300480",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc2b": {
+      "role": "attendee",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "eventId": null,
+      "eventName": null,
+      "tableNumber": null,
+      "seatNumber": null,
+      "registeredAt": "2025-06-12T23:08:58.687360Z",
+      "registeredBy": null
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": "Na",
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": false,
+  "isActive": true,
+  "tags": [],
+  "source": "attendee",
+  "createdAt": "2025-06-10T03:53:38.073448Z",
+  "updatedAt": "2025-06-10T03:53:38.073448Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

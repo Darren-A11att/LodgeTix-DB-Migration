@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e56d",
+  "orderId": "226900e1-3c99-4724-a4ee-8f5d1809aaed",
+  "orderNumber": "IND-731396VL",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "8c961ed0-26a2-4900-a7e3-67af3a874212",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "8c961ed0-26a2-4900-a7e3-67af3a874212",
+    "name": "Andrew Earney",
+    "email": "earneyfamily@bigpond.com",
+    "phone": "+61406743182"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e56e",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "a58a86b8-830d-4c4d-b0b8-9e175acb6841"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "a58a86b8-830d-4c4d-b0b8-9e175acb6841",
+      "contactId": null,
+      "firstName": "Andrew",
+      "lastName": "Earney",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e56e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "1.00"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.47"
+    },
+    "balance": {
+      "$numberDecimal": "-1.4699999999999989"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Andrew Earney",
+    "email": "earneyfamily@bigpond.com",
+    "phone": "+61406743182",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-19T21:49:29.648640Z",
+    "createdBy": "4b93b70b-682f-44f9-90ff-4543b892791c",
+    "updatedAt": "2025-06-19T21:49:33.865000Z",
+    "updatedBy": null
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e3fb",
+  "userId": "254191f2-f628-4c0b-9083-977875e88aa9",
+  "contactId": "e63a8c80-777d-430e-bb4e-2079a60a41c8",
+  "email": "cduring45@aol.com",
+  "phone": "+61406855586",
+  "password": "$2b$10$nTmuzpf3dpPZtFGycCpAVun9foxLXBNnqWHpfPlGlTalL0xwmkhwy",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T23:36:11.938104Z",
+  "updatedAt": "2025-07-04T11:32:30.514Z"
+}

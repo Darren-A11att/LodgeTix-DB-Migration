@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4e9",
+  "orderId": "ee789543-427b-47d1-aedf-4b03a6c20749",
+  "orderNumber": "IND-700495YH",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "67f46b84-a3b6-4b2c-9344-28b85478179a",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "67f46b84-a3b6-4b2c-9344-28b85478179a",
+    "name": "Amitava Sen",
+    "email": "amit@sen.id.au",
+    "phone": "+61418446824"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4ea",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "7a6e25e7-6053-4bbe-a990-b9ab5a0cd358"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "7a6e25e7-6053-4bbe-a990-b9ab5a0cd358",
+      "contactId": null,
+      "firstName": "Amitava",
+      "lastName": "Sen",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4ea",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Amitava Sen",
+    "email": "amit@sen.id.au",
+    "phone": "+61418446824",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T07:24:13.362398Z",
+    "createdBy": "8fb003ff-c3ed-4cb5-b8e1-a0314bc56296",
+    "updatedAt": "2025-06-17T07:24:19.473000Z",
+    "updatedBy": null
+  }
+}

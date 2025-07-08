@@ -1,0 +1,158 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4b5",
+  "orderId": "d93f3694-5ba4-4410-84a2-8196fabe7ff1",
+  "orderNumber": "ORD-1751628752221",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "3128a88c-dd71-47dc-97a6-b7622eaad02c",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "3128a88c-dd71-47dc-97a6-b7622eaad02c",
+    "name": "TEST TEST",
+    "email": "darren@allatt.me",
+    "phone": "+61438871124"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4b6",
+      "productId": "567fa008-40de-4f87-89f5-900933f898b2",
+      "productName": "Event",
+      "variationId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "44b268de-3126-45e2-8623-79bf8352b15d"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4b7",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "c3d4e5f6-a7b8-4923-cdef-345678901234",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4b8",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "b2c3d4e5-f6a7-4891-bcde-f23456789012",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e4b9",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "44b268de-3126-45e2-8623-79bf8352b15d",
+      "contactId": null,
+      "firstName": "TEST",
+      "lastName": "TEST",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4b6",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "420.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "21"
+    },
+    "total": {
+      "$numberDecimal": "420"
+    },
+    "paid": {
+      "$numberDecimal": "420"
+    },
+    "balance": {
+      "$numberDecimal": "0"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "TEST TEST",
+    "email": "darren@allatt.me",
+    "phone": "+61438871124",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-13T03:27:24.599180Z",
+    "createdBy": "c49e6938-039f-400a-9827-bae672b09018",
+    "updatedAt": "2025-06-13T03:27:24.599180Z",
+    "updatedBy": null
+  }
+}

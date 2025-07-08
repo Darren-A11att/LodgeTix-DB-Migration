@@ -1,0 +1,91 @@
+{
+  "_id": "6867bbcc727380dc8cb8e308",
+  "contactId": "3128a88c-dd71-47dc-97a6-b7622eaad02c",
+  "firstName": "Darren",
+  "lastName": "Allatt",
+  "preferredName": null,
+  "title": null,
+  "email": "darren@allatt.me",
+  "phone": "+61438871124",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "100 Harris",
+    "line2": null,
+    "city": "Syd",
+    "state": "New South Wales",
+    "postcode": "200",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc2b": {
+      "role": "attendee",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "eventId": null,
+      "eventName": null,
+      "tableNumber": null,
+      "seatNumber": null,
+      "registeredAt": "2025-06-12T23:08:58.687360Z",
+      "registeredBy": null
+    },
+    "685beba0b2fa6b693adabc2d": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-13T02:19:56.707201Z"
+    },
+    "685beba0b2fa6b693adabc2f": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-13T03:27:24.599180Z"
+    },
+    "685beba0b2fa6b693adabc77": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-19T13:24:55.446544Z"
+    },
+    "685beba0b2fa6b693adabc76": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-19T13:16:44.933502Z"
+    },
+    "685beba0b2fa6b693adabc78": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-19T14:19:40.078471Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "attendee",
+  "createdAt": "2025-06-10T06:38:48.275737Z",
+  "updatedAt": "2025-06-10T06:38:48.275737Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

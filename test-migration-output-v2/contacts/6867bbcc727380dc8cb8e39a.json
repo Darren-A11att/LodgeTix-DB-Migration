@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e39a",
+  "contactId": "0a03ad81-d037-43ad-bbd6-b043a9b5b5a0",
+  "firstName": "DAVID",
+  "lastName": "LEABEATER",
+  "preferredName": null,
+  "title": null,
+  "email": "david.pam.l@bigpond.com",
+  "phone": "+61418227049",
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "1/55 BERITH STREET",
+    "line2": null,
+    "city": "UMINA BEACH",
+    "state": "New South Wales",
+    "postcode": "2257",
+    "country": "AU"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc50": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-23T03:07:45.530550Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-23T03:07:45.530550Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

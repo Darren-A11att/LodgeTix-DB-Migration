@@ -1,0 +1,45 @@
+{
+  "_id": "6867bbcc727380dc8cb8e382",
+  "contactId": "1c89d894-5a95-4bc3-9535-ffcfe7b246db",
+  "firstName": "Collin",
+  "lastName": "Jennings",
+  "preferredName": null,
+  "title": "Bro",
+  "email": "collin.jennings1@yahoo.com.au",
+  "phone": null,
+  "mobile": "+61413472189",
+  "alternatePhone": null,
+  "address": null,
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc28": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 0,
+      "registeredAt": "2025-06-17T04:46:11.199218Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-17T04:46:11.199218Z",
+  "updatedAt": "2025-07-04T11:32:28.122Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

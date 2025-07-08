@@ -1,0 +1,161 @@
+{
+  "_id": "6867bbd0727380dc8cb8e45f",
+  "orderId": "6103a213-c13c-4c60-b585-24a1c9d7a8f4",
+  "orderNumber": "IND-196155HD",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "a04f8908-ec4c-41e8-b2c8-6a3099418530",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "a04f8908-ec4c-41e8-b2c8-6a3099418530",
+    "name": "James Melville",
+    "email": "jrmelville1@outlook.com",
+    "phone": "+61467596643"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e460",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "8a414680-3869-44b8-bc88-b5b44571686a",
+        "32553258-07fe-40ca-9c0a-579351dd1b5c"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e461",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 2,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e462",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "8a414680-3869-44b8-bc88-b5b44571686a",
+      "contactId": null,
+      "firstName": "James",
+      "lastName": "Melville",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e460",
+      "dietaryRequirements": [
+        "Nil"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    },
+    {
+      "attendeeId": "32553258-07fe-40ca-9c0a-579351dd1b5c",
+      "contactId": null,
+      "firstName": "Yuana",
+      "lastName": "Leonardo",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e460",
+      "dietaryRequirements": [
+        "NIL"
+      ],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "340.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "3.40"
+    },
+    "total": {
+      "$numberDecimal": "340"
+    },
+    "paid": {
+      "$numberDecimal": "351.12"
+    },
+    "balance": {
+      "$numberDecimal": "-11.120000000000005"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "James Melville",
+    "email": "jrmelville1@outlook.com",
+    "phone": "+61467596643",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-21T01:01:23.916874Z",
+    "createdBy": "a3096247-1330-4962-a9cc-408d1ae72d26",
+    "updatedAt": "2025-06-21T01:01:27.547000Z",
+    "updatedBy": null
+  }
+}

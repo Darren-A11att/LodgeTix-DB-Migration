@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3db",
+  "userId": "0417ce6c-fabf-4842-8e0f-a0e720ad9430",
+  "contactId": "5b747a0a-8a9b-4bcb-9a34-cceb0c7fa8a2",
+  "email": "stan@allatt.me",
+  "phone": "+61418231401",
+  "password": "$2b$10$JRJ7lqgDXGMjdlZ4tDRJgenvu764ZrAjAZVQRXaMYSzzXgxo3g5Hm",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T02:24:47.093005Z",
+  "updatedAt": "2025-07-04T11:32:28.892Z"
+}

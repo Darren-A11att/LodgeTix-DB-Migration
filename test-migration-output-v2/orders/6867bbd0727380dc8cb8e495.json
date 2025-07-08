@@ -1,0 +1,158 @@
+{
+  "_id": "6867bbd0727380dc8cb8e495",
+  "orderId": "825de05a-d4b0-4345-bb87-458243d82b57",
+  "orderNumber": "ORD-1751628752217",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "04e5fd04-90d8-4755-a40c-ffe6d1a2e5a3",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "04e5fd04-90d8-4755-a40c-ffe6d1a2e5a3",
+    "name": "David Ingram",
+    "email": "milpoldave@hotmail.com",
+    "phone": "+618108098204134"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e496",
+      "productId": "03a51924-1606-47c9-838d-9dc32657cd59",
+      "productName": "Event",
+      "variationId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "b3ecace6-b0a7-432c-b961-f55d01d7175e"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e497",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e498",
+      "productId": "567fa008-40de-4f87-89f5-900933f898b2",
+      "productName": "Event",
+      "variationId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e499",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "b3ecace6-b0a7-432c-b961-f55d01d7175e",
+      "contactId": null,
+      "firstName": "David",
+      "lastName": "Ingram",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e496",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "280.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "0.00"
+    },
+    "platformFee": {
+      "$numberDecimal": "14"
+    },
+    "total": {
+      "$numberDecimal": "280"
+    },
+    "paid": {
+      "$numberDecimal": "280"
+    },
+    "balance": {
+      "$numberDecimal": "0"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "David Ingram",
+    "email": "milpoldave@hotmail.com",
+    "phone": "+618108098204134",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-15T04:34:17.921564Z",
+    "createdBy": "3d64d116-d885-44ac-acc0-cd61f14523f0",
+    "updatedAt": "2025-06-15T04:34:17.921564Z",
+    "updatedBy": null
+  }
+}

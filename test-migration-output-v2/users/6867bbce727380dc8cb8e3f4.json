@@ -1,0 +1,24 @@
+{
+  "_id": "6867bbce727380dc8cb8e3f4",
+  "userId": "c8a2353d-6516-4ce1-a426-a3d2d4e1d806",
+  "contactId": "9f94979a-3876-41c1-8ce0-5303fbd0db22",
+  "email": "petergoodridge@hotmail.com",
+  "phone": null,
+  "password": "$2b$10$2BmkWOXu/dEkKo/MAa4bRuGA1wAgXFTlsC4J3.poh3h4r3Dnhqwh.",
+  "authProviders": {},
+  "roles": [
+    "user"
+  ],
+  "permissions": [
+    "manage_bookings"
+  ],
+  "status": "active",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "lastLogin": null,
+  "loginCount": 0,
+  "passwordResetToken": null,
+  "passwordResetExpires": null,
+  "createdAt": "2025-06-17T05:11:26.708437Z",
+  "updatedAt": "2025-07-04T11:32:30.166Z"
+}

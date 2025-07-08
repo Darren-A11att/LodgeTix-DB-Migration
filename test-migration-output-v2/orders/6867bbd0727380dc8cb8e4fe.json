@@ -1,0 +1,130 @@
+{
+  "_id": "6867bbd0727380dc8cb8e4fe",
+  "orderId": "f17891a7-db69-4e4a-874e-eb6716b5869b",
+  "orderNumber": "IND-977258NR",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "2ccb4657-7b69-4fd6-a43a-08eae646726a",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "2ccb4657-7b69-4fd6-a43a-08eae646726a",
+    "name": "Phillip  Robertson",
+    "email": "pcrobbo4@bigpond.com",
+    "phone": "+61434926359"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e4ff",
+      "productId": "e842bdb2-aff8-46d8-a347-bf50840fff13",
+      "productName": "Event",
+      "variationId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "cf9e23bd-4cc9-481f-b591-c6484ec5284b"
+      ]
+    },
+    {
+      "_id": "6867bbd0727380dc8cb8e500",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": []
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "cf9e23bd-4cc9-481f-b591-c6484ec5284b",
+      "contactId": null,
+      "firstName": "Phillip ",
+      "lastName": "Robertson ",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e4ff",
+      "dietaryRequirements": [
+        "Nil"
+      ],
+      "specialNeeds": "Nil",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "90.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "2.88"
+    },
+    "platformFee": {
+      "$numberDecimal": "4.5"
+    },
+    "total": {
+      "$numberDecimal": "90"
+    },
+    "paid": {
+      "$numberDecimal": "92.88"
+    },
+    "balance": {
+      "$numberDecimal": "-2.8799999999999955"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Phillip  Robertson",
+    "email": "pcrobbo4@bigpond.com",
+    "phone": "+61434926359",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T05:08:26.878415Z",
+    "createdBy": "492b8271-45f4-49d5-9933-eb6c3284d857",
+    "updatedAt": "2025-06-17T05:08:34.089000Z",
+    "updatedBy": null
+  }
+}

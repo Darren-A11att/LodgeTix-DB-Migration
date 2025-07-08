@@ -1,0 +1,81 @@
+{
+  "_id": "6867bbd0727380dc8cb8e515",
+  "orderId": "5a23d8f2-3c33-40da-8b4a-33231fb17d2a",
+  "orderNumber": "LDG-061926PC",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "organisation",
+    "contactId": "8821fcdc-eb0a-4d6c-bd87-07b1339e874e",
+    "organisationId": "c68475ee-f675-48f2-a38f-058b815ed85d"
+  },
+  "booking": {
+    "contactId": "8821fcdc-eb0a-4d6c-bd87-07b1339e874e",
+    "name": "Franciscuss Sunga",
+    "email": "lodgehoracethompsonryde134@gmail.com",
+    "phone": "+61400956671"
+  },
+  "lineItems": [],
+  "attendees": [],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "0"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "20.54"
+    },
+    "platformFee": {
+      "$numberDecimal": "20.00"
+    },
+    "total": {
+      "$numberDecimal": "1150"
+    },
+    "paid": {
+      "$numberDecimal": "1190.54"
+    },
+    "balance": {
+      "$numberDecimal": "-40.539999999999964"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Franciscuss Sunga",
+    "email": "lodgehoracethompsonryde134@gmail.com",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": "Lodge Horace Thompson Ryde No. 134"
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-17T03:14:09.211544Z",
+    "createdBy": null,
+    "updatedAt": "2025-06-17T03:14:09.211544Z",
+    "updatedBy": null
+  }
+}

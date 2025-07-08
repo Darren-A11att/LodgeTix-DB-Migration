@@ -1,0 +1,52 @@
+{
+  "_id": "6867bbcc727380dc8cb8e3b1",
+  "contactId": "ab81e12a-7402-4a56-a201-e187506575ec",
+  "firstName": "Robert",
+  "lastName": "Moore",
+  "preferredName": null,
+  "title": null,
+  "email": "jemrm2@bigpond.com",
+  "phone": null,
+  "mobile": null,
+  "alternatePhone": null,
+  "address": {
+    "line1": "47 Kiber Drive",
+    "line2": null,
+    "city": "Glenmore Park",
+    "state": "",
+    "postcode": "2745",
+    "country": "Australia"
+  },
+  "masonicProfile": null,
+  "registrations": {
+    "685beba0b2fa6b693adabc7f": {
+      "role": "bookingContact",
+      "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "functionName": "",
+      "bookingsManaged": 1,
+      "registeredAt": "2025-06-23T00:25:27.048399Z"
+    }
+  },
+  "organizations": {},
+  "hosting": {},
+  "relationships": {
+    "partners": [],
+    "emergencyContacts": []
+  },
+  "profile": {
+    "dateOfBirth": null,
+    "dietaryRequirements": [],
+    "specialNeeds": null,
+    "preferredCommunication": "email"
+  },
+  "hasUserAccount": true,
+  "isActive": true,
+  "tags": [
+    "booking-contact"
+  ],
+  "source": "registration",
+  "createdAt": "2025-06-23T00:25:27.048399Z",
+  "updatedAt": "2025-07-04T11:32:28.123Z",
+  "createdBy": "migration",
+  "updatedBy": "migration"
+}

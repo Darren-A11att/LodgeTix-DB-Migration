@@ -1,0 +1,90 @@
+{
+  "_id": "6867bbd0727380dc8cb8e49d",
+  "orderId": "854e821d-294c-4353-a8de-7fdf1db24e25",
+  "orderNumber": "IND-459113UR",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": null,
+    "organisationId": null
+  },
+  "booking": null,
+  "lineItems": [],
+  "attendees": [
+    {
+      "attendeeId": "45a6f4f2-48ae-4c59-9efc-4c83d5f212eb",
+      "contactId": "c1a2f54b-0f95-4b92-8d01-4a27b63dde5b",
+      "firstName": "Robert",
+      "lastName": "Dupel",
+      "email": "robertdupel@gmail.com",
+      "phone": "+618197441119",
+      "ticketId": null,
+      "lineItemId": null,
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "280.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "10.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "14"
+    },
+    "total": {
+      "$numberDecimal": "0"
+    },
+    "paid": {
+      "$numberDecimal": "296.27"
+    },
+    "balance": {
+      "$numberDecimal": "-296.27"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "",
+    "email": "",
+    "phone": null,
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-08T18:01:58.453022Z",
+    "createdBy": "5151ecd7-8698-4f96-9e3d-64fc8be176ef",
+    "updatedAt": "2025-06-08T18:02:06.630000Z",
+    "updatedBy": null
+  }
+}

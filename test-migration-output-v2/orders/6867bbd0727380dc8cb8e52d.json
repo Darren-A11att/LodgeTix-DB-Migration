@@ -1,0 +1,113 @@
+{
+  "_id": "6867bbd0727380dc8cb8e52d",
+  "orderId": "7ee60664-7a6a-4b62-894f-05e786d3694b",
+  "orderNumber": "IND-144189FZ",
+  "orderType": "registration",
+  "catalogObjectId": "685beba0b2fa6b693adaba43",
+  "status": "paid",
+  "customer": {
+    "type": "individual",
+    "contactId": "666155e2-22de-46d1-ab8b-619db3c78401",
+    "organisationId": null
+  },
+  "booking": {
+    "contactId": "666155e2-22de-46d1-ab8b-619db3c78401",
+    "name": "Jon Bon Jovi Macaraeg",
+    "email": "jonbonjovi.macaraeg@gmail.com",
+    "phone": "+61456899334"
+  },
+  "lineItems": [
+    {
+      "_id": "6867bbd0727380dc8cb8e52e",
+      "productId": "6c12952b-7cf3-4d6a-81bd-1ac3b7ff7076",
+      "productName": "Event",
+      "variationId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+      "variationName": "Standard Ticket",
+      "quantity": 1,
+      "unitPrice": {
+        "$numberDecimal": "0"
+      },
+      "totalPrice": {
+        "$numberDecimal": "0"
+      },
+      "attendees": [
+        "6d6429b6-c10c-41bb-a306-e77802ea0312"
+      ]
+    }
+  ],
+  "attendees": [
+    {
+      "attendeeId": "6d6429b6-c10c-41bb-a306-e77802ea0312",
+      "contactId": null,
+      "firstName": "Jon Bon Jovi",
+      "lastName": "Macaraeg",
+      "email": "",
+      "phone": null,
+      "ticketId": null,
+      "lineItemId": "6867bbd0727380dc8cb8e52e",
+      "dietaryRequirements": [],
+      "specialNeeds": "",
+      "masonicProfile": null
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "$numberDecimal": "20.00"
+    },
+    "discount": {
+      "$numberDecimal": "0"
+    },
+    "tax": {
+      "$numberDecimal": "0"
+    },
+    "merchantFee": {
+      "$numberDecimal": "1.67"
+    },
+    "platformFee": {
+      "$numberDecimal": "1"
+    },
+    "total": {
+      "$numberDecimal": "20"
+    },
+    "paid": {
+      "$numberDecimal": "21.67"
+    },
+    "balance": {
+      "$numberDecimal": "-1.6700000000000017"
+    },
+    "currency": "AUD"
+  },
+  "payment": {
+    "status": "pending",
+    "method": "unknown",
+    "transactions": []
+  },
+  "billing": {
+    "contactId": null,
+    "name": "Jon Bon Jovi Macaraeg",
+    "email": "jonbonjovi.macaraeg@gmail.com",
+    "phone": "+61456899334",
+    "address": {
+      "line1": "",
+      "line2": "",
+      "city": "",
+      "state": "",
+      "postcode": "",
+      "country": "Australia"
+    },
+    "abn": "",
+    "organisationName": ""
+  },
+  "notes": "",
+  "metadata": {
+    "source": {
+      "channel": "online",
+      "device": "desktop",
+      "ipAddress": ""
+    },
+    "createdAt": "2025-06-18T07:35:52.315247Z",
+    "createdBy": "81da2517-71fe-43c1-96d2-f3c8f739048e",
+    "updatedAt": "2025-06-18T07:35:59.258000Z",
+    "updatedBy": null
+  }
+}
