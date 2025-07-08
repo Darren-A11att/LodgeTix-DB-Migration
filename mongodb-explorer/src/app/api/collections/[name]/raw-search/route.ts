@@ -1,38 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { connectMongoDB } from '@/lib/mongodb';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ name: string }> }
 ) {
   try {
-    const { searchText, limit = 50 } = await request.json();
+    const { name } = await params;
+    const body = await request.json();
+    const { search } = body;
     
-    // Await params as required in Next.js 15
-    const { name: collection } = await params;
-    
-    if (!searchText || searchText.trim().length === 0) {
+    if (!search) {
       return NextResponse.json(
         { error: 'Search text is required' },
         { status: 400 }
       );
     }
-
-    // Get the API port from the port config or use default
-    const apiPort = process.env.API_PORT || '3006';
     
-    // First, get all documents from the collection (with a reasonable limit)
-    const docsUrl = `http://localhost:${apiPort}/api/collections/${collection}/documents?limit=1000`;
-    const docsResponse = await fetch(docsUrl);
+    const { db } = await connectMongoDB();
     
-    if (!docsResponse.ok) {
-      throw new Error(`Failed to fetch documents: ${docsResponse.statusText}`);
+    // Check if collection exists
+    const collections = await db.listCollections({ name }).toArray();
+    if (collections.length === 0) {
+      return NextResponse.json(
+        { error: 'Collection not found' },
+        { status: 404 }
+      );
     }
     
-    const docsData = await docsResponse.json();
-    const documents = docsData.documents || [];
+    // Get all documents from collection
+    const documents = await db.collection(name).find({}).toArray();
     
-    // Perform raw text search on all documents
-    const searchLower = searchText.toLowerCase();
+    const searchLower = search.toLowerCase();
     const matches = [];
     
     for (const doc of documents) {
@@ -41,7 +40,7 @@ export async function POST(
       
       if (docString.includes(searchLower)) {
         // Find which fields contain the search text
-        const matchedFields = [];
+        const matchedFields: { field: string; value: any; snippet: string }[] = [];
         
         const searchInObject = (obj: any, path: string = '') => {
           for (const key in obj) {
@@ -81,34 +80,25 @@ export async function POST(
         
         searchInObject(doc);
         
-        matches.push({
-          document: doc,
-          matchedFields,
-          score: matchedFields.length
-        });
+        if (matchedFields.length > 0) {
+          matches.push({
+            document: doc,
+            matchedFields
+          });
+        }
       }
     }
     
-    // Sort by score (number of matching fields)
-    matches.sort((a, b) => b.score - a.score);
-    
-    // Limit results
-    const limitedMatches = matches.slice(0, limit);
-    
     return NextResponse.json({
-      documents: limitedMatches.map(m => m.document),
-      matches: limitedMatches,
-      total: matches.length,
-      limit,
-      skip: 0,
-      collection,
-      searchText
+      total: documents.length,
+      matchCount: matches.length,
+      matches
     });
     
   } catch (error) {
     console.error('Raw search error:', error);
     return NextResponse.json(
-      { error: 'Failed to perform raw text search' },
+      { error: 'Failed to perform search' },
       { status: 500 }
     );
   }

@@ -48,11 +48,8 @@ export class PaymentRegistrationMatcher {
    * Match a single payment to a registration
    */
   async matchPayment(payment: PaymentData): Promise<MatchResult> {
-<<<<<<< HEAD
     const issues: string[] = [];
     
-=======
->>>>>>> origin/main
     // Try different matching strategies in order of preference
     
     // 1. Try exact payment ID match
@@ -79,36 +76,25 @@ export class PaymentRegistrationMatcher {
       return {
         payment,
         registration,
-        matchConfidence: amountMatch && timeMatch ? 90 : 70,
+        matchConfidence: amountMatch && timeMatch ? 80 : 60,
         matchMethod: 'metadata',
         issues: this.collectIssues(amountMatch, timeMatch, payment, registration)
       };
     }
 
-    // 3. Try fuzzy match by amount and time
+    // 3. Try fuzzy match by amount and time window
     registration = await this.matchByAmountAndTime(payment);
     if (registration) {
+      const amountMatch = this.validateAmount(payment.amount, registration.totalAmount);
+      const timeMatch = this.validateTimestamp(payment.timestamp, registration.createdAt);
+      
       return {
         payment,
         registration,
-        matchConfidence: 60,
-        matchMethod: 'amount_time',
-        issues: ['Matched by amount and time only - no payment ID match']
+        matchConfidence: 40,
+        matchMethod: 'fuzzy',
+        issues: this.collectIssues(amountMatch, timeMatch, payment, registration)
       };
-    }
-
-    // 4. Try email match with amount
-    if (payment.customerEmail) {
-      registration = await this.matchByEmailAndAmount(payment);
-      if (registration) {
-        return {
-          payment,
-          registration,
-          matchConfidence: 50,
-          matchMethod: 'email_amount',
-          issues: ['Matched by email and amount only - verify manually']
-        };
-      }
     }
 
     // No match found
@@ -121,54 +107,61 @@ export class PaymentRegistrationMatcher {
     };
   }
 
-  private async matchByPaymentId(payment: PaymentData): Promise<RegistrationData | null> {
-    const paymentId = payment.paymentId || payment.transactionId;
+  /**
+   * Match multiple payments in batch
+   */
+  async matchPayments(payments: PaymentData[]): Promise<MatchResult[]> {
+    const results: MatchResult[] = [];
     
-    if (payment.source === 'square') {
-      // Try multiple field variations for Square
-      return await this.registrationsCollection.findOne({
-        $or: [
-          { square_payment_id: paymentId },
-          { squarePaymentId: paymentId },
-          { 'registrationData.square_payment_id': paymentId }
-        ]
-      });
-    } else {
-      // Try multiple field variations for Stripe
-      return await this.registrationsCollection.findOne({
-        $or: [
-          { stripe_payment_intent_id: paymentId },
-          { stripePaymentIntentId: paymentId },
-          { 'registrationData.stripe_payment_intent_id': paymentId }
-        ]
-      });
+    for (const payment of payments) {
+      const result = await this.matchPayment(payment);
+      results.push(result);
     }
+    
+    return results;
+  }
+
+  private async matchByPaymentId(payment: PaymentData): Promise<RegistrationData | null> {
+    const query = payment.source === 'square' 
+      ? {
+          $or: [
+            { square_payment_id: payment.paymentId },
+            { squarePaymentId: payment.paymentId },
+            { 'paymentInfo.square_payment_id': payment.paymentId },
+            { 'paymentData.paymentId': payment.paymentId }
+          ]
+        }
+      : {
+          $or: [
+            { stripe_payment_intent_id: payment.transactionId },
+            { stripePaymentIntentId: payment.transactionId },
+            { 'paymentInfo.stripe_payment_intent_id': payment.transactionId },
+            { 'paymentData.transactionId': payment.transactionId }
+          ]
+        };
+
+    return await this.registrationsCollection.findOne(query);
   }
 
   private async matchByMetadata(payment: PaymentData): Promise<RegistrationData | null> {
-    if (!payment.originalData) return null;
+    if (!payment.metadata) return null;
 
-    // Extract metadata fields
-    const metadata = payment.originalData;
-    const registrationId = metadata['registrationId (metadata)'] || 
-                          metadata['registrationId'] ||
-                          metadata.registrationId;
+    const registrationId = payment.metadata.registrationId || 
+                          payment.metadata.registration_id ||
+                          payment.originalData?.metadata?.registration_id;
 
-    if (registrationId) {
-      return await this.registrationsCollection.findOne({
-        $or: [
-          { registrationId: registrationId },
-          { _id: registrationId }
-        ]
-      });
-    }
+    if (!registrationId) return null;
 
-    return null;
+    return await this.registrationsCollection.findOne({
+      $or: [
+        { registrationId: registrationId },
+        { _id: registrationId }
+      ]
+    });
   }
 
   private async matchByAmountAndTime(payment: PaymentData): Promise<RegistrationData | null> {
-    // Look for registrations within 5 minutes of payment time
-    const timeWindow = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const timeWindow = 24 * 60 * 60 * 1000; // 24 hours
     const startTime = new Date(payment.timestamp.getTime() - timeWindow);
     const endTime = new Date(payment.timestamp.getTime() + timeWindow);
 
@@ -181,24 +174,14 @@ export class PaymentRegistrationMatcher {
     });
   }
 
-  private async matchByEmailAndAmount(payment: PaymentData): Promise<RegistrationData | null> {
-    if (!payment.customerEmail) return null;
-
-    return await this.registrationsCollection.findOne({
-      customerEmail: payment.customerEmail,
-      totalAmount: payment.amount
-    });
-  }
-
   private validateAmount(paymentAmount: number, registrationAmount: number): boolean {
-    // Allow for small rounding differences (within $0.10)
-    return Math.abs(paymentAmount - registrationAmount) <= 0.10;
+    const tolerance = 0.01; // 1 cent tolerance
+    return Math.abs(paymentAmount - registrationAmount) <= tolerance;
   }
 
   private validateTimestamp(paymentTime: Date, registrationTime: Date): boolean {
-    // Check if times are within 10 minutes of each other
-    const timeDiff = Math.abs(paymentTime.getTime() - registrationTime.getTime());
-    return timeDiff <= 10 * 60 * 1000; // 10 minutes
+    const maxDiff = 7 * 24 * 60 * 60 * 1000; // 7 days
+    return Math.abs(paymentTime.getTime() - registrationTime.getTime()) <= maxDiff;
   }
 
   private collectIssues(
@@ -208,88 +191,16 @@ export class PaymentRegistrationMatcher {
     registration: RegistrationData
   ): string[] {
     const issues: string[] = [];
-
-    if (!amountMatch) {
-      issues.push(`Amount mismatch: Payment ${payment.amount} vs Registration ${registration.totalAmount}`);
-    }
-
-    if (!timeMatch) {
-      issues.push(`Time mismatch: Payment ${payment.timestamp} vs Registration ${registration.createdAt}`);
-    }
-
-    return issues;
-  }
-
-  /**
-   * Match all unprocessed payments
-   */
-  async matchAllPayments(): Promise<MatchResult[]> {
-    const unmatchedPayments = await this.paymentsCollection.find({
-      $and: [
-        {
-          $or: [
-            { invoiceCreated: { $ne: true } },
-            { invoiceCreated: { $exists: false } }
-          ]
-        },
-        {
-          $or: [
-            { invoiceDeclined: { $ne: true } },
-            { invoiceDeclined: { $exists: false } }
-          ]
-        }
-      ]
-    }).sort({ timestamp: 1 }).toArray(); // Sort by oldest first
-
-    const results: MatchResult[] = [];
-
-    for (const payment of unmatchedPayments) {
-      const result = await this.matchPayment(payment);
-      results.push(result);
-    }
-
-    return results;
-  }
-
-  /**
-   * Get match statistics
-   */
-  async getMatchStatistics(): Promise<{
-    total: number;
-    matched: number;
-    unmatched: number;
-    byConfidence: Record<string, number>;
-    byMethod: Record<string, number>;
-  }> {
-    const results = await this.matchAllPayments();
     
-    const stats = {
-      total: results.length,
-      matched: results.filter(r => r.registration !== null).length,
-      unmatched: results.filter(r => r.registration === null).length,
-      byConfidence: {} as Record<string, number>,
-      byMethod: {} as Record<string, number>
-    };
-
-    // Group by confidence levels
-    const confidenceBuckets = [
-      { range: '90-100', min: 90, max: 100 },
-      { range: '70-89', min: 70, max: 89 },
-      { range: '50-69', min: 50, max: 69 },
-      { range: '0-49', min: 0, max: 49 }
-    ];
-
-    confidenceBuckets.forEach(bucket => {
-      stats.byConfidence[bucket.range] = results.filter(
-        r => r.matchConfidence >= bucket.min && r.matchConfidence <= bucket.max
-      ).length;
-    });
-
-    // Group by method
-    results.forEach(result => {
-      stats.byMethod[result.matchMethod] = (stats.byMethod[result.matchMethod] || 0) + 1;
-    });
-
-    return stats;
+    if (!amountMatch) {
+      issues.push(`Amount mismatch: payment ${payment.amount} vs registration ${registration.totalAmount}`);
+    }
+    
+    if (!timeMatch) {
+      const daysDiff = Math.abs(payment.timestamp.getTime() - registration.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      issues.push(`Time difference: ${daysDiff.toFixed(1)} days`);
+    }
+    
+    return issues;
   }
 }

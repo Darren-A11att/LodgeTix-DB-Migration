@@ -11,17 +11,18 @@ export async function POST(request: NextRequest) {
     
     if (!payment || !registration) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Payment and registration are required' },
         { status: 400 }
       );
     }
 
-    // Connect to MongoDB
     const { db } = await connectMongoDB();
+    
+    // Initialize services
     const invoiceSequence = new InvoiceSequence(db);
     const transactionService = new TransactionService(db);
     
-    // Use payment date for invoice number generation
+    // Get payment date for invoice numbering
     const paymentDate = payment.timestamp ? new Date(payment.timestamp) : new Date();
     
     // Generate customer invoice number
@@ -30,41 +31,55 @@ export async function POST(request: NextRequest) {
     // Generate supplier invoice number (same number, different prefix)
     const supplierInvoiceNumber = customerInvoiceNumber.replace('LTIV-', 'LTSP-');
     
+    // Convert IDs to ObjectId if they're strings
+    const paymentId = payment._id ? 
+      (typeof payment._id === 'string' ? new ObjectId(payment._id) : payment._id) : 
+      null;
+    const registrationId = registration._id ? 
+      (typeof registration._id === 'string' ? new ObjectId(registration._id) : registration._id) : 
+      null;
+    
     // Prepare invoice documents with generated invoice numbers
-    const invoicesToInsert = [];
+    const invoicesToInsert: any[] = [];
     let customerInvoiceId = null;
     
     if (customerInvoice) {
+      // Clean the invoice data before storing
+      const cleanedCustomerInvoice = cleanInvoiceData(customerInvoice);
+      
       customerInvoiceId = new ObjectId();
       invoicesToInsert.push({
         _id: customerInvoiceId,
-        ...customerInvoice,
+        ...cleanedCustomerInvoice,
         invoiceNumber: customerInvoiceNumber,
-        paymentId: payment._id,
-        registrationId: registration._id,
+        paymentId: paymentId,
+        registrationId: registrationId,
         createdAt: new Date(),
         updatedAt: new Date()
       });
     }
     
     if (supplierInvoice) {
+      // Clean the invoice data before storing
+      const cleanedSupplierInvoice = cleanInvoiceData(supplierInvoice);
+      
       invoicesToInsert.push({
         _id: new ObjectId(),
-        ...supplierInvoice,
+        ...cleanedSupplierInvoice,
         invoiceNumber: supplierInvoiceNumber,
-        paymentId: payment._id,
-        registrationId: registration._id,
+        paymentId: paymentId,
+        registrationId: registrationId,
         createdAt: new Date(),
         updatedAt: new Date()
       });
     }
     
-    // Start a transaction to ensure all updates happen together
+    // Start a session for atomic transaction
     const session = (db as any).client.startSession();
     
     try {
       await session.withTransaction(async () => {
-        // Insert invoices
+        // Insert invoices if any
         if (invoicesToInsert.length > 0) {
           await db.collection('invoices').insertMany(invoicesToInsert, { session });
         }
@@ -74,7 +89,7 @@ export async function POST(request: NextRequest) {
         
         // Update payment as processed
         await db.collection('payments').updateOne(
-          { _id: payment._id },
+          { _id: paymentId },
           { 
             $set: { 
               customerInvoiceNumber: customerInvoiceNumber,
@@ -99,7 +114,7 @@ export async function POST(request: NextRequest) {
         
         // Update registration as processed
         await db.collection('registrations').updateOne(
-          { _id: registration._id },
+          { _id: registrationId },
           { 
             $set: { 
               customerInvoiceNumber: customerInvoiceNumber,
@@ -146,26 +161,45 @@ export async function POST(request: NextRequest) {
           
           console.log(`Created ${transactionIds.length} transaction records for invoice ${customerInvoiceNumber}`);
         });
-      } catch (transactionError) {
-        console.error('Error creating transactions:', transactionError);
-        // Don't fail the invoice creation if transaction creation fails
       } finally {
         await transactionSession.endSession();
       }
     }
     
-    // Return the generated invoice numbers
     return NextResponse.json({
       success: true,
       customerInvoiceNumber,
-      supplierInvoiceNumber
+      supplierInvoiceNumber,
+      invoiceId: customerInvoiceId?.toString(),
+      message: 'Invoices created successfully'
     });
     
   } catch (error) {
-    console.error('Error creating invoice:', error);
+    console.error('Error creating invoices:', error);
     return NextResponse.json(
-      { error: 'Failed to create invoice' },
+      { error: 'Failed to create invoices' },
       { status: 500 }
     );
   }
+}
+
+// Helper function to clean invoice data
+function cleanInvoiceData(invoice: any) {
+  const cleaned = { ...invoice };
+  
+  // Remove any _id fields that might exist from preview
+  delete cleaned._id;
+  delete cleaned.paymentId;
+  delete cleaned.registrationId;
+  
+  // Ensure date fields are proper Date objects
+  if (cleaned.date && typeof cleaned.date === 'string') {
+    cleaned.date = new Date(cleaned.date);
+  }
+  
+  if (cleaned.payment?.paidDate && typeof cleaned.payment.paidDate === 'string') {
+    cleaned.payment.paidDate = new Date(cleaned.payment.paidDate);
+  }
+  
+  return cleaned;
 }

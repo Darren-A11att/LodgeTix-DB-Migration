@@ -12,12 +12,18 @@ export async function POST(request: NextRequest) {
       supplier: {
         name: 'Test Supplier',
         abn: '12 345 678 901',
-        address: '123 Test Street, Sydney NSW 2000'
+        address: '123 Test Street, Sydney NSW 2000',
+        issuedBy: 'Test Issuer'
       },
       billTo: {
-        name: 'Test Customer',
+        firstName: 'Test',
+        lastName: 'Customer',
         email: 'darren@allatt.me',
-        phone: '+61 400 000 000'
+        addressLine1: '456 Customer Street',
+        city: 'Sydney',
+        postalCode: '2000',
+        stateProvince: 'NSW',
+        country: 'AU'
       },
       items: [
         {
@@ -27,39 +33,35 @@ export async function POST(request: NextRequest) {
         }
       ],
       subtotal: 100,
-      processingFees: 2.50,
-      gstIncluded: 10.23,
-      total: 102.50,
-      payment: {
-        method: 'credit_card',
-        transactionId: 'test_123',
-        paidDate: new Date(),
-        amount: 102.50,
-        currency: 'AUD',
-        status: 'completed',
-        source: 'test'
-      }
+      processingFees: 0,
+      gstIncluded: 10,
+      total: 100
     };
 
-    // Create a simple test PDF content
-    const pdfContent = 'Test PDF Content';
+    // Create a test PDF blob (simple placeholder)
+    const pdfContent = 'This is a test PDF content';
     const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
 
-    await sendInvoiceEmail({
-      invoice: testInvoice,
+    // Send the email
+    const result = await sendInvoiceEmail({
       pdfBlob,
+      invoice: testInvoice,
       recipientEmail: 'darren@allatt.me',
-      recipientName: 'Darren Allatt'
+      recipientName: 'Test Customer'
     });
-    
+
     return NextResponse.json({
       success: true,
-      message: 'Test invoice email sent to darren@allatt.me'
+      message: 'Test email sent successfully',
+      emailId: result.id
     });
   } catch (error) {
-    console.error('Error sending test invoice email:', error);
+    console.error('Error sending test email:', error);
     return NextResponse.json(
-      { error: 'Failed to send test invoice email', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Failed to send test email',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

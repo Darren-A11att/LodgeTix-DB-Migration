@@ -7,12 +7,19 @@ export interface InvoiceSupplier {
     name: string;
     abn: string;
     address: string;
+    issuedBy: string;
 }
 export interface InvoiceBillTo {
-    name: string;
+    businessName?: string;
+    businessNumber?: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    phone?: string;
-    address?: string;
+    addressLine1: string;
+    city: string;
+    postalCode: string;
+    stateProvince: string;
+    country: string;
 }
 export interface InvoicePayment {
     method: 'credit_card' | 'debit_card' | 'bank_transfer' | 'paypal' | 'stripe' | 'other';
@@ -24,10 +31,13 @@ export interface InvoicePayment {
     cardBrand?: string;
     receiptUrl?: string;
     status: 'completed' | 'processing' | 'failed' | 'refunded';
+    source?: string;
+    statementDescriptor?: string;
 }
 export interface Invoice {
     _id?: string;
     invoiceNumber: string;
+    invoiceType?: 'customer' | 'supplier';
     date: Date;
     status: 'paid' | 'pending' | 'overdue' | 'cancelled';
     supplier: InvoiceSupplier;

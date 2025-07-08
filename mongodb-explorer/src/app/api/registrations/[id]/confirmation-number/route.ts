@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectMongoDB } from '@/lib/mongodb';
 import { generateConfirmationNumber, isValidConfirmationNumber } from '@/utils/confirmation-number';
+import { ObjectId } from 'mongodb';
 
 export async function POST(
   request: NextRequest,
@@ -12,10 +13,10 @@ export async function POST(
     const body = await request.json();
     const { confirmationNumber, registrationType } = body;
     
-    const { db } = await connectToDatabase();
+    const { db } = await connectMongoDB();
     
     // First, get the registration to check current state
-    const registration = await db.collection('registrations').findOne({ _id: id });
+    const registration = await db.collection('registrations').findOne({ _id: new ObjectId(id) });
     
     if (!registration) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function POST(
     
     // Update the registration with the confirmation number
     const result = await db.collection('registrations').updateOne(
-      { _id: id },
+      { _id: new ObjectId(id) },
       { 
         $set: { 
           confirmationNumber: finalConfirmationNumber,
