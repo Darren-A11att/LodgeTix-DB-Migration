@@ -1,0 +1,17 @@
+
+> lodgetix---reconcile@1.0.0 server
+> ts-node src/server.ts
+
+Loaded default mapping for catalog-objects
+🚀 API Server running at http://localhost:3006
+
+Press Ctrl+C to stop the server
+Loaded default mapping for contacts
+Loaded default mapping for financial-transactions
+Loaded default mapping for jurisdictions
+Loaded default mapping for lodges
+Loaded default mapping for orders
+Loaded default mapping for organisations
+Loaded default mapping for tickets
+Loaded default mapping for users
+Connected to MongoDB

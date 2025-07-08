@@ -42,7 +42,7 @@ const getOptionalEnv = (key: string, defaultValue: string): string => {
 export const config: Config = {
   supabase: {
     url: getRequiredEnv('SUPABASE_URL'),
-    key: getRequiredEnv('SUPABASE_KEY'),
+    key: getRequiredEnv('SUPABASE_ANON_KEY'),
   },
   postgres: {
     host: getOptionalEnv('POSTGRES_HOST', 'localhost'),

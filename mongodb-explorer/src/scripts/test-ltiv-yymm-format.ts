@@ -77,7 +77,7 @@ async function testLTIVYYMMFormat() {
     
     console.log('\n✓ Invoice created successfully:');
     console.log(`  Invoice Number: ${invoice.invoiceNumber}`);
-    console.log(`  Customer: ${invoice.billTo.name}`);
+    console.log(`  Customer: ${invoice.billTo.firstName} ${invoice.billTo.lastName}`);
     console.log(`  Total: $${invoice.total.toFixed(2)}`);
     console.log(`  Database ID: ${result.insertedId}`);
     
