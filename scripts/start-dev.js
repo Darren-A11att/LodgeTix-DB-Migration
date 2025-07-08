@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -15,6 +15,17 @@ const colors = {
 
 function log(message, color = colors.reset) {
   console.log(`${color}${message}${colors.reset}`);
+}
+
+// Kill process on a specific port
+function killProcessOnPort(port) {
+  try {
+    // Use lsof to find process using the port and kill it
+    execSync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`, { stdio: 'ignore' });
+    log(`🔪 Killed process on port ${port}`, colors.yellow);
+  } catch (error) {
+    // No process was using the port, which is fine
+  }
 }
 
 // Wait for port config file to be created
@@ -86,6 +97,16 @@ function startProcess(command, args, name, color) {
 async function main() {
   log('\n🚀 Starting LodgeTix Reconcile Development Environment\n', colors.bright + colors.green);
   
+  // Kill processes on common ports first
+  log('\n🧹 Cleaning up ports...', colors.yellow);
+  killProcessOnPort(3006); // API server
+  killProcessOnPort(3005); // MongoDB Explorer
+  killProcessOnPort(3002); // MongoDB Explorer alternate
+  killProcessOnPort(3003); // Migration Viewer
+  
+  // Wait a moment for ports to be freed
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
   // Setup migration viewer if needed
   try {
     require('./setup-migration-viewer');
@@ -111,7 +132,7 @@ async function main() {
     setTimeout(() => {
       log('\n📌 Services are running at:', colors.bright);
       log(`   API Server:        http://localhost:${config.apiPort}`, colors.blue);
-      log(`   MongoDB Explorer:  http://localhost:3002`, colors.yellow);
+      log(`   MongoDB Explorer:  http://localhost:3005`, colors.yellow);
       log(`   Migration Viewer:  http://localhost:3003`, colors.green);
       log('\n   Press Ctrl+C to stop all services\n', colors.bright);
     }, 3000);

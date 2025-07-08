@@ -48,11 +48,8 @@ export class PaymentRegistrationMatcher {
    * Match a single payment to a registration
    */
   async matchPayment(payment: PaymentData): Promise<MatchResult> {
-<<<<<<< HEAD
     const issues: string[] = [];
     
-=======
->>>>>>> origin/main
     // Try different matching strategies in order of preference
     
     // 1. Try exact payment ID match

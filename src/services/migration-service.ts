@@ -245,7 +245,7 @@ export class MigrationService {
         const matches = expression.match(fieldPattern);
         
         if (matches) {
-          matches.forEach(match => {
+          matches.forEach((match: string) => {
             const fieldPath = match.slice(1, -1); // Remove { and }
             let value = this.getValueByPath(sourceData, fieldPath);
             

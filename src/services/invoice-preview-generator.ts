@@ -25,18 +25,12 @@ export interface InvoicePreview extends Invoice {
 }
 
 export class InvoicePreviewGenerator {
-<<<<<<< HEAD
   private db: Db;
-=======
->>>>>>> origin/main
   private lineItemService: InvoiceLineItemService;
   private invoiceSequence: InvoiceSequence;
 
   constructor(db: Db) {
-<<<<<<< HEAD
     this.db = db;
-=======
->>>>>>> origin/main
     this.lineItemService = new InvoiceLineItemService();
     this.invoiceSequence = new InvoiceSequence(db);
   }
@@ -87,12 +81,8 @@ export class InvoicePreviewGenerator {
         paidDate: payment.timestamp,
         amount: payment.amount,
         currency: 'AUD',
-<<<<<<< HEAD
         status: 'completed',
         source: payment.source
-=======
-        status: 'completed'
->>>>>>> origin/main
       },
       paymentId: payment._id?.toString(),
       registrationId: registration._id?.toString(),

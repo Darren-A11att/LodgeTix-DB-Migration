@@ -34,12 +34,8 @@ export interface InvoicePayment {
   cardBrand?: string; // Visa, Mastercard, etc.
   receiptUrl?: string;
   status: 'completed' | 'processing' | 'failed' | 'refunded';
-<<<<<<< HEAD
   source?: 'square' | 'stripe'; // Payment gateway source
-=======
-  source?: string; // Payment gateway source
   statementDescriptor?: string; // Statement descriptor from payment processor
->>>>>>> origin/main
 }
 
 export interface Invoice {

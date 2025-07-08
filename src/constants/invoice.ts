@@ -1,4 +1,4 @@
-import { InvoiceSupplier } from '@/types/invoice';
+import { InvoiceSupplier } from '../types/invoice';
 
 // Customer Invoice Supplier (default)
 export const DEFAULT_INVOICE_SUPPLIER: InvoiceSupplier = {
