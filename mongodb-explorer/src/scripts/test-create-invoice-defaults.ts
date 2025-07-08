@@ -15,10 +15,14 @@ async function testCreateInvoiceWithDefaults() {
       date: new Date(),
       status: 'paid',
       billTo: {
-        name: 'Robert Johnson',
+        firstName: 'Robert',
+        lastName: 'Johnson',
         email: 'robert.johnson@lodge.org.au',
-        phone: '+61 400 555 123',
-        address: '45 Lodge Street, Parramatta NSW 2150'
+        addressLine1: '45 Lodge Street',
+        city: 'Parramatta',
+        postalCode: '2150',
+        stateProvince: 'NSW',
+        country: 'AU'
       },
       items: [
         {
@@ -69,7 +73,7 @@ async function testCreateInvoiceWithDefaults() {
     const savedInvoice = await invoicesCollection.findOne({ _id: result.insertedId });
     console.log('\n✓ Retrieved invoice details:');
     console.log('  Invoice Number:', savedInvoice?.invoiceNumber);
-    console.log('  Customer:', savedInvoice?.billTo.name);
+    console.log('  Customer:', `${savedInvoice?.billTo.firstName} ${savedInvoice?.billTo.lastName}`);
     console.log('  Items:');
     savedInvoice?.items.forEach(item => {
       const itemTotal = item.price * item.quantity;

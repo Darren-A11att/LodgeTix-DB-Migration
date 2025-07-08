@@ -30,9 +30,14 @@ async function testLTIVFormat() {
       date: new Date(),
       status: 'paid',
       billTo: {
-        name: 'Sample Customer',
+        firstName: 'Sample',
+        lastName: 'Customer',
         email: 'sample@example.com',
-        phone: '+61 400 111 222'
+        addressLine1: '789 Test Avenue',
+        city: 'Sydney',
+        postalCode: '2000',
+        stateProvince: 'NSW',
+        country: 'AU'
       },
       items: [
         {
@@ -68,7 +73,7 @@ async function testLTIVFormat() {
     
     console.log('\n✓ Invoice created successfully:');
     console.log(`  Invoice Number: ${invoice.invoiceNumber}`);
-    console.log(`  Customer: ${invoice.billTo.name}`);
+    console.log(`  Customer: ${invoice.billTo.firstName} ${invoice.billTo.lastName}`);
     console.log(`  Total: $${invoice.total.toFixed(2)}`);
     console.log(`  Database ID: ${result.insertedId}`);
     

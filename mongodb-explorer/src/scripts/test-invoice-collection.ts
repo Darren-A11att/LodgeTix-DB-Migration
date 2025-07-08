@@ -31,12 +31,18 @@ async function testInvoiceCollection() {
       supplier: {
         name: 'Sydney Grand Lodge',
         abn: '12 345 678 901',
-        address: '233 Castlereagh Street, Sydney NSW 2000'
+        address: '233 Castlereagh Street, Sydney NSW 2000',
+        issuedBy: 'Grand Secretary'
       },
       billTo: {
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
         email: 'john.doe@example.com',
-        phone: '+61 400 123 456'
+        addressLine1: '123 Main Street',
+        city: 'Sydney',
+        postalCode: '2000',
+        stateProvince: 'NSW',
+        country: 'AU'
       },
       items: [
         {

@@ -34,9 +34,14 @@ async function testLTIVYYMMFormat() {
       date: new Date(),
       status: 'paid',
       billTo: {
-        name: 'Grand Lodge Member',
+        firstName: 'Grand Lodge',
+        lastName: 'Member',
         email: 'member@grandlodge.org.au',
-        phone: '+61 400 222 333'
+        addressLine1: '233 Castlereagh Street',
+        city: 'Sydney',
+        postalCode: '2000',
+        stateProvince: 'NSW',
+        country: 'AU'
       },
       items: [
         {

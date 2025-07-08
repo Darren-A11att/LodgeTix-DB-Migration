@@ -117,14 +117,6 @@ class ApiService {
     return response.data;
   }
 
-  async searchDocuments(collectionName: string, query: any): Promise<DocumentsResponse> {
-    const response = await axios.post<DocumentsResponse>(
-      `${API_BASE_URL}/collections/${collectionName}/search`,
-      { query }
-    );
-    return response.data;
-  }
-
   async getFunctionById(functionId: string): Promise<any> {
     const response = await axios.get(`${API_BASE_URL}/functions/${functionId}`);
     return response.data;

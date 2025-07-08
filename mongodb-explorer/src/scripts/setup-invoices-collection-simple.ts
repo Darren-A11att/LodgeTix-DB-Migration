@@ -42,11 +42,18 @@ async function setupInvoicesCollection() {
       supplier: {
         name: 'Test Organiser',
         abn: '12 345 678 901',
-        address: '123 Test Street, Sydney NSW 2000'
+        address: '123 Test Street, Sydney NSW 2000',
+        issuedBy: 'Test Issuer'
       },
       billTo: {
-        name: 'Test Customer',
-        email: 'test@example.com'
+        firstName: 'Test',
+        lastName: 'Customer',
+        email: 'test@example.com',
+        addressLine1: '456 Customer Street',
+        city: 'Sydney',
+        postalCode: '2000',
+        stateProvince: 'NSW',
+        country: 'AU'
       },
       items: [{
         description: 'Test Item',
