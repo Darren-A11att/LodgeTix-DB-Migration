@@ -1,0 +1,14 @@
+{
+  "name": "lodgetix-test-migration",
+  "version": "1.0.0",
+  "description": "Test migration scripts for LodgeTix e-commerce transformation",
+  "main": "migrate-all.js",
+  "scripts": {
+    "migrate": "node migrate-all.js",
+    "clean": "rm -rf ../../test-migration-output/*"
+  },
+  "dependencies": {
+    "mongodb": "^4.0.0",
+    "dotenv": "^16.0.0"
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "_id": "ObjectId",
+  "transactionId": "TXN-2024-00123",
+  "type": "registration_payment",
+  "reference": {
+    "type": "registration",
+    "id": "registrations: _id",
+    "number": "registrations: registrationNumber",
+    "functionId": "functions: functionId", 
+    "functionName": "functions: name"
+  },
+  "parties": {
+    "customer": {
+      "type": "organisation",
+      "id": "organisations: _id",
+      "name": "organisations: name",
+      "abn": "organisations: metadata.abn",
+      "email": "organisations: contacts.billing.email",
+      "contact": {
+        "name": "organisations: contacts.billing.name",
+        "phone": "organisations: contacts.billing.phone"
+      }
+    },
+    "supplier": {
+      "name": "Grand Lodge Events Pty Ltd",
+      "abn": "98765432109",
+      "address": "456 Grand Avenue, Sydney NSW 2000"
+    }
+  },
+  "amounts": {
+    "gross": 2900.00,
+    "fees": 58.00,
+    "tax": 290.00,
+    "net": 2842.00,
+    "total": 3248.00,
+    "currency": "AUD"
+  },
+  "payments": [{
+    "_id": "ObjectId",
+    "method": "credit_card",
+    "gateway": "stripe",
+    "gatewayTransactionId": "pi_1234567890",
+    "status": "succeeded",
+    "amount": 3248.00,
+    "processedAt": "2024-08-15T10:30:00Z",
+    "card": {
+      "last4": "4242",
+      "brand": "visa",
+      "expiryMonth": 12,
+      "expiryYear": 2025
+    },
+    "fees": {
+      "amount": 58.00,
+      "rate": "1.75% + $0.30",
+      "breakdown": {
+        "percentage": 50.75,
+        "fixed": 0.30
+      }
+    },
+    "metadata": {
+      "chargeId": "ch_1234567890",
+      "receiptUrl": "https://pay.stripe.com/receipts/...",
+      "riskScore": 32
+    }
+  }],
+  "invoices": {
+    "customer": {
+      "_id": "ObjectId",
+      "invoiceNumber": "INV-2024-00123",
+      "type": "tax_invoice",
+      "issuedDate": "2024-08-15T10:35:00Z",
+      "dueDate": null,
+      "status": "paid",
+      "lineItems": [{
+        "description": "Grand Proclamation 2025 - Banquet Ticket",
+        "productId": "functions.events.products: _id",
+        "eventId": "banquet-2025",
+        "quantity": 20,
+        "unitPrice": 120.00,
+        "total": 2400.00,
+        "taxRate": 0.10,
+        "taxAmount": 240.00
+      },
+      {
+        "description": "Commemorative Pin",
+        "productId": "functions.events.products: _id",
+        "eventId": null,
+        "quantity": 20,
+        "unitPrice": 25.00,
+        "total": 500.00,
+        "taxRate": 0.10,
+        "taxAmount": 50.00
+      }],
+      "totals": {
+        "subtotal": 2900.00,
+        "tax": 290.00,
+        "fees": 58.00,
+        "total": 3248.00
+      },
+      "pdfUrl": "https://storage.example.com/invoices/INV-2024-00123.pdf",
+      "emailedTo": ["secretary@lodge60.org"],
+      "emailedAt": "2024-08-15T10:36:00Z",
+      "downloadCount": 3
+    },
+    "creditNotes": [],
+    "supplier": []
+  },
+  "remittance": {
+    "required": false,
+    "sentDate": null,
+    "method": null,
+    "recipient": null,
+    "reference": null,
+    "details": null
+  },
+  "reconciliation": {
+    "status": "reconciled",
+    "reconciledDate": "2024-08-20T14:00:00Z",
+    "reconciledBy": "system",
+    "bankStatementRef": "STMT-2024-08-20-L123",
+    "bankDate": "2024-08-16T00:00:00Z",
+    "notes": "Auto-matched by transaction ID"
+  },
+  "accounting": {
+    "exported": true,
+    "exportedAt": "2024-08-21T09:00:00Z",
+    "exportBatchId": "BATCH-2024-08-21-001",
+    "entries": [{
+      "account": "1200",
+      "accountName": "Accounts Receivable",
+      "debit": 3248.00,
+      "credit": 0,
+      "description": "Registration payment - Lodge 60"
+    },
+    {
+      "account": "4100",
+      "accountName": "Event Revenue",
+      "debit": 0,
+      "credit": 2900.00,
+      "description": "Ticket and merchandise sales"
+    },
+    {
+      "account": "2300",
+      "accountName": "GST Payable",
+      "debit": 0,
+      "credit": 290.00,
+      "description": "GST collected"
+    },
+    {
+      "account": "5100",
+      "accountName": "Processing Fees",
+      "debit": 58.00,
+      "credit": 0,
+      "description": "Stripe processing fees"
+    }],
+    "externalReferences": {
+      "xeroId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "myobId": null,
+      "quickbooksId": null
+    }
+  },
+  "refund": null,
+  "audit": {
+    "createdAt": "2024-08-15T10:30:00Z",
+    "createdBy": "system",
+    "updatedAt": "2024-08-20T14:00:00Z",
+    "updatedBy": "reconciliation_job",
+    "version": 3,
+    "changes": [{
+      "timestamp": "2024-08-20T14:00:00Z",
+      "userId": "reconciliation_job",
+      "action": "update",
+      "field": "reconciliation.status",
+      "oldValue": "pending",
+      "newValue": "reconciled",
+      "reason": "Matched with bank statement"
+    }],
+    "notes": []
+  }
+}

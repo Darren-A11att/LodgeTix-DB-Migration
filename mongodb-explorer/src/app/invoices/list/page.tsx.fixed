@@ -1,0 +1,120 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import apiService from '@/lib/api';
+
+declare global {
+  interface Window {
+    matchDetailsLogged?: boolean;
+  }
+}
+
+interface InvoiceMatch {
+  payment: any;
+  registration: any;
+  invoice: any;
+  matchConfidence: number;
+  matchDetails?: any[];
+}
+
+interface MatchesResponse {
+  matches: InvoiceMatch[];
+  total: number;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+}
+
+// Helper to convert MongoDB Decimal128 to number
+const toNumber = (value: number | { $numberDecimal: string } | undefined): number => {
+  if (value === undefined) return 0;
+  return typeof value === 'object' && value.$numberDecimal 
+    ? parseFloat(value.$numberDecimal)
+    : value;
+};
+
+export default function InvoicesListPage() {
+  const [matches, setMatches] = useState<InvoiceMatch[]>([]);
+  const [processedInvoices, setProcessedInvoices] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'all' | 'processed'>('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [filterConfidence, setFilterConfidence] = useState<number>(0);
+  const [showProcessedOnly, setShowProcessedOnly] = useState(false);
+  const [filterPaymentStatus, setFilterPaymentStatus] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const router = useRouter();
+  const limit = 50;
+
+  useEffect(() => {
+    if (viewMode === 'all') {
+      fetchAllMatches();
+    } else {
+      fetchProcessedInvoices();
+    }
+  }, [currentPage, viewMode]);
+
+  const fetchMatches = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.getInvoiceMatches(limit, currentPage * limit);
+      setMatches(data.matches);
+      setTotal(data.total);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load matches');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to find email in payment object
+  const findEmailInPayment = (payment: any): string | null => {
+    if (!payment) return null;
+    
+    // Priority 1: Check customerEmail field
+    if (payment.customerEmail && payment.customerEmail.includes('@')) {
+      return payment.customerEmail;
+    }
+    
+    // Priority 2: Check "Customer Email" field (with space)
+    if (payment['Customer Email'] && payment['Customer Email'].includes('@')) {
+      return payment['Customer Email'];
+    }
+    
+    // Priority 3: Check common email field variations
+    if (payment.email && payment.email.includes('@')) return payment.email;
+    if (payment.customer?.email && payment.customer.email.includes('@')) return payment.customer.email;
+    
+    // Priority 4: Search for any field containing 'email' in its name
+    const searchObject = (obj: any, depth: number = 0): string | null => {
+      // Limit depth to prevent infinite recursion
+      if (depth > 3) return null;
+      
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          
+          // Check if the key contains 'email' (case insensitive)
+          if (key.toLowerCase().includes('email') && typeof value === 'string' && value.includes('@')) {
+            return value;
+          }
+          
+          // Recursively search nested objects (like originalData)
+          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            const found = searchObject(value, depth + 1);
+            if (found) return found;
+          }
+        }
+      }
+      return null;
+    };
+    
+    return searchObject(payment);
+  };
+

@@ -1,0 +1,55 @@
+  const fetchAllMatches = async () => {
+    try {
+      setLoading(true);
+      // Use the new invoice matches endpoint which includes proper match information
+      const matchesData = await apiService.getInvoiceMatches(limit, currentPage * limit);
+      
+      // Transform the data to include processing status
+      const matchesWithStatus = matchesData.matches.map((match: any) => {
+        // Our new API endpoint already provides all the match information
+        const payment = match.payment;
+        const paymentEmail = findEmailInPayment(payment);
+        
+        // Determine payment status
+        const getPaymentStatus = () => {
+          if (payment.status) return payment.status;
+          if (payment.paymentStatus) return payment.paymentStatus;
+          if (payment.refunded || payment.isRefunded) return 'refunded';
+          if (payment.declined || payment.isDeclined) return 'declined';
+          if (payment.paid || payment.isPaid || payment.captured) return 'paid';
+          if (payment.pending || payment.isPending) return 'pending';
+          if (payment.failed || payment.isFailed) return 'failed';
+          // Default to paid if we have an amount
+          if (payment.amount || payment.grossAmount) return 'paid';
+          return 'unknown';
+        };
+        
+        return {
+          payment: {
+            ...payment,
+            customerEmail: paymentEmail, // Use the found email
+            invoiceCreated: payment.invoiceCreated || false,
+            invoiceDeclined: payment.invoiceDeclined || false,
+            invoiceNumber: payment.customerInvoiceNumber || payment.invoiceNumber || null,
+            paymentStatus: getPaymentStatus()
+          },
+          registration: match.registration,
+          invoice: match.invoice,
+          matchConfidence: match.matchConfidence || 0,
+          matchMethod: match.matchMethod || 'none',
+          matchDetails: match.matchDetails || [],
+          isProcessed: payment.invoiceCreated || payment.processed || match.invoiceStatus === 'created',
+          isDeclined: payment.invoiceDeclined || false,
+          invoiceStatus: match.invoiceStatus || 'unprocessed'
+        };
+      });
+      
+      setMatches(matchesWithStatus);
+      setTotal(matchesData.total || 0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load all payments');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };

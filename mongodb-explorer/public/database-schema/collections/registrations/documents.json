@@ -1,0 +1,132 @@
+{
+  "_id": "ObjectId",
+  "registrationNumber": "GP2025-REG-00123",
+  "functionId": "gp-2025",
+  "type": "lodge",
+  "registrant": {
+    "type": "registrations: Determine from context - 'contact' for individuals, 'organisation' for lodges/orgs",
+    "contactId": "contacts: _id (when type is 'contact')",
+    "organisationId": "organisations: _id (when type is 'organisation')",
+    "userId": "registrations: authUserId or bookingContactId",
+    "name": "Multiple sources: registrations.registrationData.billingDetails.firstName + lastName, organisations.name",
+    "email": "Multiple sources: registrations.registrationData.billingDetails.email, registrations.primaryEmail",
+    "phone": "Multiple sources: registrations.registrationData.billingDetails.phone, registrations.primaryPhone",
+    "abn": "organisations: abn",
+    "lodgeNumber": "lodges: number"
+  },
+  "purchase": {
+    "items": [
+      {
+        "lineItemId": "ObjectId",
+        "productId": "functions.events.products: _id",
+        "productType": "ticket",
+        "eventId": "banquet-2025",
+        "eventName": "Grand Banquet",
+        "name": "Banquet Ticket - Standard",
+        "description": "Standard seating allocation",
+        "quantity": 20,
+        "unitPrice": 120.00,
+        "discount": {
+          "amount": 120.00,
+          "percentage": 5,
+          "code": "LODGE5"
+        },
+        "tax": {
+          "rate": 0.10,
+          "amount": 228.00
+        },
+        "total": 2508.00,
+        "ticketIds": [
+          "tickets: _id",
+          "tickets: _id"
+        ]
+      },
+      {
+        "lineItemId": "ObjectId",
+        "productId": "functions.merchandise: _id",
+        "productType": "merchandise",
+        "eventId": null,
+        "eventName": null,
+        "name": "Commemorative Pin 2025",
+        "description": "Limited edition enamel pin",
+        "quantity": 20,
+        "unitPrice": 25.00,
+        "discount": {
+          "amount": 0,
+          "percentage": 0,
+          "code": null
+        },
+        "tax": {
+          "rate": 0.10,
+          "amount": 50.00
+        },
+        "total": 550.00,
+        "ticketIds": [],
+        "fulfillment": {
+          "method": "shipping",
+          "status": "pending",
+          "trackingNumber": null,
+          "shippingAddress": {
+            "name": "Unity Lodge No. 60",
+            "addressLine1": "123 Lodge Street",
+            "addressLine2": null,
+            "city": "Sydney",
+            "state": "NSW",
+            "postcode": "2000",
+            "country": "Australia"
+          }
+        }
+      }
+    ],
+    "subtotal": 2780.00,
+    "discountTotal": 120.00,
+    "taxTotal": 278.00,
+    "shippingTotal": 15.00,
+    "fees": 56.76,
+    "total": 3129.76
+  },
+  "payment": {
+    "method": "credit_card",
+    "gateway": "stripe",
+    "transactionId": "pi_1234567890abcdef",
+    "status": "paid",
+    "paidAt": "2024-08-15T10:30:00Z",
+    "invoiceTerms": null
+  },
+  "attendeeIds": [
+    "attendees: _id",
+    "attendees: _id",
+    "attendees: _id"
+  ],
+  "attendeeAllocation": {
+    "total": 20,
+    "assigned": 15,
+    "unassigned": 5
+  },
+  "status": "partial",
+  "cancellation": null,
+  "financialTransactionId": "financialTransactions: _id",
+  "invoiceId": "invoices: _id",
+  "communications": {
+    "confirmationSent": true,
+    "confirmationSentAt": "2024-08-15T10:35:00Z",
+    "remindersSent": 2,
+    "lastReminderAt": "2024-10-01T09:00:00Z"
+  },
+  "customFields": {
+    "specialRequests": "Require 2 vegetarian meals, 1 gluten-free",
+    "internalNotes": "Regular customer - priority seating",
+    "referralSource": "Grand Lodge Newsletter",
+    "marketingConsent": true
+  },
+  "metadata": {
+    "source": "web",
+    "ipAddress": "203.45.67.89",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "sessionId": "sess_abc123def456",
+    "affiliateCode": null,
+    "createdAt": "2024-08-15T10:28:00Z",
+    "updatedAt": "2024-10-15T14:30:00Z",
+    "version": 3
+  }
+}

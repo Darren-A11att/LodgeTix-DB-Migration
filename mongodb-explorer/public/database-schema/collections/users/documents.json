@@ -1,0 +1,265 @@
+{
+  "_id": "ObjectId",
+  "userId": "Generated: USR-NNNNNN",
+  "auth": {
+    "email": "users: email",
+    "emailVerified": false,
+    "emailVerifiedAt": "TODO: Email verification timestamp",
+    "passwordHash": "Generated: Bcrypt hash",
+    "passwordChangedAt": "TODO: Password change timestamp",
+    "passwordResetToken": "TODO: Reset token",
+    "passwordResetExpires": "TODO: Reset token expiry",
+    "mfa": {
+      "enabled": false,
+      "method": "totp",
+      "secret": "Generated: Encrypted TOTP secret",
+      "backupCodes": ["Generated: Encrypted backup codes"],
+      "phone": "users: phone"
+    },
+    "providers": [
+      {
+        "provider": "google",
+        "providerId": "TODO: OAuth provider ID",
+        "connectedAt": "TODO: OAuth connection timestamp",
+        "profile": {}
+      }
+    ],
+    "sessions": [
+      {
+        "sessionId": "Generated: Session UUID",
+        "createdAt": "Generated: Session creation",
+        "expiresAt": "Generated: Session expiry",
+        "ipAddress": "TODO: Client IP",
+        "userAgent": "TODO: Client user agent",
+        "location": {
+          "country": "Australia",
+          "city": "Sydney",
+          "coordinates": {
+            "latitude": -33.8688,
+            "longitude": 151.2093
+          }
+        },
+        "revoked": false,
+        "revokedAt": null
+      }
+    ],
+    "loginAttempts": 0,
+    "lockedUntil": null,
+    "lastLoginAt": "TODO: Last login timestamp",
+    "lastLoginIp": "TODO: Last login IP"
+  },
+  "contactId": "contacts: _id (required - created from user profile data)",
+  "profile": {
+    "displayName": "users: displayName or firstName + lastName",
+    "avatar": {
+      "url": "TODO: Avatar URL",
+      "uploadedAt": "TODO: Avatar upload timestamp",
+      "source": "upload"
+    },
+    "timezone": "Australia/Sydney",
+    "locale": "en-AU",
+    "currency": "AUD"
+  },
+  "access": {
+    "roles": ["customer"],
+    "permissions": ["purchase", "view_own_data"],
+    "organisations": [
+      {
+        "organisationId": "organisations: _id",
+        "role": "member",
+        "permissions": ["view", "purchase_for_org"],
+        "joinedAt": "TODO: Organisation join date",
+        "invitedBy": "users: _id (inviter)",
+        "status": "active"
+      }
+    ],
+    "restrictions": [
+      {
+        "type": "TODO: Restriction type",
+        "reason": "TODO: Restriction reason",
+        "appliedAt": "TODO: Restriction timestamp",
+        "appliedBy": "users: _id (admin)",
+        "expiresAt": "TODO: Restriction expiry"
+      }
+    ]
+  },
+  "financial": {
+    "paymentMethods": [
+      {
+        "methodId": "Generated: Method UUID",
+        "type": "card",
+        "card": {
+          "token": "TODO: Payment gateway token",
+          "last4": "TODO: Card last 4 digits",
+          "brand": "visa",
+          "expiryMonth": 12,
+          "expiryYear": 2025
+        },
+        "bank": {
+          "accountName": "TODO: Account name",
+          "bsb": "TODO: BSB (encrypted)",
+          "accountNumber": "TODO: Account number (encrypted)",
+          "accountType": "savings"
+        },
+        "isDefault": true,
+        "addedAt": "TODO: Payment method add date",
+        "verifiedAt": "TODO: Payment method verification date"
+      }
+    ],
+    "billing": {
+      "defaultAddress": "contacts.addresses: _id (reference to address in contact)",
+      "taxId": "users: abn or taxId",
+      "invoiceEmails": ["accounts@example.com"],
+      "autoPayEnabled": false,
+      "paymentTerms": "immediate"
+    },
+    "credit": {
+      "balance": 0.00,
+      "currency": "AUD",
+      "history": [
+        {
+          "amount": 50.00,
+          "type": "refund",
+          "description": "Event cancellation refund",
+          "date": "TODO: Credit transaction date",
+          "referenceId": "financialTransactions: _id"
+        }
+      ]
+    },
+    "loyaltyPoints": {
+      "balance": 0,
+      "tier": "bronze",
+      "tierExpiry": "TODO: Tier expiry date",
+      "lifetimePoints": 0
+    }
+  },
+  "preferences": {
+    "communications": {
+      "marketing": {
+        "email": true,
+        "sms": false,
+        "push": false,
+        "post": false
+      },
+      "transactional": {
+        "email": true,
+        "sms": true
+      },
+      "newsletter": true,
+      "partnerOffers": false
+    },
+    "events": {
+      "categories": ["masonic", "charity", "social"],
+      "notifications": {
+        "newEvents": true,
+        "preSale": true,
+        "lastChance": false
+      },
+      "accessibility": ["NOTE: Accessibility/special needs stored in contacts.profile.specialNeeds"],
+      "dietary": ["NOTE: Dietary requirements stored in contacts.profile.dietaryRequirements"]
+    },
+    "privacy": {
+      "profileVisibility": "private",
+      "showInDirectory": false,
+      "allowTagging": false,
+      "dataSharing": {
+        "analytics": true,
+        "partners": false,
+        "improvement": true
+      }
+    }
+  },
+  "activity": {
+    "registrations": {
+      "count": 0,
+      "firstDate": "TODO: First registration date",
+      "lastDate": "TODO: Last registration date",
+      "totalSpent": 0.00,
+      "functionIds": ["functions: functionId"]
+    },
+    "engagement": {
+      "lastActiveAt": "Generated: Last activity timestamp",
+      "loginCount": 0,
+      "pageViews": 0,
+      "searchQueries": ["TODO: Recent search terms"],
+      "favoriteEvents": ["functions.events: _id"],
+      "following": ["users: _id"],
+      "followers": ["users: _id"],
+      "reviews": [
+        {
+          "eventId": "functions.events: event_id",
+          "rating": 5,
+          "comment": "TODO: Review comment",
+          "postedAt": "TODO: Review timestamp"
+        }
+      ]
+    },
+    "support": {
+      "ticketsCreated": 0,
+      "lastTicketAt": "TODO: Last support ticket date",
+      "satisfactionScore": 0.0
+    }
+  },
+  "relationships": {
+    "NOTE": "Relationships are managed in contacts.relationships",
+    "managedAccounts": [
+      {
+        "userId": "users: _id",
+        "contactId": "contacts: _id (of managed account)",
+        "relationship": "child",
+        "permissions": ["view", "purchase"]
+      }
+    ]
+  },
+  "compliance": {
+    "termsAccepted": [
+      {
+        "version": "2.0",
+        "acceptedAt": "TODO: Terms acceptance timestamp",
+        "ipAddress": "TODO: Acceptance IP"
+      }
+    ],
+    "ageVerified": false,
+    "ageVerifiedAt": "TODO: Age verification timestamp",
+    "ageVerificationMethod": "TODO: Verification method",
+    "dataRetention": {
+      "deleteRequestedAt": null,
+      "deleteScheduledFor": null,
+      "retentionReason": null
+    },
+    "gdpr": {
+      "consentGiven": true,
+      "consentDate": "TODO: GDPR consent date",
+      "dataExports": [
+        {
+          "requestedAt": "TODO: Export request date",
+          "completedAt": "TODO: Export completion date",
+          "downloadUrl": "TODO: Export download URL",
+          "expiresAt": "TODO: Export expiry date"
+        }
+      ]
+    }
+  },
+  "flags": {
+    "isActive": true,
+    "isVerified": false,
+    "isVip": false,
+    "isBanned": false,
+    "isDeleted": false,
+    "betaFeatures": ["new_checkout", "social_features"],
+    "experimentGroups": ["pricing_test_b"]
+  },
+  "metadata": {
+    "source": "web",
+    "referrer": "TODO: Referral source",
+    "campaign": "TODO: Marketing campaign",
+    "createdAt": "Generated: Account creation timestamp",
+    "createdBy": "users: _id or system",
+    "updatedAt": "Generated: Last update timestamp",
+    "updatedBy": "users: _id or system",
+    "lastValidated": "TODO: Data validation timestamp",
+    "validationErrors": [],
+    "importBatchId": "TODO: Import batch identifier",
+    "legacyId": "users: legacyUserId"
+  }
+}
