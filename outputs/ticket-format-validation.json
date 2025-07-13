@@ -1,0 +1,645 @@
+{
+  "summary": {
+    "total": 125,
+    "withTickets": 118,
+    "withoutTickets": 7,
+    "correctFormat": 118,
+    "incorrectFormat": 0,
+    "mixedFormat": 0,
+    "individualCorrect": 94,
+    "individualIncorrect": 0,
+    "lodgeCorrect": 24,
+    "lodgeIncorrect": 0
+  },
+  "correctRegistrations": [
+    {
+      "confirmationNumber": "LDG-499228VV",
+      "type": "lodge",
+      "ticketCount": 10
+    },
+    {
+      "confirmationNumber": "IND-616604CO",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-373823MJ",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-776340BK",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-996479KN",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-689815EJ",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-328561DQ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-047204NQ",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-134890AT",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-122869NV",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-013387DT",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-722590NM",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-997699KO",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-820268FC",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-269036DU",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-392727JB",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-410816YY",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "LDG-061926PC",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-875720VU",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-317273ME",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-260607FR",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-476871HW",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-600084JM",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-893761YT",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-936321XI",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-407561BF",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-570051EQ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-287686ME",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-074985CN",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "IND-198120LX",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-977258NR",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-798968FI",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-907847CL",
+      "type": "individuals",
+      "ticketCount": 5
+    },
+    {
+      "confirmationNumber": "IND-196155HD",
+      "type": "individuals",
+      "ticketCount": 5
+    },
+    {
+      "confirmationNumber": "LDG-128834EX",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-899170ZA",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "LDG-144723KI",
+      "type": "lodge",
+      "ticketCount": 20
+    },
+    {
+      "confirmationNumber": "LDG-744471CY",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-736000JY",
+      "type": "individuals",
+      "ticketCount": 9
+    },
+    {
+      "confirmationNumber": "IND-310175CR",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-175407QT",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-834482AH",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-761222CU",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-459113UR",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-210667MQ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-672238HE",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "LDG-490194LF",
+      "type": "lodge",
+      "ticketCount": 10
+    },
+    {
+      "confirmationNumber": "IND-927200QC",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "LDG-347228SB",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-912399IP",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-626222LS",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-744334FP",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-541567ED",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-700495YH",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-207429XM",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "IND-053305XA",
+      "type": "individuals",
+      "ticketCount": 8
+    },
+    {
+      "confirmationNumber": "IND-674554ID",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-553984EH",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-490159HT",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-387357PU",
+      "type": "individuals",
+      "ticketCount": 5
+    },
+    {
+      "confirmationNumber": "IND-964407WO",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-296416RL",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-832475RH",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "IND-128022YC",
+      "type": "individuals",
+      "ticketCount": 28
+    },
+    {
+      "confirmationNumber": "IND-098199VI",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-819251JQ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-508869TS",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-930810GG",
+      "type": "individuals",
+      "ticketCount": 28
+    },
+    {
+      "confirmationNumber": "LDG-889319AW",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-676835FV",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "IND-651444UM",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-113303IR",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-918733AD",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-237453PX",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-135650VH",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-210679FX",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-867620PW",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-666183NB",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-787853TU",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-604441PZ",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-139578PB",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-044917YO",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-029388TI",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-151429RZ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-269178VM",
+      "type": "individuals",
+      "ticketCount": 7
+    },
+    {
+      "confirmationNumber": "IND-144189FZ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-702724KT",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-777516CY",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-461840KN",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-731396VL",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-107839YX",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-401063XD",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "LDG-643031YX",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-061341OM",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-681795EL",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-648819EP",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-388482NJ",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-522951GX",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "LDG-569943MS",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-715615QC",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-357731NN",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "LDG-498522DH",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-640947YP",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-705286AR",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "IND-437822EF",
+      "type": "individuals",
+      "ticketCount": 9
+    },
+    {
+      "confirmationNumber": "LDG-666103RY",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-447942ZX",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "IND-390830ZR",
+      "type": "individuals",
+      "ticketCount": 3
+    },
+    {
+      "confirmationNumber": "IND-474529QQ",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-845981WQ",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-195631AV",
+      "type": "individuals",
+      "ticketCount": 6
+    },
+    {
+      "confirmationNumber": "LDG-281295FC",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-259642KT",
+      "type": "individuals",
+      "ticketCount": 4
+    },
+    {
+      "confirmationNumber": "LDG-440125ZK",
+      "type": "lodge",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-159724RR",
+      "type": "individuals",
+      "ticketCount": 1
+    },
+    {
+      "confirmationNumber": "IND-138727RA",
+      "type": "individuals",
+      "ticketCount": 2
+    },
+    {
+      "confirmationNumber": "IND-634669NT",
+      "type": "individuals",
+      "ticketCount": 7
+    },
+    {
+      "confirmationNumber": "IND-858394IT",
+      "type": "individuals",
+      "ticketCount": 2
+    }
+  ],
+  "incorrectRegistrations": [],
+  "mixedRegistrations": [],
+  "noTicketsRegistrations": [
+    {
+      "id": "686c7afcf17c9cbb6cdef069",
+      "confirmationNumber": "IND-671599JU",
+      "type": "individuals"
+    },
+    {
+      "id": "686fb56589bace4d716bde62",
+      "confirmationNumber": "IND-705286AR",
+      "type": "individuals"
+    },
+    {
+      "id": "686fb56589bace4d716bde63",
+      "confirmationNumber": "IND-033856GP",
+      "type": "individuals"
+    },
+    {
+      "id": "686fb56589bace4d716bde64",
+      "confirmationNumber": "IND-312120OI",
+      "type": "individuals"
+    },
+    {
+      "id": "686fb56589bace4d716bde65",
+      "confirmationNumber": "IND-497543FJ",
+      "type": "individuals"
+    },
+    {
+      "id": "686fb56589bace4d716bde66",
+      "confirmationNumber": "IND-728959PF",
+      "type": "individuals"
+    },
+    {
+      "id": "686fb56589bace4d716bde67",
+      "confirmationNumber": "IND-820047IW",
+      "type": "individuals"
+    }
+  ]
+}

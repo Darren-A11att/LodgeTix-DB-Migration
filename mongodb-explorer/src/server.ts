@@ -71,7 +71,7 @@ app.get('/api/search', async (req, res) => {
     const searchTargets = [
       {
         collection: 'registrations',
-        fields: ['registrationId', 'customerId', 'confirmationNumber', 'primaryAttendee']
+        fields: ['registrationId', 'customerId', 'confirmationNumber', 'primaryAttendee', 'stripePaymentIntentId', 'squarePaymentId', 'paymentId', 'transactionId']
       },
       {
         collection: 'payments',
@@ -116,7 +116,14 @@ app.get('/api/search', async (req, res) => {
         searchConditions.push(
           { 'registrationData.registrationId': searchQuery },
           { 'registrationData.bookingContact.email': { $regex: searchQuery, $options: 'i' } },
-          { 'registrationData.attendees.primaryEmail': { $regex: searchQuery, $options: 'i' } }
+          { 'registrationData.attendees.primaryEmail': { $regex: searchQuery, $options: 'i' } },
+          // Add payment ID field variations
+          { 'stripe_payment_intent_id': searchQuery },
+          { 'square_payment_id': searchQuery },
+          { 'paymentInfo.stripe_payment_intent_id': searchQuery },
+          { 'paymentInfo.square_payment_id': searchQuery },
+          { 'paymentData.transactionId': searchQuery },
+          { 'paymentData.paymentId': searchQuery }
         );
       }
       

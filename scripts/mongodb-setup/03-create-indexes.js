@@ -123,6 +123,12 @@ async function createIndexes() {
       { sparse: true, name: "gateway_lookup" }
     );
     
+    // Add a unique index for the Square Payment ID to ensure idempotency
+    await db.collection('financialTransactions').createIndex(
+      { "externalPaymentId": 1 },
+      { unique: true, sparse: true, name: "externalPaymentId_unique" }
+    );
+    
     console.log('✓ Financial transactions indexes created');
     
     // FUNCTIONS COLLECTION INDEXES

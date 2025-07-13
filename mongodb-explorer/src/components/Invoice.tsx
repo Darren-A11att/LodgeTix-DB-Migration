@@ -231,7 +231,6 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
               <div>
                 <span className="text-gray-600" style={styles.textGray600}>Method: </span>
                 <span className="font-medium">
-                  {invoice.payment.cardBrand ? `${invoice.payment.cardBrand} ` : ''}
                   {invoice.payment.method ? 
                     invoice.payment.method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
                     'Unknown Method'
@@ -257,8 +256,8 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
                 <span className="font-medium">{formatCurrency(invoice.payment.amount)}</span>
               </div>
               <div>
-                <span className="text-gray-600" style={styles.textGray600}>Transaction ID: </span>
-                <span className="font-medium font-mono">{invoice.payment.transactionId}</span>
+                <span className="text-gray-600" style={styles.textGray600}>Payment ID: </span>
+                <span className="font-medium font-mono">{invoice.payment.paymentId || invoice.payment.transactionId}</span>
               </div>
               {invoice.payment.statementDescriptor && (
                 <div>

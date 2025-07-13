@@ -26,6 +26,7 @@ export interface InvoiceBillTo {
 
 export interface InvoicePayment {
   method: 'credit_card' | 'debit_card' | 'bank_transfer' | 'paypal' | 'stripe' | 'other';
+  paymentId?: string; // Payment ID from the payment system
   transactionId: string;
   paidDate: Date;
   amount: number;

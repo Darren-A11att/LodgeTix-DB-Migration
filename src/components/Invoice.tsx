@@ -126,17 +126,17 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
         {/* Supplier Section (Right Side) */}
         <div>
           <h2 className="text-base font-semibold mb-1" style={styles.text}>From:</h2>
-          {invoice.supplier.name && (
-            <p className="text-sm font-medium">{invoice.supplier.name}</p>
+          {invoice.supplier?.name && (
+            <p className="text-sm font-medium">{invoice.supplier?.name}</p>
           )}
-          {invoice.supplier.abn && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>ABN: {invoice.supplier.abn}</p>
+          {invoice.supplier?.abn && (
+            <p className="text-xs text-gray-600" style={styles.textGray600}>ABN: {invoice.supplier?.abn}</p>
           )}
-          {invoice.supplier.address && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>{invoice.supplier.address}</p>
+          {invoice.supplier?.address && (
+            <p className="text-xs text-gray-600" style={styles.textGray600}>{invoice.supplier?.address}</p>
           )}
-          {invoice.invoiceType !== 'supplier' && invoice.supplier.issuedBy && (
-            <p className="text-xs text-gray-500 mt-1" style={styles.textGray500}>Issued By: {invoice.supplier.issuedBy}</p>
+          {invoice.invoiceType !== 'supplier' && invoice.supplier?.issuedBy && (
+            <p className="text-xs text-gray-500 mt-1" style={styles.textGray500}>Issued By: {invoice.supplier?.issuedBy}</p>
           )}
         </div>
       </div>
@@ -150,7 +150,7 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
           <span className="text-xs">
             <span className="font-semibold">Status:</span>{' '}
             <span className={`font-medium ${getStatusColor(invoice.status)}`} style={getStatusStyle(invoice.status)}>
-              {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+              {invoice.status ? invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1) : 'Unknown'}
             </span>
           </span>
           <span className="text-xs">
@@ -231,43 +231,45 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
               <div>
                 <span className="text-gray-600" style={styles.textGray600}>Method: </span>
                 <span className="font-medium">
-                  {invoice.payment.cardBrand ? `${invoice.payment.cardBrand} ` : ''}
-                  {invoice.payment.method ? 
+                  {invoice.payment?.cardBrand ? `${invoice.payment.cardBrand} ` : ''}
+                  {invoice.payment?.method ? 
                     invoice.payment.method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
                     'Unknown Method'
                   }
-                  {invoice.payment.last4 ? ` ending in ${invoice.payment.last4}` : ''}
+                  {invoice.payment?.last4 ? ` ending in ${invoice.payment.last4}` : ''}
                 </span>
               </div>
               <div>
                 <span className="text-gray-600" style={styles.textGray600}>Gateway: </span>
                 <span className="font-medium">
-                  {invoice.payment.source ? 
-                    invoice.payment.source.charAt(0).toUpperCase() + invoice.payment.source.slice(1) : 
-                    'Unknown'
+                  {invoice.payment?.gateway ? 
+                    invoice.payment.gateway : 
+                    invoice.payment?.source ? 
+                      invoice.payment.source?.charAt(0).toUpperCase() + invoice.payment.source?.slice(1) : 
+                      'Unknown'
                   }
                 </span>
               </div>
               <div>
                 <span className="text-gray-600" style={styles.textGray600}>Date: </span>
-                <span className="font-medium">{formatDate(invoice.payment.paidDate)}</span>
+                <span className="font-medium">{invoice.payment?.paidDate ? formatDate(invoice.payment.paidDate) : 'N/A'}</span>
               </div>
               <div>
                 <span className="text-gray-600" style={styles.textGray600}>Amount: </span>
-                <span className="font-medium">{formatCurrency(invoice.payment.amount)}</span>
+                <span className="font-medium">{invoice.payment?.amount ? formatCurrency(invoice.payment.amount) : '$0.00'}</span>
               </div>
               <div>
                 <span className="text-gray-600" style={styles.textGray600}>Transaction ID: </span>
-                <span className="font-medium font-mono">{invoice.payment.transactionId}</span>
+                <span className="font-medium font-mono">{invoice.payment?.transactionId || 'N/A'}</span>
               </div>
-              {invoice.payment.statementDescriptor && (
+              {invoice.payment?.statementDescriptor && (
                 <div>
                   <span className="text-gray-600" style={styles.textGray600}>Statement: </span>
                   <span className="font-medium">{invoice.payment.statementDescriptor}</span>
                 </div>
               )}
             </div>
-            {invoice.payment.receiptUrl && (
+            {invoice.payment?.receiptUrl && (
                 <div className="mt-2">
                   <a 
                     href={invoice.payment.receiptUrl} 

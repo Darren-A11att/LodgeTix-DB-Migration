@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import apiService from '@/lib/api';
+// Removed confidence thresholds import - now using simple ID-only matching
 
 declare global {
   interface Window {
@@ -15,8 +16,7 @@ interface InvoiceMatch {
   payment: any;
   registration: any;
   invoice: any;
-  matchConfidence: number;
-  matchDetails?: any[];
+  isMatch: boolean;
   matchMethod?: string;
   isProcessed?: boolean;
   isDeclined?: boolean;
@@ -50,7 +50,7 @@ export default function InvoicesListPage() {
   const [showProcessedOnly, setShowProcessedOnly] = useState(false);
   const [filterPaymentStatus, setFilterPaymentStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const router = useRouter();
   const limit = 50;
 
@@ -121,6 +121,70 @@ export default function InvoicesListPage() {
     return searchObject(payment);
   };
 
+  // Unified matching function that checks server matches first, then performs new search
+  const getUnifiedMatch = async (payment: any) => {
+    // 1. Check if payment already has server-side match data
+    const hasServerMatch = payment.matchedRegistrationId && payment.matchMethod;
+    
+    if (hasServerMatch) {
+      try {
+        const registration = await apiService.getDocument('registrations', payment.matchedRegistrationId);
+        if (registration) {
+          return {
+            registration,
+            isMatch: true,
+            matchMethod: payment.matchMethod || 'server'
+          };
+        }
+      } catch (error) {
+        console.warn('Failed to fetch server-matched registration:', error);
+      }
+    }
+
+    // 2. Check for manual matches (backward compatibility)
+    if (payment.linkedRegistrationId) {
+      try {
+        const registration = await apiService.getDocument('registrations', payment.linkedRegistrationId);
+        if (registration) {
+          return {
+            registration,
+            isMatch: true,
+            matchMethod: 'manual'
+          };
+        }
+      } catch (error) {
+        console.warn('Failed to fetch manually linked registration:', error);
+      }
+    }
+
+    // 3. Use unified API to find new match
+    try {
+      const response = await fetch('/api/matches/unified', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ payment })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.match;
+      } else {
+        console.error('Unified matching API error:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error calling unified matching API:', error);
+    }
+
+    // 4. Return no match
+    return {
+      registration: null,
+      isMatch: false,
+      matchMethod: 'none'
+    };
+  };
+
   const fetchAllMatches = async () => {
     try {
       setLoading(true);
@@ -168,49 +232,17 @@ export default function InvoicesListPage() {
         }
         
         try {
-          // First check if there's a linked registration from manual matching
-          if (payment.linkedRegistrationId) {
-            console.log(`Payment ${payment._id} has linkedRegistrationId:`, payment.linkedRegistrationId);
-            try {
-              registration = await apiService.getDocument('registrations', payment.linkedRegistrationId);
-              if (registration) {
-                console.log(`Found linked registration:`, registration._id, registration.confirmationNumber);
-                matchConfidence = 100; // Manual matches have 100% confidence
-              }
-            } catch (err) {
-              console.error('Error fetching linked registration:', err);
-            }
-          }
+          // Use unified matching service for consistent results
+          const matchResult = await getUnifiedMatch(payment);
+          registration = matchResult.registration;
+          matchConfidence = matchResult.matchConfidence;
           
-          // If no linked registration, try automatic matching
-          if (!registration) {
-            const registrationQuery = {
-              $or: [
-                { stripePaymentIntentId: payment.transactionId },
-                { confirmationNumber: payment.transactionId },
-                { 'paymentInfo.transactionId': payment.transactionId },
-                ...(paymentEmail ? [
-                  { customerEmail: paymentEmail },
-                  { email: paymentEmail }
-                ] : [])
-              ]
-            };
-            
-            const regData = await apiService.searchDocuments('registrations', registrationQuery);
-            if (regData.documents && regData.documents.length > 0) {
-              registration = regData.documents[0];
-              // Simple confidence calculation
-              if (payment.transactionId && registration.stripePaymentIntentId === payment.transactionId) {
-                matchConfidence = 100;
-              } else if (paymentEmail && (registration.customerEmail === paymentEmail || registration.email === paymentEmail)) {
-                matchConfidence = 80;
-              } else {
-                matchConfidence = 50;
-              }
-            }
+          // Log match details for debugging
+          if (registration) {
+            console.log(`Payment ${payment._id} matched with registration ${registration._id} (confidence: ${matchConfidence}%, method: ${matchResult.matchMethod})`);
           }
         } catch (err) {
-          console.error('Error fetching registration:', err);
+          console.error('Error in unified matching:', err);
         }
         
         // Determine payment status

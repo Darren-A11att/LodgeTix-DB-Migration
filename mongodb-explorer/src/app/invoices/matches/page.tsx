@@ -18,7 +18,7 @@ import { registrationMappingStorage } from '@/services/registration-mapping-stor
 import apiService from '@/lib/api';
 import { getSupplierInvoiceSupplier, DEFAULT_INVOICE_SUPPLIER } from '@/constants/invoice';
 import { loadLogoAsBase64 } from '@/utils/logo-base64';
-import { getMonetaryValue, formatMoney } from '@/utils/monetary';
+import { getMonetaryValue, formatMoney, roundToMoney } from '@/utils/monetary';
 
 interface MatchDetail {
   valueType: 'paymentId' | 'registrationId' | 'confirmationNumber' | 'email' | 'amount' | 'accountId' | 'name' | 'address' | 'timestamp' | 'manual';
@@ -196,42 +196,55 @@ export default function InvoiceMatchesPage() {
     fetchInvoiceStatus();
   }, [selectedPayment, currentMatch]);
 
-  // Generate custom individuals invoice for JSON preview
+  // Generate custom individuals/lodge invoice for JSON preview
   useEffect(() => {
-    const generateCustomIndividualsInvoiceForPreview = async () => {
+    const generateCustomInvoiceForPreview = async () => {
       const effectiveRegistration = selectedRegistration || currentMatch?.registration;
       const effectivePayment = selectedPayment || currentMatch?.payment;
       
-      if (effectiveRegistration && effectivePayment && effectiveRegistration.registrationType === 'individuals') {
+      if (effectiveRegistration && effectivePayment && 
+          (effectiveRegistration.registrationType === 'individuals' || effectiveRegistration.registrationType === 'lodge')) {
         try {
           // Create a base invoice structure similar to the button handler
           const invoiceNumbers = await generateInvoiceNumbers(new Date(effectivePayment.timestamp || effectivePayment.createdAt || new Date()));
           const baseInvoice = {
             customerInvoiceNumber: invoiceNumbers.customerInvoiceNumber,
             supplierInvoiceNumber: invoiceNumbers.supplierInvoiceNumber,
-            paymentId: effectivePayment._id,
+            paymentId: effectivePayment.paymentId || effectivePayment._id,
             registrationId: effectiveRegistration._id,
             // Additional base properties that might be needed
             date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
             status: 'paid'
           };
           
-          const customInvoice = await generateCustomIndividualsInvoice(effectiveRegistration, effectivePayment, baseInvoice);
-          setCustomerInvoice(customInvoice);
+          let customInvoice;
+          if (effectiveRegistration.registrationType === 'individuals') {
+            customInvoice = await generateCustomIndividualsInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+          } else if (effectiveRegistration.registrationType === 'lodge') {
+            customInvoice = await generateCustomLodgeInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+          }
           
-          console.log('🔄 Auto-generated individuals invoice for JSON preview:', {
-            registrationId: effectiveRegistration._id,
-            confirmationNumber: effectiveRegistration.confirmationNumber,
-            registrationType: effectiveRegistration.registrationType
-          });
+          if (customInvoice) {
+            setCustomerInvoice(customInvoice);
+            
+            // Generate supplier invoice from customer invoice
+            const supplierInvoiceData = transformToSupplierInvoice(customInvoice, effectivePayment, effectiveRegistration);
+            setSupplierInvoice(supplierInvoiceData);
+            
+            console.log('🔄 Auto-generated invoice for JSON preview:', {
+              registrationId: effectiveRegistration._id,
+              confirmationNumber: effectiveRegistration.confirmationNumber,
+              registrationType: effectiveRegistration.registrationType
+            });
+          }
         } catch (error) {
-          console.error('❌ Error auto-generating individuals invoice for JSON preview:', error);
+          console.error('❌ Error auto-generating invoice for JSON preview:', error);
           // Fall back to default behavior if custom generation fails
         }
       }
     };
     
-    generateCustomIndividualsInvoiceForPreview();
+    generateCustomInvoiceForPreview();
   }, [selectedRegistration, selectedPayment, currentMatch]);
 
   const generateInvoiceNumbers = async (paymentDate: Date) => {
@@ -285,6 +298,203 @@ export default function InvoiceMatchesPage() {
     }
   };
 
+  const generateCustomLodgeInvoice = async (effectiveRegistration: any, effectivePayment: any, baseInvoice: any) => {
+    try {
+      console.log('🏛️ LODGE LOGIC TRIGGERED (JSON Preview)', {
+        registrationId: effectiveRegistration._id,
+        confirmationNumber: effectiveRegistration.confirmationNumber,
+        lodgeName: effectiveRegistration.registrationData?.lodgeDetails?.lodgeName,
+        paymentAmount: getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount)
+      });
+      
+      // Fetch function name from database using functionId
+      const functionName = effectiveRegistration.functionId 
+        ? await fetchFunctionName(effectiveRegistration.functionId)
+        : 'Event';
+      
+      console.log('📋 Function name for lodge registration (JSON Preview):', {
+        functionId: effectiveRegistration.functionId,
+        functionName,
+        lodgeName: effectiveRegistration.registrationData?.lodgeName
+      });
+      
+      // Get lodge info and tickets from registration data
+      const allTickets = effectiveRegistration.registrationData?.tickets || [];
+      
+      console.log('🏛️ Processing lodge tickets (JSON Preview):', {
+        totalTickets: allTickets.length,
+        ticketDetails: allTickets.map((t: any) => ({
+          name: t.name,
+          price: t.price,
+          quantity: t.quantity
+        }))
+      });
+      
+      // Create line items
+      const items = [];
+      
+      // First item: Registration line - Confirmation number | Lodge for Function Name
+      items.push({
+        description: `${effectiveRegistration.confirmationNumber} | Lodge for ${functionName}`,
+        quantity: 0,
+        price: 0,
+        total: 0
+      });
+      
+      // Process tickets - for lodge registrations, tickets are usually owned by the registration
+      let subtotal = 0;
+      
+      // Add all tickets
+      allTickets.forEach((ticket: any) => {
+        const ticketPrice = roundToMoney(ticket.price || 0);
+        const ticketQuantity = ticket.quantity || 1;
+        const ticketTotal = roundToMoney(ticketQuantity * ticketPrice);
+        subtotal = roundToMoney(subtotal + ticketTotal);
+        
+        console.log(`💰 Adding ticket to lodge invoice (JSON Preview):`, {
+          ticketName: ticket.name,
+          quantity: ticketQuantity,
+          price: ticketPrice,
+          ticketTotal,
+          runningSubtotal: subtotal
+        });
+        
+        items.push({
+          description: `  - ${ticket.name || 'Ticket'}`,
+          quantity: ticketQuantity,
+          price: ticketPrice,
+          total: ticketTotal
+        });
+      });
+      
+      // Calculate processing fees and totals
+      const totalAmount = roundToMoney(getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount) || 0);
+      const processingFees = roundToMoney(Math.max(0, totalAmount - subtotal));
+      const gst = roundToMoney(totalAmount / 11);
+      
+      console.log('🧮 Final calculations for lodge (JSON Preview):', {
+        subtotal,
+        totalAmount,
+        processingFees,
+        gst,
+        itemsCount: items.length,
+        paymentSource: effectivePayment.source || 'unknown'
+      });
+      
+      // Create billTo from metadata.billingDetails for lodge registrations
+      const billingDetails = effectiveRegistration.registrationData?.metadata?.billingDetails || {};
+      
+      // For lodge registrations, use billing details from metadata
+      const billTo = {
+        firstName: billingDetails.firstName || '',
+        lastName: billingDetails.lastName || '',
+        businessName: billingDetails.businessName || lodgeDisplay,
+        businessNumber: effectiveRegistration.registrationData?.lodgeABN || '',
+        addressLine1: '', // Hide addressLine1 for lodge invoices as it duplicates the business name
+        addressLine2: billingDetails.addressLine2 || '',
+        city: billingDetails.suburb || billingDetails.city || '',
+        postalCode: billingDetails.postcode || billingDetails.postalCode || '',
+        stateProvince: billingDetails.stateTerritory?.name || billingDetails.stateProvince || '',
+        country: billingDetails.country?.isoCode === 'AU' ? 'Australia' : (billingDetails.country?.name || billingDetails.country || 'Australia'),
+        email: billingDetails.emailAddress || billingDetails.email || '',
+        phone: billingDetails.phone || billingDetails.mobileNumber || ''
+      };
+      
+      // Create payment info with custom format
+      // Get funding info from originalData fallback
+      const fundingInfo = effectivePayment.funding || (effectivePayment.originalData && effectivePayment.originalData["Card Funding"]);
+      
+      // Build payment method parts
+      let paymentParts = [];
+      
+      // Add card brand (e.g., "Visa")
+      if (effectivePayment.cardBrand) {
+        paymentParts.push(effectivePayment.cardBrand);
+      }
+      
+      // Add funding info (e.g., "credit") - remove "card" from it
+      if (fundingInfo) {
+        const cleanedFunding = fundingInfo.toLowerCase().replace(/\s*card\s*/gi, '').trim();
+        if (cleanedFunding) {
+          paymentParts.push(cleanedFunding);
+        }
+      }
+      
+      // Add payment method type if different from what we already have
+      if (effectivePayment.paymentMethodType && 
+          !effectivePayment.paymentMethodType.toLowerCase().includes('card')) {
+        paymentParts.push(effectivePayment.paymentMethodType);
+      }
+      
+      // Add last 4 digits
+      const last4 = effectivePayment.cardLast4 || effectivePayment.last4;
+      if (last4) {
+        paymentParts.push(last4);
+      }
+      
+      const paymentMethod = paymentParts.join(' ');
+      
+      // Override the invoice data with lodge-specific structure
+      const customInvoice = {
+        ...baseInvoice,
+        invoiceNumber: baseInvoice.customerInvoiceNumber || baseInvoice.invoiceNumber || '[To be assigned]',
+        invoiceType: 'customer',
+        status: 'paid',
+        date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+        supplier: DEFAULT_INVOICE_SUPPLIER,
+        billTo,
+        items,
+        subtotal,
+        processingFees,
+        total: totalAmount,
+        gst,
+        payment: {
+          method: paymentMethod || 'credit_card',
+          gateway: effectivePayment.source === 'stripe' ? 'Stripe' : effectivePayment.source === 'square' ? 'Square' : (effectivePayment.source || 'unknown'),
+          source: effectivePayment.source || 'unknown',
+          cardBrand: effectivePayment.cardBrand || '',
+          last4: effectivePayment.cardLast4 || effectivePayment.last4 || '',
+          amount: totalAmount,
+          paymentId: effectivePayment.paymentId || effectivePayment._id || '',
+          transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
+          paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+          receiptUrl: effectivePayment.receiptUrl || '',
+          statementDescriptor: effectivePayment.statementDescriptor || ''
+        }
+      };
+      
+      console.log('✅ LODGE INVOICE GENERATED (JSON Preview):', {
+        confirmationNumber: effectiveRegistration.confirmationNumber,
+        functionName,
+        lodgeDisplay,
+        totalItems: items.length,
+        subtotal,
+        processingFees,
+        totalAmount,
+        paymentMethod,
+        gateway: effectivePayment.source,
+        billToEmail: billTo.email,
+        success: true
+      });
+      
+      return customInvoice;
+      
+    } catch (error) {
+      console.error('❌ ERROR in lodge invoice generation (JSON Preview):', {
+        registrationId: effectiveRegistration._id,
+        confirmationNumber: effectiveRegistration.confirmationNumber,
+        error: error.message,
+        stack: error.stack,
+        effectiveRegistration: {
+          functionId: effectiveRegistration.functionId,
+          registrationType: effectiveRegistration.registrationType,
+          hasTickets: !!effectiveRegistration.registrationData?.tickets?.length
+        }
+      });
+      throw error;
+    }
+  };
+
   const generateCustomIndividualsInvoice = async (effectiveRegistration: any, effectivePayment: any, baseInvoice: any) => {
     try {
       console.log('🎯 INDIVIDUALS LOGIC TRIGGERED (JSON Preview)', {
@@ -294,10 +504,10 @@ export default function InvoiceMatchesPage() {
         paymentAmount: getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount)
       });
       
-      // Fetch function name
+      // Fetch function name from database using functionId
       const functionName = effectiveRegistration.functionId 
         ? await fetchFunctionName(effectiveRegistration.functionId)
-        : effectiveRegistration.functionName || 'Event';
+        : 'Event';
       
       console.log('📋 Function name lookup result (JSON Preview):', {
         functionId: effectiveRegistration.functionId,
@@ -325,11 +535,11 @@ export default function InvoiceMatchesPage() {
       // Create line items
       const items = [];
       
-      // First item: Registration line
+      // First item: Registration line - Confirmation number | Individuals for Function Name
       items.push({
-        description: `${effectiveRegistration.confirmationNumber} | Registration for ${functionName}`,
-        quantity: '',
-        price: '',
+        description: `${effectiveRegistration.confirmationNumber} | Individuals for ${functionName}`,
+        quantity: 0,
+        price: 0,
         total: 0
       });
       
@@ -340,37 +550,73 @@ export default function InvoiceMatchesPage() {
         const attendeeName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
         const lodgeInfo = attendee.lodgeNameNumber || '';
         items.push({
-          description: `attendee: ${attendeeName} | ${lodgeInfo}`,
-          quantity: '',
-          price: '',
+          description: `${attendeeName} | ${lodgeInfo}`,
+          quantity: 0,
+          price: 0,
           total: 0
         });
         
         // Add tickets for this attendee with fallback strategy
+        // First try exact match
         let attendeeTickets = allTickets.filter((ticket: any) => 
           ticket.ownerType === 'attendee' && ticket.ownerId === attendee.attendeeId
         );
         
+        // If no exact match, try string comparison (in case of type mismatch)
+        if (attendeeTickets.length === 0) {
+          attendeeTickets = allTickets.filter((ticket: any) => 
+            ticket.ownerType === 'attendee' && String(ticket.ownerId) === String(attendee.attendeeId)
+          );
+          if (attendeeTickets.length > 0) {
+            console.log(`🔧 Found tickets using string comparison for attendee ${attendeeName}:`, {
+              ticketCount: attendeeTickets.length,
+              matchedTickets: attendeeTickets.map(t => ({ name: t.name, ownerId: t.ownerId }))
+            });
+          }
+        }
+        
         console.log(`🎫 Ticket filtering for attendee ${attendeeName} (JSON Preview):`, {
           attendeeId: attendee.attendeeId,
           directMatchTickets: attendeeTickets.length,
-          ticketDetails: attendeeTickets.map(t => ({ name: t.name, price: t.price, quantity: t.quantity }))
+          ticketDetails: attendeeTickets.map(t => ({ name: t.name, price: t.price, quantity: t.quantity })),
+          // Enhanced debugging info
+          allTicketsOwnership: allTickets.map(t => ({ 
+            name: t.name, 
+            ownerType: t.ownerType, 
+            ownerId: t.ownerId,
+            ownerIdMatch: t.ownerId === attendee.attendeeId ? 'MATCH' : 'NO_MATCH'
+          }))
         });
         
         // Fallback: If no tickets found and this is an 'individuals' registration,
         // check if tickets are owned by the registration itself and assign to primary attendee
         if (attendeeTickets.length === 0 && effectiveRegistration.registrationType === 'individuals') {
-          const registrationOwnedTickets = allTickets.filter((ticket: any) => 
-            (ticket.ownerType === 'registration' && ticket.ownerId === effectiveRegistration._id) ||
-            (ticket.ownerType === 'attendee' && ticket.ownerId === effectiveRegistration._id)
-          );
+          const registrationOwnedTickets = allTickets.filter((ticket: any) => {
+            // Try exact ID match first
+            const exactMatch = (ticket.ownerType === 'registration' && ticket.ownerId === effectiveRegistration._id) ||
+                              (ticket.ownerType === 'attendee' && ticket.ownerId === effectiveRegistration._id);
+            
+            // Try string comparison as fallback
+            const stringMatch = (ticket.ownerType === 'registration' && String(ticket.ownerId) === String(effectiveRegistration._id)) ||
+                               (ticket.ownerType === 'attendee' && String(ticket.ownerId) === String(effectiveRegistration._id));
+            
+            return exactMatch || stringMatch;
+          });
           
           console.log('🔄 Applying fallback ticket assignment (JSON Preview):', {
             attendeeName,
             registrationId: effectiveRegistration._id,
             registrationOwnedTickets: registrationOwnedTickets.length,
             isPrimaryAttendee: attendees.indexOf(attendee) === 0,
-            fallbackTickets: registrationOwnedTickets.map(t => ({ name: t.name, price: t.price }))
+            fallbackTickets: registrationOwnedTickets.map(t => ({ name: t.name, price: t.price })),
+            // Enhanced debugging for registration fallback
+            registrationTicketDetails: registrationOwnedTickets.map(t => ({
+              name: t.name,
+              ownerType: t.ownerType,
+              ownerId: t.ownerId,
+              expectedRegistrationId: effectiveRegistration._id,
+              ownerIdMatch: String(t.ownerId) === String(effectiveRegistration._id) ? 'MATCH' : 'NO_MATCH'
+            }))
           });
           
           // For individuals registration, assign all registration-owned tickets to the first attendee
@@ -380,62 +626,99 @@ export default function InvoiceMatchesPage() {
               assignedTickets: attendeeTickets.length
             });
           } else if (attendeeTickets.length === 0 && attendees.indexOf(attendee) === 0) {
-            // Final fallback: assign any tickets without proper ownership to primary attendee
+            // Final fallback strategy - assign tickets based on registration association
+            let finalFallbackTickets = [];
+            
+            // 1. Find tickets without proper ownership
             const unassignedTickets = allTickets.filter((ticket: any) => 
               !ticket.ownerType || !ticket.ownerId || 
               (ticket.ownerType !== 'attendee' && ticket.ownerType !== 'registration')
             );
-            if (unassignedTickets.length > 0) {
-              attendeeTickets = unassignedTickets;
-              console.log('🔄 Final fallback: assigning unowned tickets to primary attendee (JSON Preview):', {
-                unassignedTickets: unassignedTickets.length,
-                ticketNames: unassignedTickets.map(t => t.name)
+            
+            // 2. If no unassigned tickets, look for any tickets that should belong to this registration
+            if (unassignedTickets.length === 0) {
+              // Check if there are tickets that might belong to this registration but have wrong ownership
+              const potentialTickets = allTickets.filter((ticket: any) => {
+                // Look for tickets that might be misassigned but belong to this registration's attendees
+                const belongsToRegistration = ticket.ownerType === 'attendee' && 
+                  attendees.some(att => String(ticket.ownerId) === String(att.attendeeId));
+                return !belongsToRegistration && ticket.eventTicketId;
+              });
+              
+              if (potentialTickets.length > 0) {
+                console.log('🔍 Found potentially misassigned tickets for registration:', {
+                  registrationId: effectiveRegistration._id,
+                  potentialTickets: potentialTickets.map(t => ({ 
+                    name: t.name, 
+                    ownerType: t.ownerType, 
+                    ownerId: t.ownerId,
+                    eventTicketId: t.eventTicketId
+                  }))
+                });
+                finalFallbackTickets = potentialTickets;
+              }
+            } else {
+              finalFallbackTickets = unassignedTickets;
+            }
+            
+            if (finalFallbackTickets.length > 0) {
+              attendeeTickets = finalFallbackTickets;
+              console.log('🔄 Final fallback: assigning tickets to primary attendee (JSON Preview):', {
+                ticketCount: finalFallbackTickets.length,
+                ticketNames: finalFallbackTickets.map(t => t.name),
+                assignmentReason: unassignedTickets.length > 0 ? 'unassigned_tickets' : 'potential_misassignment'
               });
             }
           }
         }
         
         attendeeTickets.forEach((ticket: any) => {
-          const ticketTotal = (ticket.quantity || 1) * (ticket.price || 0);
-          subtotal += ticketTotal;
+          const ticketPrice = roundToMoney(ticket.price || 0);
+          const ticketTotal = roundToMoney((ticket.quantity || 1) * ticketPrice);
+          subtotal = roundToMoney(subtotal + ticketTotal);
           console.log(`💰 Adding ticket to invoice (JSON Preview):`, {
             attendeeName,
             ticketName: ticket.name,
             quantity: ticket.quantity || 1,
-            price: ticket.price || 0,
+            price: ticketPrice,
             ticketTotal,
             runningSubtotal: subtotal
           });
           items.push({
-            description: `  * ${ticket.name || 'Ticket'}`,
+            description: `  - ${ticket.name || 'Ticket'}`,
             quantity: ticket.quantity || 1,
-            price: ticket.price || 0,
+            price: ticketPrice,
             total: ticketTotal
           });
         });
       });
       
       // Calculate processing fees and totals
-      const totalAmount = getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount) || 0;
-      const processingFees = Math.max(0, totalAmount - subtotal);
-      const gst = totalAmount / 11;
+      const totalAmount = roundToMoney(getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount) || 0);
+      const processingFees = roundToMoney(Math.max(0, totalAmount - subtotal));
+      const gst = roundToMoney(totalAmount / 11);
       
       console.log('🧮 Final calculations (JSON Preview):', {
         subtotal,
         totalAmount,
         processingFees,
-        gst: parseFloat(gst.toFixed(2)),
+        gst,
         itemsCount: items.length,
-        paymentSource: effectivePayment.source
+        paymentSource: effectivePayment.source || 'unknown'
       });
       
       // Create billTo from bookingContact
       const bookingContact = effectiveRegistration.registrationData?.bookingContact || {};
+      
+      // Ensure clean billTo fields - replace any placeholder values with empty strings
+      const cleanBusinessName = bookingContact.businessName && bookingContact.businessName !== '-----' ? bookingContact.businessName : '';
+      const cleanBusinessNumber = bookingContact.businessNumber && bookingContact.businessNumber !== '-----' ? bookingContact.businessNumber : '';
+      
       const billTo = {
         firstName: bookingContact.firstName || '',
         lastName: bookingContact.lastName || '',
-        businessName: bookingContact.businessName || '',
-        businessNumber: bookingContact.businessNumber || '',
+        businessName: cleanBusinessName,
+        businessNumber: cleanBusinessNumber,
         addressLine1: bookingContact.addressLine1 || '',
         addressLine2: bookingContact.addressLine2 || '',
         city: bookingContact.city || '',
@@ -450,19 +733,44 @@ export default function InvoiceMatchesPage() {
       // Get funding info from originalData fallback
       const fundingInfo = effectivePayment.funding || (effectivePayment.originalData && effectivePayment.originalData["Card Funding"]);
       
-      const paymentMethod = [
-        effectivePayment.cardBrand,
-        fundingInfo,
-        effectivePayment.paymentMethodType,
-        effectivePayment.cardLast4 || effectivePayment.last4
-      ].filter(Boolean).join(' ');
+      // Build payment method parts
+      let paymentParts = [];
+      
+      // Add card brand (e.g., "Visa")
+      if (effectivePayment.cardBrand) {
+        paymentParts.push(effectivePayment.cardBrand);
+      }
+      
+      // Add funding info (e.g., "credit") - remove "card" from it
+      if (fundingInfo) {
+        const cleanedFunding = fundingInfo.toLowerCase().replace(/\s*card\s*/gi, '').trim();
+        if (cleanedFunding) {
+          paymentParts.push(cleanedFunding);
+        }
+      }
+      
+      // Add payment method type if different from what we already have
+      if (effectivePayment.paymentMethodType && 
+          !effectivePayment.paymentMethodType.toLowerCase().includes('card')) {
+        paymentParts.push(effectivePayment.paymentMethodType);
+      }
+      
+      // Add last 4 digits
+      const last4 = effectivePayment.cardLast4 || effectivePayment.last4;
+      if (last4) {
+        paymentParts.push(last4);
+      }
+      
+      const paymentMethod = paymentParts.join(' ');
       
       // Override the invoice data with individuals-specific structure
       const customInvoice = {
         ...baseInvoice,
+        invoiceNumber: baseInvoice.customerInvoiceNumber || baseInvoice.invoiceNumber || '[To be assigned]',
         invoiceType: 'customer',
         status: 'paid',
         date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+        supplier: DEFAULT_INVOICE_SUPPLIER,
         billTo,
         items,
         subtotal,
@@ -472,10 +780,15 @@ export default function InvoiceMatchesPage() {
         payment: {
           method: paymentMethod || 'credit_card',
           gateway: effectivePayment.source === 'stripe' ? 'Stripe' : effectivePayment.source === 'square' ? 'Square' : (effectivePayment.source || 'unknown'),
+          source: effectivePayment.source || 'unknown',
+          cardBrand: effectivePayment.cardBrand || '',
+          last4: effectivePayment.cardLast4 || effectivePayment.last4 || '',
           amount: totalAmount,
-          paymentId: effectivePayment._id || effectivePayment.paymentId || '',
+          paymentId: effectivePayment.paymentId || effectivePayment._id || '',
           transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
-          paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString()
+          paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+          receiptUrl: effectivePayment.receiptUrl || '',
+          statementDescriptor: effectivePayment.statementDescriptor || ''
         }
       };
       
@@ -603,7 +916,7 @@ export default function InvoiceMatchesPage() {
           const initialCustomerInvoice = {
             invoiceType: 'customer' as const,
             invoiceNumber: customerInvoiceNumber,
-            paymentId: payment._id,
+            paymentId: payment.paymentId || payment._id,
             registrationId: registration?._id,
             date: payment.timestamp || new Date().toISOString(),
             dueDate: payment.timestamp || new Date().toISOString(),
@@ -625,7 +938,7 @@ export default function InvoiceMatchesPage() {
               amount: getMonetaryValue(payment.amount) || getMonetaryValue(payment.grossAmount) || 0,
               currency: 'AUD',
               status: 'completed',
-              source: payment.source
+              source: payment.source || 'unknown'
             }
           };
           
@@ -634,7 +947,7 @@ export default function InvoiceMatchesPage() {
           
           // Generate supplier invoice with the matching number
           if (customerInvoiceNumber) {
-            const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, payment);
+            const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, payment, registration);
             if (supplierInvoiceData) {
               setSupplierInvoice({
                 ...supplierInvoiceData,
@@ -664,11 +977,12 @@ export default function InvoiceMatchesPage() {
             ...match.invoice,
             invoiceType: 'customer' as const,
             invoiceNumber: customerInvoiceNumber,
-            paymentId: match.payment._id,
+            paymentId: match.payment.paymentId || match.payment._id,
             registrationId: match.registration?._id,
+            supplier: DEFAULT_INVOICE_SUPPLIER,
             billTo: {
-              businessName: match.registration?.businessName || '',
-              businessNumber: match.registration?.businessNumber || '',
+              businessName: (match.registration?.businessName && match.registration?.businessName !== '-----') ? match.registration?.businessName : '',
+              businessNumber: (match.registration?.businessNumber && match.registration?.businessNumber !== '-----') ? match.registration?.businessNumber : '',
               firstName: nameParts[0] || 'Unknown',
               lastName: nameParts.slice(1).join(' ') || 'Customer',
               email: match.payment.customerEmail || match.registration?.customerEmail || 'no-email@lodgetix.io',
@@ -697,7 +1011,7 @@ export default function InvoiceMatchesPage() {
               amount: getMonetaryValue(match.payment.amount) || 0,
               currency: 'AUD',
               status: 'completed',
-              source: match.payment.source
+              source: match.payment.source || 'unknown'
             }
           };
           
@@ -706,7 +1020,7 @@ export default function InvoiceMatchesPage() {
           
           // Generate supplier invoice with the matching number
           if (customerInvoiceNumber) {
-            const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, match.payment);
+            const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, match.payment, match.registration);
             if (supplierInvoiceData) {
               setSupplierInvoice({
                 ...supplierInvoiceData,
@@ -826,7 +1140,7 @@ export default function InvoiceMatchesPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          paymentId: manualMatchPayment._id,
+          paymentId: manualMatchPayment.paymentId || manualMatchPayment._id,
           registrationId: manualMatchRegistration._id,
           matchCriteria: matchCriteria,
           matchedBy: 'manual',
@@ -870,8 +1184,8 @@ export default function InvoiceMatchesPage() {
           date: new Date().toISOString(),
           dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           billTo: {
-            businessName: manualMatchRegistration.organisation?.name || '',
-            businessNumber: manualMatchRegistration.organisation?.abn || '',
+            businessName: (manualMatchRegistration.organisation?.name && manualMatchRegistration.organisation?.name !== '-----') ? manualMatchRegistration.organisation?.name : '',
+            businessNumber: (manualMatchRegistration.organisation?.abn && manualMatchRegistration.organisation?.abn !== '-----') ? manualMatchRegistration.organisation?.abn : '',
             firstName: manualMatchRegistration.customerName || manualMatchRegistration.registrationData?.bookingContact?.firstName || '',
             lastName: manualMatchRegistration.registrationData?.bookingContact?.lastName || '',
             email: manualMatchRegistration.customerEmail || manualMatchRegistration.registrationData?.bookingContact?.email || '',
@@ -902,7 +1216,7 @@ export default function InvoiceMatchesPage() {
             amount: getMonetaryValue(manualMatchPayment.amount) || 0,
             currency: 'AUD',
             status: 'completed',
-            source: manualMatchPayment.source
+            source: manualMatchPayment.source || 'unknown'
           }
         };
         
@@ -911,7 +1225,7 @@ export default function InvoiceMatchesPage() {
         
         // Generate supplier invoice with the matching number
         if (customerInvoiceNumber) {
-          const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, manualMatchPayment);
+          const supplierInvoiceData = transformToSupplierInvoice(initialCustomerInvoice, manualMatchPayment, selectedRegistration);
           if (supplierInvoiceData) {
             setSupplierInvoice({
               ...supplierInvoiceData,
@@ -942,7 +1256,7 @@ export default function InvoiceMatchesPage() {
   };
 
   // Transform invoice data for supplier invoice
-  const transformToSupplierInvoice = (customerInvoice: any, payment?: any) => {
+  const transformToSupplierInvoice = (customerInvoice: any, payment?: any, registration?: any) => {
     if (!customerInvoice) return null;
     
     // Get the appropriate supplier based on payment source
@@ -957,6 +1271,24 @@ export default function InvoiceMatchesPage() {
       const timestamp = Date.now().toString(36).toUpperCase();
       supplierInvoiceNumber = `LTSP-TEMP-${timestamp}`;
     }
+    
+    // Generate supplier invoice items with correct structure
+    const customerInvoiceSubtotal = customerInvoice?.subtotal || 0;
+    const effectiveRegistration = registration || selectedRegistration || currentMatch?.registration;
+    const effectivePayment = payment || selectedPayment || currentMatch?.payment;
+    const supplierItems = generateSupplierInvoiceItems(
+      effectivePayment,
+      effectiveRegistration,
+      customerInvoiceSubtotal
+    );
+    
+    const subtotal = roundToMoney(supplierItems.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0));
+    const gst = roundToMoney(subtotal / 11); // Calculate GST for supplier invoice
+    const total = roundToMoney(subtotal); // Total includes GST for supplier invoice
+    
+    // Get payment method for supplier invoice
+    const paymentMethod = effectivePayment?.paymentMethod || 
+      (effectivePayment?.cardLastFour ? `Visa credit card ${effectivePayment.cardLastFour}` : 'credit_card');
     
     const supplierInvoice = {
       ...customerInvoice,
@@ -978,19 +1310,57 @@ export default function InvoiceMatchesPage() {
         country: 'Australia'
       },
       supplier: supplierDetails, // LodgeTix as the supplier
-      items: [], // Start with empty array - supplier items will be added separately
-      processingFees: 0, // No additional fees on supplier invoice
-      subtotal: 0, // Will be recalculated based on supplier items
-      total: 0 // Will be recalculated based on supplier items
+      items: supplierItems, // Add the correct line items automatically
+      processingFees: roundToMoney(0), // No additional fees on supplier invoice
+      subtotal: subtotal, // Calculate based on supplier items
+      gst: gst, // Add GST calculation
+      total: total, // Calculate based on supplier items
+      payment: {
+        method: paymentMethod,
+        gateway: effectivePayment?.source === 'stripe' ? 'Stripe' : effectivePayment?.source === 'square' ? 'Square' : (effectivePayment?.source || 'unknown'),
+        source: effectivePayment?.source || 'unknown',
+        cardBrand: effectivePayment?.cardBrand || '',
+        last4: effectivePayment?.cardLast4 || effectivePayment?.last4 || '',
+        amount: roundToMoney(total),
+        paymentId: effectivePayment?.paymentId || effectivePayment?._id || '',
+        transactionId: effectivePayment?.transactionId || effectivePayment?.paymentId || '',
+        paidDate: effectivePayment?.timestamp || effectivePayment?.createdAt || new Date().toISOString(),
+        receiptUrl: effectivePayment?.receiptUrl || '',
+        statementDescriptor: effectivePayment?.statementDescriptor || ''
+      }
     };
     
     return supplierInvoice;
   };
   
-  // Calculate software utilization fee (customize as needed)
-  const calculateSoftwareUtilizationFee = (invoice: any) => {
-    // Example: 2% of invoice total
-    return (invoice.total || 0) * 0.02;
+  // Calculate software utilization fee based on payment and customer invoice
+  const calculateSoftwareUtilizationFee = (payment: any, customerInvoiceSubtotal: number) => {
+    // Software utilisation fee = payment.grossAmount - payment.feeAmount - customer invoice subtotal
+    const grossAmount = roundToMoney(payment?.grossAmount || payment?.amount || 0);
+    const feeAmount = roundToMoney(payment?.feeAmount || payment?.fees || 0);
+    const customerSubtotal = roundToMoney(customerInvoiceSubtotal);
+    return roundToMoney(grossAmount - feeAmount - customerSubtotal);
+  };
+
+  // Generate supplier invoice line items with correct structure
+  const generateSupplierInvoiceItems = (payment: any, registration: any, customerInvoiceSubtotal: number) => {
+    const confirmationNumber = registration?.confirmationNumber || 'N/A';
+    const paymentGateway = payment?.source || (payment?.sourceFile?.includes('square') ? 'Square' : 'Stripe');
+    const paymentId = payment?.paymentId || payment?._id || 'N/A';
+    const feeAmount = roundToMoney(payment?.feeAmount || payment?.fees || 0);
+    
+    return [
+      {
+        description: `Software utilisation fee for registration: ${confirmationNumber}`,
+        quantity: 1,
+        price: roundToMoney(calculateSoftwareUtilizationFee(payment, customerInvoiceSubtotal))
+      },
+      {
+        description: `${paymentGateway.charAt(0).toUpperCase() + paymentGateway.slice(1).toLowerCase()} processing fee reimbursement for ${paymentId}`,
+        quantity: 1,
+        price: feeAmount
+      }
+    ];
   };
 
   const handleApprove = async () => {
@@ -1009,13 +1379,13 @@ export default function InvoiceMatchesPage() {
       
       const invoiceToCreate = {
         ...currentMatch!.invoice,
-        paymentId: paymentToUse._id?.toString(),
+        paymentId: paymentToUse.paymentId?.toString() || paymentToUse._id?.toString(),
         registrationId: registrationToUse?._id?.toString(),
         // Only override billTo if it's using the old format
         ...(hasNewBillToFormat ? {} : {
           billTo: {
-            businessName: registrationToUse?.businessName || '',
-            businessNumber: registrationToUse?.businessNumber || '',
+            businessName: (registrationToUse?.businessName && registrationToUse?.businessName !== '-----') ? registrationToUse?.businessName : '',
+            businessNumber: (registrationToUse?.businessNumber && registrationToUse?.businessNumber !== '-----') ? registrationToUse?.businessNumber : '',
             firstName: (() => {
               const fullName = paymentToUse.customerName || registrationToUse?.customerName || registrationToUse?.primaryAttendee || 'Unknown Customer';
               const nameParts = fullName.split(' ');
@@ -1053,7 +1423,7 @@ export default function InvoiceMatchesPage() {
           amount: getMonetaryValue(paymentToUse.amount) || 0,
           currency: 'AUD',
           status: 'completed',
-          source: paymentToUse.source
+          source: paymentToUse.source || 'unknown'
         }
       };
       
@@ -1068,7 +1438,7 @@ export default function InvoiceMatchesPage() {
       if (customerInvoice && supplierInvoice) {
         const supplierToCreate = {
           ...supplierInvoice,
-          paymentId: paymentToUse._id?.toString(),
+          paymentId: paymentToUse.paymentId?.toString() || paymentToUse._id?.toString(),
           registrationId: registrationToUse?._id?.toString(),
           relatedInvoiceId: customerResult._id // Link to customer invoice
         };
@@ -1144,7 +1514,7 @@ export default function InvoiceMatchesPage() {
     
     const declineData = {
       timestamp: new Date().toISOString(),
-      paymentId: paymentToUse._id,
+      paymentId: paymentToUse.paymentId || paymentToUse._id,
       registrationId: registrationToUse?._id,
       declineReason: declineComments,
       payment: paymentToUse,
@@ -1723,6 +2093,57 @@ export default function InvoiceMatchesPage() {
                   console.log('Preview button clicked. customerInvoice:', customerInvoice);
                   console.log('supplierInvoice:', supplierInvoice);
                   
+                  // For individuals/lodge registrations, always ensure we have the proper custom invoice
+                  if ((effectiveRegistration?.registrationType === 'individuals' || effectiveRegistration?.registrationType === 'lodge') && effectivePayment) {
+                    try {
+                      console.log(`🔄 Ensuring proper ${effectiveRegistration.registrationType} invoice before preview...`);
+                      
+                      // If we don't have a customer invoice or it's incomplete, generate it
+                      if (!customerInvoice) {
+                        const invoiceNumbers = await generateInvoiceNumbers(new Date(effectivePayment.timestamp || effectivePayment.createdAt || new Date()));
+                        const baseInvoice = {
+                          customerInvoiceNumber: invoiceNumbers.customerInvoiceNumber,
+                          supplierInvoiceNumber: invoiceNumbers.supplierInvoiceNumber,
+                          paymentId: effectivePayment.paymentId || effectivePayment._id,
+                          registrationId: effectiveRegistration._id,
+                          date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+                          status: 'paid'
+                        };
+                        
+                        let customInvoice;
+                        if (effectiveRegistration.registrationType === 'individuals') {
+                          customInvoice = await generateCustomIndividualsInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+                        } else if (effectiveRegistration.registrationType === 'lodge') {
+                          customInvoice = await generateCustomLodgeInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+                        }
+                        
+                        if (customInvoice) {
+                          setCustomerInvoice(customInvoice);
+                          setEditableInvoice(customInvoice);
+                        }
+                        
+                        // Generate supplier invoice
+                        const supplierInvoiceData = transformToSupplierInvoice(customInvoice, effectivePayment, effectiveRegistration);
+                        setSupplierInvoice(supplierInvoiceData);
+                      } else {
+                        // Use existing customer invoice
+                        setEditableInvoice(customerInvoice);
+                      }
+                      
+                      setActiveInvoiceType('customer');
+                      setShowInvoicePreviewModal(true);
+                      
+                      // Fetch related documents if we have a registration
+                      if (effectiveRegistration?._id) {
+                        fetchRelatedDocuments(effectiveRegistration._id);
+                      }
+                      return;
+                    } catch (error) {
+                      console.error('❌ Error generating individuals invoice for preview:', error);
+                      // Fall through to standard logic if generation fails
+                    }
+                  }
+                  
                   // If we already have invoices, use them
                   if (customerInvoice) {
                     setEditableInvoice(customerInvoice);
@@ -1746,7 +2167,7 @@ export default function InvoiceMatchesPage() {
                   // Apply selected mapping if one is chosen
                   let invoiceData = {
                     ...currentMatch.invoice,
-                    paymentId: effectivePayment._id,
+                    paymentId: effectivePayment.paymentId || effectivePayment._id,
                     registrationId: effectiveRegistration?._id,
                   };
                   
@@ -1784,8 +2205,8 @@ export default function InvoiceMatchesPage() {
                     setCustomerArrayMappings([]);
                     
                     invoiceData.billTo = {
-                      businessName: effectiveRegistration?.businessName || '',
-                      businessNumber: effectiveRegistration?.businessNumber || '',
+                      businessName: (effectiveRegistration?.businessName && effectiveRegistration?.businessName !== '-----') ? effectiveRegistration?.businessName : '',
+                      businessNumber: (effectiveRegistration?.businessNumber && effectiveRegistration?.businessNumber !== '-----') ? effectiveRegistration?.businessNumber : '',
                       firstName: firstName,
                       lastName: lastName,
                       email: effectivePayment.customerEmail || effectiveRegistration?.customerEmail || 'no-email@lodgetix.io',
@@ -1825,15 +2246,16 @@ export default function InvoiceMatchesPage() {
                       amount: getMonetaryValue(effectivePayment.amount) || 0,
                       currency: 'AUD',
                       status: 'completed',
-                      source: effectivePayment.source || 'unknown'
+                      source: effectivePayment.source || 'unknown' || 'unknown'
                     }
                   };
                   // Set up customer invoice with custom logic for individuals
                   let customerInvoiceData = { ...invoice, invoiceType: 'customer' as const };
                   
-                  // Apply custom structure for 'individuals' registration type
-                  if (effectiveRegistration?.registrationType === 'individuals') {
-                    console.log('🎯 INDIVIDUALS LOGIC TRIGGERED', {
+                  // Apply custom structure for 'individuals' or 'lodge' registration type
+                  if (effectiveRegistration?.registrationType === 'individuals' || effectiveRegistration?.registrationType === 'lodge') {
+                    console.log('🎯 CUSTOM REGISTRATION TYPE LOGIC TRIGGERED', {
+                      registrationType: effectiveRegistration.registrationType,
                       registrationId: effectiveRegistration._id,
                       confirmationNumber: effectiveRegistration.confirmationNumber,
                       functionId: effectiveRegistration.functionId,
@@ -1841,207 +2263,31 @@ export default function InvoiceMatchesPage() {
                     });
                     
                     try {
-                    // Fetch function name
-                    const functionName = effectiveRegistration.functionId 
-                      ? await fetchFunctionName(effectiveRegistration.functionId)
-                      : effectiveRegistration.functionName || 'Event';
-                    
-                    console.log('📋 Function name lookup result:', {
-                      functionId: effectiveRegistration.functionId,
-                      functionName,
-                      fallbackUsed: !effectiveRegistration.functionId
-                    });
-                    
-                    // Get attendees and tickets from registration data
-                    const attendees = effectiveRegistration.registrationData?.attendees || [];
-                    const allTickets = effectiveRegistration.registrationData?.tickets || [];
-                    
-                    console.log('👥 Processing attendees and tickets:', {
-                      attendeesCount: attendees.length,
-                      totalTickets: allTickets.length,
-                      attendeeNames: attendees.map((a: any) => `${a.firstName} ${a.lastName}`),
-                      ticketOwnership: allTickets.map((t: any) => ({
-                        name: t.name,
-                        ownerType: t.ownerType,
-                        ownerId: t.ownerId,
-                        price: t.price,
-                        quantity: t.quantity
-                      }))
-                    });
-                    
-                    // Create line items
-                    const items = [];
-                    
-                    // First item: Registration line
-                    items.push({
-                      description: `${effectiveRegistration.confirmationNumber} | Registration for ${functionName}`,
-                      quantity: '',
-                      price: '',
-                      total: 0
-                    });
-                    
-                    // Process attendees and their tickets
-                    let subtotal = 0;
-                    attendees.forEach((attendee: any) => {
-                      // Add attendee line
-                      const attendeeName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
-                      const lodgeInfo = attendee.lodgeNameNumber || '';
-                      items.push({
-                        description: `attendee: ${attendeeName} | ${lodgeInfo}`,
-                        quantity: '',
-                        price: '',
-                        total: 0
-                      });
+                      // Generate invoice numbers
+                      const invoiceNumbers = await generateInvoiceNumbers(new Date(effectivePayment.timestamp || effectivePayment.createdAt || new Date()));
+                      const baseInvoice = {
+                        ...customerInvoiceData,
+                        customerInvoiceNumber: invoiceNumbers.customerInvoiceNumber,
+                        supplierInvoiceNumber: invoiceNumbers.supplierInvoiceNumber,
+                        paymentId: effectivePayment.paymentId || effectivePayment._id,
+                        registrationId: effectiveRegistration._id,
+                        date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+                        status: 'paid'
+                      };
                       
-                      // Add tickets for this attendee with fallback strategy
-                      let attendeeTickets = allTickets.filter((ticket: any) => 
-                        ticket.ownerType === 'attendee' && ticket.ownerId === attendee.attendeeId
-                      );
-                      
-                      console.log(`🎫 Ticket filtering for attendee ${attendeeName}:`, {
-                        attendeeId: attendee.attendeeId,
-                        directMatchTickets: attendeeTickets.length,
-                        ticketDetails: attendeeTickets.map(t => ({ name: t.name, price: t.price, quantity: t.quantity }))
-                      });
-                      
-                      // Fallback: If no tickets found and this is an 'individuals' registration,
-                      // check if tickets are owned by the registration itself and assign to primary attendee
-                      if (attendeeTickets.length === 0 && effectiveRegistration.registrationType === 'individuals') {
-                        const registrationOwnedTickets = allTickets.filter((ticket: any) => 
-                          (ticket.ownerType === 'registration' && ticket.ownerId === effectiveRegistration._id) ||
-                          (ticket.ownerType === 'attendee' && ticket.ownerId === effectiveRegistration._id)
-                        );
-                        
-                        console.log('🔄 Applying fallback ticket assignment:', {
-                          attendeeName,
-                          registrationId: effectiveRegistration._id,
-                          registrationOwnedTickets: registrationOwnedTickets.length,
-                          isPrimaryAttendee: attendees.indexOf(attendee) === 0,
-                          fallbackTickets: registrationOwnedTickets.map(t => ({ name: t.name, price: t.price }))
-                        });
-                        
-                        // For individuals registration, assign all registration-owned tickets to the first attendee
-                        if (registrationOwnedTickets.length > 0 && attendees.indexOf(attendee) === 0) {
-                          attendeeTickets = registrationOwnedTickets;
-                          console.log('✅ Fallback tickets assigned to primary attendee:', {
-                            assignedTickets: attendeeTickets.length
-                          });
-                        } else if (attendeeTickets.length === 0 && attendees.indexOf(attendee) === 0) {
-                          // Final fallback: assign any tickets without proper ownership to primary attendee
-                          const unassignedTickets = allTickets.filter((ticket: any) => 
-                            !ticket.ownerType || !ticket.ownerId || 
-                            (ticket.ownerType !== 'attendee' && ticket.ownerType !== 'registration')
-                          );
-                          if (unassignedTickets.length > 0) {
-                            attendeeTickets = unassignedTickets;
-                            console.log('🔄 Final fallback: assigning unowned tickets to primary attendee:', {
-                              unassignedTickets: unassignedTickets.length,
-                              ticketNames: unassignedTickets.map(t => t.name)
-                            });
-                          }
-                        }
+                      // Use appropriate generator based on registration type
+                      let customInvoice;
+                      if (effectiveRegistration.registrationType === 'individuals') {
+                        customInvoice = await generateCustomIndividualsInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+                      } else if (effectiveRegistration.registrationType === 'lodge') {
+                        customInvoice = await generateCustomLodgeInvoice(effectiveRegistration, effectivePayment, baseInvoice);
                       }
                       
-                      attendeeTickets.forEach((ticket: any) => {
-                        const ticketTotal = (ticket.quantity || 1) * (ticket.price || 0);
-                        subtotal += ticketTotal;
-                        console.log(`💰 Adding ticket to invoice:`, {
-                          attendeeName,
-                          ticketName: ticket.name,
-                          quantity: ticket.quantity || 1,
-                          price: ticket.price || 0,
-                          ticketTotal,
-                          runningSubtotal: subtotal
-                        });
-                        items.push({
-                          description: `  * ${ticket.name || 'Ticket'}`,
-                          quantity: ticket.quantity || 1,
-                          price: ticket.price || 0,
-                          total: ticketTotal
-                        });
-                      });
-                    });
-                    
-                    // Calculate processing fees and totals
-                    const totalAmount = getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount) || 0;
-                    const processingFees = Math.max(0, totalAmount - subtotal);
-                    const gst = totalAmount / 11;
-                    
-                    console.log('🧮 Final calculations:', {
-                      subtotal,
-                      totalAmount,
-                      processingFees,
-                      gst: parseFloat(gst.toFixed(2)),
-                      itemsCount: items.length,
-                      paymentSource: effectivePayment.source
-                    });
-                    
-                    // Create billTo from bookingContact
-                    const bookingContact = effectiveRegistration.registrationData?.bookingContact || {};
-                    const billTo = {
-                      firstName: bookingContact.firstName || '',
-                      lastName: bookingContact.lastName || '',
-                      businessName: bookingContact.businessName || '',
-                      businessNumber: bookingContact.businessNumber || '',
-                      addressLine1: bookingContact.addressLine1 || '',
-                      addressLine2: bookingContact.addressLine2 || '',
-                      city: bookingContact.city || '',
-                      postalCode: bookingContact.postalCode || '',
-                      stateProvince: bookingContact.stateProvince || '',
-                      country: bookingContact.country || '',
-                      email: bookingContact.email || bookingContact.emailAddress || '',
-                      phone: bookingContact.phone || bookingContact.mobileNumber || ''
-                    };
-                    
-                    // Create payment info with custom format
-                    // Get funding info from originalData fallback
-                    const fundingInfo = effectivePayment.funding || (effectivePayment.originalData && effectivePayment.originalData["Card Funding"]);
-                    
-                    const paymentMethod = [
-                      effectivePayment.cardBrand,
-                      fundingInfo,
-                      effectivePayment.paymentMethodType,
-                      effectivePayment.cardLast4 || effectivePayment.last4
-                    ].filter(Boolean).join(' ');
-                    
-                    // Override the invoice data with individuals-specific structure
-                    customerInvoiceData = {
-                      ...customerInvoiceData,
-                      status: 'paid',
-                      date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
-                      billTo,
-                      items,
-                      subtotal,
-                      processingFees,
-                      total: totalAmount,
-                      gst,
-                      payment: {
-                        ...customerInvoiceData.payment,
-                        method: paymentMethod || 'credit_card',
-                        gateway: effectivePayment.source === 'stripe' ? 'Stripe' : effectivePayment.source === 'square' ? 'Square' : (effectivePayment.source || 'unknown'),
-                        amount: totalAmount,
-                        paymentId: effectivePayment._id || effectivePayment.paymentId || '',
-                        transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
-                        paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString()
+                      if (customInvoice) {
+                        customerInvoiceData = customInvoice;
                       }
-                    };
-                    
-                    console.log('✅ INDIVIDUALS INVOICE GENERATED:', {
-                      confirmationNumber: effectiveRegistration.confirmationNumber,
-                      functionName,
-                      attendeesProcessed: attendees.length,
-                      totalItems: items.length,
-                      subtotal,
-                      processingFees,
-                      totalAmount,
-                      paymentMethod,
-                      gateway: effectivePayment.source,
-                      billToEmail: billTo.email,
-                      success: true
-                    });
-                    
                     } catch (error) {
-                      console.error('❌ ERROR in individuals invoice generation:', {
+                      console.error(`❌ ERROR in ${effectiveRegistration.registrationType} invoice generation:`, {
                         registrationId: effectiveRegistration._id,
                         confirmationNumber: effectiveRegistration.confirmationNumber,
                         error: error.message,
@@ -2058,8 +2304,15 @@ export default function InvoiceMatchesPage() {
                     }
                   }
                   
+                  console.log('🎯 SETTING EDITABLE INVOICE:', customerInvoiceData);
+                  console.log('🎯 SUPPLIER OBJECT:', customerInvoiceData?.supplier);
                   setEditableInvoice(customerInvoiceData);
                   setCustomerInvoice(customerInvoiceData);
+                  
+                  // Generate supplier invoice from customer invoice
+                  const supplierInvoiceData = transformToSupplierInvoice(customerInvoiceData, effectivePayment, effectiveRegistration);
+                  setSupplierInvoice(supplierInvoiceData);
+                  
                   setFieldMappings({});
                   setFieldMappingConfig({});
                   setCustomerFieldMappingConfig({});
@@ -2095,6 +2348,10 @@ export default function InvoiceMatchesPage() {
                       const customerInvoiceWithMapping = { ...customerInvoiceData, ...mappedData };
                       setEditableInvoice(customerInvoiceWithMapping);
                       setCustomerInvoice(customerInvoiceWithMapping);
+                      
+                      // Generate supplier invoice from mapped customer invoice
+                      const supplierInvoiceData = transformToSupplierInvoice(customerInvoiceWithMapping, effectivePayment, effectiveRegistration);
+                      setSupplierInvoice(supplierInvoiceData);
                       // Store the mapping configuration including line items
                       const fullConfig = {
                         ...autoMapping.mappings,
@@ -2136,11 +2393,12 @@ export default function InvoiceMatchesPage() {
                   invoiceData = {
                     ...currentMatch.invoice,
                     invoiceType: 'customer',
-                    paymentId: effectivePayment._id,
+                    paymentId: effectivePayment.paymentId || effectivePayment._id,
                     registrationId: effectiveRegistration?._id,
+                    supplier: DEFAULT_INVOICE_SUPPLIER,
                     billTo: {
-                      businessName: effectiveRegistration?.businessName || '',
-                      businessNumber: effectiveRegistration?.businessNumber || '',
+                      businessName: (effectiveRegistration?.businessName && effectiveRegistration?.businessName !== '-----') ? effectiveRegistration?.businessName : '',
+                      businessNumber: (effectiveRegistration?.businessNumber && effectiveRegistration?.businessNumber !== '-----') ? effectiveRegistration?.businessNumber : '',
                       firstName: nameParts[0] || 'Unknown',
                       lastName: nameParts.slice(1).join(' ') || 'Customer',
                       email: effectivePayment.customerEmail || effectiveRegistration?.customerEmail || 'no-email@lodgetix.io',
@@ -2169,7 +2427,7 @@ export default function InvoiceMatchesPage() {
                       amount: effectivePayment.amount || 0,
                       currency: 'AUD',
                       status: 'completed',
-                      source: effectivePayment.source
+                      source: effectivePayment.source || 'unknown'
                     }
                   };
                 }
@@ -2185,25 +2443,9 @@ export default function InvoiceMatchesPage() {
               {/* Supplier Invoice Preview */}
               {(() => {
                 // Create default supplier invoice if not already created
-                const defaultSupplierInvoice = customerInvoice ? transformToSupplierInvoice(customerInvoice, effectivePayment) : null;
+                const defaultSupplierInvoice = customerInvoice ? transformToSupplierInvoice(customerInvoice, effectivePayment, effectiveRegistration) : null;
                 
-                if (defaultSupplierInvoice && (!defaultSupplierInvoice.items || defaultSupplierInvoice.items.length === 0)) {
-                  defaultSupplierInvoice.items = [
-                    {
-                      description: 'Payment Processing Fee Reimbursement',
-                      quantity: 1,
-                      price: effectivePayment?.fees || 0
-                    },
-                    {
-                      description: 'Software Utilization Fee',
-                      quantity: 1,
-                      price: calculateSoftwareUtilizationFee({ total: effectivePayment?.amount || 0 })
-                    }
-                  ];
-                  const subtotal = defaultSupplierInvoice.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
-                  defaultSupplierInvoice.subtotal = subtotal;
-                  defaultSupplierInvoice.total = subtotal;
-                }
+                // The transformToSupplierInvoice function now automatically generates the correct items
                 
                 return (supplierInvoice || defaultSupplierInvoice) ? (
                   <JsonViewer 
@@ -2365,7 +2607,7 @@ export default function InvoiceMatchesPage() {
                       onClick={() => handleSelectPayment(result)}
                     >
                       <div className="font-semibold">
-                        Payment: {result.document.transactionId || result.document.paymentId || 'No ID'}
+                        Payment: {result.document.paymentId || result.document.transactionId || 'No ID'}
                       </div>
                       <div className="text-sm text-gray-600">
                         {result.document.customerName || result.document.customerEmail || 'Unknown'} - 
@@ -2482,6 +2724,11 @@ export default function InvoiceMatchesPage() {
                       
                       setEditableInvoice(invoiceToSet);
                       setCustomerInvoice(invoiceToSet); // Also update the customer invoice state
+                      
+                      // Generate supplier invoice from updated customer invoice
+                      const supplierInvoiceData = transformToSupplierInvoice(invoiceToSet, effectivePayment, effectiveRegistration);
+                      setSupplierInvoice(supplierInvoiceData);
+                      
                       // Restore customer field mapping config
                       setFieldMappingConfig(customerFieldMappingConfig);
                       // Restore customer mapping selection
@@ -2502,29 +2749,10 @@ export default function InvoiceMatchesPage() {
                     setActiveInvoiceType('supplier');
                     if (!supplierInvoice && customerInvoice) {
                       // Create supplier invoice from customer invoice
-                      const newSupplierInvoice = transformToSupplierInvoice(customerInvoice, effectivePayment);
+                      const newSupplierInvoice = transformToSupplierInvoice(customerInvoice, effectivePayment, effectiveRegistration);
                       
                       if (newSupplierInvoice) {
-                        // Only add default line items if there are no items yet
-                        if (!newSupplierInvoice.items || newSupplierInvoice.items.length === 0) {
-                        newSupplierInvoice.items = [
-                          {
-                            description: 'Payment Processing Fee Reimbursement',
-                            quantity: 1,
-                            price: customerInvoice.processingFees || 0
-                          },
-                          {
-                            description: 'Software Utilization Fee',
-                            quantity: 1,
-                            price: calculateSoftwareUtilizationFee(customerInvoice)
-                          }
-                        ];
-                        }
-                        
-                        // Recalculate totals
-                        const subtotal = newSupplierInvoice.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
-                        newSupplierInvoice.subtotal = subtotal;
-                        newSupplierInvoice.total = subtotal;
+                        // The transformToSupplierInvoice function now automatically generates the correct items and totals
                         
                         setSupplierInvoice(newSupplierInvoice);
                         setEditableInvoice(newSupplierInvoice);
@@ -3099,16 +3327,23 @@ export default function InvoiceMatchesPage() {
                 </div>
                 {/* A4 size container: 210mm x 297mm at 96dpi = 794px x 1123px */}
                 <div id="invoice-preview" className="bg-white shadow-lg" style={{ width: '794px', minHeight: '1123px' }}>
-                  {editableInvoice ? (
-                    <InvoiceComponent 
-                      invoice={{
-                        ...editableInvoice,
-                        billTo: fieldMappings.billTo || editableInvoice.billTo || {}
-                      }} 
-                      className="h-full"
-                      logoBase64={logoBase64}
-                    />
-                  ) : (
+                  {editableInvoice ? (() => {
+                    const invoiceData = {
+                      ...editableInvoice,
+                      billTo: fieldMappings.billTo || editableInvoice.billTo || {}
+                    };
+                    console.log('🎯 INVOICE DATA PASSED TO COMPONENT:', invoiceData);
+                    console.log('🎯 PAYMENT OBJECT:', invoiceData?.payment);
+                    console.log('🎯 PAYMENT SOURCE:', invoiceData?.payment?.source);
+                    
+                    return (
+                      <InvoiceComponent 
+                        invoice={invoiceData} 
+                        className="h-full"
+                        logoBase64={logoBase64}
+                      />
+                    );
+                  })() : (
                     <div className="p-8 text-gray-500">No invoice data available</div>
                   )}
                 </div>
@@ -3359,15 +3594,14 @@ export default function InvoiceMatchesPage() {
                       // Send email with customer invoice PDF if available (optional - will fail silently if not configured)
                       if (customerPdfBlob && updatedCustomerInvoice) {
                         try {
-                          let functionName = effectiveRegistration?.functionName;
-                          
-                          // If we have a functionId but no functionName, look it up
-                          if (effectiveRegistration?.functionId && !functionName) {
-                            try {
-                              const functionDoc = await apiService.getFunctionById(effectiveRegistration.functionId);
-                              functionName = functionDoc.name;
-                            } catch (error) {
-                              console.warn('Failed to fetch function name:', error);
+                          // Extract function name from the invoice items (first line item)
+                          let functionName = '';
+                          if (updatedCustomerInvoice?.items && updatedCustomerInvoice.items.length > 0) {
+                            const firstLineItem = updatedCustomerInvoice.items[0].description;
+                            // Extract function name from format: "CONF-123 | Individuals/Lodge for Function Name"
+                            const match = firstLineItem.match(/\| (?:Individuals|Lodge) for (.+)$/);
+                            if (match) {
+                              functionName = match[1];
                             }
                           }
                           

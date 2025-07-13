@@ -2,8 +2,17 @@ const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
 const fs = require('fs').promises;
+const fsSync = require('fs');
 const path = require('path');
 const net = require('net');
+const dotenv = require('dotenv');
+
+// Load parent environment variables first
+const parentEnvPath = path.join(__dirname, '..', '.env.local');
+if (fsSync.existsSync(parentEnvPath)) {
+  console.log('Loading parent .env.local from:', parentEnvPath);
+  dotenv.config({ path: parentEnvPath });
+}
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -88,6 +97,11 @@ async function writeEnvFile(webPort, apiPort) {
   }
   if (!envVars['MONGODB_DB']) {
     envVars['MONGODB_DB'] = 'LodgeTix';
+  }
+  
+  // Preserve SQUARE_ACCESS_TOKEN if it exists from parent env
+  if (process.env.SQUARE_ACCESS_TOKEN && !envVars['SQUARE_ACCESS_TOKEN']) {
+    envVars['SQUARE_ACCESS_TOKEN'] = process.env.SQUARE_ACCESS_TOKEN;
   }
   
   // Reconstruct the env file content

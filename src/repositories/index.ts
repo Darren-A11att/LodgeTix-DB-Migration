@@ -1,15 +1,118 @@
 import { Db } from 'mongodb';
 import { EventsRepository } from './events.repository';
+import { AttendeeEventsRepository } from './attendeeEvents.repository';
+import { AttendeesRepository } from './attendees.repository';
+import { ConnectedAccountPaymentsRepository } from './connectedAccountPayments.repository';
+import { ContactsRepository } from './contacts.repository';
+import { CustomersRepository } from './customers.repository';
+import { DisplayScopesRepository } from './displayScopes.repository';
+import { EligibilityCriteriaRepository } from './eligibilityCriteria.repository';
+import { EventTicketsRepository } from './eventTickets.repository';
+import { FunctionsRepository } from './functions.repository';
+import { GrandLodgesRepository } from './grandLodges.repository';
+import { LocationsRepository } from './locations.repository';
+import { LodgeCreationRateLimitRepository } from './lodgeCreationRateLimit.repository';
+import { LodgesRepository } from './lodges.repository';
+import { MasonicProfilesRepository } from './masonicProfiles.repository';
+import { MembershipsRepository } from './memberships.repository';
+import { OrganisationPayoutsRepository } from './organisationPayouts.repository';
+import { OrganisationsRepository } from './organisations.repository';
+import { OrganisationUsersRepository } from './organisationUsers.repository';
+import { PackagesRepository } from './packages.repository';
+import { PaymentGatewayRepository } from './paymentGateway.repository';
+import { PlatformTransfersRepository } from './platformTransfers.repository';
+import { RawRegistrationsRepository } from './rawRegistrations.repository';
+import { RegistrationsRepository } from './registrations.repository';
+import { TicketsRepository } from './tickets.repository';
+import { UserRolesRepository } from './userRoles.repository';
+import { WebhookLogsRepository } from './webhookLogs.repository';
 
 export class Repositories {
   public events: EventsRepository;
-  // Add other repositories here as you convert them
+  public attendeeEvents: AttendeeEventsRepository;
+  public attendees: AttendeesRepository;
+  public connectedAccountPayments: ConnectedAccountPaymentsRepository;
+  public contacts: ContactsRepository;
+  public customers: CustomersRepository;
+  public displayScopes: DisplayScopesRepository;
+  public eligibilityCriteria: EligibilityCriteriaRepository;
+  public eventTickets: EventTicketsRepository;
+  public functions: FunctionsRepository;
+  public grandLodges: GrandLodgesRepository;
+  public locations: LocationsRepository;
+  public lodgeCreationRateLimit: LodgeCreationRateLimitRepository;
+  public lodges: LodgesRepository;
+  public masonicProfiles: MasonicProfilesRepository;
+  public memberships: MembershipsRepository;
+  public organisationPayouts: OrganisationPayoutsRepository;
+  public organisations: OrganisationsRepository;
+  public organisationUsers: OrganisationUsersRepository;
+  public packages: PackagesRepository;
+  public paymentGateway: PaymentGatewayRepository;
+  public platformTransfers: PlatformTransfersRepository;
+  public rawRegistrations: RawRegistrationsRepository;
+  public registrations: RegistrationsRepository;
+  public tickets: TicketsRepository;
+  public userRoles: UserRolesRepository;
+  public webhookLogs: WebhookLogsRepository;
 
   constructor(database: Db) {
     this.events = new EventsRepository(database);
-    // Initialize other repositories
+    this.attendeeEvents = new AttendeeEventsRepository(database);
+    this.attendees = new AttendeesRepository(database);
+    this.connectedAccountPayments = new ConnectedAccountPaymentsRepository(database);
+    this.contacts = new ContactsRepository(database);
+    this.customers = new CustomersRepository(database);
+    this.displayScopes = new DisplayScopesRepository(database);
+    this.eligibilityCriteria = new EligibilityCriteriaRepository(database);
+    this.eventTickets = new EventTicketsRepository(database);
+    this.functions = new FunctionsRepository(database);
+    this.grandLodges = new GrandLodgesRepository(database);
+    this.locations = new LocationsRepository(database);
+    this.lodgeCreationRateLimit = new LodgeCreationRateLimitRepository(database);
+    this.lodges = new LodgesRepository(database);
+    this.masonicProfiles = new MasonicProfilesRepository(database);
+    this.memberships = new MembershipsRepository(database);
+    this.organisationPayouts = new OrganisationPayoutsRepository(database);
+    this.organisations = new OrganisationsRepository(database);
+    this.organisationUsers = new OrganisationUsersRepository(database);
+    this.packages = new PackagesRepository(database);
+    this.paymentGateway = new PaymentGatewayRepository(database);
+    this.platformTransfers = new PlatformTransfersRepository(database);
+    this.rawRegistrations = new RawRegistrationsRepository(database);
+    this.registrations = new RegistrationsRepository(database);
+    this.tickets = new TicketsRepository(database);
+    this.userRoles = new UserRolesRepository(database);
+    this.webhookLogs = new WebhookLogsRepository(database);
   }
 }
 
+// Export all repository classes and interfaces
 export * from './events.repository';
-// Export other repositories as you create them
+export * from './attendeeEvents.repository';
+export * from './attendees.repository';
+export * from './connectedAccountPayments.repository';
+export * from './contacts.repository';
+export * from './customers.repository';
+export * from './displayScopes.repository';
+export * from './eligibilityCriteria.repository';
+export * from './eventTickets.repository';
+export * from './functions.repository';
+export * from './grandLodges.repository';
+export * from './locations.repository';
+export * from './lodgeCreationRateLimit.repository';
+export * from './lodges.repository';
+export * from './masonicProfiles.repository';
+export * from './memberships.repository';
+export * from './organisationPayouts.repository';
+export * from './organisations.repository';
+export * from './organisationUsers.repository';
+export * from './packages.repository';
+export * from './paymentGateway.repository';
+export * from './platformTransfers.repository';
+export * from './rawRegistrations.repository';
+export * from './registrations.repository';
+export * from './tickets.repository';
+export * from './userRoles.repository';
+export * from './webhookLogs.repository';
+export * from './supporting-file';
