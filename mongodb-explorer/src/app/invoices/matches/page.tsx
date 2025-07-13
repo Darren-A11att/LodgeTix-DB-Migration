@@ -839,6 +839,14 @@ export default function InvoiceMatchesPage() {
         // Fetch the specific payment
         const payment = await apiService.getDocument('payments', paymentId);
         
+        console.log('🔍 Fetched payment:', {
+          _id: payment?._id,
+          paymentId: payment?.paymentId,
+          transactionId: payment?.transactionId,
+          customerEmail: payment?.customerEmail,
+          amount: payment?.amount
+        });
+        
         // Try to find a registration match
         let registration = null;
         let matchConfidence = 0;
@@ -872,9 +880,19 @@ export default function InvoiceMatchesPage() {
                 ]
               };
               
+              console.log('🔍 Searching for registration with query:', JSON.stringify(registrationQuery, null, 2));
+              
               const regData = await apiService.searchDocuments('registrations', registrationQuery);
-              if (regData.documents && regData.documents.length > 0) {
-                registration = regData.documents[0];
+              
+              // Handle both 'documents' and 'results' response formats
+              const documents = regData.documents || regData.results || [];
+              console.log('🔍 Registration search result:', {
+                found: documents.length,
+                documents: documents
+              });
+              
+              if (documents.length > 0) {
+                registration = documents[0];
                 // Simple confidence calculation
                 if (payment.paymentId && registration.stripePaymentIntentId === payment.paymentId) {
                   matchConfidence = 100;

@@ -18,6 +18,34 @@ import fs from 'fs/promises';
 import { findBestMatch, convertToLegacyMatchDetails } from './utils/match-analyzer-multi-field';
 import { findAvailablePort } from './utils/port-finder';
 
+// Helper function to process MongoDB queries and handle ObjectIds
+function processMongoQuery(query: any): any {
+  if (!query || typeof query !== 'object') {
+    return query;
+  }
+  
+  const processed: any = {};
+  
+  for (const [key, value] of Object.entries(query)) {
+    if (key === '_id' && typeof value === 'string' && ObjectId.isValid(value)) {
+      processed[key] = new ObjectId(value);
+    } else if (key.startsWith('$')) {
+      // Handle MongoDB operators
+      if (Array.isArray(value)) {
+        processed[key] = value.map(item => processMongoQuery(item));
+      } else {
+        processed[key] = processMongoQuery(value);
+      }
+    } else if (typeof value === 'object' && value !== null) {
+      processed[key] = processMongoQuery(value);
+    } else {
+      processed[key] = value;
+    }
+  }
+  
+  return processed;
+}
+
 const app = express();
 
 // Middleware
@@ -252,27 +280,33 @@ app.post('/api/collections/:name/search', async (req, res) => {
     const collection = db.collection(collectionName);
     
     // Build MongoDB query from the provided query object
-    const filter: any = {};
+    let filter: any = {};
     
-    // Handle different query patterns
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        // For ID fields, use exact match
-        if (key.includes('Id') || key === '_id') {
-          if (key === '_id' && ObjectId.isValid(value as string)) {
-            filter[key] = new ObjectId(value as string);
+    // Check if query contains MongoDB operators like $or, $and, etc.
+    if (query.$or || query.$and || query.$not || query.$nor) {
+      // If query contains operators, use it directly but process any ObjectIds
+      filter = processMongoQuery(query);
+    } else {
+      // Handle simple query patterns
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          // For ID fields, use exact match
+          if (key.includes('Id') || key === '_id') {
+            if (key === '_id' && ObjectId.isValid(value as string)) {
+              filter[key] = new ObjectId(value as string);
+            } else {
+              filter[key] = value;
+            }
+          } else if (key === 'email' || key === 'customerEmail') {
+            // For email fields, use case-insensitive regex
+            filter[key] = { $regex: new RegExp(value as string, 'i') };
           } else {
+            // For other fields, use exact match
             filter[key] = value;
           }
-        } else if (key === 'email' || key === 'customerEmail') {
-          // For email fields, use case-insensitive regex
-          filter[key] = { $regex: new RegExp(value as string, 'i') };
-        } else {
-          // For other fields, use exact match
-          filter[key] = value;
         }
-      }
-    });
+      });
+    }
     
     // If no valid filters, return empty results
     if (Object.keys(filter).length === 0) {
@@ -285,9 +319,13 @@ app.post('/api/collections/:name/search', async (req, res) => {
       return;
     }
     
+    console.log(`🔍 Searching collection '${collectionName}' with filter:`, JSON.stringify(filter, null, 2));
+    
     // Execute search
     const results = await collection.find(filter).limit(50).toArray();
     const total = await collection.countDocuments(filter);
+    
+    console.log(`🔍 Found ${results.length} results in '${collectionName}'`);
     
     res.json({
       results,
