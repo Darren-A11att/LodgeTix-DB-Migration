@@ -196,6 +196,44 @@ export default function InvoiceMatchesPage() {
     fetchInvoiceStatus();
   }, [selectedPayment, currentMatch]);
 
+  // Generate custom individuals invoice for JSON preview
+  useEffect(() => {
+    const generateCustomIndividualsInvoiceForPreview = async () => {
+      const effectiveRegistration = selectedRegistration || currentMatch?.registration;
+      const effectivePayment = selectedPayment || currentMatch?.payment;
+      
+      if (effectiveRegistration && effectivePayment && effectiveRegistration.registrationType === 'individuals') {
+        try {
+          // Create a base invoice structure similar to the button handler
+          const invoiceNumbers = await generateInvoiceNumbers(new Date(effectivePayment.timestamp || effectivePayment.createdAt || new Date()));
+          const baseInvoice = {
+            customerInvoiceNumber: invoiceNumbers.customerInvoiceNumber,
+            supplierInvoiceNumber: invoiceNumbers.supplierInvoiceNumber,
+            paymentId: effectivePayment._id,
+            registrationId: effectiveRegistration._id,
+            // Additional base properties that might be needed
+            date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+            status: 'paid'
+          };
+          
+          const customInvoice = await generateCustomIndividualsInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+          setCustomerInvoice(customInvoice);
+          
+          console.log('🔄 Auto-generated individuals invoice for JSON preview:', {
+            registrationId: effectiveRegistration._id,
+            confirmationNumber: effectiveRegistration.confirmationNumber,
+            registrationType: effectiveRegistration.registrationType
+          });
+        } catch (error) {
+          console.error('❌ Error auto-generating individuals invoice for JSON preview:', error);
+          // Fall back to default behavior if custom generation fails
+        }
+      }
+    };
+    
+    generateCustomIndividualsInvoiceForPreview();
+  }, [selectedRegistration, selectedPayment, currentMatch]);
+
   const generateInvoiceNumbers = async (paymentDate: Date) => {
     try {
       const response = await fetch('/api/invoices/generate-number', {
@@ -229,6 +267,248 @@ export default function InvoiceMatchesPage() {
         customerInvoiceNumber: `LTIV-${yy}${mm}${dd}${paddedSequence}`,
         supplierInvoiceNumber: `LTSP-${yy}${mm}${dd}${paddedSequence}`
       };
+    }
+  };
+
+  const fetchFunctionName = async (functionId: string) => {
+    try {
+      const response = await fetch(`/api/functions/${functionId}`);
+      if (!response.ok) {
+        console.error('Failed to fetch function:', response.status, response.statusText);
+        return 'Unknown Function';
+      }
+      const functionDoc = await response.json();
+      return functionDoc?.name || 'Unknown Function';
+    } catch (error) {
+      console.error('Error fetching function name:', error);
+      return 'Unknown Function';
+    }
+  };
+
+  const generateCustomIndividualsInvoice = async (effectiveRegistration: any, effectivePayment: any, baseInvoice: any) => {
+    try {
+      console.log('🎯 INDIVIDUALS LOGIC TRIGGERED (JSON Preview)', {
+        registrationId: effectiveRegistration._id,
+        confirmationNumber: effectiveRegistration.confirmationNumber,
+        functionId: effectiveRegistration.functionId,
+        paymentAmount: getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount)
+      });
+      
+      // Fetch function name
+      const functionName = effectiveRegistration.functionId 
+        ? await fetchFunctionName(effectiveRegistration.functionId)
+        : effectiveRegistration.functionName || 'Event';
+      
+      console.log('📋 Function name lookup result (JSON Preview):', {
+        functionId: effectiveRegistration.functionId,
+        functionName,
+        fallbackUsed: !effectiveRegistration.functionId
+      });
+      
+      // Get attendees and tickets from registration data
+      const attendees = effectiveRegistration.registrationData?.attendees || [];
+      const allTickets = effectiveRegistration.registrationData?.tickets || [];
+      
+      console.log('👥 Processing attendees and tickets (JSON Preview):', {
+        attendeesCount: attendees.length,
+        totalTickets: allTickets.length,
+        attendeeNames: attendees.map((a: any) => `${a.firstName} ${a.lastName}`),
+        ticketOwnership: allTickets.map((t: any) => ({
+          name: t.name,
+          ownerType: t.ownerType,
+          ownerId: t.ownerId,
+          price: t.price,
+          quantity: t.quantity
+        }))
+      });
+      
+      // Create line items
+      const items = [];
+      
+      // First item: Registration line
+      items.push({
+        description: `${effectiveRegistration.confirmationNumber} | Registration for ${functionName}`,
+        quantity: '',
+        price: '',
+        total: 0
+      });
+      
+      // Process attendees and their tickets
+      let subtotal = 0;
+      attendees.forEach((attendee: any) => {
+        // Add attendee line
+        const attendeeName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
+        const lodgeInfo = attendee.lodgeNameNumber || '';
+        items.push({
+          description: `attendee: ${attendeeName} | ${lodgeInfo}`,
+          quantity: '',
+          price: '',
+          total: 0
+        });
+        
+        // Add tickets for this attendee with fallback strategy
+        let attendeeTickets = allTickets.filter((ticket: any) => 
+          ticket.ownerType === 'attendee' && ticket.ownerId === attendee.attendeeId
+        );
+        
+        console.log(`🎫 Ticket filtering for attendee ${attendeeName} (JSON Preview):`, {
+          attendeeId: attendee.attendeeId,
+          directMatchTickets: attendeeTickets.length,
+          ticketDetails: attendeeTickets.map(t => ({ name: t.name, price: t.price, quantity: t.quantity }))
+        });
+        
+        // Fallback: If no tickets found and this is an 'individuals' registration,
+        // check if tickets are owned by the registration itself and assign to primary attendee
+        if (attendeeTickets.length === 0 && effectiveRegistration.registrationType === 'individuals') {
+          const registrationOwnedTickets = allTickets.filter((ticket: any) => 
+            (ticket.ownerType === 'registration' && ticket.ownerId === effectiveRegistration._id) ||
+            (ticket.ownerType === 'attendee' && ticket.ownerId === effectiveRegistration._id)
+          );
+          
+          console.log('🔄 Applying fallback ticket assignment (JSON Preview):', {
+            attendeeName,
+            registrationId: effectiveRegistration._id,
+            registrationOwnedTickets: registrationOwnedTickets.length,
+            isPrimaryAttendee: attendees.indexOf(attendee) === 0,
+            fallbackTickets: registrationOwnedTickets.map(t => ({ name: t.name, price: t.price }))
+          });
+          
+          // For individuals registration, assign all registration-owned tickets to the first attendee
+          if (registrationOwnedTickets.length > 0 && attendees.indexOf(attendee) === 0) {
+            attendeeTickets = registrationOwnedTickets;
+            console.log('✅ Fallback tickets assigned to primary attendee (JSON Preview):', {
+              assignedTickets: attendeeTickets.length
+            });
+          } else if (attendeeTickets.length === 0 && attendees.indexOf(attendee) === 0) {
+            // Final fallback: assign any tickets without proper ownership to primary attendee
+            const unassignedTickets = allTickets.filter((ticket: any) => 
+              !ticket.ownerType || !ticket.ownerId || 
+              (ticket.ownerType !== 'attendee' && ticket.ownerType !== 'registration')
+            );
+            if (unassignedTickets.length > 0) {
+              attendeeTickets = unassignedTickets;
+              console.log('🔄 Final fallback: assigning unowned tickets to primary attendee (JSON Preview):', {
+                unassignedTickets: unassignedTickets.length,
+                ticketNames: unassignedTickets.map(t => t.name)
+              });
+            }
+          }
+        }
+        
+        attendeeTickets.forEach((ticket: any) => {
+          const ticketTotal = (ticket.quantity || 1) * (ticket.price || 0);
+          subtotal += ticketTotal;
+          console.log(`💰 Adding ticket to invoice (JSON Preview):`, {
+            attendeeName,
+            ticketName: ticket.name,
+            quantity: ticket.quantity || 1,
+            price: ticket.price || 0,
+            ticketTotal,
+            runningSubtotal: subtotal
+          });
+          items.push({
+            description: `  * ${ticket.name || 'Ticket'}`,
+            quantity: ticket.quantity || 1,
+            price: ticket.price || 0,
+            total: ticketTotal
+          });
+        });
+      });
+      
+      // Calculate processing fees and totals
+      const totalAmount = getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount) || 0;
+      const processingFees = Math.max(0, totalAmount - subtotal);
+      const gst = totalAmount / 11;
+      
+      console.log('🧮 Final calculations (JSON Preview):', {
+        subtotal,
+        totalAmount,
+        processingFees,
+        gst: parseFloat(gst.toFixed(2)),
+        itemsCount: items.length,
+        paymentSource: effectivePayment.source
+      });
+      
+      // Create billTo from bookingContact
+      const bookingContact = effectiveRegistration.registrationData?.bookingContact || {};
+      const billTo = {
+        firstName: bookingContact.firstName || '',
+        lastName: bookingContact.lastName || '',
+        businessName: bookingContact.businessName || '',
+        businessNumber: bookingContact.businessNumber || '',
+        addressLine1: bookingContact.addressLine1 || '',
+        addressLine2: bookingContact.addressLine2 || '',
+        city: bookingContact.city || '',
+        postalCode: bookingContact.postalCode || '',
+        stateProvince: bookingContact.stateProvince || '',
+        country: bookingContact.country || '',
+        email: bookingContact.email || bookingContact.emailAddress || '',
+        phone: bookingContact.phone || bookingContact.mobileNumber || ''
+      };
+      
+      // Create payment info with custom format
+      // Get funding info from originalData fallback
+      const fundingInfo = effectivePayment.funding || (effectivePayment.originalData && effectivePayment.originalData["Card Funding"]);
+      
+      const paymentMethod = [
+        effectivePayment.cardBrand,
+        fundingInfo,
+        effectivePayment.paymentMethodType,
+        effectivePayment.cardLast4 || effectivePayment.last4
+      ].filter(Boolean).join(' ');
+      
+      // Override the invoice data with individuals-specific structure
+      const customInvoice = {
+        ...baseInvoice,
+        invoiceType: 'customer',
+        status: 'paid',
+        date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+        billTo,
+        items,
+        subtotal,
+        processingFees,
+        total: totalAmount,
+        gst,
+        payment: {
+          method: paymentMethod || 'credit_card',
+          gateway: effectivePayment.source === 'stripe' ? 'Stripe' : effectivePayment.source === 'square' ? 'Square' : (effectivePayment.source || 'unknown'),
+          amount: totalAmount,
+          paymentId: effectivePayment._id || effectivePayment.paymentId || '',
+          transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
+          paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString()
+        }
+      };
+      
+      console.log('✅ INDIVIDUALS INVOICE GENERATED (JSON Preview):', {
+        confirmationNumber: effectiveRegistration.confirmationNumber,
+        functionName,
+        attendeesProcessed: attendees.length,
+        totalItems: items.length,
+        subtotal,
+        processingFees,
+        totalAmount,
+        paymentMethod,
+        gateway: effectivePayment.source,
+        billToEmail: billTo.email,
+        success: true
+      });
+      
+      return customInvoice;
+      
+    } catch (error) {
+      console.error('❌ ERROR in individuals invoice generation (JSON Preview):', {
+        registrationId: effectiveRegistration._id,
+        confirmationNumber: effectiveRegistration.confirmationNumber,
+        error: error.message,
+        stack: error.stack,
+        effectiveRegistration: {
+          functionId: effectiveRegistration.functionId,
+          registrationType: effectiveRegistration.registrationType,
+          hasAttendees: !!effectiveRegistration.registrationData?.attendees?.length,
+          hasTickets: !!effectiveRegistration.registrationData?.tickets?.length
+        }
+      });
+      throw error;
     }
   };
 
@@ -1439,7 +1719,7 @@ export default function InvoiceMatchesPage() {
                 </select>
               )}
               <button
-                onClick={() => {
+                onClick={async () => {
                   console.log('Preview button clicked. customerInvoice:', customerInvoice);
                   console.log('supplierInvoice:', supplierInvoice);
                   
@@ -1517,10 +1797,11 @@ export default function InvoiceMatchesPage() {
                     };
                   }
                   
+                  // Create standard invoice for now (async logic moved to button handler)
                   const invoice = {
                     ...invoiceData,
                     supplier: DEFAULT_INVOICE_SUPPLIER,
-                    status: 'paid', // Add default status
+                    status: 'paid',
                     date: new Date().toISOString(),
                     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                     invoiceNumber: customerInvoice?.invoiceNumber || invoiceData.invoiceNumber || '[To be assigned]',
@@ -1547,8 +1828,236 @@ export default function InvoiceMatchesPage() {
                       source: effectivePayment.source || 'unknown'
                     }
                   };
-                  // Set up customer invoice
-                  const customerInvoiceData = { ...invoice, invoiceType: 'customer' as const };
+                  // Set up customer invoice with custom logic for individuals
+                  let customerInvoiceData = { ...invoice, invoiceType: 'customer' as const };
+                  
+                  // Apply custom structure for 'individuals' registration type
+                  if (effectiveRegistration?.registrationType === 'individuals') {
+                    console.log('🎯 INDIVIDUALS LOGIC TRIGGERED', {
+                      registrationId: effectiveRegistration._id,
+                      confirmationNumber: effectiveRegistration.confirmationNumber,
+                      functionId: effectiveRegistration.functionId,
+                      paymentAmount: getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount)
+                    });
+                    
+                    try {
+                    // Fetch function name
+                    const functionName = effectiveRegistration.functionId 
+                      ? await fetchFunctionName(effectiveRegistration.functionId)
+                      : effectiveRegistration.functionName || 'Event';
+                    
+                    console.log('📋 Function name lookup result:', {
+                      functionId: effectiveRegistration.functionId,
+                      functionName,
+                      fallbackUsed: !effectiveRegistration.functionId
+                    });
+                    
+                    // Get attendees and tickets from registration data
+                    const attendees = effectiveRegistration.registrationData?.attendees || [];
+                    const allTickets = effectiveRegistration.registrationData?.tickets || [];
+                    
+                    console.log('👥 Processing attendees and tickets:', {
+                      attendeesCount: attendees.length,
+                      totalTickets: allTickets.length,
+                      attendeeNames: attendees.map((a: any) => `${a.firstName} ${a.lastName}`),
+                      ticketOwnership: allTickets.map((t: any) => ({
+                        name: t.name,
+                        ownerType: t.ownerType,
+                        ownerId: t.ownerId,
+                        price: t.price,
+                        quantity: t.quantity
+                      }))
+                    });
+                    
+                    // Create line items
+                    const items = [];
+                    
+                    // First item: Registration line
+                    items.push({
+                      description: `${effectiveRegistration.confirmationNumber} | Registration for ${functionName}`,
+                      quantity: '',
+                      price: '',
+                      total: 0
+                    });
+                    
+                    // Process attendees and their tickets
+                    let subtotal = 0;
+                    attendees.forEach((attendee: any) => {
+                      // Add attendee line
+                      const attendeeName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
+                      const lodgeInfo = attendee.lodgeNameNumber || '';
+                      items.push({
+                        description: `attendee: ${attendeeName} | ${lodgeInfo}`,
+                        quantity: '',
+                        price: '',
+                        total: 0
+                      });
+                      
+                      // Add tickets for this attendee with fallback strategy
+                      let attendeeTickets = allTickets.filter((ticket: any) => 
+                        ticket.ownerType === 'attendee' && ticket.ownerId === attendee.attendeeId
+                      );
+                      
+                      console.log(`🎫 Ticket filtering for attendee ${attendeeName}:`, {
+                        attendeeId: attendee.attendeeId,
+                        directMatchTickets: attendeeTickets.length,
+                        ticketDetails: attendeeTickets.map(t => ({ name: t.name, price: t.price, quantity: t.quantity }))
+                      });
+                      
+                      // Fallback: If no tickets found and this is an 'individuals' registration,
+                      // check if tickets are owned by the registration itself and assign to primary attendee
+                      if (attendeeTickets.length === 0 && effectiveRegistration.registrationType === 'individuals') {
+                        const registrationOwnedTickets = allTickets.filter((ticket: any) => 
+                          (ticket.ownerType === 'registration' && ticket.ownerId === effectiveRegistration._id) ||
+                          (ticket.ownerType === 'attendee' && ticket.ownerId === effectiveRegistration._id)
+                        );
+                        
+                        console.log('🔄 Applying fallback ticket assignment:', {
+                          attendeeName,
+                          registrationId: effectiveRegistration._id,
+                          registrationOwnedTickets: registrationOwnedTickets.length,
+                          isPrimaryAttendee: attendees.indexOf(attendee) === 0,
+                          fallbackTickets: registrationOwnedTickets.map(t => ({ name: t.name, price: t.price }))
+                        });
+                        
+                        // For individuals registration, assign all registration-owned tickets to the first attendee
+                        if (registrationOwnedTickets.length > 0 && attendees.indexOf(attendee) === 0) {
+                          attendeeTickets = registrationOwnedTickets;
+                          console.log('✅ Fallback tickets assigned to primary attendee:', {
+                            assignedTickets: attendeeTickets.length
+                          });
+                        } else if (attendeeTickets.length === 0 && attendees.indexOf(attendee) === 0) {
+                          // Final fallback: assign any tickets without proper ownership to primary attendee
+                          const unassignedTickets = allTickets.filter((ticket: any) => 
+                            !ticket.ownerType || !ticket.ownerId || 
+                            (ticket.ownerType !== 'attendee' && ticket.ownerType !== 'registration')
+                          );
+                          if (unassignedTickets.length > 0) {
+                            attendeeTickets = unassignedTickets;
+                            console.log('🔄 Final fallback: assigning unowned tickets to primary attendee:', {
+                              unassignedTickets: unassignedTickets.length,
+                              ticketNames: unassignedTickets.map(t => t.name)
+                            });
+                          }
+                        }
+                      }
+                      
+                      attendeeTickets.forEach((ticket: any) => {
+                        const ticketTotal = (ticket.quantity || 1) * (ticket.price || 0);
+                        subtotal += ticketTotal;
+                        console.log(`💰 Adding ticket to invoice:`, {
+                          attendeeName,
+                          ticketName: ticket.name,
+                          quantity: ticket.quantity || 1,
+                          price: ticket.price || 0,
+                          ticketTotal,
+                          runningSubtotal: subtotal
+                        });
+                        items.push({
+                          description: `  * ${ticket.name || 'Ticket'}`,
+                          quantity: ticket.quantity || 1,
+                          price: ticket.price || 0,
+                          total: ticketTotal
+                        });
+                      });
+                    });
+                    
+                    // Calculate processing fees and totals
+                    const totalAmount = getMonetaryValue(effectivePayment.grossAmount || effectivePayment.amount) || 0;
+                    const processingFees = Math.max(0, totalAmount - subtotal);
+                    const gst = totalAmount / 11;
+                    
+                    console.log('🧮 Final calculations:', {
+                      subtotal,
+                      totalAmount,
+                      processingFees,
+                      gst: parseFloat(gst.toFixed(2)),
+                      itemsCount: items.length,
+                      paymentSource: effectivePayment.source
+                    });
+                    
+                    // Create billTo from bookingContact
+                    const bookingContact = effectiveRegistration.registrationData?.bookingContact || {};
+                    const billTo = {
+                      firstName: bookingContact.firstName || '',
+                      lastName: bookingContact.lastName || '',
+                      businessName: bookingContact.businessName || '',
+                      businessNumber: bookingContact.businessNumber || '',
+                      addressLine1: bookingContact.addressLine1 || '',
+                      addressLine2: bookingContact.addressLine2 || '',
+                      city: bookingContact.city || '',
+                      postalCode: bookingContact.postalCode || '',
+                      stateProvince: bookingContact.stateProvince || '',
+                      country: bookingContact.country || '',
+                      email: bookingContact.email || bookingContact.emailAddress || '',
+                      phone: bookingContact.phone || bookingContact.mobileNumber || ''
+                    };
+                    
+                    // Create payment info with custom format
+                    // Get funding info from originalData fallback
+                    const fundingInfo = effectivePayment.funding || (effectivePayment.originalData && effectivePayment.originalData["Card Funding"]);
+                    
+                    const paymentMethod = [
+                      effectivePayment.cardBrand,
+                      fundingInfo,
+                      effectivePayment.paymentMethodType,
+                      effectivePayment.cardLast4 || effectivePayment.last4
+                    ].filter(Boolean).join(' ');
+                    
+                    // Override the invoice data with individuals-specific structure
+                    customerInvoiceData = {
+                      ...customerInvoiceData,
+                      status: 'paid',
+                      date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+                      billTo,
+                      items,
+                      subtotal,
+                      processingFees,
+                      total: totalAmount,
+                      gst,
+                      payment: {
+                        ...customerInvoiceData.payment,
+                        method: paymentMethod || 'credit_card',
+                        gateway: effectivePayment.source === 'stripe' ? 'Stripe' : effectivePayment.source === 'square' ? 'Square' : (effectivePayment.source || 'unknown'),
+                        amount: totalAmount,
+                        paymentId: effectivePayment._id || effectivePayment.paymentId || '',
+                        transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
+                        paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString()
+                      }
+                    };
+                    
+                    console.log('✅ INDIVIDUALS INVOICE GENERATED:', {
+                      confirmationNumber: effectiveRegistration.confirmationNumber,
+                      functionName,
+                      attendeesProcessed: attendees.length,
+                      totalItems: items.length,
+                      subtotal,
+                      processingFees,
+                      totalAmount,
+                      paymentMethod,
+                      gateway: effectivePayment.source,
+                      billToEmail: billTo.email,
+                      success: true
+                    });
+                    
+                    } catch (error) {
+                      console.error('❌ ERROR in individuals invoice generation:', {
+                        registrationId: effectiveRegistration._id,
+                        confirmationNumber: effectiveRegistration.confirmationNumber,
+                        error: error.message,
+                        stack: error.stack,
+                        effectiveRegistration: {
+                          functionId: effectiveRegistration.functionId,
+                          registrationType: effectiveRegistration.registrationType,
+                          hasAttendees: !!effectiveRegistration.registrationData?.attendees?.length,
+                          hasTickets: !!effectiveRegistration.registrationData?.tickets?.length
+                        }
+                      });
+                      // Re-throw the error to maintain existing error handling
+                      throw error;
+                    }
+                  }
+                  
                   setEditableInvoice(customerInvoiceData);
                   setCustomerInvoice(customerInvoiceData);
                   setFieldMappings({});
@@ -1617,51 +2126,57 @@ export default function InvoiceMatchesPage() {
             <div className="flex-1 max-h-[900px] overflow-y-auto space-y-4">
               {/* Customer Invoice Preview */}
               {(() => {
-                const fullName = effectivePayment.customerName || effectiveRegistration?.customerName || effectiveRegistration?.primaryAttendee || 'Unknown Customer';
-                const nameParts = fullName.split(' ');
-                const defaultCustomerInvoice = {
-                  ...currentMatch.invoice,
-                  invoiceType: 'customer',
-                  paymentId: effectivePayment._id,
-                  registrationId: effectiveRegistration?._id,
-                  billTo: {
-                    businessName: effectiveRegistration?.businessName || '',
-                    businessNumber: effectiveRegistration?.businessNumber || '',
-                    firstName: nameParts[0] || 'Unknown',
-                    lastName: nameParts.slice(1).join(' ') || 'Customer',
-                    email: effectivePayment.customerEmail || effectiveRegistration?.customerEmail || 'no-email@lodgetix.io',
-                    addressLine1: effectiveRegistration?.addressLine1 || '',
-                    city: effectiveRegistration?.city || '',
-                    postalCode: effectiveRegistration?.postalCode || '',
-                    stateProvince: effectiveRegistration?.stateProvince || '',
-                    country: effectiveRegistration?.country || 'Australia'
-                  },
-                  items: [
-                    {
-                      description: effectiveRegistration ? 
-                        `Registration for ${effectiveRegistration.functionName || 'Event'} - Confirmation: ${effectiveRegistration.confirmationNumber}` :
-                        'Payment - No registration linked',
-                      quantity: 1,
-                      price: effectivePayment.amount || 0,
-                      total: effectivePayment.amount || 0
+                // If customerInvoice state exists (set by useEffect for individuals), use it
+                // Otherwise fall back to basic invoice structure for non-individuals registrations
+                let invoiceData = customerInvoice;
+                
+                if (!invoiceData) {
+                  const fullName = effectivePayment.customerName || effectiveRegistration?.customerName || effectiveRegistration?.primaryAttendee || 'Unknown Customer';
+                  const nameParts = fullName.split(' ');
+                  invoiceData = {
+                    ...currentMatch.invoice,
+                    invoiceType: 'customer',
+                    paymentId: effectivePayment._id,
+                    registrationId: effectiveRegistration?._id,
+                    billTo: {
+                      businessName: effectiveRegistration?.businessName || '',
+                      businessNumber: effectiveRegistration?.businessNumber || '',
+                      firstName: nameParts[0] || 'Unknown',
+                      lastName: nameParts.slice(1).join(' ') || 'Customer',
+                      email: effectivePayment.customerEmail || effectiveRegistration?.customerEmail || 'no-email@lodgetix.io',
+                      addressLine1: effectiveRegistration?.addressLine1 || '',
+                      city: effectiveRegistration?.city || '',
+                      postalCode: effectiveRegistration?.postalCode || '',
+                      stateProvince: effectiveRegistration?.stateProvince || '',
+                      country: effectiveRegistration?.country || 'Australia'
+                    },
+                    items: [
+                      {
+                        description: effectiveRegistration ? 
+                          `Registration for ${effectiveRegistration.functionName || 'Event'} - Confirmation: ${effectiveRegistration.confirmationNumber}` :
+                          'Payment - No registration linked',
+                        quantity: 1,
+                        price: effectivePayment.amount || 0,
+                        total: effectivePayment.amount || 0
+                      }
+                    ],
+                    subtotal: effectivePayment.amount || 0,
+                    total: effectivePayment.amount || 0,
+                    payment: {
+                      method: 'credit_card',
+                      transactionId: effectivePayment.transactionId,
+                      paidDate: effectivePayment.timestamp,
+                      amount: effectivePayment.amount || 0,
+                      currency: 'AUD',
+                      status: 'completed',
+                      source: effectivePayment.source
                     }
-                  ],
-                  subtotal: effectivePayment.amount || 0,
-                  total: effectivePayment.amount || 0,
-                  payment: {
-                    method: 'credit_card',
-                    transactionId: effectivePayment.transactionId,
-                    paidDate: effectivePayment.timestamp,
-                    amount: effectivePayment.amount || 0,
-                    currency: 'AUD',
-                    status: 'completed',
-                    source: effectivePayment.source
-                  }
-                };
+                  };
+                }
                 
                 return (
                   <JsonViewer 
-                    data={customerInvoice || defaultCustomerInvoice} 
+                    data={invoiceData} 
                     title="Customer Invoice Preview" 
                   />
                 );
