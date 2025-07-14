@@ -2846,13 +2846,16 @@ export default function InvoiceMatchesPage() {
                         try {
                           let functionName = effectiveRegistration?.functionName;
                           
-                          // If we have a functionId but no functionName, look it up
-                          if (effectiveRegistration?.functionId && !functionName) {
+                          // Always fetch function name from functions collection when we have a functionId
+                          // This ensures we get the correct name even if the registration has outdated data
+                          if (effectiveRegistration?.functionId) {
                             try {
                               const functionDoc = await apiService.getFunctionById(effectiveRegistration.functionId);
                               functionName = functionDoc.name;
                             } catch (error) {
                               console.warn('Failed to fetch function name:', error);
+                              // Fall back to registration's functionName if fetch fails
+                              functionName = effectiveRegistration?.functionName;
                             }
                           }
                           
