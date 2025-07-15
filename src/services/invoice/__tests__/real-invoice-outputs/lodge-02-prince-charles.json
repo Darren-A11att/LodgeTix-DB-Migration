@@ -1,0 +1,178 @@
+{
+  "testCase": "lodge-02-prince-charles",
+  "confirmationNumber": "LDG-643031YX",
+  "payment": {
+    "_id": "TYT8M8wPO4wy1LaBRbCyfIAXEDBZY",
+    "paymentId": "TYT8M8wPO4wy1LaBRbCyfIAXEDBZY",
+    "transactionId": "F0fRHM6SV5iy9ac26eznQ1nkDBgZY",
+    "amount": 1153.45,
+    "grossAmount": 1179.4,
+    "fees": 25.95,
+    "currency": "AUD",
+    "paymentMethod": "credit_card",
+    "paymentDate": "2025-06-23T01:22:41.000Z",
+    "customerName": "Unknown",
+    "cardBrand": "American Express",
+    "cardLast4": "2003",
+    "status": "paid",
+    "source": "square",
+    "description": "Lodge Registration - Grand Proclamation 2025 (1 tables)"
+  },
+  "registration": {
+    "_id": "1b538a7d-4370-49a3-a1af-b3110a4015a0",
+    "confirmationNumber": "LDG-643031YX",
+    "registrationType": "lodge",
+    "functionName": "Grand Proclamation 2025",
+    "metadata": {
+      "billingDetails": {
+        "firstName": "Joe",
+        "lastName": "Corrigan",
+        "phone": "0416 042 338",
+        "suburb": "Sydney",
+        "postcode": "2000",
+        "country": {
+          "isoCode": "AU"
+        },
+        "addressLine1": "The Prince Charles Edward Stuart Lodge No. 1745",
+        "businessName": "The Prince Charles Edward Stuart Lodge No. 1745",
+        "emailAddress": "joecorrigan@mac.com",
+        "mobileNumber": "0416 042 338",
+        "stateTerritory": {
+          "name": "NSW"
+        }
+      },
+      "squarePaymentId": "F0fRHM6SV5iy9ac26eznQ1nkDBgZY",
+      "roundedAmountCents": 119632,
+      "originalSubtotalCents": 115000,
+      "platformFeeAmountCents": 345
+    },
+    "registrationData": {}
+  },
+  "customerInvoice": {
+    "invoiceType": "customer",
+    "invoiceNumber": "LTIV-2412-ACTUAL007",
+    "paymentId": "TYT8M8wPO4wy1LaBRbCyfIAXEDBZY",
+    "registrationId": "1b538a7d-4370-49a3-a1af-b3110a4015a0",
+    "date": "2025-06-23T01:22:41.000Z",
+    "dueDate": "2025-07-23T01:22:41.000Z",
+    "billTo": {
+      "businessName": "The Prince Charles Edward Stuart Lodge No. 1745",
+      "businessNumber": "",
+      "firstName": "Joe",
+      "lastName": "Corrigan",
+      "email": "joecorrigan@mac.com",
+      "addressLine1": "",
+      "addressLine2": "",
+      "city": "",
+      "postalCode": "2000",
+      "stateProvince": "",
+      "country": {
+        "isoCode": "AU"
+      }
+    },
+    "supplier": {
+      "name": "United Grand Lodge of NSW & ACT",
+      "abn": "93 230 340 687",
+      "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "issuedBy": "LodgeTix as Agent"
+    },
+    "items": [
+      {
+        "description": "LDG-643031YX | The Prince Charles Edward Stuart Lodge No. 1745 for Grand Proclamation 2025",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "header"
+      }
+    ],
+    "subtotal": 1150.34,
+    "processingFees": 29.06,
+    "gstIncluded": 107.22,
+    "totalBeforeGST": 1179.4,
+    "total": 1179.4,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "F0fRHM6SV5iy9ac26eznQ1nkDBgZY",
+      "paidDate": "2025-06-23T01:22:41.000Z",
+      "amount": 1179.4,
+      "currency": "AUD",
+      "last4": "2003",
+      "cardBrand": "American Express",
+      "status": "completed",
+      "source": "square"
+    },
+    "status": "paid",
+    "notes": ""
+  },
+  "supplierInvoice": {
+    "invoiceType": "supplier",
+    "invoiceNumber": "LTSP-2412-ACTUAL007",
+    "paymentId": "TYT8M8wPO4wy1LaBRbCyfIAXEDBZY",
+    "registrationId": "1b538a7d-4370-49a3-a1af-b3110a4015a0",
+    "relatedInvoiceId": "LTIV-2412-ACTUAL007",
+    "date": "2025-06-23T01:22:41.000Z",
+    "dueDate": "2025-07-23T01:22:41.000Z",
+    "billTo": {
+      "businessName": "United Grand Lodge of NSW & ACT",
+      "businessNumber": "93 230 340 687",
+      "firstName": "",
+      "lastName": "",
+      "email": "accounting@masonicnswact.com",
+      "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "city": "Sydney",
+      "postalCode": "2000",
+      "stateProvince": "NSW",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "LodgeTix / Lodge Tickets",
+      "abn": "94 687 923 128",
+      "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+      "issuedBy": "Winding Stair Pty Limited (ACN: 687 923 128)"
+    },
+    "items": [
+      {
+        "description": "Processing Fees Reimbursement",
+        "quantity": 1,
+        "price": 29.06,
+        "total": 29.06,
+        "type": "other"
+      },
+      {
+        "description": "Software Utilization Fee",
+        "quantity": 1,
+        "price": 33.02,
+        "total": 33.02,
+        "type": "other"
+      }
+    ],
+    "subtotal": 62.08,
+    "processingFees": 0,
+    "gstIncluded": 5.64,
+    "totalBeforeGST": 62.08,
+    "total": 62.08,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "F0fRHM6SV5iy9ac26eznQ1nkDBgZY",
+      "paidDate": "2025-06-23T01:22:41.000Z",
+      "amount": 62.08,
+      "currency": "AUD",
+      "last4": "2003",
+      "cardBrand": "American Express",
+      "status": "pending",
+      "source": "square"
+    },
+    "status": "pending",
+    "notes": "Related to Customer Invoice: LTIV-2412-ACTUAL007"
+  },
+  "summary": {
+    "registrationType": "lodge",
+    "paymentSource": "square",
+    "customerTotal": 1179.4,
+    "supplierTotal": 62.08,
+    "processingFees": 29.06,
+    "softwareUtilizationFee": 33.02,
+    "paymentAmount": 1179.4,
+    "customerName": "Unknown"
+  }
+}

@@ -1,0 +1,86 @@
+INVOICE GENERATION TEST SUMMARY
+===============================
+
+INDIVIDUALS REGISTRATIONS
+------------------------
+
+1. Single Attendee (individual-01)
+   Invoice: LTIV-2412-TEST001
+   Customer: Michael Johnson
+   Items: 1 attendee, 1 ticket
+   Total: $150.00 → Fees: $4.05 → Invoice Total: $154.05
+   Supplier Fee: $5.08 (3.3% Stripe)
+
+2. Multiple Attendees (individual-02)
+   Invoice: LTIV-2412-TEST002
+   Customer: David Smith (Heritage Lodge 456)
+   Items: 3 attendees, 4 tickets
+   Total: $320.00 → Fees: $8.30 → Invoice Total: $328.30
+   Supplier Fee: $10.83 (3.3% Stripe)
+
+3. No Booking Contact (individual-03)
+   Invoice: LTIV-2412-TEST003
+   Customer: Emily Brown (fallback from attendee)
+   Items: 1 attendee, 2 ticket types (including 5 raffle tickets)
+   Total: $220.00 → Fees: $5.80 → Invoice Total: $225.80
+   Supplier Fee: $6.32 (2.8% Square)
+
+4. Registration-Owned Tickets (individual-04)
+   Invoice: LTIV-2412-TEST004
+   Customer: Margaret Wilson (Ladies Committee)
+   Items: 2 attendees, table of 10 assigned to primary
+   Total: $795.00 → Fees: $20.18 → Invoice Total: $815.18
+   Supplier Fee: $26.90 (3.3% Stripe)
+
+5. Minimal Data (individual-05)
+   Invoice: LTIV-2412-TEST005
+   Customer: Robert Anderson (from customerName)
+   Items: 2 attendees (one is "Guest"), free + paid tickets
+   Total: $25.00 → Fees: $0.93 → Invoice Total: $25.93
+   Supplier Fee: $0.73 (2.8% Square)
+
+LODGE REGISTRATIONS
+------------------
+
+6. Standard Lodge (lodge-01)
+   Invoice: LTIV-2412-TEST006
+   Business: Exemplar Lodge 111 (WA)
+   Items: 5 members, single registration fee
+   Total: $500.00 → Fees: $12.80 → Invoice Total: $512.80
+   Supplier Fee: $16.92 (3.3% Stripe)
+
+7. Multiple Ticket Types (lodge-02)
+   Invoice: LTIV-2412-TEST007
+   Business: Prosperity Lodge 222 (SA)
+   Items: 8 members, 3 ticket types
+   Total: $1,060.00 → Fees: $26.80 → Invoice Total: $1,086.80
+   Supplier Fee: $30.43 (2.8% Square)
+
+8. Minimal Lodge (lodge-03)
+   Invoice: LTIV-2412-TEST008
+   Business: Ancient Lodge 333
+   Items: Lodge subscription only
+   Total: $1,200.00 → Fees: $30.30 → Invoice Total: $1,230.30
+   Supplier Fee: $40.60 (3.3% Stripe)
+
+9. Large Delegation (lodge-04)
+   Invoice: LTIV-2412-TEST009
+   Business: Travelling Lodge 444 (NSW)
+   Items: 15 members, visitation packages
+   Total: $1,800.00 → Fees: $45.30 → Invoice Total: $1,845.30
+   Supplier Fee: $51.67 (2.8% Square)
+
+10. Complex Metadata (lodge-05)
+    Invoice: LTIV-2412-TEST010
+    Business: The Centenary Lodge No. 555 (TAS)
+    Items: 4 distinguished members, gala + commemorative
+    Total: $1,400.00 → Fees: $35.30 → Invoice Total: $1,435.30
+    Supplier Fee: $47.36 (3.3% Stripe)
+
+SUMMARY STATISTICS
+-----------------
+Total Individuals Invoiced: $1,543.25
+Total Lodge Invoiced: $5,810.50
+Total Processing Fees: $212.76
+Total Software Fees: $241.64
+Grand Total: $7,353.75

@@ -22,10 +22,10 @@ class ApiService {
     return response.data;
   }
 
-  async getDocuments(collectionName: string, skip: number = 0, limit: number = 20, search?: string): Promise<DocumentsResponse> {
+  async getDocuments(collectionName: string, skip: number = 0, limit: number = 20, search?: string, sortBy?: string, sortOrder?: string): Promise<DocumentsResponse> {
     const response = await axios.get<DocumentsResponse>(
       `${API_BASE_URL}/collections/${collectionName}/documents`,
-      { params: { skip, limit, search } }
+      { params: { skip, limit, search, sortBy, sortOrder } }
     );
     return response.data;
   }
@@ -126,8 +126,19 @@ class ApiService {
   }
 
   async getFunctionById(functionId: string): Promise<any> {
-    const response = await axios.get(`${API_BASE_URL}/functions/${functionId}`);
-    return response.data;
+    console.log('🔍 API Service: getFunctionById called with:', functionId);
+    console.log('🔍 API URL:', `${API_BASE_URL}/functions/${functionId}`);
+    
+    try {
+      const response = await axios.get(`${API_BASE_URL}/functions/${functionId}`);
+      console.log('🔍 API Service: Function response received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('🔍 API Service: Function fetch failed:', error);
+      console.error('🔍 Error response:', error.response?.data);
+      console.error('🔍 Error status:', error.response?.status);
+      throw error;
+    }
   }
 
   // New methods for migration tool

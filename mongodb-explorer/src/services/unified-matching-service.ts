@@ -108,33 +108,40 @@ export class UnifiedMatchingService {
   }
 
   /**
-   * Find ID match between payment and registration (simplified)
+   * Find ID match between payment and registration (STRICT matching)
    */
   private findIdMatch(payment: any, registration: any): MatchResult {
-    // Check each ID field type
-    for (const [fieldType, mapping] of Object.entries(ID_FIELD_MAPPINGS)) {
-      const paymentValues = mapping.paymentPaths
-        .map(path => extractValue(payment, path))
-        .filter(val => val !== null && val !== undefined && val !== '');
-      
-      const registrationValues = mapping.registrationPaths
-        .map(path => extractValue(registration, path))
-        .filter(val => val !== null && val !== undefined && val !== '');
-
-      // Check for exact matches
-      for (const pVal of paymentValues) {
-        for (const rVal of registrationValues) {
-          if (pVal === rVal) {
-            return {
-              registration,
-              matchMethod: this.getMatchMethod(fieldType),
-              isMatch: true
-            };
-          }
+    // Only check paymentId field type for STRICT matching
+    const paymentIdMapping = ID_FIELD_MAPPINGS.paymentId;
+    
+    // Extract payment IDs from payment
+    const paymentIds = paymentIdMapping.paymentPaths
+      .map(path => extractValue(payment, path))
+      .filter(val => val !== null && val !== undefined && val !== '');
+    
+    if (paymentIds.length === 0) {
+      return this.createNoMatchResult();
+    }
+    
+    // For each payment ID, verify it exists in the registration
+    for (const paymentId of paymentIds) {
+      // Check all possible registration fields for this exact payment ID
+      for (const regPath of paymentIdMapping.registrationPaths) {
+        const regValue = extractValue(registration, regPath);
+        
+        // STRICT: Payment ID must be found in registration
+        if (regValue === paymentId) {
+          console.log(`✅ STRICT MATCH: Payment ID "${paymentId}" found in registration field "${regPath}"`);
+          return {
+            registration,
+            matchMethod: MATCH_METHODS.PAYMENT_ID,
+            isMatch: true
+          };
         }
       }
     }
-
+    
+    // No payment ID found in registration = NO MATCH
     return this.createNoMatchResult();
   }
 

@@ -5,6 +5,8 @@ import { connectMongoDB } from '@/lib/mongodb';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📮 Email API: POST request received');
+    
     const formData = await request.formData();
     const pdfFile = formData.get('pdf') as File;
     const invoiceData = formData.get('invoice') as string;
@@ -12,7 +14,17 @@ export async function POST(request: NextRequest) {
     const recipientName = formData.get('recipientName') as string;
     const functionName = formData.get('functionName') as string | null;
 
+    console.log('📮 Email API: Form data received:', {
+      hasPdf: !!pdfFile,
+      hasInvoice: !!invoiceData,
+      recipientEmail,
+      recipientName,
+      functionName,
+      functionNameType: typeof functionName
+    });
+
     if (!pdfFile || !invoiceData || !recipientEmail || !recipientName) {
+      console.log('📮 ❌ Missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields: pdf, invoice, recipientEmail, or recipientName' },
         { status: 400 }
@@ -23,7 +35,10 @@ export async function POST(request: NextRequest) {
     let invoice: Invoice;
     try {
       invoice = JSON.parse(invoiceData);
+      console.log('📮 Invoice parsed successfully');
+      console.log('📮 Invoice items:', invoice.items);
     } catch (error) {
+      console.log('📮 ❌ Failed to parse invoice data');
       return NextResponse.json(
         { error: 'Invalid invoice data format' },
         { status: 400 }
@@ -35,6 +50,15 @@ export async function POST(request: NextRequest) {
     const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
 
     // Send email with attachment and get metadata
+    console.log('📮 Calling sendInvoiceEmail with:', {
+      hasInvoice: !!invoice,
+      hasPdfBlob: !!blob,
+      recipientEmail,
+      recipientName,
+      functionName: functionName || undefined,
+      functionNameToSend: functionName || undefined
+    });
+    
     const emailMetadata = await sendInvoiceEmail({
       invoice,
       pdfBlob: blob,
@@ -42,6 +66,8 @@ export async function POST(request: NextRequest) {
       recipientName,
       functionName: functionName || undefined
     });
+    
+    console.log('📮 Email sent successfully, metadata:', emailMetadata);
 
     // Update invoice, payment, and registration with comprehensive email tracking information
     try {

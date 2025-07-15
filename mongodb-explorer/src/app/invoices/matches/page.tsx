@@ -312,10 +312,17 @@ export default function InvoiceMatchesPage() {
         ? await fetchFunctionName(effectiveRegistration.functionId)
         : 'Event';
       
+      // Construct lodge display from registration data
+      const lodgeDetails = effectiveRegistration.registrationData?.lodgeDetails || {};
+      const lodgeName = lodgeDetails.lodgeName || effectiveRegistration.registrationData?.lodgeName || '';
+      const lodgeNumber = lodgeDetails.lodgeNumber || effectiveRegistration.registrationData?.lodgeNumber || '';
+      const lodgeDisplay = lodgeName && lodgeNumber ? `${lodgeName} ${lodgeNumber}` : lodgeName || 'Lodge';
+      
       console.log('📋 Function name for lodge registration (JSON Preview):', {
         functionId: effectiveRegistration.functionId,
         functionName,
-        lodgeName: effectiveRegistration.registrationData?.lodgeName
+        lodgeName: effectiveRegistration.registrationData?.lodgeName,
+        lodgeDisplay
       });
       
       // Get lodge info and tickets from registration data
@@ -459,7 +466,8 @@ export default function InvoiceMatchesPage() {
           transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
           paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
           receiptUrl: effectivePayment.receiptUrl || '',
-          statementDescriptor: effectivePayment.statementDescriptor || ''
+          statementDescriptor: effectivePayment.statementDescriptor || '',
+          status: effectivePayment.Status?.toLowerCase() || effectivePayment.status || 'completed'
         }
       };
       
@@ -788,7 +796,8 @@ export default function InvoiceMatchesPage() {
           transactionId: effectivePayment.transactionId || effectivePayment.paymentId || '',
           paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
           receiptUrl: effectivePayment.receiptUrl || '',
-          statementDescriptor: effectivePayment.statementDescriptor || ''
+          statementDescriptor: effectivePayment.statementDescriptor || '',
+          status: effectivePayment.Status?.toLowerCase() || effectivePayment.status || 'completed'
         }
       };
       
@@ -852,23 +861,25 @@ export default function InvoiceMatchesPage() {
         let matchConfidence = 0;
         
         if (payment) {
-          // First, check if there's a registration that was manually matched to this payment
-          try {
-            const manualMatchQuery = { matchedPaymentId: payment._id };
-            console.log('Searching for manually matched registration with query:', manualMatchQuery);
-            const manualMatchData = await apiService.searchDocuments('registrations', manualMatchQuery);
-            console.log('Manual match search result:', manualMatchData);
-            
-            // The search API returns { results: [...] } not { documents: [...] }
-            const documents = (manualMatchData as any).results || (manualMatchData as any).documents || [];
-            
-            if (documents.length > 0) {
-              // Found a manually matched registration
-              registration = documents[0];
-              matchConfidence = 100; // Manual matches have 100% confidence
-              console.log('Found manually matched registration:', registration._id);
-            } else {
-              // No manual match found, try automatic matching
+          // First, check if payment has a matchedRegistrationId
+          if (payment.matchedRegistrationId) {
+            try {
+              console.log('Payment has matchedRegistrationId:', payment.matchedRegistrationId);
+              const registrationData = await apiService.getDocument('registrations', payment.matchedRegistrationId);
+              
+              if (registrationData) {
+                registration = registrationData;
+                matchConfidence = payment.matchConfidence || 100;
+                console.log('Found matched registration:', registration._id);
+              }
+            } catch (error) {
+              console.error('Error fetching matched registration:', error);
+            }
+          }
+          
+          if (!registration) {
+            // No match found from stored ID, try automatic matching
+            try {
               const registrationQuery = {
                 $or: [
                   { stripePaymentIntentId: payment.transactionId },
@@ -904,9 +915,9 @@ export default function InvoiceMatchesPage() {
                   matchConfidence = 50;
                 }
               }
+            } catch (err) {
+              console.error('Error fetching registration:', err);
             }
-          } catch (err) {
-            console.error('Error fetching registration:', err);
           }
         }
         
@@ -955,7 +966,7 @@ export default function InvoiceMatchesPage() {
               paidDate: payment.timestamp,
               amount: getMonetaryValue(payment.amount) || getMonetaryValue(payment.grossAmount) || 0,
               currency: 'AUD',
-              status: 'completed',
+              status: payment.Status?.toLowerCase() || payment.status || 'completed',
               source: payment.source || 'unknown'
             }
           };
@@ -1028,7 +1039,7 @@ export default function InvoiceMatchesPage() {
               paidDate: match.payment.timestamp,
               amount: getMonetaryValue(match.payment.amount) || 0,
               currency: 'AUD',
-              status: 'completed',
+              status: match.payment.Status?.toLowerCase() || match.payment.status || 'completed',
               source: match.payment.source || 'unknown'
             }
           };
@@ -1440,7 +1451,7 @@ export default function InvoiceMatchesPage() {
           paidDate: paymentToUse.timestamp,
           amount: getMonetaryValue(paymentToUse.amount) || 0,
           currency: 'AUD',
-          status: 'completed',
+          status: paymentToUse.Status?.toLowerCase() || paymentToUse.status || 'completed',
           source: paymentToUse.source || 'unknown'
         }
       };
@@ -1579,10 +1590,18 @@ export default function InvoiceMatchesPage() {
   if (!currentMatch) {
     return (
       <main className="mx-auto px-4 py-8 w-[80%]">
-        <div className="mb-6">
+        <div className="mb-6 flex gap-4">
           <Link href="/" className="text-blue-500 hover:underline">
             ← Back to Home
           </Link>
+          {searchParams.get('page') && (
+            <Link 
+              href={`/invoices/list?page=${searchParams.get('page')}`} 
+              className="text-blue-500 hover:underline"
+            >
+              ← Back to List
+            </Link>
+          )}
         </div>
         <div className="text-center text-gray-600 py-12">
           <h2 className="text-2xl font-semibold mb-4">All payments have been processed!</h2>
@@ -1747,10 +1766,18 @@ export default function InvoiceMatchesPage() {
 
   return (
     <main className="mx-auto px-4 py-8 w-[80%]">
-      <div className="mb-6">
+      <div className="mb-6 flex gap-4">
         <Link href="/" className="text-blue-500 hover:underline">
           ← Back to Home
         </Link>
+        {searchParams.get('paymentId') && (
+          <Link 
+            href={`/invoices/list${searchParams.get('page') ? `?page=${searchParams.get('page')}` : ''}`} 
+            className="text-blue-500 hover:underline"
+          >
+            ← Back to List
+          </Link>
+        )}
       </div>
 
       <h1 className="text-3xl font-bold text-gray-800 mb-4">
@@ -3359,6 +3386,8 @@ export default function InvoiceMatchesPage() {
                         invoice={invoiceData} 
                         className="h-full"
                         logoBase64={logoBase64}
+                        confirmationNumber={invoiceData.invoiceNumber}
+                        functionName="Grand Proclamation 2025"
                       />
                     );
                   })() : (

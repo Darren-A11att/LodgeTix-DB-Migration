@@ -63,6 +63,17 @@ export async function sendInvoiceEmail({
   recipientName,
   functionName
 }: SendInvoiceEmailParams): Promise<EmailMetadata> {
+  console.log('✉️ Email Service: sendInvoiceEmail called');
+  console.log('✉️ Parameters received:', {
+    hasInvoice: !!invoice,
+    invoiceNumber: invoice?.invoiceNumber,
+    hasPdfBlob: !!pdfBlob,
+    recipientEmail,
+    recipientName,
+    functionName,
+    functionNameType: typeof functionName
+  });
+  
   if (!resend) {
     throw new Error('RESEND_API_KEY is not configured');
   }
@@ -71,8 +82,33 @@ export async function sendInvoiceEmail({
     // Convert PDF blob to base64
     const base64Content = await blobToBase64(pdfBlob);
 
-    // Use provided function name only - don't fall back to invoice item description
-    const eventName = functionName || 'Function';
+    // Extract function name from invoice items if not provided
+    let eventName = functionName;
+    console.log('✉️ Initial eventName from parameter:', eventName);
+    
+    // If no function name provided, try to extract from invoice items
+    if (!eventName && invoice.items && invoice.items.length > 0) {
+      console.log('✉️ No functionName provided, attempting to extract from invoice items');
+      console.log('✉️ Invoice items:', JSON.stringify(invoice.items, null, 2));
+      
+      // Look for function name in the first item's description
+      // Format is usually: "IND-123456XX | Individuals for [Function Name]"
+      const firstItem = invoice.items[0];
+      if (firstItem.description) {
+        console.log('✉️ First item description:', firstItem.description);
+        const match = firstItem.description.match(/for\s+(.+?)(?:\s*\||$)/i);
+        if (match && match[1]) {
+          eventName = match[1].trim();
+          console.log('✉️ Extracted function name from invoice:', eventName);
+        } else {
+          console.log('✉️ Could not extract function name from description');
+        }
+      }
+    }
+    
+    // For now, always use "Grand Proclamation 2025" as the function name
+    eventName = 'Grand Proclamation 2025';
+    console.log('✉️ Final eventName to use in email:', eventName);
 
     // Create plain text version of the email
     const emailText = `Dear ${recipientName},

@@ -57,7 +57,7 @@ export default function InvoicesListPage() {
     } else {
       fetchProcessedInvoices();
     }
-  }, [currentPage, viewMode]);
+  }, [currentPage, viewMode, sortBy, sortOrder]);
 
   const fetchMatches = async () => {
     try {
@@ -123,7 +123,7 @@ export default function InvoicesListPage() {
       setLoading(true);
       // Fetch all payments with their match information
       const skip = currentPage * limit;
-      const paymentsData = await apiService.getDocuments('payments', skip, limit);
+      const paymentsData = await apiService.getDocuments('payments', skip, limit, undefined, sortBy, sortOrder);
       const payments = paymentsData.documents || [];
       
       // Debug: Log first few payments to see structure
@@ -379,23 +379,7 @@ export default function InvoicesListPage() {
       
       return true;
     })
-    .sort((a, b) => {
-      let aValue, bValue;
-      
-      if (sortBy === 'date') {
-        aValue = new Date(a.payment.timestamp || a.payment.createdAt).getTime();
-        bValue = new Date(b.payment.timestamp || b.payment.createdAt).getTime();
-      } else if (sortBy === 'amount') {
-        aValue = toNumber(a.payment.amount || a.payment.grossAmount || 0);
-        bValue = toNumber(b.payment.amount || b.payment.grossAmount || 0);
-      }
-      
-      if (sortOrder === 'asc') {
-        return aValue - bValue;
-      } else {
-        return bValue - aValue;
-      }
-    });
+;
 
   if (loading) {
     return (
@@ -604,14 +588,20 @@ export default function InvoicesListPage() {
             </label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
+              onChange={(e) => {
+                setSortBy(e.target.value as 'date' | 'amount');
+                setCurrentPage(0); // Reset to first page when sorting changes
+              }}
               className="border rounded px-3 py-1 text-sm"
             >
               <option value="date">Date</option>
               <option value="amount">Amount</option>
             </select>
             <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() => {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                setCurrentPage(0); // Reset to first page when sorting changes
+              }}
               className="px-3 py-1 text-sm border rounded hover:bg-gray-50 flex items-center gap-1"
             >
               {sortOrder === 'desc' ? '↓' : '↑'}

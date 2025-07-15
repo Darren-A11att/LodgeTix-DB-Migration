@@ -5,9 +5,11 @@ interface InvoiceComponentProps {
   invoice: Invoice;
   className?: string;
   logoBase64?: string;
+  confirmationNumber?: string;
+  functionName?: string;
 }
 
-const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className = '', logoBase64 }) => {
+const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className = '', logoBase64, confirmationNumber, functionName }) => {
   // RGB color styles for PDF compatibility
   const styles = {
     text: { color: '#000000' },
@@ -280,6 +282,75 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
                 </div>
               )}
             </div>
+        </div>
+      )}
+
+      {/* Credit Note Section for Refunded Payments */}
+      {(() => {
+        // Check if payment exists and has any refunded status
+        if (!invoice.payment) return false;
+        
+        // Check all possible locations for refunded status
+        const isRefunded = 
+          invoice.payment.status === 'refunded' || 
+          invoice.payment.status === 'Refunded' ||
+          invoice.payment.Status === 'refunded' || 
+          invoice.payment.Status === 'Refunded' ||
+          invoice.payment.originalData?.status === 'refunded' ||
+          invoice.payment.originalData?.status === 'Refunded' ||
+          invoice.payment.originalData?.Status === 'refunded' ||
+          invoice.payment.originalData?.Status === 'Refunded';
+          
+        return isRefunded;
+      })() && (
+        <div className="mt-8 pt-6 border-t-2" style={{ borderTopWidth: '2px', borderTopStyle: 'solid', borderTopColor: '#e5e7eb' }}>
+          {/* Credit Note Header */}
+          <div className="flex justify-between items-start mb-6">
+            <h1 className="text-2xl font-bold" style={{ color: '#000000' }}>CREDIT NOTE</h1>
+            <div className="text-right">
+              <div className="text-sm">
+                <span className="font-semibold">Credit Note No:</span> LTCN-{invoice.invoiceNumber?.replace('LTIV-', '') || invoice.invoiceNumber}
+              </div>
+            </div>
+          </div>
+          
+          {/* Credit Note Items Table */}
+          <div className="mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-300" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#d1d5db' }}>
+                  <th className="text-left py-2 text-xs font-semibold" style={styles.text}>Description</th>
+                  <th className="text-right py-2 w-12 text-xs font-semibold" style={styles.text}>Qty</th>
+                  <th className="text-right py-2 w-20 text-xs font-semibold" style={styles.text}>Unit Price</th>
+                  <th className="text-right py-2 w-20 text-xs font-semibold" style={styles.text}>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-200" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#e5e7eb' }}>
+                  <td className="py-2 text-xs">
+                    Refund of Registration {confirmationNumber || invoice.invoiceNumber} for {functionName || 'Grand Proclamation 2025'}
+                  </td>
+                  <td className="text-right py-2 text-xs">1</td>
+                  <td className="text-right py-2 text-xs">{formatCurrency(-toNumber(invoice.total))}</td>
+                  <td className="text-right py-2 text-xs">{formatCurrency(-toNumber(invoice.total))}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Credit Note Totals */}
+          <div className="flex justify-end">
+            <div className="w-48">
+              <div className="flex justify-between py-2 font-bold text-sm border-t border-gray-300" style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: '#d1d5db' }}>
+                <span>Total:</span>
+                <span>{formatCurrency(-toNumber(invoice.total))}</span>
+              </div>
+              <div className="flex justify-between py-1 text-xs text-gray-600" style={styles.textGray600}>
+                <span>GST Included:</span>
+                <span>{formatCurrency(-toNumber(invoice.total) / 11)}</span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

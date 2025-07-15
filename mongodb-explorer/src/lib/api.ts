@@ -22,10 +22,10 @@ class ApiService {
     return response.data;
   }
 
-  async getDocuments(collectionName: string, skip: number = 0, limit: number = 20, search?: string): Promise<DocumentsResponse> {
+  async getDocuments(collectionName: string, skip: number = 0, limit: number = 20, search?: string, sortBy?: string, sortOrder?: string): Promise<DocumentsResponse> {
     const response = await axios.get<DocumentsResponse>(
       `${API_BASE_URL}/collections/${collectionName}/documents`,
-      { params: { skip, limit, search } }
+      { params: { skip, limit, search, sortBy, sortOrder } }
     );
     return response.data;
   }

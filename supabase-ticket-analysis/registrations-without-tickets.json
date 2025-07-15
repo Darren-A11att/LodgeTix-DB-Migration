@@ -1,0 +1,2295 @@
+{
+  "count": 24,
+  "registrations": [
+    {
+      "registration_id": "f5c2fc05-693b-4b9b-ba26-dc73dafa8a20",
+      "customer_id": "35555f79-6ba8-4d5a-8399-63fa0700a4c2",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 2351.74,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-07-07T03:33:56.943857+00:00",
+      "updated_at": "2025-07-07T03:33:56.943857+00:00",
+      "registration_data": {
+        "totalItems": 20,
+        "itemQuantity": 10,
+        "squareAmounts": {
+          "subtotal": 2300,
+          "totalTax": 0,
+          "totalAmount": 2351.74,
+          "processingFee": 51.74
+        },
+        "squareOrderId": "tnaLo5wOIOQAoVC4IaWN06Wc12LZY",
+        "billingDetails": {
+          "phone": "0406 639 903",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Flores",
+          "postcode": "2000",
+          "firstName": "Juan Carlos",
+          "addressLine1": "Lodge Miguel De Cervantes No. 1038",
+          "businessName": "Lodge Miguel De Cervantes No. 1038",
+          "emailAddress": "yennoe@icloud.com",
+          "mobileNumber": "0406 639 903",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "packageDetails": {
+          "discount": 0,
+          "isActive": true,
+          "quantity": 2,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "totalItems": 20,
+          "packageName": "Lodge Package",
+          "packagePrice": 1150,
+          "originalPrice": 1150,
+          "catalogObjectId": "",
+          "itemsPerPackage": 10,
+          "registrationTypes": [
+            "lodges",
+            "delegations"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "attendeeDetails": {},
+        "packageQuantity": 2,
+        "registrationMode": "purchaseOnly",
+        "squareCustomerId": "2HY05W3YVSM8ENP4WD1KQ4HN58",
+        "calculatedAmounts": {
+          "subtotal": 2300,
+          "totalAmount": 2351.74,
+          "processingFee": 51.74
+        },
+        "lodgeOrderDetails": {
+          "subtotal": 2300,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "itemQuantity": 10,
+          "packagePrice": 1150,
+          "totalAttendees": 20,
+          "packageQuantity": 2
+        },
+        "selectedPackageDetails": {
+          "discount": null,
+          "isActive": true,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "originalPrice": 1150,
+          "pricePerPackage": 1150,
+          "registrationTypes": [
+            "lodges"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "comprehensiveLodgeDetails": {
+          "lodge_id": "6cf6e4b4-af37-2330-c855-c6420433fa0c",
+          "lodgeName": "Lodge Miguel De Cervantes No. 1038",
+          "grand_lodge_id": "3e893fa6-2cc2-448c-be9c-e3858cc90e11"
+        },
+        "comprehensiveBookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "yennoe@icloud.com",
+          "state": "",
+          "title": "VW Bro",
+          "mobile": "0406 639 903",
+          "country": "Australia",
+          "lastName": "Flores",
+          "postcode": "",
+          "firstName": "Juan Carlos",
+          "addressLine1": ""
+        }
+      },
+      "confirmation_number": "LDG-569943MS",
+      "organisation_id": "6cf6e4b4-af37-2330-c855-c6420433fa0c",
+      "connected_account_id": null,
+      "platform_fee_amount": 0,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 2300,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-07-07T03:33:56.943857+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "Bcqu6v3fkpayVua3B7EFQVQTVsUZY",
+      "square_fee": 51.74
+    },
+    {
+      "registration_id": "523998a8-9660-44af-a241-0178a7295e6f",
+      "customer_id": "9f314f40-81ca-4add-af47-fa79c05091d5",
+      "registration_date": "2025-06-09T00:10:16.893944+00:00",
+      "status": "completed",
+      "total_amount_paid": 0,
+      "total_price_paid": 0,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RXtI3KBASow5NsW1TWZPMxL",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-09T00:10:16.893944+00:00",
+      "updated_at": "2025-06-09T00:10:16.893944+00:00",
+      "registration_data": {
+        "metadata": {
+          "amount": 1190.54,
+          "subtotal": 1150,
+          "stripeFee": 20.54,
+          "billingDetails": {
+            "phone": "0431 281 332",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Moran",
+            "postcode": "2000",
+            "firstName": "Val",
+            "addressLine1": "Lodge Celebration of Fairfield No. 345",
+            "businessName": "Lodge Celebration of Fairfield No. 345",
+            "emailAddress": "valm0716@gmail.com",
+            "mobileNumber": "0431 281 332",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          }
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "8eaa16ee-df01-1c09-2313-759d2d7e5071",
+          "lodgeName": "Lodge Celebration of Fairfield No. 345"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "valm0716@gmail.com",
+          "state": "",
+          "title": "VW Bro",
+          "mobile": "0431 281 332",
+          "country": "Australia",
+          "lastName": "Moran",
+          "postcode": "",
+          "firstName": "Val",
+          "addressLine1": ""
+        },
+        "bookingContactId": "89e644f5-13a9-4a56-a33a-2e8dfde734ba"
+      },
+      "confirmation_number": "LDG-499228VV",
+      "organisation_id": null,
+      "connected_account_id": null,
+      "platform_fee_amount": null,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 0,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": "9f314f40-81ca-4add-af47-fa79c05091d5",
+      "organisation_name": "Lodge Celebration of Fairfield No. 345",
+      "organisation_number": null,
+      "primary_attendee": "{\"email\": \"valm0716@gmail.com\", \"mobile\": \"0431 281 332\", \"lastName\": \"Moran\", \"firstName\": \"Val\"}",
+      "attendee_count": 10,
+      "confirmation_generated_at": "2025-06-09T00:10:18.653+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "aca83ae3-33e9-4ff3-a4cd-6af04554479b",
+      "customer_id": "e4d84360-640a-40e7-99ed-a55f999f4eaf",
+      "registration_date": "2025-06-17T06:11:30.708403+00:00",
+      "status": "completed",
+      "total_amount_paid": 2360.43,
+      "total_price_paid": 2300,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3Rask1HDfNBUEWUu0b9yqSKQ",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T06:11:30.708403+00:00",
+      "updated_at": "2025-06-17T06:11:30.708403+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0417 431 816",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Constantin",
+            "postcode": "2000",
+            "firstName": "Dr Abraham",
+            "addressLine1": "The Cedars Lodge No. 1041",
+            "businessName": "The Cedars Lodge No. 1041",
+            "emailAddress": "aconstantin@bigpond.com",
+            "mobileNumber": "0417 431 816",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 236043,
+          "originalAmountCents": 236042.99999999997,
+          "roundedStripFeeCents": 4043,
+          "roundedSubtotalCents": 230000,
+          "originalStripFeeCents": 4043,
+          "originalSubtotalCents": 230000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 2,
+        "lodgeDetails": {
+          "lodgeId": "dde2f70f-6ef0-a0f3-acfd-10f4c0885c28",
+          "lodgeName": "The Cedars Lodge No. 1041"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "aconstantin@bigpond.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "0417 431 816",
+          "country": "Australia",
+          "lastName": "Constantin",
+          "postcode": "",
+          "firstName": "Dr Abraham",
+          "addressLine1": ""
+        },
+        "totalAttendees": 20
+      },
+      "confirmation_number": "LDG-689815EJ",
+      "organisation_id": "76cc23ca-7f52-40cb-a8fd-fcb8907bdc8b",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 40.43,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "The Cedars Lodge No. 1041",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 20,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "e4d84360-640a-40e7-99ed-a55f999f4eaf",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "9096129e-dba5-4073-856b-937df2c6d3f1",
+      "customer_id": "5cf9e88e-a8cc-450a-a54e-5ee6cf2d0ad0",
+      "registration_date": "2025-06-07T13:49:08.245689+00:00",
+      "status": "completed",
+      "total_amount_paid": 0,
+      "total_price_paid": 0,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RXN7OKBASow5NsW0MW8UfXD",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-07T13:49:08.245689+00:00",
+      "updated_at": "2025-06-07T13:49:08.245689+00:00",
+      "registration_data": {
+        "metadata": {
+          "amount": 1170.19,
+          "subtotal": 1150,
+          "stripeFee": 20.19,
+          "billingDetails": {
+            "phone": "0404 040 239",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Hezari",
+            "postcode": "2000",
+            "firstName": "Alex",
+            "addressLine1": "Elysian Lodge No. 418",
+            "businessName": "Elysian Lodge No. 418",
+            "emailAddress": "alex@taylornicholashills.com.au",
+            "mobileNumber": "0404 040 239",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          }
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "11c66ae7-763d-2a2a-d226-10415d997a84",
+          "lodgeName": "Elysian Lodge No. 418"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "IM",
+          "email": "alex@taylornicholashills.com.au",
+          "state": "",
+          "title": "W Bro",
+          "mobile": "0404 040 239",
+          "country": "Australia",
+          "lastName": "Hezari",
+          "postcode": "",
+          "firstName": "Alex",
+          "addressLine1": ""
+        },
+        "bookingContactId": "7c8f6c9f-cb38-4e16-ab5c-927e241764d7"
+      },
+      "confirmation_number": "LDG-047204NQ",
+      "organisation_id": null,
+      "connected_account_id": null,
+      "platform_fee_amount": null,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 0,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": "5cf9e88e-a8cc-450a-a54e-5ee6cf2d0ad0",
+      "organisation_name": "Elysian Lodge No. 418",
+      "organisation_number": null,
+      "primary_attendee": "{\"email\": \"alex@taylornicholashills.com.au\", \"mobile\": \"0404 040 239\", \"lastName\": \"Hezari\", \"firstName\": \"Alex\"}",
+      "attendee_count": 10,
+      "confirmation_generated_at": "2025-06-07T13:49:09.6+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "aa598020-d3cf-46d4-bd76-04aad430eaeb",
+      "customer_id": "3db196ef-fd90-41ea-8046-8b58fb859e3b",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1196.32,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-07-01T01:08:13.383844+00:00",
+      "updated_at": "2025-07-01T01:08:13.383844+00:00",
+      "registration_data": {
+        "totalItems": 10,
+        "itemQuantity": 10,
+        "squareAmounts": {
+          "subtotal": 1150,
+          "totalTax": 0,
+          "totalAmount": 1196.32,
+          "processingFee": 46.32
+        },
+        "squareOrderId": "jQNbf0vLuboXaXQmEXPYyivJ4QQZY",
+        "billingDetails": {
+          "phone": "0418 166 667",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Rizzotto",
+          "postcode": "2000",
+          "firstName": "Tony",
+          "addressLine1": "Lodge Galileo No. 1019",
+          "businessName": "Lodge Galileo No. 1019",
+          "emailAddress": "rizzottotony@gmail.com",
+          "mobileNumber": "0418 166 667",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "packageDetails": {
+          "discount": 0,
+          "isActive": true,
+          "quantity": 1,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "totalItems": 10,
+          "packageName": "Lodge Package",
+          "packagePrice": 1150,
+          "originalPrice": 1150,
+          "catalogObjectId": "",
+          "itemsPerPackage": 10,
+          "registrationTypes": [
+            "lodges",
+            "delegations"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "attendeeDetails": {},
+        "packageQuantity": 1,
+        "registrationMode": "purchaseOnly",
+        "squareCustomerId": "6H0NDE35GT5ZNCN94FEK4H4TER",
+        "calculatedAmounts": {
+          "subtotal": 1150,
+          "totalAmount": 1196.32,
+          "processingFee": 26.32
+        },
+        "lodgeOrderDetails": {
+          "subtotal": 1150,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "itemQuantity": 10,
+          "packagePrice": 1150,
+          "totalAttendees": 10,
+          "packageQuantity": 1
+        },
+        "selectedPackageDetails": {
+          "discount": null,
+          "isActive": true,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "originalPrice": 1150,
+          "pricePerPackage": 1150,
+          "registrationTypes": [
+            "lodges"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "comprehensiveLodgeDetails": {
+          "lodge_id": "1773df23-996f-c335-9c09-3302b4a53945",
+          "lodgeName": "Lodge Galileo No. 1019",
+          "grand_lodge_id": "3e893fa6-2cc2-448c-be9c-e3858cc90e11"
+        },
+        "comprehensiveBookingContact": {
+          "city": "",
+          "rank": "IM",
+          "email": "rizzottotony@gmail.com",
+          "state": "",
+          "title": "W Bro",
+          "mobile": "0418 166 667",
+          "country": "Australia",
+          "lastName": "Rizzotto",
+          "postcode": "",
+          "firstName": "Tony",
+          "addressLine1": ""
+        }
+      },
+      "confirmation_number": "LDG-666103RY",
+      "organisation_id": "1773df23-996f-c335-9c09-3302b4a53945",
+      "connected_account_id": null,
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-07-01T01:08:13.383844+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "tqwHaIAVYtXbZaTNNE5ddSssGyMZY",
+      "square_fee": 46.32
+    },
+    {
+      "registration_id": "654fff3d-b939-4984-89bd-17e9dc8d9a75",
+      "customer_id": "2854b785-d69d-46ef-b6b6-61d623bab368",
+      "registration_date": "2025-06-17T03:14:09.211544+00:00",
+      "status": "completed",
+      "total_amount_paid": 1190.54,
+      "total_price_paid": 1150,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RapyOHDfNBUEWUu1gsb6Iw2",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T03:14:09.211544+00:00",
+      "updated_at": "2025-06-17T03:14:09.211544+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0400 956 671",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Sunga",
+            "postcode": "2000",
+            "firstName": "Franciscuss",
+            "addressLine1": "Lodge Horace Thompson Ryde No. 134",
+            "businessName": "Lodge Horace Thompson Ryde No. 134",
+            "emailAddress": "lodgehoracethompsonryde134@gmail.com",
+            "mobileNumber": "0400 956 671",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 119054,
+          "originalAmountCents": 119054,
+          "roundedStripFeeCents": 2054,
+          "roundedSubtotalCents": 115000,
+          "originalStripFeeCents": 2054,
+          "originalSubtotalCents": 115000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "b3dbeeaa-3cd1-721e-2a61-9cec5d9a8160",
+          "lodgeName": "Lodge Horace Thompson Ryde No. 134"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "lodgehoracethompsonryde134@gmail.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "0400 956 671",
+          "country": "Australia",
+          "lastName": "Sunga",
+          "postcode": "",
+          "firstName": "Franciscuss",
+          "addressLine1": ""
+        },
+        "totalAttendees": 10
+      },
+      "confirmation_number": "LDG-061926PC",
+      "organisation_id": "c68475ee-f675-48f2-a38f-058b815ed85d",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 20.54,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "Lodge Horace Thompson Ryde No. 134",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 10,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "2854b785-d69d-46ef-b6b6-61d623bab368",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "f04785c9-1eb8-4bba-b6be-634ba4d8d8f8",
+      "customer_id": "4bb6e6d5-7195-4a96-b981-a2031b16b67c",
+      "registration_date": "2025-06-17T06:38:05.437377+00:00",
+      "status": "completed",
+      "total_amount_paid": 1190.54,
+      "total_price_paid": 1150,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3Rat9jHDfNBUEWUu0Lw7k7BT",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T06:38:05.437377+00:00",
+      "updated_at": "2025-06-17T06:38:05.437377+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "416042338",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Corrigan",
+            "postcode": "2000",
+            "firstName": "Joe",
+            "addressLine1": "The Prince Charles Edward Stuart Lodge No. 1745",
+            "businessName": "The Prince Charles Edward Stuart Lodge No. 1745",
+            "emailAddress": "joecorrigan@mac.com",
+            "mobileNumber": "416042338",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 119054,
+          "originalAmountCents": 119054,
+          "roundedStripFeeCents": 2054,
+          "roundedSubtotalCents": 115000,
+          "originalStripFeeCents": 2054,
+          "originalSubtotalCents": 115000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "fc3456bd-00b9-3862-fb75-2f92d7d94928",
+          "lodgeName": "The Prince Charles Edward Stuart Lodge No. 1745"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "joecorrigan@mac.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "416042338",
+          "country": "Australia",
+          "lastName": "Corrigan",
+          "postcode": "",
+          "firstName": "Joe",
+          "addressLine1": ""
+        },
+        "totalAttendees": 10
+      },
+      "confirmation_number": "LDG-875720VU",
+      "organisation_id": "78e21d2d-a69e-494e-b3c0-0b25f952a238",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 20.54,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "The Prince Charles Edward Stuart Lodge No. 1745",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 10,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "4bb6e6d5-7195-4a96-b981-a2031b16b67c",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "c20df7a8-da41-4d6c-bc77-d5b9e1324a47",
+      "customer_id": "2c871c78-5381-43e3-b299-4d63290ef4cd",
+      "registration_date": "2025-06-18T01:48:48.377024+00:00",
+      "status": "completed",
+      "total_amount_paid": 2360.43,
+      "total_price_paid": 2300,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RbB7KCari1bgsWq1EQuHWYa",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-18T01:48:48.377024+00:00",
+      "updated_at": "2025-06-18T01:48:48.377024+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0413 213 333",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "OZER",
+            "postcode": "2000",
+            "firstName": "KAAN",
+            "addressLine1": "The Sir Walter Scott Lodge No. 123",
+            "businessName": "The Sir Walter Scott Lodge No. 123",
+            "emailAddress": "hkaanozer@gmail.com",
+            "mobileNumber": "0413 213 333",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 236043,
+          "originalAmountCents": 236042.99999999997,
+          "roundedStripFeeCents": 4043,
+          "roundedSubtotalCents": 230000,
+          "originalStripFeeCents": 4043,
+          "originalSubtotalCents": 230000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 2,
+        "lodgeDetails": {
+          "lodgeId": "546fed7b-6530-a15c-e3b6-b459f2f6e089",
+          "lodgeName": "The Sir Walter Scott Lodge No. 123"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "IM",
+          "email": "hkaanozer@gmail.com",
+          "state": "",
+          "title": "W Bro",
+          "mobile": "0413 213 333",
+          "country": "Australia",
+          "lastName": "OZER",
+          "postcode": "",
+          "firstName": "KAAN",
+          "addressLine1": ""
+        },
+        "totalAttendees": 20
+      },
+      "confirmation_number": "LDG-317273ME",
+      "organisation_id": "32061b32-2081-4eae-a4e4-d17f6be2d57d",
+      "connected_account_id": "acct_1Rb0lgE8F0RDorit",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 40.43,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "The Sir Walter Scott Lodge No. 123",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 20,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "2c871c78-5381-43e3-b299-4d63290ef4cd",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "825be57a-a1d2-4baa-86a6-a8d7c049e0ee",
+      "customer_id": "db3277a4-0f14-4c67-802d-35c532cfaa16",
+      "registration_date": "2025-06-17T04:46:11.199218+00:00",
+      "status": "completed",
+      "total_amount_paid": 1190.54,
+      "total_price_paid": 1150,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RarPRHDfNBUEWUu0nwLMGur",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T04:46:11.199218+00:00",
+      "updated_at": "2025-06-17T04:46:11.199218+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0413 472 189",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Jennings",
+            "postcode": "2000",
+            "firstName": "Collin",
+            "addressLine1": "Lodge Antiquity No. 1",
+            "businessName": "Lodge Antiquity No. 1",
+            "emailAddress": "collin.jennings1@yahoo.com.au",
+            "mobileNumber": "0413 472 189",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 119054,
+          "originalAmountCents": 119054,
+          "roundedStripFeeCents": 2054,
+          "roundedSubtotalCents": 115000,
+          "originalStripFeeCents": 2054,
+          "originalSubtotalCents": 115000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "6539e8d0-7937-d890-ddcc-1347484d0c62",
+          "lodgeName": "Lodge Antiquity No. 1"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "MM",
+          "email": "collin.jennings1@yahoo.com.au",
+          "state": "",
+          "title": "Bro",
+          "mobile": "0413 472 189",
+          "country": "Australia",
+          "lastName": "Jennings",
+          "postcode": "",
+          "firstName": "Collin",
+          "addressLine1": ""
+        },
+        "totalAttendees": 10
+      },
+      "confirmation_number": "LDG-600084JM",
+      "organisation_id": "06df7c94-6377-426e-9834-c0ab38072303",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 20.54,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "Lodge Antiquity No. 1",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 10,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "db3277a4-0f14-4c67-802d-35c532cfaa16",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "0b69a89b-4e7f-46bf-92bf-08d29fecb79c",
+      "customer_id": "c952d989-dc4f-41da-adb7-69f6a8f935a5",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1187.63,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-21T00:42:47.296693+00:00",
+      "updated_at": "2025-06-21T00:42:47.296693+00:00",
+      "registration_data": {
+        "billingDetails": {
+          "phone": "0407 136 823",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Schultz ",
+          "postcode": "2000",
+          "firstName": "Paul",
+          "addressLine1": "Lodge Blacktown Kildare No. 393",
+          "businessName": "Lodge Blacktown Kildare No. 393",
+          "emailAddress": "paulkschultz@gmail.com",
+          "mobileNumber": "0407 136 823",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "squarePaymentId": "LHxgeL0CTWu0cwrU0T4zWBCDK8JZY",
+        "roundedAmountCents": 119632,
+        "originalAmountCents": 119632,
+        "roundedSubtotalCents": 115000,
+        "originalSubtotalCents": 115000,
+        "roundedSquareFeeCents": 2632,
+        "originalSquareFeeCents": 2632,
+        "platformFeeAmountCents": 1150
+      },
+      "confirmation_number": "LDG-476871HW",
+      "organisation_id": "ac114f83-925b-6cfb-a9be-d947b50640bc",
+      "connected_account_id": null,
+      "platform_fee_amount": 11.5,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-21T00:42:47.296693+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "LHxgeL0CTWu0cwrU0T4zWBCDK8JZY",
+      "square_fee": 26.13
+    },
+    {
+      "registration_id": "a9de69ea-fc72-439b-ba2e-19adcc1e6d97",
+      "customer_id": "385fce70-f4e5-4bf0-838b-aa9becf63cec",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1175.87,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-07-05T08:26:25.885486+00:00",
+      "updated_at": "2025-07-05T08:26:25.885486+00:00",
+      "registration_data": {
+        "totalItems": 10,
+        "itemQuantity": 10,
+        "squareAmounts": {
+          "subtotal": 1150,
+          "totalTax": 0,
+          "totalAmount": 1175.87,
+          "processingFee": 25.87
+        },
+        "squareOrderId": "FHYj98tdMfWHzLbXbmUWz06pmcVZY",
+        "billingDetails": {
+          "phone": "0410 555 450",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Calopedos",
+          "postcode": "2000",
+          "firstName": "Spero",
+          "addressLine1": "Lodge Hellenic Arcadia No. 177",
+          "businessName": "Lodge Hellenic Arcadia No. 177",
+          "emailAddress": "spero.ylh@gmail.com",
+          "mobileNumber": "0410 555 450",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "packageDetails": {
+          "discount": 0,
+          "isActive": true,
+          "quantity": 1,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "totalItems": 10,
+          "packageName": "Lodge Package",
+          "packagePrice": 1150,
+          "originalPrice": 1150,
+          "catalogObjectId": "",
+          "itemsPerPackage": 10,
+          "registrationTypes": [
+            "lodges",
+            "delegations"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "attendeeDetails": {},
+        "packageQuantity": 1,
+        "registrationMode": "purchaseOnly",
+        "squareCustomerId": "GHK910AN18NWA2D281GTENQZQG",
+        "calculatedAmounts": {
+          "subtotal": 1150,
+          "totalAmount": 1175.87,
+          "processingFee": 25.87
+        },
+        "lodgeOrderDetails": {
+          "subtotal": 1150,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "itemQuantity": 10,
+          "packagePrice": 1150,
+          "totalAttendees": 10,
+          "packageQuantity": 1
+        },
+        "selectedPackageDetails": {
+          "discount": null,
+          "isActive": true,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "originalPrice": 1150,
+          "pricePerPackage": 1150,
+          "registrationTypes": [
+            "lodges"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "comprehensiveLodgeDetails": {
+          "lodge_id": "f19a04bd-1ae2-2fe2-4153-5d7bf9f32867",
+          "lodgeName": "Lodge Hellenic Arcadia No. 177",
+          "grand_lodge_id": "3e893fa6-2cc2-448c-be9c-e3858cc90e11"
+        },
+        "comprehensiveBookingContact": {
+          "city": "",
+          "rank": "IM",
+          "email": "spero.ylh@gmail.com",
+          "state": "",
+          "title": "W Bro",
+          "mobile": "0410 555 450",
+          "country": "Australia",
+          "lastName": "Calopedos",
+          "postcode": "",
+          "firstName": "Spero",
+          "addressLine1": ""
+        }
+      },
+      "confirmation_number": "LDG-498522DH",
+      "organisation_id": "f19a04bd-1ae2-2fe2-4153-5d7bf9f32867",
+      "connected_account_id": null,
+      "platform_fee_amount": 0,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-07-05T08:26:25.885486+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "tqKw6hCOQCQiHCz2pOyT7ZA46s7YY",
+      "square_fee": 25.87
+    },
+    {
+      "registration_id": "651b5606-d177-4fca-9684-057946026fc1",
+      "customer_id": "331a3248-fca2-4701-9f14-4911cb81f8bb",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1187.63,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-21T07:27:33.935459+00:00",
+      "updated_at": "2025-06-21T07:27:33.935459+00:00",
+      "registration_data": {
+        "billingDetails": {
+          "phone": "0475 606 805",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Riomalos",
+          "postcode": "2000",
+          "firstName": "John ",
+          "addressLine1": "Lodge Honour No. 1054",
+          "businessName": "Lodge Honour No. 1054",
+          "emailAddress": "johnlegisllb@icloud.com",
+          "mobileNumber": "0475 606 805",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "squarePaymentId": "BCRIyZsd2LsulOVdEOSxg3HJzkcZY",
+        "roundedAmountCents": 119632,
+        "originalAmountCents": 119632,
+        "roundedSubtotalCents": 115000,
+        "originalSubtotalCents": 115000,
+        "roundedSquareFeeCents": 2632,
+        "originalSquareFeeCents": 2632,
+        "platformFeeAmountCents": 1150
+      },
+      "confirmation_number": "LDG-889319AW",
+      "organisation_id": "b2b671be-37e5-893d-9fae-fd8433d3212c",
+      "connected_account_id": null,
+      "platform_fee_amount": 11.5,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-21T07:27:33.935459+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "BCRIyZsd2LsulOVdEOSxg3HJzkcZY",
+      "square_fee": 26.13
+    },
+    {
+      "registration_id": "a2f31052-3039-4e0d-b820-526e0e7ca4f2",
+      "customer_id": "15c1e0b6-5ebf-4aad-8df1-018cf1dcde44",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1196.32,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-24T02:37:53.746337+00:00",
+      "updated_at": "2025-06-24T02:37:53.746337+00:00",
+      "registration_data": {
+        "totalItems": 10,
+        "itemQuantity": 10,
+        "squareAmounts": {
+          "subtotal": 1150,
+          "totalTax": 0,
+          "totalAmount": 1196.32,
+          "processingFee": 46.32
+        },
+        "squareOrderId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+        "billingDetails": {
+          "phone": "0413 501 120",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Acosta",
+          "postcode": "2000",
+          "firstName": "Joseph",
+          "addressLine1": "Lodge Trinity No. 666",
+          "businessName": "Lodge Trinity No. 666",
+          "emailAddress": "joe@buildtec.net.au",
+          "mobileNumber": "0413 501 120",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "packageQuantity": 1,
+        "squareCustomerId": "C4SKCT49RD1NCD457SYMV6VJ0M",
+        "calculatedAmounts": {
+          "subtotal": 1150,
+          "totalAmount": 1196.32,
+          "processingFee": 26.32
+        }
+      },
+      "confirmation_number": "LDG-210679FX",
+      "organisation_id": "5367527a-7220-f228-3297-31484e3f5344",
+      "connected_account_id": null,
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-24T02:37:53.746337+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "7PRUEiqETLsQ2bnhNVAyl5fv4aYZY",
+      "square_fee": 46.32
+    },
+    {
+      "registration_id": "ac2f75bc-d628-4953-82ff-10e3491e6c6c",
+      "customer_id": "e447969d-3cd1-4009-b542-206302506372",
+      "registration_date": "2025-06-17T05:11:26.708437+00:00",
+      "status": "completed",
+      "total_amount_paid": 1190.54,
+      "total_price_paid": 1150,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RarntHDfNBUEWUu1UN3zWaz",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T05:11:26.708437+00:00",
+      "updated_at": "2025-06-17T05:11:26.708437+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0459 672 800",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Goodridge",
+            "postcode": "2000",
+            "firstName": "Peter",
+            "addressLine1": "Lodge Ku-Ring-Gai No. 1033",
+            "businessName": "Lodge Ku-Ring-Gai No. 1033",
+            "emailAddress": "petergoodridge@hotmail.com",
+            "mobileNumber": "0459 672 800",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 119054,
+          "originalAmountCents": 119054,
+          "roundedStripFeeCents": 2054,
+          "roundedSubtotalCents": 115000,
+          "originalStripFeeCents": 2054,
+          "originalSubtotalCents": 115000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "fd88e098-4d6f-d8c2-db46-cdc1595f614c",
+          "lodgeName": "Lodge Ku-Ring-Gai No. 1033"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "petergoodridge@hotmail.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "0459 672 800",
+          "country": "Australia",
+          "lastName": "Goodridge",
+          "postcode": "",
+          "firstName": "Peter",
+          "addressLine1": ""
+        },
+        "totalAttendees": 10
+      },
+      "confirmation_number": "LDG-128834EX",
+      "organisation_id": "027f5979-6fc3-4567-be1d-bf60e545b272",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 20.54,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "Lodge Ku-Ring-Gai No. 1033",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 10,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "e447969d-3cd1-4009-b542-206302506372",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "136dac1d-9eb1-4c62-af3b-2b8c0375a277",
+      "customer_id": "c952d989-dc4f-41da-adb7-69f6a8f935a5",
+      "registration_date": "2025-06-07T15:22:39.444756+00:00",
+      "status": "completed",
+      "total_amount_paid": 0,
+      "total_price_paid": 0,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RXOZuKBASow5NsW17pchd2q",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-07T15:22:39.444756+00:00",
+      "updated_at": "2025-06-07T15:22:39.444756+00:00",
+      "registration_data": {
+        "metadata": {
+          "amount": 2340.08,
+          "subtotal": 2300,
+          "stripeFee": 40.08,
+          "billingDetails": {
+            "phone": "0407 136 823",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Schultz ",
+            "postcode": "2000",
+            "firstName": "Paul",
+            "addressLine1": "Lodge Blacktown Kildare No. 393",
+            "businessName": "Lodge Blacktown Kildare No. 393",
+            "emailAddress": "paulkschultz@gmail.com",
+            "mobileNumber": "0407 136 823",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          }
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "tableCount": 2,
+        "lodgeDetails": {
+          "lodgeId": "ac114f83-925b-6cfb-a9be-d947b50640bc",
+          "lodgeName": "Lodge Blacktown Kildare No. 393"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "paulkschultz@gmail.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "0407 136 823",
+          "country": "Australia",
+          "lastName": "Schultz ",
+          "postcode": "",
+          "firstName": "Paul",
+          "addressLine1": ""
+        },
+        "bookingContactId": "a4692e84-8025-4d23-83f9-4ef78541da0e"
+      },
+      "confirmation_number": "LDG-144723KI",
+      "organisation_id": null,
+      "connected_account_id": null,
+      "platform_fee_amount": null,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 0,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": "c952d989-dc4f-41da-adb7-69f6a8f935a5",
+      "organisation_name": "Lodge Blacktown Kildare No. 393",
+      "organisation_number": null,
+      "primary_attendee": "{\"email\": \"paulkschultz@gmail.com\", \"mobile\": \"0407 136 823\", \"lastName\": \"Schultz \", \"firstName\": \"Paul\"}",
+      "attendee_count": 20,
+      "confirmation_generated_at": "2025-06-07T15:22:41.144+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "2a0eef32-78e2-4ad8-be6a-db2e356db9ef",
+      "customer_id": "4b751a68-4208-43c1-89c9-3d672beef8c0",
+      "registration_date": "2025-06-17T07:02:25.208767+00:00",
+      "status": "completed",
+      "total_amount_paid": 2360.43,
+      "total_price_paid": 2300,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RatXHHDfNBUEWUu1KfRNOKT",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T07:02:25.208767+00:00",
+      "updated_at": "2025-06-17T07:02:25.208767+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0419 281 805",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Hamer",
+            "postcode": "2000",
+            "firstName": "Paul",
+            "addressLine1": "Lodge Alpha No. 970",
+            "businessName": "Lodge Alpha No. 970",
+            "emailAddress": "paulanthonyhamer@hotmail.com",
+            "mobileNumber": "0419 281 805",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 236043,
+          "originalAmountCents": 236042.99999999997,
+          "roundedStripFeeCents": 4043,
+          "roundedSubtotalCents": 230000,
+          "originalStripFeeCents": 4043,
+          "originalSubtotalCents": 230000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 2,
+        "lodgeDetails": {
+          "lodgeId": "ae15df78-946e-58a1-f68e-3ad8390bb817",
+          "lodgeName": "Lodge Alpha No. 970"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "IM",
+          "email": "paulanthonyhamer@hotmail.com",
+          "state": "",
+          "title": "W Bro",
+          "mobile": "0419 281 805",
+          "country": "Australia",
+          "lastName": "Hamer",
+          "postcode": "",
+          "firstName": "Paul",
+          "addressLine1": ""
+        },
+        "totalAttendees": 20
+      },
+      "confirmation_number": "LDG-744471CY",
+      "organisation_id": "abd1bb4e-0e29-468e-95a2-dd590ab07155",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 40.43,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "Lodge Alpha No. 970",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 20,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "4b751a68-4208-43c1-89c9-3d672beef8c0",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "bdeecfc7-94ef-4eb8-a246-6d2883f31db8",
+      "customer_id": "8e4c890e-0fdd-4855-9b57-fb41f0d748ae",
+      "registration_date": "2025-06-09T12:05:40.255348+00:00",
+      "status": "completed",
+      "total_amount_paid": 0,
+      "total_price_paid": 0,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RY4SMKBASow5NsW1SAwbtsW",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-09T12:05:40.255348+00:00",
+      "updated_at": "2025-06-09T12:05:40.255348+00:00",
+      "registration_data": {
+        "metadata": {
+          "amount": 1190.54,
+          "subtotal": 1150,
+          "stripeFee": 20.54,
+          "billingDetails": {
+            "phone": "0416 399 034",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Montalbo",
+            "postcode": "2000",
+            "firstName": "Nelson",
+            "addressLine1": "Lodge West Epping No. 390",
+            "businessName": "Lodge West Epping No. 390",
+            "emailAddress": "liza_jeanl@hotmail.com",
+            "mobileNumber": "0416 399 034",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          }
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "3ecb3e7e-a912-f8cc-cd40-ed689ae2a0f1",
+          "lodgeName": "Lodge West Epping No. 390"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "MM",
+          "email": "liza_jeanl@hotmail.com",
+          "state": "",
+          "title": "Bro",
+          "mobile": "0416 399 034",
+          "country": "Australia",
+          "lastName": "Montalbo",
+          "postcode": "",
+          "firstName": "Nelson",
+          "addressLine1": ""
+        },
+        "bookingContactId": "c7ef3688-e9d9-45cc-b18c-8b3192608070"
+      },
+      "confirmation_number": "LDG-490194LF",
+      "organisation_id": null,
+      "connected_account_id": null,
+      "platform_fee_amount": null,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 0,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": "8e4c890e-0fdd-4855-9b57-fb41f0d748ae",
+      "organisation_name": "Lodge West Epping No. 390",
+      "organisation_number": null,
+      "primary_attendee": "{\"email\": \"liza_jeanl@hotmail.com\", \"mobile\": \"0416 399 034\", \"lastName\": \"Montalbo\", \"firstName\": \"Nelson\"}",
+      "attendee_count": 10,
+      "confirmation_generated_at": "2025-06-09T12:05:41.989+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "91eb13fe-0714-4c79-8839-9c36389ac20a",
+      "customer_id": "ed4b7e1e-74f9-4c2f-8e15-9bbc70124a08",
+      "registration_date": "2025-06-17T06:07:28.621358+00:00",
+      "status": "completed",
+      "total_amount_paid": 1190.54,
+      "total_price_paid": 1150,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3Rasg7HDfNBUEWUu0rQ42mRE",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T06:07:28.621358+00:00",
+      "updated_at": "2025-06-17T06:07:28.621358+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0411 880 401",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Hayne",
+            "postcode": "2000",
+            "firstName": "Stephen",
+            "addressLine1": "Lodge Pennant Hills No. 905",
+            "businessName": "Lodge Pennant Hills No. 905",
+            "emailAddress": "osm.nsw@gmail.com",
+            "mobileNumber": "0411 880 401",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 119054,
+          "originalAmountCents": 119054,
+          "roundedStripFeeCents": 2054,
+          "roundedSubtotalCents": 115000,
+          "originalStripFeeCents": 2054,
+          "originalSubtotalCents": 115000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "a3dde9fa-41e6-ee39-175c-aae843383266",
+          "lodgeName": "Lodge Pennant Hills No. 905"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "osm.nsw@gmail.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "0411 880 401",
+          "country": "Australia",
+          "lastName": "Hayne",
+          "postcode": "",
+          "firstName": "Stephen",
+          "addressLine1": ""
+        },
+        "totalAttendees": 10
+      },
+      "confirmation_number": "LDG-347228SB",
+      "organisation_id": "75953a37-0af7-4dd6-9a82-86abf18bd581",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 20.54,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "Lodge Pennant Hills No. 905",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 10,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "ed4b7e1e-74f9-4c2f-8e15-9bbc70124a08",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "a502eec2-4f0b-44aa-b605-a6ec622a546a",
+      "customer_id": "3866a86e-831a-4ad0-848a-d6b633a0009f",
+      "registration_date": "2025-06-17T07:18:29.097258+00:00",
+      "status": "completed",
+      "total_amount_paid": 1190.54,
+      "total_price_paid": 1150,
+      "payment_status": "completed",
+      "agree_to_terms": true,
+      "stripe_payment_intent_id": "pi_3RatmpHDfNBUEWUu0o2UggIG",
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-17T07:18:29.097258+00:00",
+      "updated_at": "2025-06-17T07:18:29.097258+00:00",
+      "registration_data": {
+        "metadata": {
+          "billingDetails": {
+            "phone": "0400 404 481",
+            "title": "",
+            "suburb": "Sydney",
+            "country": {
+              "isoCode": "AU"
+            },
+            "lastName": "Lowder",
+            "postcode": "2000",
+            "firstName": "Brian ",
+            "addressLine1": "Australian Lodge of Fidelity No. 101",
+            "businessName": "Australian Lodge of Fidelity No. 101",
+            "emailAddress": "belowder@outlook.com",
+            "mobileNumber": "0400 404 481",
+            "stateTerritory": {
+              "name": "NSW"
+            }
+          },
+          "roundedAmountCents": 119054,
+          "originalAmountCents": 119054,
+          "roundedStripFeeCents": 2054,
+          "roundedSubtotalCents": 115000,
+          "originalStripFeeCents": 2054,
+          "originalSubtotalCents": 115000,
+          "platformFeeAmountCents": 2000
+        },
+        "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+        "functionId": "eebddef5-6833-43e3-8d32-700508b1c089",
+        "tableCount": 1,
+        "lodgeDetails": {
+          "lodgeId": "6a2b56ec-fada-7c96-ba00-d066bedc056f",
+          "lodgeName": "Australian Lodge of Fidelity No. 101"
+        },
+        "bookingContact": {
+          "city": "",
+          "rank": "GL",
+          "email": "belowder@outlook.com",
+          "state": "",
+          "title": "RW Bro",
+          "mobile": "0400 404 481",
+          "country": "Australia",
+          "lastName": "Lowder",
+          "postcode": "",
+          "firstName": "Brian ",
+          "addressLine1": ""
+        },
+        "totalAttendees": 10
+      },
+      "confirmation_number": "LDG-912399IP",
+      "organisation_id": "bb4aefb9-6356-4546-b889-ccf8b8316aba",
+      "connected_account_id": "acct_1RYbQCQaqFdfJRMI",
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": null,
+      "stripe_fee": 20.54,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": "Australian Lodge of Fidelity No. 101",
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 10,
+      "confirmation_generated_at": null,
+      "event_id": null,
+      "booking_contact_id": "3866a86e-831a-4ad0-848a-d6b633a0009f",
+      "square_payment_id": null,
+      "square_fee": 0
+    },
+    {
+      "registration_id": "1408e014-4560-4206-96d5-6fd708eb0ddd",
+      "customer_id": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1196.32,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-30T07:15:10.525113+00:00",
+      "updated_at": "2025-06-30T07:15:10.525113+00:00",
+      "registration_data": {
+        "totalItems": 10,
+        "itemQuantity": 10,
+        "orderDetails": {
+          "subtotal": 1150,
+          "ticketCount": 1,
+          "totalWithFees": 1196.32,
+          "processingFees": 46.32
+        },
+        "squareAmounts": {
+          "subtotal": 1150,
+          "totalTax": 0,
+          "totalAmount": 1196.32,
+          "processingFee": 46.32
+        },
+        "squareOrderId": "Bv1lKbp74LJc48xsTPJEUkg64iJZY",
+        "billingDetails": {
+          "phone": "0409 392 303",
+          "title": "R Ex Comp",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Wise",
+          "postcode": "2000",
+          "firstName": "Tony",
+          "addressLine1": "",
+          "businessName": "United Supreme Chapter of Mark & Royal Arch Masons of NSW & ACT",
+          "emailAddress": "gse@markandroyalarch.au",
+          "mobileNumber": "0409 392 303",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "packageDetails": {
+          "discount": 0,
+          "isActive": true,
+          "quantity": 1,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "totalItems": 10,
+          "packageName": "Lodge Package",
+          "packagePrice": 1150,
+          "originalPrice": 1150,
+          "catalogObjectId": "",
+          "itemsPerPackage": 10,
+          "registrationTypes": [
+            "lodges",
+            "delegations"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "attendeeDetails": {},
+        "packageQuantity": 1,
+        "registrationMode": "purchaseOnly",
+        "squareCustomerId": "7KXEYPJRDHH3VRAW5CR592YRP4",
+        "calculatedAmounts": {
+          "subtotal": 1150,
+          "totalAmount": 1196.32,
+          "processingFee": 26.32
+        },
+        "selectedPackageDetails": {
+          "discount": null,
+          "isActive": true,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "originalPrice": 1150,
+          "pricePerPackage": 1150,
+          "registrationTypes": [
+            "lodges"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "comprehensiveLodgeDetails": {
+          "delegationType": "masonicOrder",
+          "grandLodgeName": "",
+          "grand_lodge_id": "0",
+          "organisationId": null,
+          "organisationName": "United Supreme Chapter of Mark & Royal Arch Masons of NSW & ACT",
+          "organisationKnownAs": "Mark & Royal Arch Mason of NSW & ACT",
+          "organisationAbbreviation": "USGC of NSW & ACT"
+        },
+        "comprehensiveBookingContact": {
+          "rank": "GL",
+          "email": "gse@markandroyalarch.au",
+          "title": "R Ex Comp",
+          "mobile": "0409 392 303",
+          "suburb": "Sydney",
+          "country": "AU",
+          "lastName": "Wise",
+          "postcode": "2000",
+          "firstName": "Tony",
+          "grandRank": "PDGZ",
+          "grandOffice": "Grand Scribe Ezra",
+          "addressLine1": "",
+          "attendeeType": "Mason",
+          "stateTerritory": "NSW",
+          "otherGrandOffice": "",
+          "contactPreference": "directly",
+          "grandOfficerStatus": "Present"
+        }
+      },
+      "confirmation_number": "LDG-440125ZK",
+      "organisation_id": "5c6b60cd-5177-459c-afae-b8de928d0598",
+      "connected_account_id": null,
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-30T07:15:10.525113+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "pCNpJb7Bp93yAKZV3a34B2Vib25YY",
+      "square_fee": 46.32
+    },
+    {
+      "registration_id": "813022df-ce60-40ca-86af-728570ad728c",
+      "customer_id": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1196.32,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-30T07:28:15.842536+00:00",
+      "updated_at": "2025-06-30T07:28:15.842536+00:00",
+      "registration_data": {
+        "totalItems": 10,
+        "itemQuantity": 10,
+        "orderDetails": {
+          "subtotal": 1150,
+          "ticketCount": 1,
+          "totalWithFees": 1196.32,
+          "processingFees": 46.32
+        },
+        "squareAmounts": {
+          "subtotal": 1150,
+          "totalTax": 0,
+          "totalAmount": 1196.32,
+          "processingFee": 46.32
+        },
+        "squareOrderId": "hTp0f9ECG5cYQooFBXR52Rk7ArMZY",
+        "billingDetails": {
+          "phone": "0409 392 303",
+          "title": "R Ex Comp",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Wise",
+          "postcode": "2000",
+          "firstName": "Tony",
+          "addressLine1": "",
+          "businessName": "United Supreme Chapter of Mark & Royal Arch Masone of NSW & ACT",
+          "emailAddress": "gse@markandroyalarch.au",
+          "mobileNumber": "0409 392 303",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "packageDetails": {
+          "discount": 0,
+          "isActive": true,
+          "quantity": 1,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "totalItems": 10,
+          "packageName": "Lodge Package",
+          "packagePrice": 1150,
+          "originalPrice": 1150,
+          "catalogObjectId": "",
+          "itemsPerPackage": 10,
+          "registrationTypes": [
+            "lodges",
+            "delegations"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "attendeeDetails": {},
+        "packageQuantity": 1,
+        "registrationMode": "purchaseOnly",
+        "squareCustomerId": "56DVGKY5VNTA57KPRQY5HR00F8",
+        "calculatedAmounts": {
+          "subtotal": 1150,
+          "totalAmount": 1196.32,
+          "processingFee": 26.32
+        },
+        "selectedPackageDetails": {
+          "discount": null,
+          "isActive": true,
+          "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "packageName": "Lodge Package",
+          "originalPrice": 1150,
+          "pricePerPackage": 1150,
+          "registrationTypes": [
+            "lodges"
+          ],
+          "packageDescription": "Package for Lodges - 10 tickets for Banquet",
+          "eligibilityCriteria": {
+            "rules": [
+              {
+                "type": "registration_type",
+                "value": "lodges",
+                "operator": "equals"
+              },
+              {
+                "type": "registration_type",
+                "value": "delegations",
+                "operator": "equals"
+              }
+            ],
+            "operator": "OR"
+          },
+          "includesDescription": null
+        },
+        "comprehensiveLodgeDetails": {
+          "delegationType": "masonicOrder",
+          "grandLodgeName": "",
+          "grand_lodge_id": "0",
+          "organisationId": null,
+          "organisationName": "United Supreme Chapter of Mark & Royal Arch Masone of NSW & ACT",
+          "organisationKnownAs": "Mark & Royal Arch Masons of NSW & ACT",
+          "organisationAbbreviation": "USSGC of NSW & ACT"
+        },
+        "comprehensiveBookingContact": {
+          "rank": "GL",
+          "email": "gse@markandroyalarch.au",
+          "title": "R Ex Comp",
+          "mobile": "0409 392 303",
+          "suburb": "Sydney",
+          "country": "AU",
+          "lastName": "Wise",
+          "postcode": "2000",
+          "firstName": "Tony",
+          "grandRank": "PDGZ",
+          "grandOffice": "Grand Scribe Ezra",
+          "addressLine1": "",
+          "attendeeType": "Mason",
+          "stateTerritory": "NSW",
+          "otherGrandOffice": "",
+          "contactPreference": "directly",
+          "grandOfficerStatus": "Present"
+        }
+      },
+      "confirmation_number": "LDG-281295FC",
+      "organisation_id": "52997a30-a336-4f56-8df7-c18b2b534983",
+      "connected_account_id": null,
+      "platform_fee_amount": 20,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-30T07:28:15.842536+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "71UGzZLU4WhNOq4NtU3dEay7RcYZY",
+      "square_fee": 46.32
+    },
+    {
+      "registration_id": "1b538a7d-4370-49a3-a1af-b3110a4015a0",
+      "customer_id": "c302adc8-9553-436a-bd9e-d861ceadb1ab",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1179.4,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-22T15:22:42.159507+00:00",
+      "updated_at": "2025-06-22T15:22:42.159507+00:00",
+      "registration_data": {
+        "billingDetails": {
+          "phone": "0416 042 338",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Corrigan",
+          "postcode": "2000",
+          "firstName": "Joe",
+          "addressLine1": "The Prince Charles Edward Stuart Lodge No. 1745",
+          "businessName": "The Prince Charles Edward Stuart Lodge No. 1745",
+          "emailAddress": "joecorrigan@mac.com",
+          "mobileNumber": "0416 042 338",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "squarePaymentId": "F0fRHM6SV5iy9ac26eznQ1nkDBgZY",
+        "roundedAmountCents": 119632,
+        "originalAmountCents": 119632,
+        "roundedSubtotalCents": 115000,
+        "originalSubtotalCents": 115000,
+        "roundedSquareFeeCents": 2632,
+        "originalSquareFeeCents": 2632,
+        "platformFeeAmountCents": 345
+      },
+      "confirmation_number": "LDG-643031YX",
+      "organisation_id": "78e21d2d-a69e-494e-b3c0-0b25f952a238",
+      "connected_account_id": null,
+      "platform_fee_amount": 3.45,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-22T15:22:42.159507+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "F0fRHM6SV5iy9ac26eznQ1nkDBgZY",
+      "square_fee": 25.95
+    },
+    {
+      "registration_id": "8024de93-41f3-4e37-9b9f-41b0e80a8f2f",
+      "customer_id": "2341bb54-0d7d-43df-8d96-327ebf425eae",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 4717.59,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-21T23:13:06.571254+00:00",
+      "updated_at": "2025-06-21T23:13:06.571254+00:00",
+      "registration_data": {
+        "billingDetails": {
+          "phone": "0452 620 819",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Franco",
+          "postcode": "2000",
+          "firstName": "McJulian",
+          "addressLine1": "Lodge Sydney St. George No. 269",
+          "businessName": "Lodge Sydney St. George No. 269",
+          "emailAddress": "mcjulianfranco@gmail.com",
+          "mobileNumber": "0452 620 819",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "squarePaymentId": "zHddlOinPKTa2W6GFMNjqIkjW3EZY",
+        "roundedAmountCents": 472393,
+        "originalAmountCents": 472393,
+        "roundedSubtotalCents": 460000,
+        "originalSubtotalCents": 460000,
+        "roundedSquareFeeCents": 10393,
+        "originalSquareFeeCents": 10393,
+        "platformFeeAmountCents": 1380
+      },
+      "confirmation_number": "LDG-867620PW",
+      "organisation_id": "04335c71-9f6b-5e63-033f-8a59a5868042",
+      "connected_account_id": null,
+      "platform_fee_amount": 13.8,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 4600,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-21T23:13:06.571254+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "zHddlOinPKTa2W6GFMNjqIkjW3EZY",
+      "square_fee": 103.79
+    },
+    {
+      "registration_id": "ba78e9c7-abf7-492f-94cf-2723fe67fc3a",
+      "customer_id": "a50fb972-ee8b-4df8-b075-843ddb21fc00",
+      "registration_date": null,
+      "status": "completed",
+      "total_amount_paid": 1187.63,
+      "total_price_paid": null,
+      "payment_status": "completed",
+      "agree_to_terms": false,
+      "stripe_payment_intent_id": null,
+      "primary_attendee_id": null,
+      "registration_type": "lodge",
+      "created_at": "2025-06-19T22:12:38.127132+00:00",
+      "updated_at": "2025-06-19T22:12:38.127132+00:00",
+      "registration_data": {
+        "billingDetails": {
+          "phone": "0410 432 852",
+          "title": "",
+          "suburb": "Sydney",
+          "country": {
+            "isoCode": "AU"
+          },
+          "lastName": "Bourke",
+          "postcode": "2000",
+          "firstName": "Bob",
+          "addressLine1": "Lodge Temora No. 168",
+          "businessName": "Lodge Temora No. 168",
+          "emailAddress": "bob.bourke@gmail.com",
+          "mobileNumber": "0410 432 852",
+          "stateTerritory": {
+            "name": "NSW"
+          }
+        },
+        "squarePaymentId": "lwB7XvUF0aLc2thAcupnDtqC4hTZY",
+        "roundedAmountCents": 119632,
+        "originalAmountCents": 119632,
+        "roundedSubtotalCents": 115000,
+        "originalSubtotalCents": 115000,
+        "roundedSquareFeeCents": 2632,
+        "originalSquareFeeCents": 2632,
+        "platformFeeAmountCents": 1150
+      },
+      "confirmation_number": "LDG-604441PZ",
+      "organisation_id": "c1fe4447-58ff-e0fe-4e50-d927ca786237",
+      "connected_account_id": null,
+      "platform_fee_amount": 11.5,
+      "platform_fee_id": null,
+      "confirmation_pdf_url": null,
+      "subtotal": 1150,
+      "stripe_fee": 0,
+      "includes_processing_fee": false,
+      "function_id": "eebddef5-6833-43e3-8d32-700508b1c089",
+      "auth_user_id": null,
+      "organisation_name": null,
+      "organisation_number": null,
+      "primary_attendee": null,
+      "attendee_count": 0,
+      "confirmation_generated_at": "2025-06-19T22:12:38.127132+00:00",
+      "event_id": null,
+      "booking_contact_id": null,
+      "square_payment_id": "lwB7XvUF0aLc2thAcupnDtqC4hTZY",
+      "square_fee": 26.13
+    }
+  ]
+}

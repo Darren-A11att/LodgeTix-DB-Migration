@@ -1,0 +1,1327 @@
+{
+  "summary": {
+    "packagesProcessed": 50,
+    "totalExpansions": 62
+  },
+  "details": [
+    {
+      "originalTicket": {
+        "index": 11,
+        "registrationId": "43f3fa8b-e605-44cf-af81-d4250eaa276f",
+        "ticket": {
+          "id": "019750ed-3bc6-75ce-bb60-f9b4f8c9a66c-88567b9c-9675-4ee2-b572-eace1c580eb4",
+          "price": 0,
+          "isPackage": true,
+          "attendeeId": "019750ed-3bc6-75ce-bb60-f9b4f8c9a66c",
+          "eventTicketId": "88567b9c-9675-4ee2-b572-eace1c580eb4"
+        },
+        "source": "tickets"
+      },
+      "packageName": "All Events",
+      "packageId": "88567b9c-9675-4ee2-b572-eace1c580eb4",
+      "expandedInto": [
+        {
+          "eventTicketId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+          "eventTicketName": "Meet & Greet Cocktail Party",
+          "quantity": 1,
+          "unitPrice": 70
+        },
+        {
+          "eventTicketId": "be94ef03-6647-48d5-97ea-f98c862e30e6",
+          "eventTicketName": "Quarterly Communication",
+          "quantity": 1,
+          "unitPrice": 0
+        },
+        {
+          "eventTicketId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+          "eventTicketName": "Grand Proclamation Ceremony",
+          "quantity": 1,
+          "unitPrice": 20
+        },
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 1,
+          "unitPrice": 115
+        },
+        {
+          "eventTicketId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+          "eventTicketName": "Farewell Cruise Luncheon",
+          "quantity": 1,
+          "unitPrice": 75
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 28,
+        "registrationId": "ee93dfa6-912b-4554-9521-e57eb0326b96",
+        "ticket": {
+          "id": "01975043-51a5-776b-bc2d-4e758b67a3f0-88567b9c-9675-4ee2-b572-eace1c580eb4",
+          "price": 0,
+          "isPackage": true,
+          "attendeeId": "01975043-51a5-776b-bc2d-4e758b67a3f0",
+          "eventTicketId": "88567b9c-9675-4ee2-b572-eace1c580eb4"
+        },
+        "source": "tickets"
+      },
+      "packageName": "All Events",
+      "packageId": "88567b9c-9675-4ee2-b572-eace1c580eb4",
+      "expandedInto": [
+        {
+          "eventTicketId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+          "eventTicketName": "Meet & Greet Cocktail Party",
+          "quantity": 1,
+          "unitPrice": 70
+        },
+        {
+          "eventTicketId": "be94ef03-6647-48d5-97ea-f98c862e30e6",
+          "eventTicketName": "Quarterly Communication",
+          "quantity": 1,
+          "unitPrice": 0
+        },
+        {
+          "eventTicketId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+          "eventTicketName": "Grand Proclamation Ceremony",
+          "quantity": 1,
+          "unitPrice": 20
+        },
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 1,
+          "unitPrice": 115
+        },
+        {
+          "eventTicketId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+          "eventTicketName": "Farewell Cruise Luncheon",
+          "quantity": 1,
+          "unitPrice": 75
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 106,
+        "registrationId": "2cb923f1-c674-4a52-8bab-05aa94c5148f",
+        "ticket": {
+          "id": "019750a8-42f5-7073-8646-88be2ba6da43-88567b9c-9675-4ee2-b572-eace1c580eb4",
+          "price": 0,
+          "isPackage": true,
+          "attendeeId": "019750a8-42f5-7073-8646-88be2ba6da43",
+          "eventTicketId": "88567b9c-9675-4ee2-b572-eace1c580eb4"
+        },
+        "source": "tickets"
+      },
+      "packageName": "All Events",
+      "packageId": "88567b9c-9675-4ee2-b572-eace1c580eb4",
+      "expandedInto": [
+        {
+          "eventTicketId": "d586ecc1-e410-4ef3-a59c-4a53a866bc33",
+          "eventTicketName": "Meet & Greet Cocktail Party",
+          "quantity": 1,
+          "unitPrice": 70
+        },
+        {
+          "eventTicketId": "be94ef03-6647-48d5-97ea-f98c862e30e6",
+          "eventTicketName": "Quarterly Communication",
+          "quantity": 1,
+          "unitPrice": 0
+        },
+        {
+          "eventTicketId": "7196514b-d4b8-4fe0-93ac-deb4c205dd09",
+          "eventTicketName": "Grand Proclamation Ceremony",
+          "quantity": 1,
+          "unitPrice": 20
+        },
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 1,
+          "unitPrice": 115
+        },
+        {
+          "eventTicketId": "bce41292-3662-44a7-85da-eeb1a1e89d8a",
+          "eventTicketName": "Farewell Cruise Luncheon",
+          "quantity": 1,
+          "unitPrice": 75
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 394,
+        "registrationId": "f5c2fc05-693b-4b9b-ba26-dc73dafa8a20",
+        "ticket": {
+          "id": "35555f79-6ba8-4d5a-8399-63fa0700a4c2-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "35555f79-6ba8-4d5a-8399-63fa0700a4c2",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 395,
+        "registrationId": "aa598020-d3cf-46d4-bd76-04aad430eaeb",
+        "ticket": {
+          "id": "3db196ef-fd90-41ea-8046-8b58fb859e3b-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "3db196ef-fd90-41ea-8046-8b58fb859e3b",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 396,
+        "registrationId": "a9de69ea-fc72-439b-ba2e-19adcc1e6d97",
+        "ticket": {
+          "id": "385fce70-f4e5-4bf0-838b-aa9becf63cec-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "385fce70-f4e5-4bf0-838b-aa9becf63cec",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 397,
+        "registrationId": "1408e014-4560-4206-96d5-6fd708eb0ddd",
+        "ticket": {
+          "id": "323228f7-0ec7-4298-9d2c-a9d66f177be7-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 398,
+        "registrationId": "813022df-ce60-40ca-86af-728570ad728c",
+        "ticket": {
+          "id": "323228f7-0ec7-4298-9d2c-a9d66f177be7-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 399,
+        "registrationId": "f5c2fc05-693b-4b9b-ba26-dc73dafa8a20",
+        "ticket": {
+          "id": "35555f79-6ba8-4d5a-8399-63fa0700a4c2-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "35555f79-6ba8-4d5a-8399-63fa0700a4c2",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 400,
+        "registrationId": "523998a8-9660-44af-a241-0178a7295e6f",
+        "ticket": {
+          "id": "9f314f40-81ca-4add-af47-fa79c05091d5-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "9f314f40-81ca-4add-af47-fa79c05091d5",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 401,
+        "registrationId": "aca83ae3-33e9-4ff3-a4cd-6af04554479b",
+        "ticket": {
+          "id": "e4d84360-640a-40e7-99ed-a55f999f4eaf-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "e4d84360-640a-40e7-99ed-a55f999f4eaf",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 402,
+        "registrationId": "9096129e-dba5-4073-856b-937df2c6d3f1",
+        "ticket": {
+          "id": "5cf9e88e-a8cc-450a-a54e-5ee6cf2d0ad0-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "5cf9e88e-a8cc-450a-a54e-5ee6cf2d0ad0",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 403,
+        "registrationId": "aa598020-d3cf-46d4-bd76-04aad430eaeb",
+        "ticket": {
+          "id": "3db196ef-fd90-41ea-8046-8b58fb859e3b-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "3db196ef-fd90-41ea-8046-8b58fb859e3b",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 404,
+        "registrationId": "654fff3d-b939-4984-89bd-17e9dc8d9a75",
+        "ticket": {
+          "id": "2854b785-d69d-46ef-b6b6-61d623bab368-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "2854b785-d69d-46ef-b6b6-61d623bab368",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 405,
+        "registrationId": "f04785c9-1eb8-4bba-b6be-634ba4d8d8f8",
+        "ticket": {
+          "id": "4bb6e6d5-7195-4a96-b981-a2031b16b67c-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "4bb6e6d5-7195-4a96-b981-a2031b16b67c",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 406,
+        "registrationId": "c20df7a8-da41-4d6c-bc77-d5b9e1324a47",
+        "ticket": {
+          "id": "2c871c78-5381-43e3-b299-4d63290ef4cd-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "2c871c78-5381-43e3-b299-4d63290ef4cd",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 407,
+        "registrationId": "825be57a-a1d2-4baa-86a6-a8d7c049e0ee",
+        "ticket": {
+          "id": "db3277a4-0f14-4c67-802d-35c532cfaa16-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "db3277a4-0f14-4c67-802d-35c532cfaa16",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 408,
+        "registrationId": "a9de69ea-fc72-439b-ba2e-19adcc1e6d97",
+        "ticket": {
+          "id": "385fce70-f4e5-4bf0-838b-aa9becf63cec-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "385fce70-f4e5-4bf0-838b-aa9becf63cec",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 409,
+        "registrationId": "ac2f75bc-d628-4953-82ff-10e3491e6c6c",
+        "ticket": {
+          "id": "e447969d-3cd1-4009-b542-206302506372-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "e447969d-3cd1-4009-b542-206302506372",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 410,
+        "registrationId": "136dac1d-9eb1-4c62-af3b-2b8c0375a277",
+        "ticket": {
+          "id": "c952d989-dc4f-41da-adb7-69f6a8f935a5-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "c952d989-dc4f-41da-adb7-69f6a8f935a5",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 411,
+        "registrationId": "2a0eef32-78e2-4ad8-be6a-db2e356db9ef",
+        "ticket": {
+          "id": "4b751a68-4208-43c1-89c9-3d672beef8c0-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "4b751a68-4208-43c1-89c9-3d672beef8c0",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 412,
+        "registrationId": "bdeecfc7-94ef-4eb8-a246-6d2883f31db8",
+        "ticket": {
+          "id": "8e4c890e-0fdd-4855-9b57-fb41f0d748ae-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "8e4c890e-0fdd-4855-9b57-fb41f0d748ae",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 413,
+        "registrationId": "91eb13fe-0714-4c79-8839-9c36389ac20a",
+        "ticket": {
+          "id": "ed4b7e1e-74f9-4c2f-8e15-9bbc70124a08-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "ed4b7e1e-74f9-4c2f-8e15-9bbc70124a08",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 414,
+        "registrationId": "a502eec2-4f0b-44aa-b605-a6ec622a546a",
+        "ticket": {
+          "id": "3866a86e-831a-4ad0-848a-d6b633a0009f-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "3866a86e-831a-4ad0-848a-d6b633a0009f",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 415,
+        "registrationId": "1408e014-4560-4206-96d5-6fd708eb0ddd",
+        "ticket": {
+          "id": "323228f7-0ec7-4298-9d2c-a9d66f177be7-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 416,
+        "registrationId": "813022df-ce60-40ca-86af-728570ad728c",
+        "ticket": {
+          "id": "323228f7-0ec7-4298-9d2c-a9d66f177be7-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 417,
+        "registrationId": "f5c2fc05-693b-4b9b-ba26-dc73dafa8a20",
+        "ticket": {
+          "id": "35555f79-6ba8-4d5a-8399-63fa0700a4c2-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "35555f79-6ba8-4d5a-8399-63fa0700a4c2",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 418,
+        "registrationId": "523998a8-9660-44af-a241-0178a7295e6f",
+        "ticket": {
+          "id": "9f314f40-81ca-4add-af47-fa79c05091d5-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "9f314f40-81ca-4add-af47-fa79c05091d5",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 419,
+        "registrationId": "aca83ae3-33e9-4ff3-a4cd-6af04554479b",
+        "ticket": {
+          "id": "e4d84360-640a-40e7-99ed-a55f999f4eaf-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "e4d84360-640a-40e7-99ed-a55f999f4eaf",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 420,
+        "registrationId": "9096129e-dba5-4073-856b-937df2c6d3f1",
+        "ticket": {
+          "id": "5cf9e88e-a8cc-450a-a54e-5ee6cf2d0ad0-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "5cf9e88e-a8cc-450a-a54e-5ee6cf2d0ad0",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 421,
+        "registrationId": "aa598020-d3cf-46d4-bd76-04aad430eaeb",
+        "ticket": {
+          "id": "3db196ef-fd90-41ea-8046-8b58fb859e3b-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "3db196ef-fd90-41ea-8046-8b58fb859e3b",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 422,
+        "registrationId": "654fff3d-b939-4984-89bd-17e9dc8d9a75",
+        "ticket": {
+          "id": "2854b785-d69d-46ef-b6b6-61d623bab368-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "2854b785-d69d-46ef-b6b6-61d623bab368",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 423,
+        "registrationId": "f04785c9-1eb8-4bba-b6be-634ba4d8d8f8",
+        "ticket": {
+          "id": "4bb6e6d5-7195-4a96-b981-a2031b16b67c-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "4bb6e6d5-7195-4a96-b981-a2031b16b67c",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 424,
+        "registrationId": "c20df7a8-da41-4d6c-bc77-d5b9e1324a47",
+        "ticket": {
+          "id": "2c871c78-5381-43e3-b299-4d63290ef4cd-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "2c871c78-5381-43e3-b299-4d63290ef4cd",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 425,
+        "registrationId": "825be57a-a1d2-4baa-86a6-a8d7c049e0ee",
+        "ticket": {
+          "id": "db3277a4-0f14-4c67-802d-35c532cfaa16-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "db3277a4-0f14-4c67-802d-35c532cfaa16",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 426,
+        "registrationId": "0b69a89b-4e7f-46bf-92bf-08d29fecb79c",
+        "ticket": {
+          "id": "c952d989-dc4f-41da-adb7-69f6a8f935a5-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "c952d989-dc4f-41da-adb7-69f6a8f935a5",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 427,
+        "registrationId": "a9de69ea-fc72-439b-ba2e-19adcc1e6d97",
+        "ticket": {
+          "id": "385fce70-f4e5-4bf0-838b-aa9becf63cec-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "385fce70-f4e5-4bf0-838b-aa9becf63cec",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 428,
+        "registrationId": "651b5606-d177-4fca-9684-057946026fc1",
+        "ticket": {
+          "id": "331a3248-fca2-4701-9f14-4911cb81f8bb-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "331a3248-fca2-4701-9f14-4911cb81f8bb",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 429,
+        "registrationId": "a2f31052-3039-4e0d-b820-526e0e7ca4f2",
+        "ticket": {
+          "id": "15c1e0b6-5ebf-4aad-8df1-018cf1dcde44-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "15c1e0b6-5ebf-4aad-8df1-018cf1dcde44",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 430,
+        "registrationId": "ac2f75bc-d628-4953-82ff-10e3491e6c6c",
+        "ticket": {
+          "id": "e447969d-3cd1-4009-b542-206302506372-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "e447969d-3cd1-4009-b542-206302506372",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 431,
+        "registrationId": "136dac1d-9eb1-4c62-af3b-2b8c0375a277",
+        "ticket": {
+          "id": "c952d989-dc4f-41da-adb7-69f6a8f935a5-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "c952d989-dc4f-41da-adb7-69f6a8f935a5",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 432,
+        "registrationId": "2a0eef32-78e2-4ad8-be6a-db2e356db9ef",
+        "ticket": {
+          "id": "4b751a68-4208-43c1-89c9-3d672beef8c0-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "4b751a68-4208-43c1-89c9-3d672beef8c0",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 20
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 200,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 433,
+        "registrationId": "bdeecfc7-94ef-4eb8-a246-6d2883f31db8",
+        "ticket": {
+          "id": "8e4c890e-0fdd-4855-9b57-fb41f0d748ae-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "8e4c890e-0fdd-4855-9b57-fb41f0d748ae",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 434,
+        "registrationId": "91eb13fe-0714-4c79-8839-9c36389ac20a",
+        "ticket": {
+          "id": "ed4b7e1e-74f9-4c2f-8e15-9bbc70124a08-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "ed4b7e1e-74f9-4c2f-8e15-9bbc70124a08",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 435,
+        "registrationId": "a502eec2-4f0b-44aa-b605-a6ec622a546a",
+        "ticket": {
+          "id": "3866a86e-831a-4ad0-848a-d6b633a0009f-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "3866a86e-831a-4ad0-848a-d6b633a0009f",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 436,
+        "registrationId": "1408e014-4560-4206-96d5-6fd708eb0ddd",
+        "ticket": {
+          "id": "323228f7-0ec7-4298-9d2c-a9d66f177be7-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 437,
+        "registrationId": "813022df-ce60-40ca-86af-728570ad728c",
+        "ticket": {
+          "id": "323228f7-0ec7-4298-9d2c-a9d66f177be7-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "323228f7-0ec7-4298-9d2c-a9d66f177be7",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 438,
+        "registrationId": "1b538a7d-4370-49a3-a1af-b3110a4015a0",
+        "ticket": {
+          "id": "c302adc8-9553-436a-bd9e-d861ceadb1ab-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "c302adc8-9553-436a-bd9e-d861ceadb1ab",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 439,
+        "registrationId": "8024de93-41f3-4e37-9b9f-41b0e80a8f2f",
+        "ticket": {
+          "id": "2341bb54-0d7d-43df-8d96-327ebf425eae-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "2341bb54-0d7d-43df-8d96-327ebf425eae",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 40
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 400,
+          "unitPrice": 115
+        }
+      ]
+    },
+    {
+      "originalTicket": {
+        "index": 440,
+        "registrationId": "ba78e9c7-abf7-492f-94cf-2723fe67fc3a",
+        "ticket": {
+          "id": "a50fb972-ee8b-4df8-b075-843ddb21fc00-794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "price": 1150,
+          "isPackage": true,
+          "attendeeId": "a50fb972-ee8b-4df8-b075-843ddb21fc00",
+          "eventTicketId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+          "quantity": 10
+        },
+        "source": "lodges"
+      },
+      "packageName": "Lodge Package",
+      "packageId": "794841e4-5f04-4899-96e2-c0afece4d5f2",
+      "expandedInto": [
+        {
+          "eventTicketId": "fd12d7f0-f346-49bf-b1eb-0682ad226216",
+          "eventTicketName": "Proclamation Banquet - Best Available",
+          "quantity": 100,
+          "unitPrice": 115
+        }
+      ]
+    }
+  ]
+}

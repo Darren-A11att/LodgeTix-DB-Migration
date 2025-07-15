@@ -153,6 +153,8 @@ app.get('/api/collections/:name/documents', async (req, res) => {
     const limit = parseInt(req.query.limit as string) || 20;
     const skip = parseInt(req.query.skip as string) || 0;
     const searchQuery = req.query.search as string || '';
+    const sortBy = req.query.sortBy as string;
+    const sortOrder = req.query.sortOrder as string;
     
     const collection = db.collection(collectionName);
     
@@ -213,7 +215,32 @@ app.get('/api/collections/:name/documents', async (req, res) => {
       filter = { $or: searchConditions };
     }
     
-    const documents = await collection.find(filter).skip(skip).limit(limit).toArray();
+    // Build sort options
+    let sortOptions: any = {};
+    if (sortBy) {
+      // For date sorting, we need to handle multiple possible date fields
+      if (sortBy === 'date') {
+        // Sort by timestamp first, then createdAt as fallback
+        sortOptions = { 
+          timestamp: sortOrder === 'asc' ? 1 : -1,
+          createdAt: sortOrder === 'asc' ? 1 : -1
+        };
+      } else if (sortBy === 'amount') {
+        // Sort by amount field
+        sortOptions = { amount: sortOrder === 'asc' ? 1 : -1 };
+      } else {
+        // Generic sort by field name
+        sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+      }
+    }
+    
+    // Apply sorting before pagination
+    const documents = await collection
+      .find(filter)
+      .sort(Object.keys(sortOptions).length > 0 ? sortOptions : {})
+      .skip(skip)
+      .limit(limit)
+      .toArray();
     const total = await collection.countDocuments(filter);
     
     res.json({

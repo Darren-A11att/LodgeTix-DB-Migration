@@ -1,0 +1,10 @@
+{
+  "totalUniqueFields": 5,
+  "fields": [
+    "attendeeId",
+    "eventTicketId",
+    "id",
+    "isPackage",
+    "price"
+  ]
+}

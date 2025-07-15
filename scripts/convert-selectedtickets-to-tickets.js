@@ -1,8 +1,16 @@
 #!/usr/bin/env node
 
+/**
+ * Convert selectedTickets to tickets array format
+ * IMPORTANT: This script now PRESERVES attendeeId from selectedTickets
+ * - For individual registrations: ownerId = attendeeId from selectedTickets
+ * - For lodge registrations: ownerId = lodgeId/organisationId
+ */
+
 const { MongoClient } = require('mongodb');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+const { roundToTwoDecimals, parsePrice } = require('./number-helpers');
 
 async function convertSelectedTicketsToTickets() {
   const uri = process.env.MONGODB_URI;
@@ -21,7 +29,7 @@ async function convertSelectedTicketsToTickets() {
       const ticketId = ticket.eventTicketId || ticket.event_ticket_id;
       ticketMap.set(ticketId, {
         name: ticket.name,
-        price: parseFloat(ticket.price?.$numberDecimal || ticket.price || 0),
+        price: parsePrice(ticket.price),
         description: ticket.description || ''
       });
     });
@@ -52,8 +60,10 @@ async function convertSelectedTicketsToTickets() {
     console.log('1. Convert selectedTickets array to tickets array format');
     console.log('2. Handle eventTicketsId (with s) to eventTicketId (without s)');
     console.log('3. Add price, name, and proper structure for each ticket');
-    console.log('4. Remove the selectedTickets array after conversion');
-    console.log('5. Skip registrations that already have a tickets array');
+    console.log('4. PRESERVE attendeeId from selectedTickets as ownerId for individuals');
+    console.log('5. Set ownerType/ownerId based on registration type');
+    console.log('6. Remove the selectedTickets array after conversion');
+    console.log('7. Skip registrations that already have a tickets array');
     
     console.log('\nPress Ctrl+C to cancel, or wait 5 seconds to continue...');
     await new Promise(resolve => setTimeout(resolve, 5000));
@@ -78,21 +88,40 @@ async function convertSelectedTicketsToTickets() {
           
           regData.selectedTickets.forEach(selectedTicket => {
             // Handle both eventTicketsId (with s) and eventTicketId (without s)
-            const eventTicketId = selectedTicket.eventTicketsId || selectedTicket.eventTicketId;
+            const eventTicketId = selectedTicket.eventTicketsId || selectedTicket.eventTicketId || 
+                                 selectedTicket.event_ticket_id || selectedTicket.ticketDefinitionId;
             const ticketInfo = ticketMap.get(eventTicketId) || {};
             const quantity = selectedTicket.quantity || 1;
             
+            // Determine owner based on registration type
+            const isIndividual = registration.registrationType === 'individuals' || 
+                               registration.registrationType === 'individual';
+            
             // Create ticket entries based on quantity
             for (let i = 0; i < quantity; i++) {
-              tickets.push({
+              const ticket = {
                 id: `${registration.registrationId || registration.registration_id}-${eventTicketId}-${i}`,
-                price: ticketInfo.price || 0,
+                price: ticketInfo.price !== undefined ? ticketInfo.price : parsePrice(selectedTicket.price),
                 isPackage: false,
-                attendeeId: registration.primaryAttendeeId || registration.registrationId || registration.registration_id,
                 eventTicketId: eventTicketId,
                 name: ticketInfo.name || selectedTicket.name || 'Unknown Ticket',
-                quantity: 1
-              });
+                quantity: 1,
+                ownerType: isIndividual ? 'attendee' : 'lodge'
+              };
+              
+              // CRITICAL: Preserve attendeeId for individual registrations
+              if (isIndividual) {
+                ticket.ownerId = selectedTicket.attendeeId; // Preserve the original attendeeId
+              } else {
+                // For lodge registrations, use lodge/organisation ID
+                ticket.ownerId = regData?.lodgeDetails?.lodgeId || 
+                                regData?.lodgeId || 
+                                regData?.organisationId ||
+                                registration.registrationId || 
+                                registration.registration_id;
+              }
+              
+              tickets.push(ticket);
             }
           });
           

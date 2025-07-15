@@ -6,21 +6,57 @@ import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📮 Email API: POST request received');
+    
     const formData = await request.formData();
     const pdfFile = formData.get('pdf') as File;
     const invoiceData = formData.get('invoice') as string;
     const recipientEmail = formData.get('recipientEmail') as string;
     const recipientName = formData.get('recipientName') as string;
-    
+    const functionName = formData.get('functionName') as string | null;
+
+    console.log('📮 Email API: Form data received:', {
+      hasPdf: !!pdfFile,
+      hasInvoice: !!invoiceData,
+      recipientEmail,
+      recipientName,
+      functionName,
+      functionNameType: typeof functionName
+    });
+
     if (!pdfFile || !invoiceData || !recipientEmail || !recipientName) {
+      console.log('📮 ❌ Missing required fields');
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields: pdf, invoice, recipientEmail, or recipientName' },
         { status: 400 }
       );
     }
     
     // Parse invoice data
     const invoice: Invoice = JSON.parse(invoiceData);
+    
+    // If functionName is not provided, try to get it from the database
+    let finalFunctionName = functionName;
+    if (!finalFunctionName && invoice.functionId) {
+      console.log('📮 No functionName provided, attempting to fetch from database using functionId:', invoice.functionId);
+      try {
+        const { db } = await connectMongoDB();
+        const functionDoc = await db.collection('functions').findOne({ 
+          _id: new ObjectId(invoice.functionId) 
+        });
+        
+        if (functionDoc && functionDoc.name) {
+          finalFunctionName = functionDoc.name;
+          console.log('📮 Found function name from database:', finalFunctionName);
+        } else {
+          console.log('📮 ⚠️ Could not find function in database');
+        }
+      } catch (dbError) {
+        console.error('📮 ❌ Error fetching function from database:', dbError);
+      }
+    }
+    
+    console.log('📮 Final functionName to pass to email service:', finalFunctionName);
     
     // Convert PDF file to Blob
     const pdfBlob = new Blob([await pdfFile.arrayBuffer()], { type: 'application/pdf' });
@@ -30,7 +66,8 @@ export async function POST(request: NextRequest) {
       pdfBlob,
       invoice,
       recipientEmail,
-      recipientName
+      recipientName,
+      functionName: finalFunctionName || undefined
     });
     
     // Get email metadata

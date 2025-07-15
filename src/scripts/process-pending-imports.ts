@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { connectMongoDB } from '../connections/mongodb';
 import { Collection } from 'mongodb';
 import { SquareClient, SquareEnvironment } from 'square';
+import { roundToTwoDecimals, parsePrice } from '../utils/number-helpers';
 
 // Handle BigInt serialization
 // @ts-ignore
@@ -44,6 +45,7 @@ class PendingImportProcessor {
   private pendingImportsCollection!: Collection<PendingImport>;
   private failedRegistrationsCollection!: Collection<any>;
   private squareClient: SquareClient;
+  private db!: any;
   
   constructor() {
     this.squareClient = new SquareClient({
@@ -54,9 +56,10 @@ class PendingImportProcessor {
   
   async initialize() {
     const connection = await connectMongoDB();
+    this.db = connection.db;
     this.registrationsCollection = connection.db.collection<Registration>('registrations');
     this.paymentsCollection = connection.db.collection<Payment>('payments');
-    this.pendingImportsCollection = connection.db.collection<PendingImport>('pending-imports');
+    this.pendingImportsCollection = connection.db.collection<PendingImport>('registration_imports');
     this.failedRegistrationsCollection = connection.db.collection('failedRegistrations');
   }
   
@@ -212,7 +215,7 @@ class PendingImportProcessor {
       source: 'square' as const,
       status: 'paid',
       timestamp: new Date(squarePayment.createdAt),
-      grossAmount: squarePayment.amountMoney ? Number(squarePayment.amountMoney.amount) / 100 : 0,
+      grossAmount: squarePayment.amountMoney ? roundToTwoDecimals(Number(squarePayment.amountMoney.amount) / 100) : 0,
       customerName: squarePayment.shippingAddress?.name || 'Unknown',
       squareData: squarePayment,
       importedFromAPI: true,
@@ -230,13 +233,248 @@ class PendingImportProcessor {
     // Remove pending-specific fields
     const { _id, pendingSince, attemptedPaymentIds, lastCheckDate, checkCount, reason, ...registration } = pending;
     
-    // Insert into main registrations collection
+    // Initialize audit log array to track all transformations
+    const auditLog: any[] = [];
+    
+    // Transform tickets if present
+    let transformedData = { ...registration };
+    const regData = registration.registrationData || registration.registration_data;
+    
+    if (regData) {
+      // Check for selectedTickets that need transformation
+      const selectedTickets = regData.selectedTickets || [];
+      
+      if (selectedTickets.length > 0 && selectedTickets.some((t: any) => t.attendeeId)) {
+        // This registration has selectedTickets that need transformation
+        const isIndividual = registration.registrationType === 'individuals' || 
+                            registration.registrationType === 'individual';
+        
+        const transformedTickets: any[] = [];
+        const ticketTransformations: any[] = [];
+        
+        // Fetch event ticket information for enrichment
+        const eventTicketIds = selectedTickets.map((t: any) => 
+          t.event_ticket_id || t.eventTicketId || t.ticketDefinitionId || t.eventTicketsId
+        ).filter(Boolean);
+        
+        const eventTickets = await this.db.collection('eventTickets').find({
+          $or: [
+            { eventTicketId: { $in: eventTicketIds } },
+            { event_ticket_id: { $in: eventTicketIds } }
+          ]
+        }).toArray();
+        
+        const ticketInfoMap = new Map();
+        eventTickets.forEach(et => {
+          const id = et.eventTicketId || et.event_ticket_id;
+          ticketInfoMap.set(id, {
+            name: et.name || '',
+            price: parsePrice(et.price)
+          });
+        });
+        
+        selectedTickets.forEach((selectedTicket: any, index: number) => {
+          const eventTicketId = selectedTicket.event_ticket_id || 
+                               selectedTicket.eventTicketId || 
+                               selectedTicket.ticketDefinitionId ||
+                               selectedTicket.eventTicketsId;
+          
+          if (!eventTicketId) {
+            console.warn(`No event ticket ID found for ticket in registration ${registration.registrationId}`);
+            return;
+          }
+          
+          const ticketInfo = ticketInfoMap.get(eventTicketId) || {};
+          const quantity = selectedTicket.quantity || 1;
+          
+          // CRITICAL: Direct 1:1 mapping - NO COMPUTATIONS
+          let ownerId: string;
+          let ownerType: 'attendee' | 'lodge';
+          
+          if (isIndividual && selectedTicket.attendeeId) {
+            // DIRECT MAPPING: attendeeId -> ownerId
+            ownerType = 'attendee';
+            ownerId = selectedTicket.attendeeId;
+          } else if (!isIndividual) {
+            ownerType = 'lodge';
+            ownerId = regData.lodgeDetails?.lodgeId || 
+                     regData.lodgeId || 
+                     registration.organisationId ||
+                     registration.organisation_id ||
+                     registration.registrationId;
+          } else {
+            // This should not happen - log error
+            console.error(`ERROR: Individual ticket without attendeeId in registration ${registration.registrationId}`);
+            ownerType = 'attendee';
+            ownerId = registration.registrationId; // Fallback only
+          }
+          
+          const transformedTicket = {
+            eventTicketId: eventTicketId,
+            name: ticketInfo.name || selectedTicket.name || 'Unknown Ticket',
+            price: ticketInfo.price !== undefined ? ticketInfo.price : parsePrice(selectedTicket.price),
+            quantity: quantity,
+            ownerType: ownerType,
+            ownerId: ownerId
+          };
+          
+          transformedTickets.push(transformedTicket);
+          
+          // Detailed audit log for this ticket transformation
+          const ticketAudit = {
+            ticketIndex: index,
+            originalId: selectedTicket.id,
+            transformations: []
+          };
+          
+          // Track field mappings and changes
+          ticketAudit.transformations.push({
+            field: 'structure',
+            action: 'restructure',
+            from: 'selectedTickets[' + index + ']',
+            to: 'tickets[' + index + ']'
+          });
+          
+          if (selectedTicket.id) {
+            ticketAudit.transformations.push({
+              field: 'id',
+              action: 'delete',
+              oldValue: selectedTicket.id,
+              reason: 'Composite ID not needed in new structure'
+            });
+          }
+          
+          ticketAudit.transformations.push({
+            field: 'event_ticket_id',
+            action: 'rename',
+            from: 'event_ticket_id',
+            to: 'eventTicketId',
+            value: eventTicketId
+          });
+          
+          if (ticketInfo.name && ticketInfo.name !== selectedTicket.name) {
+            ticketAudit.transformations.push({
+              field: 'name',
+              action: selectedTicket.name ? 'update' : 'add',
+              from: selectedTicket.name || null,
+              to: ticketInfo.name,
+              source: 'eventTickets collection lookup'
+            });
+          }
+          
+          const originalPrice = parsePrice(selectedTicket.price);
+          if (ticketInfo.price !== undefined && ticketInfo.price !== originalPrice) {
+            ticketAudit.transformations.push({
+              field: 'price',
+              action: 'update',
+              from: originalPrice,
+              to: ticketInfo.price,
+              source: 'eventTickets collection lookup'
+            });
+          }
+          
+          if (!selectedTicket.quantity) {
+            ticketAudit.transformations.push({
+              field: 'quantity',
+              action: 'add',
+              from: null,
+              to: 1,
+              reason: 'Default quantity when not specified'
+            });
+          }
+          
+          ticketAudit.transformations.push({
+            field: 'ownerType',
+            action: 'add',
+            from: null,
+            to: ownerType,
+            reason: `Determined by registrationType: ${registration.registrationType}`
+          });
+          
+          ticketAudit.transformations.push({
+            field: 'attendeeId',
+            action: 'rename',
+            from: 'attendeeId',
+            to: 'ownerId',
+            oldValue: selectedTicket.attendeeId,
+            newValue: ownerId,
+            preserved: selectedTicket.attendeeId === ownerId
+          });
+          
+          ticketTransformations.push(ticketAudit);
+        });
+        
+        // Update registration data with transformed tickets
+        const updatePath = registration.registrationData ? 'registrationData' : 'registration_data';
+        if (updatePath === 'registrationData') {
+          transformedData.registrationData = {
+            ...regData,
+            tickets: transformedTickets,
+            selectedTickets: undefined // Remove old format
+          };
+        } else {
+          transformedData.registration_data = {
+            ...regData,
+            tickets: transformedTickets,
+            selectedTickets: undefined // Remove old format
+          };
+        }
+        
+        // Record transformation in audit log
+        auditLog.push({
+          timestamp: new Date(),
+          action: 'transform_tickets',
+          description: 'Transformed selectedTickets array to tickets array with owner structure',
+          summary: {
+            ticketsTransformed: transformedTickets.length,
+            registrationType: registration.registrationType,
+            attendeeIdsPreserved: ticketTransformations.filter(t => 
+              t.transformations.some((tr: any) => tr.field === 'attendeeId' && tr.preserved)
+            ).length,
+            dataLossDetected: ticketTransformations.some(t => 
+              t.transformations.some((tr: any) => tr.field === 'attendeeId' && !tr.preserved)
+            )
+          },
+          fieldChanges: [
+            {
+              field: 'selectedTickets',
+              action: 'rename',
+              from: 'selectedTickets',
+              to: 'tickets'
+            },
+            {
+              field: 'selectedTickets',
+              action: 'delete',
+              reason: 'Replaced by tickets array'
+            }
+          ],
+          ticketTransformations: ticketTransformations
+        });
+      }
+    }
+    
+    // Add import audit entry
+    auditLog.push({
+      timestamp: new Date(),
+      action: 'imported_from_registration_imports',
+      description: 'Imported from registration_imports collection after payment verification',
+      details: {
+        pendingSince: pendingSince,
+        checkCount: checkCount + 1,
+        pendingReason: reason,
+        paymentVerified: true,
+        importSource: 'registration_imports'
+      }
+    });
+    
+    // Insert into main registrations collection with transformations and audit log
     await this.registrationsCollection.insertOne({
-      ...registration,
+      ...transformedData,
       importedAt: new Date(),
       paymentVerified: true,
       previouslyPendingSince: pendingSince,
-      resolvedAfterChecks: checkCount + 1
+      resolvedAfterChecks: checkCount + 1,
+      auditLog: auditLog
     });
     
     // Remove from pending imports

@@ -1,3 +1,10 @@
+/**
+ * Sync latest data with new ticket owner structure
+ * IMPORTANT: This script now PRESERVES attendeeId from selectedTickets
+ * - For individual registrations: ownerId = attendeeId from selectedTickets
+ * - For lodge registrations: ownerId = lodgeId/organisationId
+ */
+
 const { MongoClient } = require('mongodb');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
@@ -56,11 +63,25 @@ async function syncLatestData() {
             ]
           });
           
-          // Transform tickets to new structure
+          // Transform tickets to new structure, preserving attendeeId from selectedTickets
           let transformedTickets = null;
+          const isLodge = supReg.registration_type === 'lodge' || supReg.registration_type === 'lodges';
+          
+          // First, build a mapping from selectedTickets if available
+          const ticketToAttendeeMap = new Map();
+          const selectedTickets = supReg.registration_data?.selectedTickets || [];
+          
+          selectedTickets.forEach((ticket) => {
+            const eventTicketId = ticket.event_ticket_id || 
+                                ticket.eventTicketId || 
+                                ticket.ticketDefinitionId ||
+                                ticket.eventTicketsId;
+            if (eventTicketId && ticket.attendeeId) {
+              ticketToAttendeeMap.set(eventTicketId, ticket.attendeeId);
+            }
+          });
+          
           if (supReg.registration_data?.tickets) {
-            const isLodge = supReg.registration_type === 'lodge' || supReg.registration_type === 'lodges';
-            
             if (Array.isArray(supReg.registration_data.tickets)) {
               transformedTickets = supReg.registration_data.tickets.map(ticket => {
                 const newTicket = { ...ticket };
@@ -73,7 +94,12 @@ async function syncLatestData() {
                                      supReg.id;
                 } else {
                   newTicket.ownerType = 'attendee';
-                  newTicket.ownerId = ticket.attendeeId || supReg.primary_attendee_id || supReg.id;
+                  // CRITICAL: Use attendeeId from mapping if available
+                  const mappedAttendeeId = ticketToAttendeeMap.get(ticket.eventTicketId);
+                  newTicket.ownerId = mappedAttendeeId || 
+                                    ticket.attendeeId || 
+                                    supReg.primary_attendee_id || 
+                                    supReg.id;
                 }
                 
                 // Remove old attendeeId field
@@ -93,7 +119,12 @@ async function syncLatestData() {
                                      supReg.id;
                 } else {
                   newTicket.ownerType = 'attendee';
-                  newTicket.ownerId = ticket.attendeeId || supReg.primary_attendee_id || supReg.id;
+                  // CRITICAL: Use attendeeId from mapping if available
+                  const mappedAttendeeId = ticketToAttendeeMap.get(ticket.eventTicketId);
+                  newTicket.ownerId = mappedAttendeeId || 
+                                    ticket.attendeeId || 
+                                    supReg.primary_attendee_id || 
+                                    supReg.id;
                 }
                 
                 delete newTicket.attendeeId;

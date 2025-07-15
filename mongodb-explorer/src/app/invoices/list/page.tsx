@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import apiService from '@/lib/api';
 // Removed confidence thresholds import - now using simple ID-only matching
 
@@ -39,20 +39,32 @@ const toNumber = (value: number | { $numberDecimal: string } | undefined): numbe
 };
 
 export default function InvoicesListPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [matches, setMatches] = useState<InvoiceMatch[]>([]);
   const [processedInvoices, setProcessedInvoices] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'all' | 'processed'>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const pageParam = searchParams.get('page');
+    return pageParam ? parseInt(pageParam, 10) - 1 : 0; // URL uses 1-based, state uses 0-based
+  });
   const [total, setTotal] = useState(0);
   const [filterConfidence, setFilterConfidence] = useState<number>(0);
   const [showProcessedOnly, setShowProcessedOnly] = useState(false);
   const [filterPaymentStatus, setFilterPaymentStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const router = useRouter();
   const limit = 50;
+  
+  // Update URL when page changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(currentPage + 1)); // Convert to 1-based for URL
+    router.push(`/invoices/list?${params.toString()}`, { scroll: false });
+  }, [currentPage]);
 
   useEffect(() => {
     if (viewMode === 'all') {
@@ -60,7 +72,7 @@ export default function InvoicesListPage() {
     } else {
       fetchProcessedInvoices();
     }
-  }, [currentPage, viewMode]);
+  }, [currentPage, viewMode, sortBy, sortOrder]);
 
   const fetchMatches = async () => {
     try {
@@ -190,7 +202,7 @@ export default function InvoicesListPage() {
       setLoading(true);
       // Fetch all payments with their match information
       const skip = currentPage * limit;
-      const paymentsData = await apiService.getDocuments('payments', skip, limit);
+      const paymentsData = await apiService.getDocuments('payments', skip, limit, undefined, sortBy, sortOrder);
       const payments = paymentsData.documents || [];
       
       // Debug: Log first few payments to see structure
@@ -308,13 +320,15 @@ export default function InvoicesListPage() {
   };
 
   const handleMatchClick = (index: number) => {
-    // Navigate to the matches page with the specific payment ID
+    // Navigate to the matches page with the specific payment ID and preserve current page
     const match = matches[index];
+    const pageParam = `&page=${currentPage + 1}`; // Convert to 1-based for URL
+    
     if (match && match.payment && match.payment._id) {
-      router.push(`/invoices/matches?paymentId=${match.payment._id}`);
+      router.push(`/invoices/matches?paymentId=${match.payment._id}${pageParam}`);
     } else {
       // Fallback to index-based navigation
-      router.push(`/invoices/matches?index=${currentPage * limit + index}`);
+      router.push(`/invoices/matches?index=${currentPage * limit + index}${pageParam}`);
     }
   };
 
@@ -414,24 +428,7 @@ export default function InvoicesListPage() {
       
       return true;
     })
-    .sort((a, b) => {
-      let aValue: number = 0;
-      let bValue: number = 0;
-      
-      if (sortBy === 'date') {
-        aValue = new Date(a.payment.timestamp || a.payment.createdAt).getTime();
-        bValue = new Date(b.payment.timestamp || b.payment.createdAt).getTime();
-      } else if (sortBy === 'amount') {
-        aValue = toNumber(a.payment.amount || a.payment.grossAmount || 0);
-        bValue = toNumber(b.payment.amount || b.payment.grossAmount || 0);
-      }
-      
-      if (sortOrder === 'asc') {
-        return aValue - bValue;
-      } else {
-        return bValue - aValue;
-      }
-    });
+;
 
   if (loading) {
     return (
@@ -640,14 +637,20 @@ export default function InvoicesListPage() {
             </label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
+              onChange={(e) => {
+                setSortBy(e.target.value as 'date' | 'amount');
+                setCurrentPage(0); // Reset to first page when sorting changes
+              }}
               className="border rounded px-3 py-1 text-sm"
             >
               <option value="date">Date</option>
               <option value="amount">Amount</option>
             </select>
             <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() => {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                setCurrentPage(0); // Reset to first page when sorting changes
+              }}
               className="px-3 py-1 text-sm border rounded hover:bg-gray-50 flex items-center gap-1"
             >
               {sortOrder === 'desc' ? '↓' : '↑'}

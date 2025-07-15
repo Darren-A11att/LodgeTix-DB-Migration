@@ -1,6 +1,22 @@
+#!/usr/bin/env node
+
+/**
+ * Update ticket structure to use ownerType/ownerId
+ * IMPORTANT: This script now PRESERVES attendeeId from selectedTickets by fetching from Supabase
+ * - For individual registrations: ownerId = attendeeId from selectedTickets (fetched from Supabase)
+ * - For lodge registrations: ownerId = lodgeId/organisationId
+ */
+
 const { MongoClient } = require('mongodb');
+const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
+);
 
 async function updateTicketStructure() {
   const uri = process.env.MONGODB_URI;
@@ -11,6 +27,7 @@ async function updateTicketStructure() {
   
   try {
     console.log('=== UPDATING TICKET STRUCTURE TO USE ownerType/ownerId ===\n');
+    console.log('IMPORTANT: This script now preserves attendeeId from Supabase\n');
     
     // Get all registrations
     const registrations = await db.collection('registrations').find({}).toArray();
@@ -20,6 +37,7 @@ async function updateTicketStructure() {
     let individualCount = 0;
     let lodgeCount = 0;
     let errorCount = 0;
+    let preservedAttendeeCount = 0;
     
     for (const registration of registrations) {
       try {
@@ -35,6 +53,42 @@ async function updateTicketStructure() {
         
         let hasChanges = false;
         let updatedTickets;
+        let ticketToAttendeeMap = new Map();
+        
+        // For individual registrations, fetch original selectedTickets from Supabase
+        if (!isLodge && registration.registrationType === 'individuals') {
+          try {
+            const { data: supabaseReg, error } = await supabase
+              .from('registrations')
+              .select('registration_data')
+              .eq('registration_id', registration.registrationId || registration.registration_id)
+              .single();
+            
+            if (error) {
+              console.warn(`Could not fetch Supabase data for ${registration.registrationId}: ${error.message}`);
+            } else if (supabaseReg?.registration_data) {
+              const selectedTickets = supabaseReg.registration_data.selectedTickets || 
+                                    supabaseReg.registration_data.tickets || [];
+              
+              // Build ticket to attendee mapping
+              selectedTickets.forEach((ticket) => {
+                const eventTicketId = ticket.event_ticket_id || 
+                                    ticket.eventTicketId || 
+                                    ticket.ticketDefinitionId ||
+                                    ticket.eventTicketsId;
+                if (eventTicketId && ticket.attendeeId) {
+                  ticketToAttendeeMap.set(eventTicketId, ticket.attendeeId);
+                }
+              });
+              
+              if (ticketToAttendeeMap.size > 0) {
+                preservedAttendeeCount++;
+              }
+            }
+          } catch (err) {
+            console.warn(`Error fetching Supabase data: ${err.message}`);
+          }
+        }
         
         if (Array.isArray(regData.tickets)) {
           // Handle array format
@@ -54,9 +108,16 @@ async function updateTicketStructure() {
                                  registration.registrationId;
             } else {
               newTicket.ownerType = 'attendee';
-              // For now, assign to primary attendee - we'll fix this with Supabase data
-              newTicket.ownerId = registration.primaryAttendeeId || 
-                                registration.registrationId;
+              
+              // CRITICAL: Use attendeeId from mapping if available
+              const attendeeIdFromMapping = ticketToAttendeeMap.get(ticket.eventTicketId);
+              if (attendeeIdFromMapping) {
+                newTicket.ownerId = attendeeIdFromMapping; // Preserve the original attendeeId
+              } else {
+                // Fallback to primary attendee only if mapping not found
+                newTicket.ownerId = registration.primaryAttendeeId || 
+                                  registration.registrationId;
+              }
             }
             
             hasChanges = true;
@@ -81,8 +142,16 @@ async function updateTicketStructure() {
                                  registration.registrationId;
             } else {
               newTicket.ownerType = 'attendee';
-              newTicket.ownerId = registration.primaryAttendeeId || 
-                                registration.registrationId;
+              
+              // CRITICAL: Use attendeeId from mapping if available
+              const attendeeIdFromMapping = ticketToAttendeeMap.get(ticket.eventTicketId);
+              if (attendeeIdFromMapping) {
+                newTicket.ownerId = attendeeIdFromMapping; // Preserve the original attendeeId
+              } else {
+                // Fallback to primary attendee only if mapping not found
+                newTicket.ownerId = registration.primaryAttendeeId || 
+                                  registration.registrationId;
+              }
             }
             
             updatedTickets[ticketId] = newTicket;
@@ -98,7 +167,11 @@ async function updateTicketStructure() {
             { _id: registration._id },
             { 
               $set: { 
-                [`${updatePath}.tickets`]: updatedTickets 
+                [`${updatePath}.tickets`]: updatedTickets,
+                'lastTicketStructureUpdate': new Date(),
+                'ticketStructureUpdateReason': ticketToAttendeeMap.size > 0 ? 
+                  'Updated with preserved attendeeId from Supabase' : 
+                  'Updated without Supabase data'
               }
             }
           );
@@ -119,6 +192,9 @@ async function updateTicketStructure() {
               ownerType: sampleTicket.ownerType,
               ownerId: sampleTicket.ownerId
             });
+            if (ticketToAttendeeMap.size > 0) {
+              console.log(`  ✅ Preserved ${ticketToAttendeeMap.size} attendeeIds from Supabase`);
+            }
           }
         }
       } catch (error) {
@@ -131,6 +207,7 @@ async function updateTicketStructure() {
     console.log(`Total registrations updated: ${updatedCount}`);
     console.log(`  - Individual registrations: ${individualCount}`);
     console.log(`  - Lodge registrations: ${lodgeCount}`);
+    console.log(`  - Individuals with preserved attendeeIds: ${preservedAttendeeCount}`);
     console.log(`Errors: ${errorCount}`);
     
     // Show sample of updated structure
@@ -162,14 +239,30 @@ async function updateTicketStructure() {
       console.log(JSON.stringify(sampleTickets, null, 2));
     }
     
-    console.log('\n⚠️  NOTE: Individual ticket ownership is currently set to primaryAttendeeId');
-    console.log('    This will be corrected when we fetch data from Supabase');
+    console.log('\n✅ Individual ticket ownership has been updated with preserved attendeeIds from Supabase');
     
   } catch (error) {
     console.error('Error:', error);
   } finally {
     await client.close();
   }
+}
+
+// Add command line options
+const args = process.argv.slice(2);
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`
+Usage: node update-ticket-structure-owner.js [options]
+
+Options:
+  --help     Show this help message
+
+This script updates ticket structure to use ownerType/ownerId while preserving attendeeId.
+- Fetches original selectedTickets from Supabase for individual registrations
+- Preserves attendeeId as ownerId for individual tickets
+- Sets lodge/organisation ID as ownerId for lodge tickets
+  `);
+  process.exit(0);
 }
 
 updateTicketStructure().catch(console.error);

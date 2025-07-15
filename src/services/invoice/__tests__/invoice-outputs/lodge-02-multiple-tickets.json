@@ -1,0 +1,228 @@
+{
+  "testCase": "lodge-02-multiple-tickets",
+  "payment": {
+    "_id": "pay_102",
+    "paymentId": "sq_102",
+    "transactionId": "SQUARE102",
+    "amount": 1033.2,
+    "grossAmount": 1060,
+    "fees": 26.8,
+    "currency": "AUD",
+    "paymentMethod": "card",
+    "paymentDate": "2025-07-14T04:38:33.540Z",
+    "cardBrand": "mastercard",
+    "status": "completed",
+    "source": "square",
+    "sourceFile": "Square - Winding Stair Export.csv"
+  },
+  "registration": {
+    "_id": "reg102",
+    "confirmationNumber": "LDG-2024-002",
+    "registrationType": "lodge",
+    "functionName": "Grand Lodge Communication",
+    "organisation": {
+      "name": "Prosperity Lodge 222",
+      "abn": "22 333 444 555"
+    },
+    "metadata": {
+      "billingDetails": {
+        "businessName": "Prosperity Lodge 222",
+        "businessNumber": "22 333 444 555",
+        "email": "treasurer@prosperitylodge.org",
+        "city": "Adelaide",
+        "stateProvince": "SA"
+      }
+    },
+    "registrationData": {
+      "attendees": [
+        {
+          "attendeeId": "lodge2_0",
+          "firstName": "Member",
+          "lastName": "1"
+        },
+        {
+          "attendeeId": "lodge2_1",
+          "firstName": "Member",
+          "lastName": "2"
+        },
+        {
+          "attendeeId": "lodge2_2",
+          "firstName": "Member",
+          "lastName": "3"
+        },
+        {
+          "attendeeId": "lodge2_3",
+          "firstName": "Member",
+          "lastName": "4"
+        },
+        {
+          "attendeeId": "lodge2_4",
+          "firstName": "Member",
+          "lastName": "5"
+        },
+        {
+          "attendeeId": "lodge2_5",
+          "firstName": "Member",
+          "lastName": "6"
+        },
+        {
+          "attendeeId": "lodge2_6",
+          "firstName": "Member",
+          "lastName": "7"
+        },
+        {
+          "attendeeId": "lodge2_7",
+          "firstName": "Member",
+          "lastName": "8"
+        }
+      ],
+      "selectedTickets": [
+        {
+          "name": "Early Bird Registration",
+          "price": 80,
+          "quantity": 5
+        },
+        {
+          "name": "Standard Registration",
+          "price": 100,
+          "quantity": 3
+        },
+        {
+          "name": "Lunch Package",
+          "price": 45,
+          "quantity": 8
+        }
+      ]
+    }
+  },
+  "customerInvoice": {
+    "invoiceType": "customer",
+    "invoiceNumber": "LTIV-2412-TEST007",
+    "paymentId": "pay_102",
+    "registrationId": "reg102",
+    "date": "2025-07-14T04:38:33.540Z",
+    "dueDate": "2025-08-13T04:38:33.540Z",
+    "billTo": {
+      "businessName": "Prosperity Lodge 222",
+      "businessNumber": "22 333 444 555",
+      "firstName": "",
+      "lastName": "",
+      "email": "treasurer@prosperitylodge.org",
+      "addressLine1": "",
+      "addressLine2": "",
+      "city": "Adelaide",
+      "postalCode": "",
+      "stateProvince": "SA",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "United Grand Lodge of NSW & ACT",
+      "abn": "93 230 340 687",
+      "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "issuedBy": "LodgeTix as Agent"
+    },
+    "items": [
+      {
+        "description": "LDG-2024-002 | Prosperity Lodge 222 for Grand Lodge Communication",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "header"
+      },
+      {
+        "description": "Prosperity Lodge 222 - 8 Members",
+        "quantity": 8,
+        "price": 132.5,
+        "total": 1060,
+        "type": "other"
+      }
+    ],
+    "subtotal": 1060,
+    "processingFees": 26.8,
+    "gstIncluded": 98.8,
+    "totalBeforeGST": 1086.8,
+    "total": 1086.8,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "SQUARE102",
+      "paidDate": "2025-07-14T04:38:33.540Z",
+      "amount": 1060,
+      "currency": "AUD",
+      "last4": "",
+      "cardBrand": "Mastercard",
+      "status": "completed",
+      "source": "square"
+    },
+    "status": "paid",
+    "notes": ""
+  },
+  "supplierInvoice": {
+    "invoiceType": "supplier",
+    "invoiceNumber": "LTSP-2412-TEST007",
+    "paymentId": "pay_102",
+    "registrationId": "reg102",
+    "relatedInvoiceId": "LTIV-2412-TEST007",
+    "date": "2025-07-14T04:38:33.540Z",
+    "dueDate": "2025-08-13T04:38:33.540Z",
+    "billTo": {
+      "businessName": "United Grand Lodge of NSW & ACT",
+      "businessNumber": "93 230 340 687",
+      "firstName": "",
+      "lastName": "",
+      "email": "accounting@masonicnswact.com",
+      "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "city": "Sydney",
+      "postalCode": "2000",
+      "stateProvince": "NSW",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "LodgeTix / Lodge Tickets",
+      "abn": "94 687 923 128",
+      "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+      "issuedBy": "Winding Stair Pty Limited (ACN: 687 923 128)"
+    },
+    "items": [
+      {
+        "description": "Processing Fees Reimbursement",
+        "quantity": 1,
+        "price": 26.8,
+        "total": 26.8,
+        "type": "other"
+      },
+      {
+        "description": "Software Utilization Fee",
+        "quantity": 1,
+        "price": 30.43,
+        "total": 30.43,
+        "type": "other"
+      }
+    ],
+    "subtotal": 57.23,
+    "processingFees": 0,
+    "gstIncluded": 5.2,
+    "totalBeforeGST": 57.23,
+    "total": 57.23,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "SQUARE102",
+      "paidDate": "2025-07-14T04:38:33.540Z",
+      "amount": 57.23,
+      "currency": "AUD",
+      "last4": "",
+      "cardBrand": "Mastercard",
+      "status": "pending",
+      "source": "square"
+    },
+    "status": "pending",
+    "notes": "Related to Customer Invoice: LTIV-2412-TEST007"
+  },
+  "summary": {
+    "registrationType": "lodge",
+    "paymentSource": "square",
+    "customerTotal": 1086.8,
+    "supplierTotal": 57.23,
+    "processingFees": 26.8,
+    "softwareUtilizationFee": 30.43
+  }
+}

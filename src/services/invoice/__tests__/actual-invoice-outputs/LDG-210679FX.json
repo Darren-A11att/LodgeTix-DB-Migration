@@ -1,0 +1,172 @@
+{
+  "testCase": {
+    "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+    "confirmationNumber": "LDG-210679FX"
+  },
+  "csvData": {
+    "paymentRow": {
+      "Date": "2025-06-24",
+      "Time": "12:37:53",
+      "Gross Sales": "$1,196.32",
+      "Total Collected": "$1,196.32",
+      "Fees": "-$26.32",
+      "Net Total": "$1,170.00",
+      "Customer Name": "Joseph Acosta",
+      "Card Brand": "Visa",
+      "PAN Suffix": "1911"
+    },
+    "registrationRow": {
+      "registration_type": "lodge",
+      "primary_attendee": "",
+      "attendee_count": "0",
+      "total_amount_paid": "1196.32"
+    }
+  },
+  "parsedData": {
+    "payment": {
+      "_id": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+      "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+      "transactionId": "7PRUEiqETLsQ2bnhNVAyl5fv4aYZY",
+      "amount": 1170,
+      "grossAmount": 1196.32,
+      "fees": 26.32,
+      "currency": "AUD",
+      "paymentMethod": "credit_card",
+      "paymentDate": "2025-06-24T02:37:53.000Z",
+      "customerName": "Joseph Acosta",
+      "cardBrand": "Visa",
+      "cardLast4": "1911",
+      "status": "paid",
+      "source": "square",
+      "description": "https://app.squareup.com/dashboard/sales/transactions/vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY/by-unit/LQ4JE0GNCZ3NK"
+    },
+    "registration": {
+      "_id": "a2f31052-3039-4e0d-b820-526e0e7ca4f2",
+      "confirmationNumber": "LDG-210679FX",
+      "registrationType": "lodge"
+    }
+  },
+  "generatedInvoices": {
+    "customer": {
+      "invoiceType": "customer",
+      "invoiceNumber": "LTIV-2412-REAL008",
+      "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+      "registrationId": "a2f31052-3039-4e0d-b820-526e0e7ca4f2",
+      "date": "2025-06-24T02:37:53.000Z",
+      "dueDate": "2025-07-24T02:37:53.000Z",
+      "billTo": {
+        "businessName": "",
+        "businessNumber": "",
+        "firstName": "Unknown",
+        "lastName": "Customer",
+        "email": "no-email@lodgetix.io",
+        "addressLine1": "",
+        "city": "",
+        "postalCode": "",
+        "stateProvince": "NSW",
+        "country": "Australia"
+      },
+      "supplier": {
+        "name": "United Grand Lodge of NSW & ACT",
+        "abn": "93 230 340 687",
+        "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+        "issuedBy": "LodgeTix as Agent"
+      },
+      "items": [
+        {
+          "description": "LDG-210679FX | Lodge for Grand Proclamation 2025",
+          "quantity": 0,
+          "price": 0,
+          "total": 0,
+          "type": "header"
+        }
+      ],
+      "subtotal": 1166.85,
+      "processingFees": 29.47,
+      "gstIncluded": 108.76,
+      "totalBeforeGST": 1196.32,
+      "total": 1196.32,
+      "payment": {
+        "method": "Credit Card",
+        "transactionId": "7PRUEiqETLsQ2bnhNVAyl5fv4aYZY",
+        "paidDate": "2025-06-24T02:37:53.000Z",
+        "amount": 1196.32,
+        "currency": "AUD",
+        "last4": "1911",
+        "cardBrand": "Visa",
+        "status": "completed",
+        "source": "square"
+      },
+      "status": "paid",
+      "notes": ""
+    },
+    "supplier": {
+      "invoiceType": "supplier",
+      "invoiceNumber": "LTSP-2412-REAL008",
+      "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+      "registrationId": "a2f31052-3039-4e0d-b820-526e0e7ca4f2",
+      "relatedInvoiceId": "LTIV-2412-REAL008",
+      "date": "2025-06-24T02:37:53.000Z",
+      "dueDate": "2025-07-24T02:37:53.000Z",
+      "billTo": {
+        "businessName": "United Grand Lodge of NSW & ACT",
+        "businessNumber": "93 230 340 687",
+        "firstName": "",
+        "lastName": "",
+        "email": "accounting@masonicnswact.com",
+        "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+        "city": "Sydney",
+        "postalCode": "2000",
+        "stateProvince": "NSW",
+        "country": "Australia"
+      },
+      "supplier": {
+        "name": "LodgeTix / Lodge Tickets",
+        "abn": "94 687 923 128",
+        "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+        "issuedBy": "Winding Stair Pty Limited (ACN: 687 923 128)"
+      },
+      "items": [
+        {
+          "description": "Processing Fees Reimbursement",
+          "quantity": 1,
+          "price": 29.47,
+          "total": 29.47,
+          "type": "other"
+        },
+        {
+          "description": "Software Utilization Fee",
+          "quantity": 1,
+          "price": 33.5,
+          "total": 33.5,
+          "type": "other"
+        }
+      ],
+      "subtotal": 62.97,
+      "processingFees": 0,
+      "gstIncluded": 5.72,
+      "totalBeforeGST": 62.97,
+      "total": 62.97,
+      "payment": {
+        "method": "Credit Card",
+        "transactionId": "7PRUEiqETLsQ2bnhNVAyl5fv4aYZY",
+        "paidDate": "2025-06-24T02:37:53.000Z",
+        "amount": 62.97,
+        "currency": "AUD",
+        "last4": "1911",
+        "cardBrand": "Visa",
+        "status": "pending",
+        "source": "square"
+      },
+      "status": "pending",
+      "notes": "Related to Customer Invoice: LTIV-2412-REAL008"
+    }
+  },
+  "summary": {
+    "paymentAmount": 1196.32,
+    "customerInvoiceTotal": 1196.32,
+    "supplierInvoiceTotal": 62.97,
+    "processingFees": 29.47,
+    "softwareUtilizationFee": 33.5
+  }
+}

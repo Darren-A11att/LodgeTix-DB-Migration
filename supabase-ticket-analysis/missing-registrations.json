@@ -1,0 +1,69 @@
+{
+  "summary": {
+    "totalSupabase": 40,
+    "totalMongoDB": 140,
+    "missingCount": 5
+  },
+  "missingRegistrations": [
+    {
+      "registrationId": "f1f1a28d-53c4-4be9-ab29-55fd70274920",
+      "createdAt": "2025-07-15T08:44:13.463666+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Maximino",
+        "lastName": "Totaan"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "bef7f1ce-8808-4683-8e9c-587a2f7ed29e",
+      "createdAt": "2025-07-15T04:18:40.946257+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Arthur",
+        "lastName": "Fleming"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "4d30d9b8-6757-46a2-ae0c-4b7f557a9dda",
+      "createdAt": "2025-07-14T11:16:21.12009+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Mark",
+        "lastName": "Whitehead"
+      },
+      "eventTitle": "",
+      "ticketCount": 1,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "9e6c1cbe-21c4-42c2-a988-b0d145829a45",
+      "createdAt": "2025-07-14T03:34:42.615193+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Arnel",
+        "lastName": "Landicho"
+      },
+      "eventTitle": "",
+      "ticketCount": 2,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "baebf858-40a8-4cf6-8035-d225ef296b1e",
+      "createdAt": "2025-07-12T14:31:15.595012+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "michel",
+        "lastName": "vigeant"
+      },
+      "eventTitle": "",
+      "ticketCount": 3,
+      "attendeeCount": 1
+    }
+  ]
+}

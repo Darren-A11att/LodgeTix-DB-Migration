@@ -1,0 +1,230 @@
+{
+  "testCase": "individual-04-registration-tickets",
+  "payment": {
+    "_id": "pay_004",
+    "paymentId": "pi_stripe_004",
+    "transactionId": "pi_stripe_004",
+    "amount": 774.825,
+    "grossAmount": 795,
+    "fees": 20.175,
+    "currency": "AUD",
+    "paymentMethod": "credit_card",
+    "paymentDate": "2025-07-14T04:38:33.540Z",
+    "customerEmail": "customer@email.com",
+    "cardLast4": "4242",
+    "cardBrand": "visa",
+    "status": "paid",
+    "source": "stripe",
+    "sourceFile": "Stripe - LodgeTix Darren Export.csv"
+  },
+  "registration": {
+    "_id": "reg004",
+    "confirmationNumber": "IND-2024-004",
+    "registrationType": "individuals",
+    "functionName": "Ladies Night 2025",
+    "registrationData": {
+      "attendees": [
+        {
+          "attendeeId": "att004a",
+          "firstName": "Margaret",
+          "lastName": "Wilson",
+          "lodgeNameNumber": "Harmony Lodge 123"
+        },
+        {
+          "attendeeId": "att004b",
+          "firstName": "Elizabeth",
+          "lastName": "Taylor",
+          "lodgeNameNumber": "Unity Lodge 999"
+        }
+      ],
+      "selectedTickets": [
+        {
+          "ownerType": "registration",
+          "name": "Table of 10",
+          "price": 750,
+          "quantity": 1
+        },
+        {
+          "attendeeId": "att004a",
+          "name": "Wine Package",
+          "price": 45,
+          "quantity": 1
+        }
+      ],
+      "bookingContact": {
+        "name": "Margaret Wilson",
+        "email": "margaret@harmonylodge.org",
+        "company": "Ladies Committee",
+        "address": "55 Queen Street, Brisbane QLD 4000"
+      }
+    }
+  },
+  "customerInvoice": {
+    "invoiceType": "customer",
+    "invoiceNumber": "LTIV-2412-TEST004",
+    "paymentId": "pay_004",
+    "registrationId": "reg004",
+    "date": "2025-07-14T04:38:33.540Z",
+    "dueDate": "2025-08-13T04:38:33.540Z",
+    "billTo": {
+      "businessName": "Ladies Committee",
+      "businessNumber": "",
+      "firstName": "Margaret",
+      "lastName": "Wilson",
+      "email": "margaret@harmonylodge.org",
+      "addressLine1": "55 Queen Street, Brisbane QLD 4000",
+      "addressLine2": "",
+      "city": "",
+      "postalCode": "",
+      "stateProvince": "NSW",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "United Grand Lodge of NSW & ACT",
+      "abn": "93 230 340 687",
+      "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "issuedBy": "LodgeTix as Agent"
+    },
+    "items": [
+      {
+        "description": "IND-2024-004 | Individuals for Ladies Night 2025",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "header"
+      },
+      {
+        "description": "Margaret Wilson | Harmony Lodge 123",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "attendee",
+        "subItems": [
+          {
+            "description": "  - Wine Package",
+            "quantity": 1,
+            "price": 45,
+            "total": 45,
+            "type": "ticket"
+          },
+          {
+            "description": "  - Table of 10",
+            "quantity": 1,
+            "price": 750,
+            "total": 750,
+            "type": "ticket"
+          }
+        ]
+      },
+      {
+        "description": "Elizabeth Taylor | Unity Lodge 999",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "attendee",
+        "subItems": []
+      },
+      {
+        "description": "Additional Tickets",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "header"
+      },
+      {
+        "description": "Table of 10",
+        "quantity": 1,
+        "price": 750,
+        "total": 750,
+        "type": "other"
+      }
+    ],
+    "subtotal": 1545,
+    "processingFees": 38.92,
+    "gstIncluded": 143.99,
+    "totalBeforeGST": 1583.92,
+    "total": 1583.92,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "pi_stripe_004",
+      "paidDate": "2025-07-14T04:38:33.540Z",
+      "amount": 795,
+      "currency": "AUD",
+      "last4": "4242",
+      "cardBrand": "Visa",
+      "status": "completed",
+      "source": "stripe"
+    },
+    "status": "paid",
+    "notes": ""
+  },
+  "supplierInvoice": {
+    "invoiceType": "supplier",
+    "invoiceNumber": "LTSP-2412-TEST004",
+    "paymentId": "pay_004",
+    "registrationId": "reg004",
+    "relatedInvoiceId": "LTIV-2412-TEST004",
+    "date": "2025-07-14T04:38:33.540Z",
+    "dueDate": "2025-08-13T04:38:33.540Z",
+    "billTo": {
+      "businessName": "United Grand Lodge of NSW & ACT",
+      "businessNumber": "93 230 340 687",
+      "firstName": "",
+      "lastName": "",
+      "email": "accounting@masonicnswact.com",
+      "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "city": "Sydney",
+      "postalCode": "2000",
+      "stateProvince": "NSW",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "LodgeTix",
+      "abn": "21 013 997 842",
+      "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+      "issuedBy": "Darren Allatt as Sole Trader"
+    },
+    "items": [
+      {
+        "description": "Processing Fees Reimbursement",
+        "quantity": 1,
+        "price": 38.92,
+        "total": 38.92,
+        "type": "other"
+      },
+      {
+        "description": "Software Utilization Fee",
+        "quantity": 1,
+        "price": 52.27,
+        "total": 52.27,
+        "type": "other"
+      }
+    ],
+    "subtotal": 91.19,
+    "processingFees": 0,
+    "gstIncluded": 8.29,
+    "totalBeforeGST": 91.19,
+    "total": 91.19,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "pi_stripe_004",
+      "paidDate": "2025-07-14T04:38:33.540Z",
+      "amount": 91.19,
+      "currency": "AUD",
+      "last4": "4242",
+      "cardBrand": "Visa",
+      "status": "pending",
+      "source": "stripe"
+    },
+    "status": "pending",
+    "notes": "Related to Customer Invoice: LTIV-2412-TEST004"
+  },
+  "summary": {
+    "registrationType": "individuals",
+    "paymentSource": "stripe",
+    "customerTotal": 1583.92,
+    "supplierTotal": 91.19,
+    "processingFees": 38.92,
+    "softwareUtilizationFee": 52.27
+  }
+}

@@ -7,6 +7,8 @@ export async function GET(
   const searchParams = request.nextUrl.searchParams;
   const limit = searchParams.get('limit') || '10';
   const offset = searchParams.get('offset') || '0';
+  const sortBy = searchParams.get('sortBy') || '';
+  const sortOrder = searchParams.get('sortOrder') || 'desc';
   
   try {
     // Await params as required in Next.js 15
@@ -15,8 +17,8 @@ export async function GET(
     // Get API port from environment
     const apiPort = process.env.API_PORT || '3006';
     
-    // Proxy to backend API
-    const apiUrl = `http://localhost:${apiPort}/api/collections/${name}/documents?limit=${limit}&offset=${offset}`;
+    // Proxy to backend API - Note: backend expects 'skip' not 'offset'
+    const apiUrl = `http://localhost:${apiPort}/api/collections/${name}/documents?limit=${limit}&skip=${offset}&sortBy=${sortBy}&sortOrder=${sortOrder}`;
     
     const response = await fetch(apiUrl, {
       method: 'GET',

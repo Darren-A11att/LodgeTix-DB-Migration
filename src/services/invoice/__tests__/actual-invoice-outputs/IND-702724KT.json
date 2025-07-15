@@ -1,0 +1,191 @@
+{
+  "testCase": {
+    "paymentId": "BrhCj6Bg8tBQE7msfhF9H0x2WKCZY",
+    "confirmationNumber": "IND-702724KT"
+  },
+  "csvData": {
+    "paymentRow": {
+      "Date": "2025-06-22",
+      "Time": "20:02:21",
+      "Gross Sales": "$21.47",
+      "Total Collected": "$21.47",
+      "Fees": "-$0.47",
+      "Net Total": "$21.00",
+      "Customer Name": "",
+      "Card Brand": "American Express",
+      "PAN Suffix": "1004"
+    },
+    "registrationRow": {
+      "registration_type": "individuals",
+      "primary_attendee": "Stoyan  Dimitrov",
+      "attendee_count": "1",
+      "total_amount_paid": "21.47"
+    }
+  },
+  "parsedData": {
+    "payment": {
+      "_id": "BrhCj6Bg8tBQE7msfhF9H0x2WKCZY",
+      "paymentId": "BrhCj6Bg8tBQE7msfhF9H0x2WKCZY",
+      "transactionId": "Xvuk93AinYSUM5dx0dQgIf2TksFZY",
+      "amount": 21,
+      "grossAmount": 21.47,
+      "fees": 0.47,
+      "currency": "AUD",
+      "paymentMethod": "credit_card",
+      "paymentDate": "2025-06-22T10:02:21.000Z",
+      "customerName": "Stoyan  Dimitrov",
+      "cardBrand": "American Express",
+      "cardLast4": "1004",
+      "status": "paid",
+      "source": "square",
+      "description": "https://app.squareup.com/dashboard/sales/transactions/BrhCj6Bg8tBQE7msfhF9H0x2WKCZY/by-unit/LQ4JE0GNCZ3NK"
+    },
+    "registration": {
+      "_id": "fe6e329c-3571-4935-b2c9-90fb9ee969cb",
+      "confirmationNumber": "IND-702724KT",
+      "registrationType": "individuals",
+      "attendeeCount": 1,
+      "ticketCount": 1
+    }
+  },
+  "generatedInvoices": {
+    "customer": {
+      "invoiceType": "customer",
+      "invoiceNumber": "LTIV-2412-REAL002",
+      "paymentId": "BrhCj6Bg8tBQE7msfhF9H0x2WKCZY",
+      "registrationId": "fe6e329c-3571-4935-b2c9-90fb9ee969cb",
+      "date": "2025-06-22T10:02:21.000Z",
+      "dueDate": "2025-07-22T10:02:21.000Z",
+      "billTo": {
+        "businessName": "",
+        "businessNumber": "",
+        "firstName": "Stoyan ",
+        "lastName": "Dimitrov",
+        "email": "stoyandimitrov80@yahoo.com",
+        "addressLine1": "80 Hume Lane ",
+        "addressLine2": "",
+        "city": "Unit 8",
+        "postalCode": "2065",
+        "stateProvince": "New South Wales",
+        "country": "AU"
+      },
+      "supplier": {
+        "name": "United Grand Lodge of NSW & ACT",
+        "abn": "93 230 340 687",
+        "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+        "issuedBy": "LodgeTix as Agent"
+      },
+      "items": [
+        {
+          "description": "IND-702724KT | Individuals for Grand Proclamation 2025",
+          "quantity": 0,
+          "price": 0,
+          "total": 0,
+          "type": "header"
+        },
+        {
+          "description": "W Bro Stoyan  Dimitrov | Lodge Ku-Ring-Gai No. 1033",
+          "quantity": 0,
+          "price": 0,
+          "total": 0,
+          "type": "attendee",
+          "subItems": [
+            {
+              "description": "  - Ticket",
+              "quantity": 1,
+              "price": 0,
+              "total": 0,
+              "type": "ticket"
+            }
+          ]
+        }
+      ],
+      "subtotal": 20.65,
+      "processingFees": 0.82,
+      "gstIncluded": 1.95,
+      "totalBeforeGST": 21.47,
+      "total": 21.47,
+      "payment": {
+        "method": "Credit Card",
+        "transactionId": "Xvuk93AinYSUM5dx0dQgIf2TksFZY",
+        "paidDate": "2025-06-22T10:02:21.000Z",
+        "amount": 21.47,
+        "currency": "AUD",
+        "last4": "1004",
+        "cardBrand": "American Express",
+        "status": "completed",
+        "source": "square"
+      },
+      "status": "paid",
+      "notes": ""
+    },
+    "supplier": {
+      "invoiceType": "supplier",
+      "invoiceNumber": "LTSP-2412-REAL002",
+      "paymentId": "BrhCj6Bg8tBQE7msfhF9H0x2WKCZY",
+      "registrationId": "fe6e329c-3571-4935-b2c9-90fb9ee969cb",
+      "relatedInvoiceId": "LTIV-2412-REAL002",
+      "date": "2025-06-22T10:02:21.000Z",
+      "dueDate": "2025-07-22T10:02:21.000Z",
+      "billTo": {
+        "businessName": "United Grand Lodge of NSW & ACT",
+        "businessNumber": "93 230 340 687",
+        "firstName": "",
+        "lastName": "",
+        "email": "accounting@masonicnswact.com",
+        "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+        "city": "Sydney",
+        "postalCode": "2000",
+        "stateProvince": "NSW",
+        "country": "Australia"
+      },
+      "supplier": {
+        "name": "LodgeTix / Lodge Tickets",
+        "abn": "94 687 923 128",
+        "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+        "issuedBy": "Winding Stair Pty Limited (ACN: 687 923 128)"
+      },
+      "items": [
+        {
+          "description": "Processing Fees Reimbursement",
+          "quantity": 1,
+          "price": 0.82,
+          "total": 0.82,
+          "type": "other"
+        },
+        {
+          "description": "Software Utilization Fee",
+          "quantity": 1,
+          "price": 0.6,
+          "total": 0.6,
+          "type": "other"
+        }
+      ],
+      "subtotal": 1.42,
+      "processingFees": 0,
+      "gstIncluded": 0.13,
+      "totalBeforeGST": 1.42,
+      "total": 1.42,
+      "payment": {
+        "method": "Credit Card",
+        "transactionId": "Xvuk93AinYSUM5dx0dQgIf2TksFZY",
+        "paidDate": "2025-06-22T10:02:21.000Z",
+        "amount": 1.42,
+        "currency": "AUD",
+        "last4": "1004",
+        "cardBrand": "American Express",
+        "status": "pending",
+        "source": "square"
+      },
+      "status": "pending",
+      "notes": "Related to Customer Invoice: LTIV-2412-REAL002"
+    }
+  },
+  "summary": {
+    "paymentAmount": 21.47,
+    "customerInvoiceTotal": 21.47,
+    "supplierInvoiceTotal": 1.42,
+    "processingFees": 0.82,
+    "softwareUtilizationFee": 0.6
+  }
+}

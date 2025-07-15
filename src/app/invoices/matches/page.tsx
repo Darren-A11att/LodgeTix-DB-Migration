@@ -344,7 +344,7 @@ export default function InvoiceMatchesPage() {
               paidDate: payment.timestamp,
               amount: getMonetaryValue(payment.amount) || getMonetaryValue(payment.grossAmount) || 0,
               currency: 'AUD',
-              status: 'completed',
+              status: payment.Status?.toLowerCase() || payment.status || 'completed',
               source: payment.source
             }
           };
@@ -416,7 +416,7 @@ export default function InvoiceMatchesPage() {
               paidDate: match.payment.timestamp,
               amount: getMonetaryValue(match.payment.amount) || 0,
               currency: 'AUD',
-              status: 'completed',
+              status: match.payment.Status?.toLowerCase() || match.payment.status || 'completed',
               source: match.payment.source
             }
           };
@@ -621,7 +621,7 @@ export default function InvoiceMatchesPage() {
             paidDate: manualMatchPayment.timestamp,
             amount: getMonetaryValue(manualMatchPayment.amount) || 0,
             currency: 'AUD',
-            status: 'completed',
+            status: manualMatchPayment.Status?.toLowerCase() || manualMatchPayment.status || 'completed',
             source: manualMatchPayment.source
           }
         };
@@ -772,7 +772,7 @@ export default function InvoiceMatchesPage() {
           paidDate: paymentToUse.timestamp,
           amount: getMonetaryValue(paymentToUse.amount) || 0,
           currency: 'AUD',
-          status: 'completed',
+          status: paymentToUse.Status?.toLowerCase() || paymentToUse.status || 'completed',
           source: paymentToUse.source
         }
       };
@@ -1543,7 +1543,7 @@ export default function InvoiceMatchesPage() {
                       paidDate: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
                       amount: getMonetaryValue(effectivePayment.amount) || 0,
                       currency: 'AUD',
-                      status: 'completed',
+                      status: effectivePayment.Status?.toLowerCase() || effectivePayment.status || 'completed',
                       source: effectivePayment.source || 'unknown'
                     }
                   };
@@ -1654,7 +1654,7 @@ export default function InvoiceMatchesPage() {
                     paidDate: effectivePayment.timestamp,
                     amount: effectivePayment.amount || 0,
                     currency: 'AUD',
-                    status: 'completed',
+                    status: effectivePayment.Status?.toLowerCase() || effectivePayment.status || 'completed',
                     source: effectivePayment.source
                   }
                 };
@@ -2592,6 +2592,8 @@ export default function InvoiceMatchesPage() {
                       }} 
                       className="h-full"
                       logoBase64={logoBase64}
+                      confirmationNumber={editableInvoice.invoiceNumber}
+                      functionName="Grand Proclamation 2025"
                     />
                   ) : (
                     <div className="p-8 text-gray-500">No invoice data available</div>
@@ -2842,22 +2844,44 @@ export default function InvoiceMatchesPage() {
                       }
                       
                       // Send email with customer invoice PDF if available (optional - will fail silently if not configured)
+                      console.log('📧 CHECK: customerPdfBlob exists?', !!customerPdfBlob);
+                      console.log('📧 CHECK: updatedCustomerInvoice exists?', !!updatedCustomerInvoice);
                       if (customerPdfBlob && updatedCustomerInvoice) {
                         try {
+                          console.log('📧 EMAIL SEND PROCESS STARTED');
+                          console.log('📧 effectiveRegistration:', effectiveRegistration);
+                          console.log('📧 effectiveRegistration?.functionId:', effectiveRegistration?.functionId);
+                          console.log('📧 effectiveRegistration?.functionName:', effectiveRegistration?.functionName);
+                          
                           let functionName = effectiveRegistration?.functionName;
+                          console.log('📧 Initial functionName from registration:', functionName);
                           
                           // Always fetch function name from functions collection when we have a functionId
                           // This ensures we get the correct name even if the registration has outdated data
                           if (effectiveRegistration?.functionId) {
+                            console.log('📧 Attempting to fetch function with ID:', effectiveRegistration.functionId);
                             try {
                               const functionDoc = await apiService.getFunctionById(effectiveRegistration.functionId);
+                              console.log('📧 Function API response:', functionDoc);
                               functionName = functionDoc.name;
+                              console.log('📧 Function name from API:', functionName);
                             } catch (error) {
-                              console.warn('Failed to fetch function name:', error);
+                              console.error('📧 ❌ Failed to fetch function:', error);
+                              console.error('📧 Error details:', {
+                                message: error.message,
+                                response: error.response?.data,
+                                status: error.response?.status
+                              });
                               // Fall back to registration's functionName if fetch fails
                               functionName = effectiveRegistration?.functionName;
+                              console.log('📧 Fallback functionName:', functionName);
                             }
+                          } else {
+                            console.log('📧 ⚠️ No functionId in registration - cannot fetch function name');
                           }
+                          
+                          console.log('📧 Final functionName to send:', functionName);
+                          console.log('📧 Invoice items:', updatedCustomerInvoice.items);
                           
                           const formData = new FormData();
                           formData.append('pdf', new File([customerPdfBlob], `${updatedCustomerInvoice.invoiceNumber}.pdf`, { type: 'application/pdf' }));
@@ -2866,6 +2890,9 @@ export default function InvoiceMatchesPage() {
                           formData.append('recipientName', `${updatedCustomerInvoice.billTo.firstName} ${updatedCustomerInvoice.billTo.lastName}`);
                           if (functionName) {
                             formData.append('functionName', functionName);
+                            console.log('📧 functionName added to FormData:', functionName);
+                          } else {
+                            console.log('📧 ⚠️ functionName is falsy, NOT adding to FormData');
                           }
                           
                           const emailResponse = await fetch('/api/invoices/email', {

@@ -1,0 +1,157 @@
+{
+  "testCase": "lodge-04-processed",
+  "confirmationNumber": "LDG-210679FX",
+  "payment": {
+    "_id": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+    "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+    "amount": 1196.32,
+    "grossAmount": 1196.32,
+    "currency": "AUD",
+    "paymentMethod": "credit_card",
+    "paymentDate": "2025-06-24T12:37:53.000Z",
+    "customerEmail": "joe@buildtec.net.au",
+    "customerName": "Unknown",
+    "status": "paid",
+    "source": "square"
+  },
+  "registration": {
+    "_id": "mock-lodge-004",
+    "confirmationNumber": "LDG-210679FX",
+    "registrationType": "lodge",
+    "functionName": "Grand Proclamation 2025",
+    "lodgeName": "Lodge 210679",
+    "customerEmail": "joe@buildtec.net.au",
+    "metadata": {
+      "billingDetails": {
+        "businessName": "Lodge 210679",
+        "emailAddress": "joe@buildtec.net.au"
+      }
+    },
+    "registrationData": {}
+  },
+  "customerInvoice": {
+    "invoiceType": "customer",
+    "invoiceNumber": "LTIV-2412-ACTUAL009",
+    "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+    "registrationId": "mock-lodge-004",
+    "date": "2025-06-24T12:37:53.000Z",
+    "dueDate": "2025-07-24T12:37:53.000Z",
+    "billTo": {
+      "businessName": "Lodge 210679",
+      "businessNumber": "",
+      "firstName": "",
+      "lastName": "",
+      "email": "joe@buildtec.net.au",
+      "addressLine1": "",
+      "addressLine2": "",
+      "city": "",
+      "postalCode": "",
+      "stateProvince": "",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "United Grand Lodge of NSW & ACT",
+      "abn": "93 230 340 687",
+      "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "issuedBy": "LodgeTix as Agent"
+    },
+    "items": [
+      {
+        "description": "LDG-210679FX | Lodge 210679 for Grand Proclamation 2025",
+        "quantity": 0,
+        "price": 0,
+        "total": 0,
+        "type": "header"
+      }
+    ],
+    "subtotal": 1166.85,
+    "processingFees": 29.47,
+    "gstIncluded": 108.76,
+    "totalBeforeGST": 1196.32,
+    "total": 1196.32,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+      "paidDate": "2025-06-24T12:37:53.000Z",
+      "amount": 1196.32,
+      "currency": "AUD",
+      "last4": "",
+      "cardBrand": "",
+      "status": "completed",
+      "source": "square"
+    },
+    "status": "paid",
+    "notes": ""
+  },
+  "supplierInvoice": {
+    "invoiceType": "supplier",
+    "invoiceNumber": "LTSP-2412-ACTUAL009",
+    "paymentId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+    "registrationId": "mock-lodge-004",
+    "relatedInvoiceId": "LTIV-2412-ACTUAL009",
+    "date": "2025-06-24T12:37:53.000Z",
+    "dueDate": "2025-07-24T12:37:53.000Z",
+    "billTo": {
+      "businessName": "United Grand Lodge of NSW & ACT",
+      "businessNumber": "93 230 340 687",
+      "firstName": "",
+      "lastName": "",
+      "email": "accounting@masonicnswact.com",
+      "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+      "city": "Sydney",
+      "postalCode": "2000",
+      "stateProvince": "NSW",
+      "country": "Australia"
+    },
+    "supplier": {
+      "name": "LodgeTix / Lodge Tickets",
+      "abn": "94 687 923 128",
+      "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+      "issuedBy": "Winding Stair Pty Limited (ACN: 687 923 128)"
+    },
+    "items": [
+      {
+        "description": "Processing Fees Reimbursement",
+        "quantity": 1,
+        "price": 29.47,
+        "total": 29.47,
+        "type": "other"
+      },
+      {
+        "description": "Software Utilization Fee",
+        "quantity": 1,
+        "price": 33.5,
+        "total": 33.5,
+        "type": "other"
+      }
+    ],
+    "subtotal": 62.97,
+    "processingFees": 0,
+    "gstIncluded": 5.72,
+    "totalBeforeGST": 62.97,
+    "total": 62.97,
+    "payment": {
+      "method": "Credit Card",
+      "transactionId": "vMYRIPaS9VU9lmsZZ7WPmH0WhkZZY",
+      "paidDate": "2025-06-24T12:37:53.000Z",
+      "amount": 62.97,
+      "currency": "AUD",
+      "last4": "",
+      "cardBrand": "",
+      "status": "pending",
+      "source": "square"
+    },
+    "status": "pending",
+    "notes": "Related to Customer Invoice: LTIV-2412-ACTUAL009"
+  },
+  "summary": {
+    "registrationType": "lodge",
+    "paymentSource": "square",
+    "customerTotal": 1196.32,
+    "supplierTotal": 62.97,
+    "processingFees": 29.47,
+    "softwareUtilizationFee": 33.5,
+    "paymentAmount": 1196.32,
+    "customerName": "Unknown"
+  }
+}

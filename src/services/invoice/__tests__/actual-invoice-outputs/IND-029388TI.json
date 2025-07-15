@@ -1,0 +1,221 @@
+{
+  "testCase": {
+    "paymentId": "5PrnY0XUftoHpNQlwZ290aFWuNIZY",
+    "confirmationNumber": "IND-029388TI"
+  },
+  "csvData": {
+    "paymentRow": {
+      "Date": "2025-06-22",
+      "Time": "17:22:17",
+      "Gross Sales": "$277.10",
+      "Total Collected": "$277.10",
+      "Fees": "-$6.10",
+      "Net Total": "$271.00",
+      "Customer Name": "",
+      "Card Brand": "Visa",
+      "PAN Suffix": "9894"
+    },
+    "registrationRow": {
+      "registration_type": "individuals",
+      "primary_attendee": "LUIS A REYES",
+      "attendee_count": "2",
+      "total_amount_paid": "277.1"
+    }
+  },
+  "parsedData": {
+    "payment": {
+      "_id": "5PrnY0XUftoHpNQlwZ290aFWuNIZY",
+      "paymentId": "5PrnY0XUftoHpNQlwZ290aFWuNIZY",
+      "transactionId": "br55qEb1O6PBBQXnOT5vMolYIgBZY",
+      "amount": 271,
+      "grossAmount": 277.1,
+      "fees": 6.1,
+      "currency": "AUD",
+      "paymentMethod": "credit_card",
+      "paymentDate": "2025-06-22T07:22:17.000Z",
+      "customerName": "LUIS A REYES",
+      "cardBrand": "Visa",
+      "cardLast4": "9894",
+      "status": "paid",
+      "source": "square",
+      "description": "https://app.squareup.com/dashboard/sales/transactions/5PrnY0XUftoHpNQlwZ290aFWuNIZY/by-unit/LQ4JE0GNCZ3NK"
+    },
+    "registration": {
+      "_id": "e8d27b17-9e6d-4682-86b4-ebdc5b44c7f7",
+      "confirmationNumber": "IND-029388TI",
+      "registrationType": "individuals",
+      "attendeeCount": 2,
+      "ticketCount": 4
+    }
+  },
+  "generatedInvoices": {
+    "customer": {
+      "invoiceType": "customer",
+      "invoiceNumber": "LTIV-2412-REAL001",
+      "paymentId": "5PrnY0XUftoHpNQlwZ290aFWuNIZY",
+      "registrationId": "e8d27b17-9e6d-4682-86b4-ebdc5b44c7f7",
+      "date": "2025-06-22T07:22:17.000Z",
+      "dueDate": "2025-07-22T07:22:17.000Z",
+      "billTo": {
+        "businessName": "",
+        "businessNumber": "",
+        "firstName": "LUIS",
+        "lastName": "A REYES",
+        "email": "luis.reyes9357@outlook.com",
+        "addressLine1": "118 Hillcrest Avenue",
+        "addressLine2": "",
+        "city": "Hurstville Grove",
+        "postalCode": "2220",
+        "stateProvince": "NSW",
+        "country": "Australia"
+      },
+      "supplier": {
+        "name": "United Grand Lodge of NSW & ACT",
+        "abn": "93 230 340 687",
+        "address": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+        "issuedBy": "LodgeTix as Agent"
+      },
+      "items": [
+        {
+          "description": "IND-029388TI | Individuals for Grand Proclamation 2025",
+          "quantity": 0,
+          "price": 0,
+          "total": 0,
+          "type": "header"
+        },
+        {
+          "description": "RW Bro Luis  Reyes  | Lodge Sir Joseph Banks No. 300",
+          "quantity": 0,
+          "price": 0,
+          "total": 0,
+          "type": "attendee",
+          "subItems": [
+            {
+              "description": "  - Ticket",
+              "quantity": 1,
+              "price": 0,
+              "total": 0,
+              "type": "ticket"
+            },
+            {
+              "description": "  - Ticket",
+              "quantity": 1,
+              "price": 0,
+              "total": 0,
+              "type": "ticket"
+            }
+          ]
+        },
+        {
+          "description": "Mrs Marilyn  Reyes ",
+          "quantity": 0,
+          "price": 0,
+          "total": 0,
+          "type": "attendee",
+          "subItems": [
+            {
+              "description": "  - Ticket",
+              "quantity": 1,
+              "price": 0,
+              "total": 0,
+              "type": "ticket"
+            },
+            {
+              "description": "  - Ticket",
+              "quantity": 1,
+              "price": 0,
+              "total": 0,
+              "type": "ticket"
+            }
+          ]
+        }
+      ],
+      "subtotal": 270.05,
+      "processingFees": 7.05,
+      "gstIncluded": 25.19,
+      "totalBeforeGST": 277.1,
+      "total": 277.1,
+      "payment": {
+        "method": "Credit Card",
+        "transactionId": "br55qEb1O6PBBQXnOT5vMolYIgBZY",
+        "paidDate": "2025-06-22T07:22:17.000Z",
+        "amount": 277.1,
+        "currency": "AUD",
+        "last4": "9894",
+        "cardBrand": "Visa",
+        "status": "completed",
+        "source": "square"
+      },
+      "status": "paid",
+      "notes": ""
+    },
+    "supplier": {
+      "invoiceType": "supplier",
+      "invoiceNumber": "LTSP-2412-REAL001",
+      "paymentId": "5PrnY0XUftoHpNQlwZ290aFWuNIZY",
+      "registrationId": "e8d27b17-9e6d-4682-86b4-ebdc5b44c7f7",
+      "relatedInvoiceId": "LTIV-2412-REAL001",
+      "date": "2025-06-22T07:22:17.000Z",
+      "dueDate": "2025-07-22T07:22:17.000Z",
+      "billTo": {
+        "businessName": "United Grand Lodge of NSW & ACT",
+        "businessNumber": "93 230 340 687",
+        "firstName": "",
+        "lastName": "",
+        "email": "accounting@masonicnswact.com",
+        "addressLine1": "Level 5, 279 Castlereagh St Sydney NSW 2000",
+        "city": "Sydney",
+        "postalCode": "2000",
+        "stateProvince": "NSW",
+        "country": "Australia"
+      },
+      "supplier": {
+        "name": "LodgeTix / Lodge Tickets",
+        "abn": "94 687 923 128",
+        "address": "110/54a Blackwall Point Rd, Chiswick NSW 2046",
+        "issuedBy": "Winding Stair Pty Limited (ACN: 687 923 128)"
+      },
+      "items": [
+        {
+          "description": "Processing Fees Reimbursement",
+          "quantity": 1,
+          "price": 7.05,
+          "total": 7.05,
+          "type": "other"
+        },
+        {
+          "description": "Software Utilization Fee",
+          "quantity": 1,
+          "price": 7.76,
+          "total": 7.76,
+          "type": "other"
+        }
+      ],
+      "subtotal": 14.81,
+      "processingFees": 0,
+      "gstIncluded": 1.35,
+      "totalBeforeGST": 14.81,
+      "total": 14.81,
+      "payment": {
+        "method": "Credit Card",
+        "transactionId": "br55qEb1O6PBBQXnOT5vMolYIgBZY",
+        "paidDate": "2025-06-22T07:22:17.000Z",
+        "amount": 14.81,
+        "currency": "AUD",
+        "last4": "9894",
+        "cardBrand": "Visa",
+        "status": "pending",
+        "source": "square"
+      },
+      "status": "pending",
+      "notes": "Related to Customer Invoice: LTIV-2412-REAL001"
+    }
+  },
+  "summary": {
+    "paymentAmount": 277.1,
+    "customerInvoiceTotal": 277.1,
+    "supplierInvoiceTotal": 14.81,
+    "processingFees": 7.05,
+    "softwareUtilizationFee": 7.76
+  }
+}

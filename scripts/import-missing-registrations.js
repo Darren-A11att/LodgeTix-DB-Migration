@@ -4,6 +4,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { MongoClient } = require('mongodb');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+const { roundToTwoDecimals } = require('./number-helpers');
 
 // Initialize Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -65,14 +66,14 @@ async function importMissingRegistrations() {
         organisationName: reg.organisation_name,
         organisationNumber: reg.organisation_number,
         attendeeCount: reg.attendee_count || 0,
-        totalAmountPaid: reg.total_amount_paid,
-        totalPricePaid: reg.total_price_paid,
+        totalAmountPaid: roundToTwoDecimals(reg.total_amount_paid),
+        totalPricePaid: roundToTwoDecimals(reg.total_price_paid),
         paymentStatus: reg.payment_status,
         stripePaymentIntentId: reg.stripe_payment_intent_id,
-        stripeFee: reg.stripe_fee,
+        stripeFee: roundToTwoDecimals(reg.stripe_fee),
         squarePaymentId: reg.square_payment_id,
-        squareFee: reg.square_fee,
-        platformFeeAmount: reg.platform_fee_amount,
+        squareFee: roundToTwoDecimals(reg.square_fee),
+        platformFeeAmount: roundToTwoDecimals(reg.platform_fee_amount),
         platformFeeId: reg.platform_fee_id,
         includesProcessingFee: reg.includes_processing_fee,
         agreeToTerms: reg.agree_to_terms,
