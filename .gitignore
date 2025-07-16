@@ -44,3 +44,11 @@ next-env.d.ts
 # Script outputs
 script-outputs/
 *.output.json
+
+# Data files with sensitive client information
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!jsconfig.json
+!*.config.json

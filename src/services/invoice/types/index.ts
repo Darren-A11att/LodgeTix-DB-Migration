@@ -14,9 +14,12 @@ export interface InvoiceItem {
 export interface InvoiceBillTo {
   businessName?: string;
   businessNumber?: string;
+  title?: string;
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
+  mobileNumber?: string;
   addressLine1?: string;
   addressLine2?: string;
   city?: string;
@@ -98,9 +101,12 @@ export interface LodgeInfo {
 export interface BillingDetails {
   businessName?: string;
   businessNumber?: string;
+  title?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
+  phone?: string;
+  mobileNumber?: string;
   addressLine1?: string;
   addressLine2?: string;
   city?: string;

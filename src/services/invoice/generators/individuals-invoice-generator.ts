@@ -133,9 +133,12 @@ export class IndividualsInvoiceGenerator extends BaseInvoiceGenerator {
     return {
       businessName: billingDetails.businessName,
       businessNumber: billingDetails.businessNumber,
+      title: billingDetails.title,
       firstName: billingDetails.firstName || 'Unknown',
       lastName: billingDetails.lastName || 'Customer',
       email: billingDetails.email || 'no-email@lodgetix.io',
+      phone: billingDetails.phone,
+      mobileNumber: billingDetails.mobileNumber,
       addressLine1: billingDetails.addressLine1,
       addressLine2: billingDetails.addressLine2,
       city: billingDetails.city,

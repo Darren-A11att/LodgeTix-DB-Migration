@@ -119,13 +119,14 @@ export function generateIndividualInvoice(
       businessNumber: bookingContact.businessNumber || '',
       firstName: bookingContact.firstName || '',
       lastName: bookingContact.lastName || '',
-      email: bookingContact.email || bookingContact.emailAddress || payment.customerEmail || '',
+      email: bookingContact.emailAddress || bookingContact.email || payment.customerEmail || '',
+      phone: bookingContact.phone || '',
       addressLine1: bookingContact.addressLine1 || bookingContact.address?.line1 || '',
       addressLine2: bookingContact.addressLine2 || bookingContact.address?.line2 || '',
       city: bookingContact.city || bookingContact.address?.city || '',
-      postalCode: bookingContact.postalCode || bookingContact.address?.postalCode || '',
+      postalCode: bookingContact.postcode || bookingContact.postalCode || bookingContact.address?.postalCode || '',
       stateProvince: bookingContact.stateProvince || bookingContact.address?.state || '',
-      country: bookingContact.country || bookingContact.address?.country || 'Australia'
+      country: (bookingContact.country === 'AU' ? 'Australia' : bookingContact.country) || bookingContact.address?.country || 'Australia'
     },
     
     supplier: {

@@ -29,7 +29,10 @@
     "fix-ticket-quantities": "ts-node --project tsconfig.scripts.json src/scripts/fix-ticket-quantity-expansion.ts",
     "fix-ticket-quantities-v2": "ts-node --project tsconfig.scripts.json src/scripts/fix-ticket-quantity-expansion-v2.ts",
     "analyze-no-tickets": "ts-node --project tsconfig.scripts.json src/scripts/analyze-registrations-without-tickets.ts",
-    "find-empty-registrations": "ts-node --project tsconfig.scripts.json src/scripts/find-truly-empty-registrations.ts"
+    "find-empty-registrations": "ts-node --project tsconfig.scripts.json src/scripts/find-truly-empty-registrations.ts",
+    "extract-registrations": "ts-node --project tsconfig.scripts.json scripts/extract-all-registrations.ts",
+    "analyze-schemas": "ts-node --project tsconfig.scripts.json scripts/analyze-registration-schemas.ts",
+    "generate-schema-report": "ts-node --project tsconfig.scripts.json scripts/generate-schema-report.ts"
   },
   "keywords": [],
   "author": "",
@@ -51,6 +54,7 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.6.0",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "mongodb": "^6.17.0",

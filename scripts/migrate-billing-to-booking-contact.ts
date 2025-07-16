@@ -1,236 +1,173 @@
-import { MongoClient, Db, UpdateResult } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
+// Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
-interface BillingDetails {
-  city?: string;
-  suburb?: string;
-  email?: string;
-  emailAddress?: string;
-  phone?: string;
-  mobileNumber?: string;
-  title?: string;
-  country?: string | { isoCode?: string };
-  lastName?: string;
-  firstName?: string;
-  postalCode?: string;
-  postcode?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  businessName?: string;
-  stateProvince?: string;
-  stateTerritory?: { name?: string };
-  businessNumber?: string;
-}
+const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_DB = process.env.MONGODB_DB || 'lodgetix-app';
 
-interface BookingContact {
-  city: string;
-  email: string;
-  phone: string;
-  title: string;
-  country: string;
-  lastName: string;
-  firstName: string;
-  postalCode: string;
-  addressLine1: string;
-  addressLine2: string;
-  businessName: string;
-  emailAddress: string;
-  mobileNumber: string;
-  stateProvince: string;
-  businessNumber: string;
-}
-
-interface RegistrationData {
-  billingDetails?: BillingDetails;
-  billing_details?: BillingDetails;
-  bookingContact?: BookingContact;
-  booking_contact?: BookingContact;
-}
-
-interface Registration {
-  _id: any;
-  confirmationNumber?: string;
-  confirmation_number?: string;
-  registrationData?: RegistrationData;
-  registration_data?: RegistrationData;
-  registrationType?: string;
-  registration_type?: string;
-}
-
-async function migrateBillingToBookingContact(): Promise<void> {
-  const uri = process.env.MONGODB_URI;
-  const dbName = process.env.MONGODB_DATABASE || 'LodgeTix-migration-test-1';
-  
-  if (!uri) {
-    throw new Error('MONGODB_URI environment variable is required');
-  }
-  
-  const client = await MongoClient.connect(uri);
-  const db: Db = client.db(dbName);
+async function migrateBillingToBookingContact() {
+  const client = new MongoClient(MONGODB_URI);
   
   try {
-    console.log('Migrating billingDetails to bookingContact for individual registrations...\n');
+    await client.connect();
+    console.log('Connected to MongoDB');
     
-    // Find individual registrations with billingDetails
-    const individualsWithBilling: Registration[] = await db.collection('registrations').find({
-      $and: [
-        {
-          $or: [
-            { registrationType: 'individuals' },
-            { registrationType: 'individual' },
-            { registration_type: 'individuals' },
-            { registration_type: 'individual' }
-          ]
-        },
-        {
-          $or: [
-            { 'registrationData.billingDetails': { $exists: true } },
-            { 'registration_data.billingDetails': { $exists: true } },
-            { 'registrationData.billing_details': { $exists: true } },
-            { 'registration_data.billing_details': { $exists: true } }
-          ]
-        }
-      ]
-    }).toArray();
+    const db = client.db(MONGODB_DB);
+    const registrationsCollection = db.collection('registrations');
     
-    console.log(`Found ${individualsWithBilling.length} individual registrations with billingDetails\n`);
+    // Read the normalized billingDetails data (now bookingContact)
+    const billingDetailsPath = path.join(__dirname, 'registrations-with-billing-details.json');
+    const billingDetailsData = JSON.parse(fs.readFileSync(billingDetailsPath, 'utf-8'));
+    
+    console.log(`\nProcessing ${billingDetailsData.count} lodge registrations with billingDetails...`);
     
     let successCount = 0;
-    let skipCount = 0;
+    let alreadyHasBookingContact = 0;
     let errorCount = 0;
+    const results = [];
     
-    for (const registration of individualsWithBilling) {
-      const confirmationNumber = registration.confirmationNumber || registration.confirmation_number;
-      const regData = registration.registrationData || registration.registration_data;
-      
-      // Get billingDetails from wherever it exists
-      const billingDetails = regData?.billingDetails || regData?.billing_details;
-      
-      if (!billingDetails) {
-        console.log(`${confirmationNumber}: No billingDetails found in registrationData - skipping`);
-        skipCount++;
-        continue;
-      }
-      
-      // Check if bookingContact already exists
-      const existingBookingContact = regData?.bookingContact || regData?.booking_contact;
-      
-      if (existingBookingContact && Object.keys(existingBookingContact).length > 0) {
-        console.log(`${confirmationNumber}: Already has bookingContact - skipping`);
-        skipCount++;
-        continue;
-      }
-      
-      console.log(`${confirmationNumber}: Migrating billingDetails to bookingContact`);
-      
-      // Create bookingContact from billingDetails
-      // Note: billingDetails might have slightly different field names, so we map them
-      const bookingContact: BookingContact = {
-        city: billingDetails.city || billingDetails.suburb || '',
-        email: billingDetails.email || billingDetails.emailAddress || '',
-        phone: billingDetails.phone || billingDetails.mobileNumber || '',
-        title: billingDetails.title || '',
-        country: billingDetails.country || 'AU',
-        lastName: billingDetails.lastName || '',
-        firstName: billingDetails.firstName || '',
-        postalCode: billingDetails.postalCode || billingDetails.postcode || '',
-        addressLine1: billingDetails.addressLine1 || '',
-        addressLine2: billingDetails.addressLine2 || '',
-        businessName: billingDetails.businessName || '',
-        emailAddress: billingDetails.emailAddress || billingDetails.email || '',
-        mobileNumber: billingDetails.mobileNumber || billingDetails.phone || '',
-        stateProvince: billingDetails.stateProvince || billingDetails.stateTerritory?.name || '',
-        businessNumber: billingDetails.businessNumber || ''
-      };
-      
-      // Handle special case where country might be an object
-      if (typeof billingDetails.country === 'object' && billingDetails.country?.isoCode) {
-        bookingContact.country = billingDetails.country.isoCode;
-      }
+    for (const reg of billingDetailsData.registrations) {
+      const registrationId = reg.registrationId;
+      const confirmationNumber = reg.confirmationNumber;
       
       try {
-        // Update the registration
-        const updateResult: UpdateResult = await db.collection('registrations').updateOne(
-          { _id: registration._id },
+        // First, check if this registration already has bookingContact
+        const existing = await registrationsCollection.findOne({
+          $or: [
+            { registrationId: registrationId },
+            { registration_id: registrationId }
+          ]
+        });
+        
+        if (!existing) {
+          console.log(`✗ Registration ${confirmationNumber} not found in database`);
+          errorCount++;
+          continue;
+        }
+        
+        // Check if it already has bookingContact
+        const hasBookingContact = !!(
+          existing.bookingContact || 
+          existing.booking_contact ||
+          existing.registrationData?.bookingContact ||
+          existing.registrationData?.booking_contact
+        );
+        
+        if (hasBookingContact) {
+          console.log(`⚠ ${confirmationNumber} already has bookingContact, skipping`);
+          alreadyHasBookingContact++;
+          continue;
+        }
+        
+        // Check if it has billingDetails
+        const hasBillingDetails = !!(
+          existing.registrationData?.billingDetails ||
+          existing.registrationData?.billing_details
+        );
+        
+        if (!hasBillingDetails) {
+          console.log(`⚠ ${confirmationNumber} does not have billingDetails in registrationData`);
+          errorCount++;
+          continue;
+        }
+        
+        // Add bookingContact to registrationData (using the normalized data from our file)
+        const bookingContact = reg.bookingContact;
+        
+        const result = await registrationsCollection.updateOne(
+          { _id: existing._id },
           {
             $set: {
               'registrationData.bookingContact': bookingContact
-            },
-            $unset: {
-              'registrationData.billingDetails': '',
-              'registrationData.billing_details': ''
             }
           }
         );
         
-        if (updateResult.modifiedCount > 0) {
+        if (result.modifiedCount > 0) {
           successCount++;
-          console.log(`  ✓ Successfully migrated`);
+          console.log(`✓ Added bookingContact to ${confirmationNumber}`);
+          console.log(`  Name: ${bookingContact.firstName} ${bookingContact.lastName}`);
+          console.log(`  Email: ${bookingContact.emailAddress}`);
+          console.log(`  Business: ${bookingContact.businessName}`);
+          
+          results.push({
+            registrationId,
+            confirmationNumber,
+            status: 'success',
+            bookingContact
+          });
         } else {
+          console.log(`⚠ No changes made for ${confirmationNumber}`);
           errorCount++;
-          console.log(`  ✗ Failed to update`);
         }
+        
       } catch (error) {
         errorCount++;
-        console.log(`  ✗ Error: ${(error as Error).message}`);
+        console.error(`✗ Error processing ${confirmationNumber}:`, error);
+        results.push({
+          registrationId,
+          confirmationNumber,
+          status: 'error',
+          error: error.message
+        });
       }
     }
     
-    console.log('\n=== MIGRATION SUMMARY ===');
-    console.log(`Total individual registrations with billingDetails: ${individualsWithBilling.length}`);
-    console.log(`Successfully migrated: ${successCount}`);
-    console.log(`Skipped: ${skipCount}`);
+    console.log('\n=== Migration Summary ===');
+    console.log(`Total registrations processed: ${billingDetailsData.count}`);
+    console.log(`Successfully added bookingContact: ${successCount}`);
+    console.log(`Already had bookingContact: ${alreadyHasBookingContact}`);
     console.log(`Errors: ${errorCount}`);
     
-    // Verify the migration
-    console.log('\n=== VERIFICATION ===');
-    const stillHaveBilling = await db.collection('registrations').countDocuments({
-      $and: [
-        {
-          $or: [
-            { registrationType: 'individuals' },
-            { registrationType: 'individual' }
-          ]
-        },
-        {
-          $or: [
-            { 'registrationData.billingDetails': { $exists: true } },
-            { 'registration_data.billingDetails': { $exists: true } }
-          ]
-        }
-      ]
-    });
+    // Save results to file for verification
+    const resultsPath = path.join(__dirname, 'billing-to-booking-migration-results.json');
+    fs.writeFileSync(resultsPath, JSON.stringify({
+      timestamp: new Date().toISOString(),
+      summary: {
+        total: billingDetailsData.count,
+        success: successCount,
+        alreadyHasBookingContact,
+        errors: errorCount
+      },
+      results
+    }, null, 2));
     
-    console.log(`Individual registrations still with billingDetails: ${stillHaveBilling}`);
+    console.log(`\nResults saved to: ${resultsPath}`);
     
-    // Show a sample of migrated data
+    // Verify the changes
     if (successCount > 0) {
-      console.log('\n=== SAMPLE MIGRATED REGISTRATION ===');
-      const sample = await db.collection('registrations').findOne({
-        $and: [
-          {
-            $or: [
-              { registrationType: 'individuals' },
-              { registrationType: 'individual' }
-            ]
-          },
-          { 'registrationData.bookingContact': { $exists: true } }
-        ]
-      });
+      console.log('\n=== Verification ===');
+      console.log('Checking that bookingContact was added correctly...');
       
-      if (sample) {
-        const regData = sample.registrationData || sample.registration_data;
-        console.log(`${sample.confirmationNumber || sample.confirmation_number}:`);
-        console.log('bookingContact:', JSON.stringify(regData.bookingContact, null, 2));
+      for (const result of results) {
+        if (result.status === 'success') {
+          const verification = await registrationsCollection.findOne({
+            $or: [
+              { registrationId: result.registrationId },
+              { registration_id: result.registrationId }
+            ]
+          });
+          
+          const hasBookingContact = !!verification?.registrationData?.bookingContact;
+          const hasBillingDetails = !!verification?.registrationData?.billingDetails;
+          
+          console.log(`${result.confirmationNumber}: bookingContact=${hasBookingContact}, billingDetails=${hasBillingDetails}`);
+        }
       }
+      
+      console.log('\n✅ bookingContact has been added. You can now run the removal script to delete billingDetails.');
     }
     
+  } catch (error) {
+    console.error('Error:', error);
   } finally {
     await client.close();
   }
 }
 
+// Run the script
 migrateBillingToBookingContact().catch(console.error);

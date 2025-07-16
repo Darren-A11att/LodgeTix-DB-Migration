@@ -142,7 +142,7 @@ export class LodgeInvoiceGenerator extends BaseInvoiceGenerator {
 
   /**
    * Extract billing information for lodge registration
-   * Lodge registrations prioritize metadata.billingDetails
+   * Lodge registrations prioritize metadata.billingDetails, then bookingContact
    */
   protected extractBillTo(options: InvoiceGeneratorOptions): InvoiceBillTo {
     const { registration } = options;
@@ -160,9 +160,12 @@ export class LodgeInvoiceGenerator extends BaseInvoiceGenerator {
     return {
       businessName: billingDetails.businessName,
       businessNumber: billingDetails.businessNumber,
+      title: billingDetails.title,
       firstName: billingDetails.firstName || '',
       lastName: billingDetails.lastName || '',
       email: billingDetails.email || 'no-email@lodgetix.io',
+      phone: billingDetails.phone,
+      mobileNumber: billingDetails.mobileNumber,
       addressLine1: shouldSkipAddress ? '' : addressLine1,
       addressLine2: billingDetails.addressLine2,
       city: billingDetails.city,

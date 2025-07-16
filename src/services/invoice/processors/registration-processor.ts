@@ -193,9 +193,12 @@ export class RegistrationProcessor {
     return {
       businessName: billingDetails.businessName || billingDetails.company || '',
       businessNumber: billingDetails.businessNumber || billingDetails.abn || '',
+      title: billingDetails.title || '',
       firstName: billingDetails.firstName || '',
       lastName: billingDetails.lastName || '',
       email: billingDetails.email || billingDetails.emailAddress || '',
+      phone: billingDetails.phone || billingDetails.phoneNumber || '',
+      mobileNumber: billingDetails.mobileNumber || billingDetails.mobile || '',
       addressLine1: billingDetails.addressLine1 || billingDetails.address || '',
       addressLine2: billingDetails.addressLine2 || '',
       city: billingDetails.city || '',
@@ -212,6 +215,7 @@ export class RegistrationProcessor {
     // Handle name splitting if needed
     let firstName = bookingContact.firstName || '';
     let lastName = bookingContact.lastName || '';
+    let title = bookingContact.title || '';
     
     if (!firstName && !lastName && bookingContact.name) {
       const nameParts = bookingContact.name.trim().split(' ');
@@ -222,9 +226,12 @@ export class RegistrationProcessor {
     return {
       businessName: bookingContact.businessName || bookingContact.company || bookingContact.organisation || '',
       businessNumber: bookingContact.businessNumber || bookingContact.abn || '',
+      title: title,
       firstName: firstName || 'Unknown',
       lastName: lastName || 'Customer',
       email: bookingContact.email || bookingContact.emailAddress || 'no-email@lodgetix.io',
+      phone: bookingContact.phone || bookingContact.phoneNumber || '',
+      mobileNumber: bookingContact.mobileNumber || bookingContact.mobile || '',
       addressLine1: bookingContact.addressLine1 || bookingContact.address?.line1 || bookingContact.address || '',
       addressLine2: bookingContact.addressLine2 || bookingContact.address?.line2 || '',
       city: bookingContact.city || bookingContact.address?.city || '',
@@ -255,10 +262,14 @@ export class RegistrationProcessor {
     return {
       businessName: '',
       businessNumber: '',
+      title: attendee.title || '',
       firstName: attendee.firstName || 'Unknown',
       lastName: attendee.lastName || 'Customer',
       email: attendee.email || registration.customerEmail || 'no-email@lodgetix.io',
+      phone: attendee.phone || attendee.phoneNumber || '',
+      mobileNumber: attendee.mobileNumber || attendee.mobile || '',
       addressLine1: attendee.address || attendee.addressLine1 || '',
+      addressLine2: attendee.addressLine2 || '',
       city: attendee.city || '',
       postalCode: attendee.postalCode || attendee.postcode || '',
       stateProvince: attendee.stateProvince || attendee.state || 'NSW',
@@ -283,10 +294,14 @@ export class RegistrationProcessor {
     return {
       businessName: registration.businessName || registration.organisation?.name || '',
       businessNumber: registration.businessNumber || registration.organisation?.abn || '',
+      title: '',
       firstName: firstName || 'Unknown',
       lastName: lastName || 'Customer',
       email: registration.customerEmail || 'no-email@lodgetix.io',
+      phone: registration.phone || registration.phoneNumber || '',
+      mobileNumber: registration.mobileNumber || registration.mobile || '',
       addressLine1: registration.addressLine1 || '',
+      addressLine2: registration.addressLine2 || '',
       city: registration.city || '',
       postalCode: registration.postalCode || '',
       stateProvince: registration.stateProvince || 'NSW',

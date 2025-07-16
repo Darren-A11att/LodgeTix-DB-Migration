@@ -207,23 +207,30 @@ export class InvoicePreviewGenerator {
     if (!firstName) firstName = 'Unknown';
     if (!lastName) lastName = 'Name';
 
+    // Map country code to full name
+    const country = bookingContact.country || 'AU';
+    const countryName = country === 'AU' ? 'Australia' : country;
+
     return {
       businessName: bookingContact.businessName || bookingContact.company || '',
       businessNumber: bookingContact.businessNumber || bookingContact.abn || '',
       firstName: firstName,
       lastName: lastName,
-      email: bookingContact.email || 
+      email: bookingContact.emailAddress || 
+             bookingContact.email || 
              primaryAttendee.email || 
              registration.customerEmail || 
              'no-email@lodgetix.io',
+      phone: bookingContact.phone || '',
       addressLine1: bookingContact.addressLine1 || 
                     bookingContact.address || 
                     primaryAttendee.address || 
                     'Address not provided',
+      addressLine2: bookingContact.addressLine2 || '',
       city: bookingContact.city || 'Sydney',
-      postalCode: bookingContact.postalCode || bookingContact.postcode || '2000',
+      postalCode: bookingContact.postcode || bookingContact.postalCode || '2000',
       stateProvince: bookingContact.stateProvince || bookingContact.state || 'NSW',
-      country: bookingContact.country || 'AU'
+      country: countryName
     };
   }
 

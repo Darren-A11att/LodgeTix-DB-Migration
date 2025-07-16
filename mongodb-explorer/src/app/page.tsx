@@ -230,6 +230,14 @@ export default function Home() {
           >
             🛠️ Tools & Scripts
           </Link>
+          <a
+            href="http://localhost:3005/reports"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            📈 Report Centre
+          </a>
         </div>
       </div>
 

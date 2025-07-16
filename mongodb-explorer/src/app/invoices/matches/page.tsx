@@ -388,21 +388,23 @@ export default function InvoiceMatchesPage() {
         paymentSource: effectivePayment.source || 'unknown'
       });
       
-      // Create billTo from metadata.billingDetails for lodge registrations
-      const billingDetails = effectiveRegistration.registrationData?.metadata?.billingDetails || {};
+      // Create billTo from bookingContact for lodge registrations
+      // First try metadata.billingDetails for backward compatibility, then bookingContact
+      const billingDetails = effectiveRegistration.registrationData?.metadata?.billingDetails || 
+                            effectiveRegistration.registrationData?.bookingContact || {};
       
-      // For lodge registrations, use billing details from metadata
+      // For lodge registrations, use billing details from metadata or bookingContact
       const billTo = {
         firstName: billingDetails.firstName || '',
         lastName: billingDetails.lastName || '',
         businessName: billingDetails.businessName || lodgeDisplay,
-        businessNumber: effectiveRegistration.registrationData?.lodgeABN || '',
-        addressLine1: '', // Hide addressLine1 for lodge invoices as it duplicates the business name
+        businessNumber: billingDetails.businessNumber || effectiveRegistration.registrationData?.lodgeABN || '',
+        addressLine1: billingDetails.addressLine1 || '',
         addressLine2: billingDetails.addressLine2 || '',
-        city: billingDetails.suburb || billingDetails.city || '',
+        city: billingDetails.city || billingDetails.suburb || '',
         postalCode: billingDetails.postcode || billingDetails.postalCode || '',
-        stateProvince: billingDetails.stateTerritory?.name || billingDetails.stateProvince || '',
-        country: billingDetails.country?.isoCode === 'AU' ? 'Australia' : (billingDetails.country?.name || billingDetails.country || 'Australia'),
+        stateProvince: billingDetails.stateProvince || billingDetails.stateTerritory?.name || '',
+        country: billingDetails.country === 'AU' ? 'Australia' : (billingDetails.country?.isoCode === 'AU' ? 'Australia' : (billingDetails.country?.name || billingDetails.country || 'Australia')),
         email: billingDetails.emailAddress || billingDetails.email || '',
         phone: billingDetails.phone || billingDetails.mobileNumber || ''
       };
