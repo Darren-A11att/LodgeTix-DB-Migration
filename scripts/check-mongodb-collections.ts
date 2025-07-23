@@ -1,57 +1,81 @@
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import * as dotenv from 'dotenv';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
 
-dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix';
+const DATABASE_NAME = process.env.DATABASE_NAME || 'LodgeTix';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DB_NAME = process.env.MONGODB_DB || 'lodgetix-reconcile';
-
-async function checkCollections() {
+async function checkMongoDBCollections() {
   const client = new MongoClient(MONGODB_URI);
   
   try {
     await client.connect();
     console.log('Connected to MongoDB');
-    console.log('Database:', DB_NAME);
+    console.log(`Database: ${DATABASE_NAME}`);
     
-    const db = client.db(DB_NAME);
+    const db = client.db(DATABASE_NAME);
     
     // List all collections
     const collections = await db.listCollections().toArray();
-    console.log('\nCollections in database:');
-    collections.forEach(col => {
-      console.log(`  - ${col.name}`);
-    });
     
-    // Check for registrations in different possible collection names
-    const possibleNames = ['registrations', 'Registrations', 'registration', 'Registration'];
+    console.log('\n=== Collections in Database ===');
+    console.log(`Total collections: ${collections.length}`);
+    console.log('─'.repeat(50));
     
-    for (const name of possibleNames) {
-      const count = await db.collection(name).countDocuments();
-      if (count > 0) {
-        console.log(`\nFound ${count} documents in collection: ${name}`);
+    for (const collection of collections) {
+      console.log(`\n📁 ${collection.name}`);
+      
+      // Get count of documents
+      const count = await db.collection(collection.name).countDocuments({});
+      console.log(`   Documents: ${count}`);
+      
+      // Check if it's related to Square
+      if (collection.name.toLowerCase().includes('square')) {
+        console.log('   ⚡ Square-related collection');
         
-        // Get a sample
-        const sample = await db.collection(name).findOne();
-        console.log('\nSample document structure:');
-        console.log('Top-level fields:', Object.keys(sample || {}));
-        
-        if (sample?.registrationData) {
-          console.log('registrationData fields:', Object.keys(sample.registrationData));
+        // Get a sample document
+        const sample = await db.collection(collection.name).findOne({});
+        if (sample) {
+          console.log('   Sample fields:', Object.keys(sample).slice(0, 10).join(', '));
         }
       }
+      
+      // Check for payments-related collections
+      if (collection.name.toLowerCase().includes('payment') || 
+          collection.name.toLowerCase().includes('transaction')) {
+        console.log('   💳 Payment/Transaction collection');
+        
+        // Get a sample document
+        const sample = await db.collection(collection.name).findOne({});
+        if (sample) {
+          console.log('   Sample fields:', Object.keys(sample).slice(0, 10).join(', '));
+        }
+      }
+    }
+    
+    // Check specifically for any collection that might contain Square data
+    console.log('\n=== Searching for Square Payment Data ===');
+    const squareRelatedCollections = collections.filter(c => 
+      c.name.toLowerCase().includes('square') || 
+      c.name.toLowerCase().includes('payment') ||
+      c.name.toLowerCase().includes('transaction')
+    );
+    
+    if (squareRelatedCollections.length > 0) {
+      console.log(`Found ${squareRelatedCollections.length} potentially related collections:`);
+      squareRelatedCollections.forEach(c => console.log(`- ${c.name}`));
+    } else {
+      console.log('No Square/payment related collections found');
     }
     
   } catch (error) {
     console.error('Error:', error);
   } finally {
     await client.close();
+    console.log('\nDisconnected from MongoDB');
   }
 }
 
-checkCollections();
+// Run the script
+checkMongoDBCollections().catch(console.error);

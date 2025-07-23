@@ -12,6 +12,7 @@ interface SelectedTicket {
   eventTicketId?: string;
   ticketDefinitionId?: string;
   quantity?: number;
+  name?: string;
 }
 
 interface TransformedTicket {

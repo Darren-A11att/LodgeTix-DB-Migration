@@ -723,6 +723,209 @@ app.get('/api/reconciliation', async (_req, res) => {
   }
 });
 
+// Get tickets report data
+app.get('/api/reports/tickets', async (_req, res) => {
+  try {
+    const { db } = await connectMongoDB();
+    const registrationsCollection = db.collection('registrations');
+    
+    // Find all registrations
+    const allRegistrations = await registrationsCollection.find({}).toArray();
+    
+    const ticketRows: any[] = [];
+    
+    // Process each registration
+    for (const registration of allRegistrations) {
+      const regData = registration.registrationData || {};
+      const tickets = regData.tickets || [];
+      
+      // Process each ticket in the registration
+      for (const ticket of tickets) {
+        // Determine the owner details based on ownerType
+        let ownerName = '';
+        let lodgeNameNumber = '';
+        let attendeeType = '';
+        let partnerOfName = '';
+        let attendee = null;
+        
+        if (ticket.ownerType === 'lodge') {
+          // For lodge tickets, use booking contact name as owner and businessName for lodge
+          if (regData.bookingContact) {
+            const bc = regData.bookingContact;
+            const nameParts = [];
+            if (bc.title) nameParts.push(bc.title);
+            if (bc.firstName) nameParts.push(bc.firstName);
+            if (bc.lastName) nameParts.push(bc.lastName);
+            ownerName = nameParts.join(' ').trim();
+            
+            // Use businessName from bookingContact for lodge name
+            lodgeNameNumber = bc.businessName || '';
+          } else {
+            ownerName = '';
+            lodgeNameNumber = '';
+          }
+          attendeeType = 'lodge';
+        } else if (ticket.ownerType === 'individual' || ticket.ownerType === 'attendee') {
+          // For individual tickets, look up the attendee details using ownerId
+          const ownerId = ticket.ownerId || ticket.attendeeId; // Support both field names
+          if (ownerId && regData.attendees) {
+            attendee = regData.attendees.find((a: any) => 
+              a.attendeeId === ownerId || a.id === ownerId
+            );
+            if (attendee) {
+              // Build full name with title and suffix
+              const nameParts = [];
+              if (attendee.title) nameParts.push(attendee.title);
+              if (attendee.firstName) nameParts.push(attendee.firstName);
+              if (attendee.lastName) nameParts.push(attendee.lastName);
+              if (attendee.suffix) nameParts.push(attendee.suffix);
+              ownerName = nameParts.join(' ').trim();
+              
+              // Get lodge info from attendee
+              lodgeNameNumber = attendee.lodgeNameNumber || '';
+              
+              // Determine attendee type and handle partner logic
+              if (attendee.attendeeType === 'mason') {
+                attendeeType = 'mason';
+              } else if (attendee.attendeeType === 'guest') {
+                // Check if this guest is a partner
+                if (attendee.isPartner || attendee.partnerOf) {
+                  attendeeType = 'partner';
+                  
+                  // Find the partner's details
+                  const partnerId = attendee.partnerOf || attendee.partner;
+                  if (partnerId && regData.attendees) {
+                    const partner = regData.attendees.find((a: any) => 
+                      a.attendeeId === partnerId || a.id === partnerId
+                    );
+                    if (partner) {
+                      // Build partner's full name
+                      const partnerNameParts = [];
+                      if (partner.title) partnerNameParts.push(partner.title);
+                      if (partner.firstName) partnerNameParts.push(partner.firstName);
+                      if (partner.lastName) partnerNameParts.push(partner.lastName);
+                      if (partner.suffix) partnerNameParts.push(partner.suffix);
+                      partnerOfName = partnerNameParts.join(' ').trim();
+                      
+                      // Inherit lodge info from partner if not already set
+                      if (!lodgeNameNumber && partner.lodgeNameNumber) {
+                        lodgeNameNumber = partner.lodgeNameNumber;
+                      }
+                    }
+                  }
+                } else {
+                  attendeeType = 'guest';
+                }
+              } else {
+                attendeeType = attendee.attendeeType || '';
+              }
+            }
+          }
+          // If no attendee found, try to use the booking contact
+          if (!ownerName && regData.bookingContact) {
+            const bc = regData.bookingContact;
+            const nameParts = [];
+            if (bc.title) nameParts.push(bc.title);
+            if (bc.firstName) nameParts.push(bc.firstName);
+            if (bc.lastName) nameParts.push(bc.lastName);
+            ownerName = nameParts.join(' ').trim();
+          }
+        }
+        
+        // Get payment status by looking up the payment
+        let paymentStatus = 'unknown';
+        const stripePaymentIntentId = registration.stripePaymentIntentId || regData.stripePaymentIntentId;
+        const squarePaymentId = registration.squarePaymentId || regData.square_payment_id;
+        
+        try {
+          const paymentsCollection = db.collection('payments');
+          let payment = null;
+          
+          // First try to match with Stripe payment intent ID
+          if (stripePaymentIntentId) {
+            payment = await paymentsCollection.findOne({
+              paymentId: stripePaymentIntentId
+            });
+          }
+          
+          // If no match, try with Square payment ID
+          if (!payment && squarePaymentId) {
+            payment = await paymentsCollection.findOne({
+              paymentId: squarePaymentId
+            });
+          }
+          
+          if (payment) {
+            paymentStatus = payment.status || 'unknown';
+            // Skip this ticket if the payment is refunded
+            if (paymentStatus === 'refunded') {
+              continue;
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to lookup payment status:', err);
+        }
+        
+        // Get invoice information
+        let invoiceNumber = '';
+        if (registration.invoiceNumber || registration.customerInvoiceNumber) {
+          invoiceNumber = registration.invoiceNumber || registration.customerInvoiceNumber;
+        } else if (registration.invoiceCreated && registration.invoiceId) {
+          // Try to look up the invoice
+          try {
+            const invoicesCollection = db.collection('invoices');
+            const invoice = await invoicesCollection.findOne({ _id: registration.invoiceId });
+            if (invoice) {
+              invoiceNumber = invoice.customerInvoice?.invoiceNumber || invoice.invoiceNumber || '';
+            }
+          } catch (err) {
+            console.warn('Failed to lookup invoice:', err);
+          }
+        }
+        
+        ticketRows.push({
+          ticketNumber: ticket.ticketNumber || ticket.ticketId || '',
+          name: ticket.name || ticket.ticketName || '',
+          quantity: ticket.quantity || 1,
+          price: ticket.price || 0,
+          ownerType: ticket.ownerType || '',
+          ownerName: ownerName,
+          attendeeType: attendeeType,
+          partnerOfName: partnerOfName,
+          lodgeNameNumber: lodgeNameNumber,
+          confirmationNumber: registration.confirmationNumber || '',
+          invoiceNumber: invoiceNumber,
+          paymentStatus: paymentStatus,
+          registrationId: registration._id,
+          registrationDate: registration.registrationDate || registration.createdAt
+        });
+      }
+    }
+    
+    // Sort by registration date (newest first)
+    ticketRows.sort((a, b) => {
+      const dateA = new Date(a.registrationDate || 0).getTime();
+      const dateB = new Date(b.registrationDate || 0).getTime();
+      return dateB - dateA;
+    });
+    
+    res.json({
+      tickets: ticketRows,
+      total: ticketRows.length,
+      summary: {
+        totalTickets: ticketRows.length,
+        lodgeTickets: ticketRows.filter(t => t.ownerType === 'lodge').length,
+        individualTickets: ticketRows.filter(t => t.ownerType === 'individual' || t.ownerType === 'attendee').length,
+        totalValue: ticketRows.reduce((sum, t) => sum + (t.price * t.quantity), 0)
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error fetching tickets report data:', error);
+    res.status(500).json({ error: 'Failed to fetch tickets report data' });
+  }
+});
+
 // Get proclamation banquet report data
 app.get('/api/reports/proclamation-banquet', async (_req, res) => {
   try {
@@ -1976,6 +2179,10 @@ app.get('/', (_req, res) => {
 
 app.get('/migration', (_req, res) => {
   res.sendFile(path.join(__dirname, '../public/migration.html'));
+});
+
+app.get('/reports', (_req, res) => {
+  res.sendFile(path.join(__dirname, '../public/reports.html'));
 });
 
 // Write port configuration to file for mongodb-explorer

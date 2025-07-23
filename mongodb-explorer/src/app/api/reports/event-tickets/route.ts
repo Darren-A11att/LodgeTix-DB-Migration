@@ -48,7 +48,8 @@ export async function GET(request: NextRequest) {
       ];
     }
     
-    const eventTickets = await db.collection('eventTickets').find(eventTicketsQuery).toArray();
+    // Use the view that dynamically computes counts from registrations
+    const eventTickets = await db.collection('eventTickets_computed').find(eventTicketsQuery).toArray();
     console.log(`Found ${eventTickets.length} event tickets`);
     
     // Build transaction query

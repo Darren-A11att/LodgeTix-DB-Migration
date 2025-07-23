@@ -15,6 +15,15 @@ interface Report {
 
 const reports: Report[] = [
   {
+    id: 'tickets',
+    title: 'Tickets Report',
+    description: 'View all tickets from registrations with owner details, lodge information, and invoice numbers. Export ticket data for analysis.',
+    icon: '🎫',
+    href: '/reports/tickets',
+    category: 'operational',
+    status: 'active'
+  },
+  {
     id: 'event-tickets',
     title: 'Event Tickets Sales Report',
     description: 'Comprehensive analysis of event ticket sales, revenue, attendee counts, and capacity utilization. Track performance across all events with detailed metrics.',
