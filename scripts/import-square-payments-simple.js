@@ -1,7 +1,21 @@
 const { MongoClient } = require('mongodb');
-const square = require('square');
+// Square SDK will be imported dynamically
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
+
+// Dynamic import for Square SDK (ESM module)
+async function getSquareClient(accessToken) {
+  try {
+    const { SquareClient, SquareEnvironment } = await import('square');
+    return new SquareClient({
+      token: accessToken,
+      environment: SquareEnvironment.Production
+    });
+  } catch (error) {
+    console.error('Failed to import Square SDK:', error.message);
+    throw error;
+  }
+}
 
 async function importSquarePayments() {
   const uri = process.env.MONGODB_URI;
@@ -16,11 +30,8 @@ async function importSquarePayments() {
   const mongoClient = await MongoClient.connect(uri);
   const db = mongoClient.db(dbName);
   
-  // Initialize Square client
-  const squareClient = new square.Client({
-    accessToken: squareAccessToken,
-    environment: square.Environment.Production
-  });
+  // Initialize Square client with dynamic import
+  const squareClient = await getSquareClient(squareAccessToken);
   
   try {
     console.log('=== SQUARE PAYMENT IMPORT ===\n');
@@ -59,31 +70,33 @@ async function importSquarePayments() {
     
     do {
       try {
-        // Fetch payments from Square
-        const response = await squareClient.paymentsApi.listPayments(
-          startDate.toISOString(),
-          endDate.toISOString(),
-          'DESC',
-          cursor,
-          undefined, // locationId
-          undefined, // total
-          undefined, // last4
-          undefined, // cardBrand
-          100        // limit
-        );
+        // Fetch payments from Square - v43 API uses async iterator
+        const response = await squareClient.payments.list({
+          beginTime: startDate.toISOString(),
+          endTime: endDate.toISOString(),
+          sortOrder: 'DESC',
+          cursor: cursor,
+          limit: 100
+        });
         
-        if (!response.result.payments || response.result.payments.length === 0) {
+        // Collect payments from async iterator
+        const payments = [];
+        for await (const payment of response) {
+          payments.push(payment);
+        }
+        
+        if (payments.length === 0) {
           console.log('No more payments to fetch');
           break;
         }
         
-        console.log(`Fetched ${response.result.payments.length} payments from API`);
-        totalFetched += response.result.payments.length;
+        console.log(`Fetched ${payments.length} payments from API`);
+        totalFetched += payments.length;
         
         // Process each payment
         const paymentsToInsert = [];
         
-        for (const payment of response.result.payments) {
+        for (const payment of payments) {
           // Skip if already exists
           if (existingPaymentIds.has(payment.id)) {
             totalSkipped++;
@@ -149,8 +162,14 @@ async function importSquarePayments() {
           console.log(`Imported ${result.insertedCount} new payments`);
         }
         
-        // Update cursor for next batch
-        cursor = response.result.cursor;
+        // Update cursor for next batch - with v43, pagination is handled by iterator
+        // If we got less than limit, we're done
+        if (payments.length < 100) {
+          cursor = undefined;
+        } else {
+          // For now, since SDK handles pagination internally, we'll stop after first page
+          cursor = undefined;
+        }
         
       } catch (error) {
         console.error('Error fetching payments:', error);

@@ -3,7 +3,7 @@
  * This is the primary interface for using the invoice generation system
  */
 
-import { InvoiceGeneratorFactory } from './invoice-generator-factory';
+import { NormalizedInvoiceGeneratorFactory } from './invoice-generator-factory-normalized';
 import { 
   Invoice, 
   PaymentData, 
@@ -30,7 +30,7 @@ export class InvoiceService {
     const { registration } = options;
     
     // Create appropriate generator based on registration type
-    const generator = InvoiceGeneratorFactory.createFromRegistration(registration);
+    const generator = NormalizedInvoiceGeneratorFactory.createFromRegistration(registration);
     
     // Generate the invoice
     const generatorOptions: InvoiceGeneratorOptions = {
@@ -52,7 +52,7 @@ export class InvoiceService {
     options: InvoiceServiceOptions
   ): Promise<Invoice> {
     // Create supplier invoice generator
-    const generator = InvoiceGeneratorFactory.createSupplierGenerator();
+    const generator = NormalizedInvoiceGeneratorFactory.createSupplierGenerator();
     
     // Generate the supplier invoice
     const generatorOptions: InvoiceGeneratorOptions = {
@@ -144,20 +144,20 @@ export class InvoiceService {
    * Get the registration type display name
    */
   static getRegistrationType(registration: RegistrationData): string {
-    return InvoiceGeneratorFactory.getRegistrationTypeDisplay(registration);
+    return NormalizedInvoiceGeneratorFactory.getRegistrationTypeDisplay(registration);
   }
 
   /**
    * Check if a registration is for individuals
    */
   static isIndividualsRegistration(registration: RegistrationData): boolean {
-    return InvoiceGeneratorFactory.isIndividualsRegistration(registration);
+    return NormalizedInvoiceGeneratorFactory.isIndividualsRegistration(registration);
   }
 
   /**
    * Check if a registration is for a lodge
    */
   static isLodgeRegistration(registration: RegistrationData): boolean {
-    return InvoiceGeneratorFactory.isLodgeRegistration(registration);
+    return NormalizedInvoiceGeneratorFactory.isLodgeRegistration(registration);
   }
 }

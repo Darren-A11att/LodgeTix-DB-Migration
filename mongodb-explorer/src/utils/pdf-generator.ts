@@ -1,5 +1,7 @@
+import { PDFEngineFactory } from './pdf-engines/pdf-engine-factory';
+
 /**
- * Generate a PDF from HTML content using server-side rendering
+ * Generate a PDF from HTML content using the configured engine
  * @param element - The DOM element to convert to PDF
  * @param filename - The filename for the PDF (without extension)
  * @returns Promise<Blob> - The PDF as a blob
@@ -9,56 +11,35 @@ export async function generatePDF(
   filename: string
 ): Promise<Blob> {
   try {
-    // Get the complete HTML including styles
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            ${Array.from(document.styleSheets)
-              .map(sheet => {
-                try {
-                  return Array.from(sheet.cssRules)
-                    .map(rule => rule.cssText)
-                    .join('\n');
-                } catch (e) {
-                  // Handle cross-origin stylesheets
-                  return '';
-                }
-              })
-              .join('\n')}
-          </style>
-        </head>
-        <body style="margin: 0; padding: 0; background: white;">
-          ${element.outerHTML}
-        </body>
-      </html>
-    `;
-
-    console.log('Sending PDF generation request for:', filename);
-    console.log('HTML content length:', html.length);
+    // Get the appropriate PDF engine
+    const engine = await PDFEngineFactory.getEngine();
     
-    // Send to server for PDF generation
-    const response = await fetch('/api/invoices/generate-pdf', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ html, filename }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      console.error('PDF generation failed:', response.status, errorData);
-      throw new Error(`Failed to generate PDF: ${errorData.error || response.statusText}`);
-    }
-
-    return await response.blob();
+    console.log(`Generating PDF using ${engine.name} engine for: ${filename}`);
+    
+    // Generate PDF using selected engine
+    const blob = await engine.generatePDF(element, filename);
+    
+    console.log(`Successfully generated PDF with ${engine.name}`);
+    return blob;
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF');
+    
+    // Try fallback engine if primary fails
+    const engines = await PDFEngineFactory.getAllEngines();
+    const currentEngine = await PDFEngineFactory.getEngine();
+    
+    for (const engine of engines) {
+      if (engine.name !== currentEngine.name && await engine.isAvailable()) {
+        console.log(`Retrying with ${engine.name} engine`);
+        try {
+          return await engine.generatePDF(element, filename);
+        } catch (fallbackError) {
+          console.error(`Fallback ${engine.name} also failed:`, fallbackError);
+        }
+      }
+    }
+    
+    throw new Error('All PDF generation engines failed');
   }
 }
 

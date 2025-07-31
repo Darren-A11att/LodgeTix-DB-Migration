@@ -19,6 +19,7 @@ import apiService from '@/lib/api';
 import { getSupplierInvoiceSupplier, DEFAULT_INVOICE_SUPPLIER } from '@/constants/invoice';
 import { loadLogoAsBase64 } from '@/utils/logo-base64';
 import { getMonetaryValue, formatMoney, roundToMoney } from '@/utils/monetary';
+import { useUnifiedInvoice } from '@/hooks/useUnifiedInvoice';
 
 interface MatchDetail {
   valueType: 'paymentId' | 'registrationId' | 'confirmationNumber' | 'email' | 'amount' | 'accountId' | 'name' | 'address' | 'timestamp' | 'manual';
@@ -98,6 +99,26 @@ export default function InvoiceMatchesPage() {
   // Invoice processing status states
   const [processedInvoices, setProcessedInvoices] = useState<any[]>([]);
   const [loadingInvoiceStatus, setLoadingInvoiceStatus] = useState(false);
+
+  // Unified invoice service hook
+  const { createInvoice: createUnifiedInvoice, loading: unifiedLoading } = useUnifiedInvoice({
+    onSuccess: (invoiceNumber, url) => {
+      alert(`Invoice created successfully! Invoice Number: ${invoiceNumber}`);
+      
+      // Move to next payment if not in single payment mode
+      if (!paymentId && currentIndex < total - 1) {
+        setCurrentIndex(currentIndex + 1);
+      } else if (!paymentId) {
+        alert('All payments processed!');
+      }
+      
+      // Refresh to show invoice details
+      fetchCurrentPayment();
+    },
+    onError: (error) => {
+      alert(`Failed to create invoice: ${error}`);
+    }
+  });
   
   // Field mapping states
   const [savedMappings, setSavedMappings] = useState<FieldMapping[]>([]);
@@ -1165,17 +1186,16 @@ export default function InvoiceMatchesPage() {
     try {
       console.log('Matching payment:', manualMatchPayment._id, 'to registration:', manualMatchRegistration._id);
       
-      const response = await fetch('/api/payments/match', {
-        method: 'POST',
+      const response = await fetch('/api/matches/unified', {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          paymentId: manualMatchPayment.paymentId || manualMatchPayment._id,
+          paymentId: manualMatchPayment._id,
           registrationId: manualMatchRegistration._id,
-          matchCriteria: matchCriteria,
-          matchedBy: 'manual',
-          matchedAt: new Date().toISOString()
+          confidence: 100,
+          method: 'manual'
         }),
       });
 
@@ -1396,103 +1416,30 @@ export default function InvoiceMatchesPage() {
 
   const handleApprove = async () => {
     const paymentToUse = selectedPayment || currentMatch?.payment;
-    if (!paymentToUse) return;
+    if (!paymentToUse?._id) {
+      alert('No payment selected');
+      return;
+    }
     
     try {
       setProcessing(true);
       
-      // Use selected registration if manually chosen, otherwise use the matched one
-      const registrationToUse = selectedRegistration || currentMatch?.registration;
-      
-      // Update the invoice with the correct registration details
-      // Check if billTo has the new format (with firstName/lastName) or old format (with name)
-      const hasNewBillToFormat = currentMatch!.invoice.billTo && 'firstName' in currentMatch!.invoice.billTo;
-      
-      const invoiceToCreate = {
-        ...currentMatch!.invoice,
-        paymentId: paymentToUse.paymentId?.toString() || paymentToUse._id?.toString(),
-        registrationId: registrationToUse?._id?.toString(),
-        // Only override billTo if it's using the old format
-        ...(hasNewBillToFormat ? {} : {
-          billTo: {
-            businessName: (registrationToUse?.businessName && registrationToUse?.businessName !== '-----') ? registrationToUse?.businessName : '',
-            businessNumber: (registrationToUse?.businessNumber && registrationToUse?.businessNumber !== '-----') ? registrationToUse?.businessNumber : '',
-            firstName: (() => {
-              const fullName = paymentToUse.customerName || registrationToUse?.customerName || registrationToUse?.primaryAttendee || 'Unknown Customer';
-              const nameParts = fullName.split(' ');
-              return nameParts[0] || 'Unknown';
-            })(),
-            lastName: (() => {
-              const fullName = paymentToUse.customerName || registrationToUse?.customerName || registrationToUse?.primaryAttendee || 'Unknown Customer';
-              const nameParts = fullName.split(' ');
-              return nameParts.slice(1).join(' ') || 'Customer';
-            })(),
-            email: paymentToUse.customerEmail || registrationToUse?.customerEmail || 'no-email@lodgetix.io',
-            addressLine1: registrationToUse?.addressLine1 || '',
-            city: registrationToUse?.city || '',
-            postalCode: registrationToUse?.postalCode || '',
-            stateProvince: registrationToUse?.stateProvince || '',
-            country: registrationToUse?.country || 'Australia'
-          }
-        }),
-        items: [
-          {
-            description: registrationToUse ? 
-              `Registration for ${registrationToUse.functionName || 'Event'} - Confirmation: ${registrationToUse.confirmationNumber}` :
-              'Payment - No registration linked',
-            quantity: 1,
-            price: getMonetaryValue(paymentToUse.amount) || 0,
-            total: getMonetaryValue(paymentToUse.amount) || 0
-          }
-        ],
-        subtotal: getMonetaryValue(paymentToUse.amount) || 0,
-        total: getMonetaryValue(paymentToUse.amount) || 0,
-        payment: {
-          method: 'credit_card',
-          transactionId: paymentToUse.transactionId,
-          paidDate: paymentToUse.timestamp,
-          amount: getMonetaryValue(paymentToUse.amount) || 0,
-          currency: 'AUD',
-          status: paymentToUse.Status?.toLowerCase() || paymentToUse.status || 'completed',
-          source: paymentToUse.source || 'unknown'
-        }
-      };
-      
-      // Create customer invoice
-      const customerResult = await apiService.createInvoice({
-        payment: paymentToUse,
-        registration: registrationToUse,
-        invoice: { ...invoiceToCreate, invoiceType: 'customer' }
-      });
-      
-      // Create supplier invoice if we have both customer and supplier data
-      if (customerInvoice && supplierInvoice) {
-        const supplierToCreate = {
-          ...supplierInvoice,
-          paymentId: paymentToUse.paymentId?.toString() || paymentToUse._id?.toString(),
-          registrationId: registrationToUse?._id?.toString(),
-          relatedInvoiceId: customerResult._id // Link to customer invoice
-        };
-        
-        const supplierResult = await apiService.createInvoice({
-          payment: paymentToUse,
-          registration: registrationToUse,
-          invoice: supplierToCreate
+      // If manual registration selected, update the payment's match first
+      if (selectedRegistration && selectedRegistration._id !== currentMatch?.registration?._id) {
+        await apiService.updateDocument('payments', paymentToUse._id, {
+          matchedRegistrationId: selectedRegistration._id,
+          matchedBy: 'manual',
+          matchConfidence: 100,
+          matchedAt: new Date()
         });
-        
-        alert(`Invoices created successfully!\nCustomer Invoice: ${customerResult.invoiceNumber}\nSupplier Invoice: ${supplierResult.invoiceNumber}`);
-      } else {
-        alert(`Invoice created successfully! Invoice Number: ${customerResult.invoiceNumber}`);
       }
       
-      // Move to next payment
-      if (currentIndex < total - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        alert('All payments processed!');
-      }
+      // Create invoice using unified service
+      await createUnifiedInvoice(paymentToUse._id, true); // true = send email
+      
     } catch (err) {
-      alert('Failed to create invoice: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      console.error('Error in handleApprove:', err);
+      alert('Failed to process: ' + (err instanceof Error ? err.message : 'Unknown error'));
     } finally {
       setProcessing(false);
     }
@@ -2510,10 +2457,10 @@ export default function InvoiceMatchesPage() {
       <div className="flex justify-center gap-4">
         <button
           onClick={handleApprove}
-          disabled={processing}
+          disabled={processing || unifiedLoading}
           className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 font-semibold"
         >
-          {processing ? 'Creating Invoice...' : 'Create Invoice'}
+          {(processing || unifiedLoading) ? 'Creating Invoice...' : 'Create Invoice'}
         </button>
         <button
           onClick={handleDecline}
@@ -3348,7 +3295,12 @@ export default function InvoiceMatchesPage() {
                   <button
                     onClick={async () => {
                       const invoiceWrapper = document.getElementById('invoice-preview');
-                      const invoiceElement = invoiceWrapper?.querySelector('.bg-white.p-8') as HTMLElement;
+                      // Try to find the invoice component's root div
+                      let invoiceElement = invoiceWrapper?.querySelector('div[style*="backgroundColor"]') as HTMLElement;
+                      if (!invoiceElement && invoiceWrapper) {
+                        // Fallback: get the first child div
+                        invoiceElement = invoiceWrapper.querySelector('div') as HTMLElement;
+                      }
                       if (invoiceElement) {
                         try {
                           // Wait a moment for any pending renders
@@ -3509,196 +3461,16 @@ export default function InvoiceMatchesPage() {
               <div className="flex gap-2">
                 <button
                   onClick={async () => {
+                    setIsCreatingInvoice(true);
                     try {
-                      setIsCreatingInvoice(true);
-                      
-                      // First, create the invoice in the database to get the actual invoice number
-                      const response = await fetch('/api/invoices/create', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          payment: effectivePayment,
-                          registration: effectiveRegistration,
-                          invoice: editableInvoice,
-                          customerInvoice: customerInvoice,
-                          supplierInvoice: supplierInvoice
-                        }),
-                      });
-                      
-                      const result = await response.json();
-                      
-                      if (!response.ok) {
-                        throw new Error(result.error || 'Failed to create invoice');
+                      const paymentToUse = selectedPayment || currentMatch?.payment;
+                      if (!paymentToUse?._id) {
+                        throw new Error('No payment selected');
                       }
                       
-                      // Update the invoice with the actual invoice numbers
-                      const customerInvoiceNumber = result.customerInvoiceNumber;
-                      const supplierInvoiceNumber = result.supplierInvoiceNumber;
-                      
-                      const updatedCustomerInvoice = customerInvoice ? {
-                        ...customerInvoice,
-                        invoiceNumber: customerInvoiceNumber
-                      } : null;
-                      const updatedSupplierInvoice = supplierInvoice ? {
-                        ...supplierInvoice,
-                        invoiceNumber: supplierInvoiceNumber
-                      } : null;
-                      
-                      // Update the state with actual invoice numbers
-                      if (updatedCustomerInvoice) {
-                        setCustomerInvoice(updatedCustomerInvoice);
-                      }
-                      
-                      // Save the current invoice type to restore later
-                      const originalInvoiceType = activeInvoiceType;
-                      
-                      // Make sure we start with customer invoice for PDF generation
-                      if (updatedCustomerInvoice) {
-                        setActiveInvoiceType('customer');
-                        setEditableInvoice(updatedCustomerInvoice);
-                      }
-                      
-                      // Wait for re-render with new invoice number and logo to load
-                      await new Promise(resolve => setTimeout(resolve, 500));
-                      
-                      // Import PDF generator
-                      const { generatePDF } = await import('@/utils/pdf-generator');
-                      
-                      // Generate PDFs for both customer and supplier invoices
-                      let customerPdfBlob: Blob | null = null;
-                      let supplierPdfBlob: Blob | null = null;
-                      
-                      // Generate customer PDF
-                      if (updatedCustomerInvoice) {
-                        const invoiceWrapper = document.getElementById('invoice-preview');
-                        const customerInvoiceElement = invoiceWrapper?.querySelector('.bg-white.p-8') as HTMLElement;
-                        if (customerInvoiceElement) {
-                          customerPdfBlob = await generatePDF(customerInvoiceElement, updatedCustomerInvoice.invoiceNumber);
-                          
-                          // Download customer PDF locally
-                          const customerUrl = URL.createObjectURL(customerPdfBlob);
-                          const customerLink = document.createElement('a');
-                          customerLink.href = customerUrl;
-                          customerLink.download = `${updatedCustomerInvoice.invoiceNumber}.pdf`;
-                          document.body.appendChild(customerLink);
-                          customerLink.click();
-                          document.body.removeChild(customerLink);
-                          URL.revokeObjectURL(customerUrl);
-                        }
-                      }
-                      
-                      // Generate supplier PDF if exists
-                      if (updatedSupplierInvoice) {
-                        // Temporarily switch to supplier invoice view
-                        setActiveInvoiceType('supplier');
-                        setEditableInvoice(updatedSupplierInvoice);
-                        
-                        // Wait for re-render
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                        
-                        const invoiceWrapper = document.getElementById('invoice-preview');
-                        const supplierInvoiceElement = invoiceWrapper?.querySelector('.bg-white.p-8') as HTMLElement;
-                        if (supplierInvoiceElement) {
-                          supplierPdfBlob = await generatePDF(supplierInvoiceElement, updatedSupplierInvoice.invoiceNumber);
-                          
-                          // Download supplier PDF locally
-                          const supplierUrl = URL.createObjectURL(supplierPdfBlob);
-                          const supplierLink = document.createElement('a');
-                          supplierLink.href = supplierUrl;
-                          supplierLink.download = `${updatedSupplierInvoice.invoiceNumber}.pdf`;
-                          document.body.appendChild(supplierLink);
-                          supplierLink.click();
-                          document.body.removeChild(supplierLink);
-                          URL.revokeObjectURL(supplierUrl);
-                        }
-                        
-                      }
-                      
-                      
-                      // Upload customer PDF to Supabase if available (optional - will fail silently if not configured)
-                      if (customerPdfBlob && updatedCustomerInvoice) {
-                        try {
-                          const formData = new FormData();
-                          formData.append('pdf', new File([customerPdfBlob], `${updatedCustomerInvoice.invoiceNumber}.pdf`, { type: 'application/pdf' }));
-                          formData.append('invoiceNumber', updatedCustomerInvoice.invoiceNumber);
-                          formData.append('invoiceType', 'customer');
-                          
-                          const uploadResponse = await fetch('/api/invoices/pdf', {
-                            method: 'POST',
-                            body: formData
-                          });
-                          
-                          if (!uploadResponse.ok) {
-                            console.warn('PDF upload to Supabase is not configured or failed - this is optional');
-                          } else {
-                            console.log('PDF uploaded to Supabase successfully');
-                          }
-                        } catch (error) {
-                          console.warn('PDF upload to Supabase is not configured - this is optional', error);
-                        }
-                      }
-                      
-                      // Send email with customer invoice PDF if available (optional - will fail silently if not configured)
-                      if (customerPdfBlob && updatedCustomerInvoice) {
-                        try {
-                          // Extract function name from the invoice items (first line item)
-                          let functionName = '';
-                          if (updatedCustomerInvoice?.items && updatedCustomerInvoice.items.length > 0) {
-                            const firstLineItem = updatedCustomerInvoice.items[0].description;
-                            // Extract function name from format: "CONF-123 | Individuals/Lodge for Function Name"
-                            const match = firstLineItem.match(/\| (?:Individuals|Lodge) for (.+)$/);
-                            if (match) {
-                              functionName = match[1];
-                            }
-                          }
-                          
-                          const formData = new FormData();
-                          formData.append('pdf', new File([customerPdfBlob], `${updatedCustomerInvoice.invoiceNumber}.pdf`, { type: 'application/pdf' }));
-                          formData.append('invoice', JSON.stringify(updatedCustomerInvoice));
-                          formData.append('recipientEmail', updatedCustomerInvoice.billTo.email);
-                          formData.append('recipientName', `${updatedCustomerInvoice.billTo.firstName} ${updatedCustomerInvoice.billTo.lastName}`);
-                          if (functionName) {
-                            formData.append('functionName', functionName);
-                          }
-                          
-                          const emailResponse = await fetch('/api/invoices/email', {
-                            method: 'POST',
-                            body: formData
-                          });
-                          
-                          if (!emailResponse.ok) {
-                            console.warn('Email service is not configured or failed - this is optional');
-                          } else {
-                            console.log('Invoice email sent successfully');
-                          }
-                        } catch (error) {
-                          console.warn('Email service is not configured - this is optional', error);
-                        }
-                      }
-                      
-                      // Restore the original invoice view
-                      if (originalInvoiceType === 'supplier' && updatedSupplierInvoice) {
-                        setActiveInvoiceType('supplier');
-                        setEditableInvoice(updatedSupplierInvoice);
-                      } else if (updatedCustomerInvoice) {
-                        setActiveInvoiceType('customer');
-                        setEditableInvoice(updatedCustomerInvoice);
-                      }
-                      
-                      // Show success message
-                      const invoiceNumbers = [];
-                      if (customerInvoiceNumber) invoiceNumbers.push(`Customer: ${customerInvoiceNumber}`);
-                      if (supplierInvoiceNumber) invoiceNumbers.push(`Supplier: ${supplierInvoiceNumber}`);
-                      
-                      alert(`Invoice created successfully!\n${invoiceNumbers.join('\n')}\n\nPDFs have been downloaded to your computer.`);
-                      
-                      // Close the modal
+                      // Create invoice without sending email since it's from preview
+                      await createUnifiedInvoice(paymentToUse._id, false);
                       setShowInvoicePreviewModal(false);
-                      setEditableInvoice(null);
-                      setFieldMappings({});
-                      
                     } catch (error: any) {
                       console.error('Error creating invoice:', error);
                       alert(`Failed to create invoice: ${error.message}`);

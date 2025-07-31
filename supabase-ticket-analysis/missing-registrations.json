@@ -1,68 +1,200 @@
 {
   "summary": {
-    "totalSupabase": 40,
-    "totalMongoDB": 140,
-    "missingCount": 5
+    "totalSupabase": 60,
+    "totalMongoDB": 193,
+    "missingCount": 16
   },
   "missingRegistrations": [
     {
-      "registrationId": "f1f1a28d-53c4-4be9-ab29-55fd70274920",
-      "createdAt": "2025-07-15T08:44:13.463666+00:00",
-      "registrationType": "individuals",
-      "bookingContact": {
-        "firstName": "Maximino",
-        "lastName": "Totaan"
-      },
-      "eventTitle": "",
-      "ticketCount": 0,
-      "attendeeCount": 2
-    },
-    {
-      "registrationId": "bef7f1ce-8808-4683-8e9c-587a2f7ed29e",
-      "createdAt": "2025-07-15T04:18:40.946257+00:00",
-      "registrationType": "individuals",
-      "bookingContact": {
-        "firstName": "Arthur",
-        "lastName": "Fleming"
-      },
-      "eventTitle": "",
-      "ticketCount": 0,
-      "attendeeCount": 2
-    },
-    {
-      "registrationId": "4d30d9b8-6757-46a2-ae0c-4b7f557a9dda",
-      "createdAt": "2025-07-14T11:16:21.12009+00:00",
-      "registrationType": "individuals",
-      "bookingContact": {
-        "firstName": "Mark",
-        "lastName": "Whitehead"
-      },
-      "eventTitle": "",
-      "ticketCount": 1,
-      "attendeeCount": 1
-    },
-    {
-      "registrationId": "9e6c1cbe-21c4-42c2-a988-b0d145829a45",
-      "createdAt": "2025-07-14T03:34:42.615193+00:00",
+      "registrationId": "6c513d98-b99d-44c9-8866-fb52a8b4e73a",
+      "createdAt": "2025-07-29T19:42:05.537322+00:00",
       "registrationType": "individuals",
       "bookingContact": {
         "firstName": "Arnel",
-        "lastName": "Landicho"
+        "lastName": "Pinili"
       },
       "eventTitle": "",
-      "ticketCount": 2,
+      "ticketCount": 0,
       "attendeeCount": 1
     },
     {
-      "registrationId": "baebf858-40a8-4cf6-8035-d225ef296b1e",
-      "createdAt": "2025-07-12T14:31:15.595012+00:00",
+      "registrationId": "f9455f8b-f5cf-473c-a4af-eda75d079b4c",
+      "createdAt": "2025-07-29T08:43:34.186937+00:00",
       "registrationType": "individuals",
       "bookingContact": {
-        "firstName": "michel",
-        "lastName": "vigeant"
+        "firstName": "Alan",
+        "lastName": "Gale"
       },
       "eventTitle": "",
-      "ticketCount": 3,
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "739b318b-e420-4f3f-84bd-85363b7dc646",
+      "createdAt": "2025-07-29T06:19:55.445291+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Reggie",
+        "lastName": "Acre"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "588503a7-9ddc-4194-9ebe-2f0cee5d333c",
+      "createdAt": "2025-07-29T05:04:43.64696+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Amanda",
+        "lastName": "Chappel"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "0e3cf4ae-30db-4b57-93d5-e921ffbb3b68",
+      "createdAt": "2025-07-29T03:00:42.466289+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Bruce ",
+        "lastName": "Sheldrick "
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "795ee269-5557-40eb-a630-a632d1b8b12c",
+      "createdAt": "2025-07-28T23:46:31.582264+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Gene",
+        "lastName": "Capistrano"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "dd28f520-702c-4b4c-8221-1e9b82cdbd13",
+      "createdAt": "2025-07-28T09:06:03.198746+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Robert",
+        "lastName": "O'Donnell"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "7e7be040-bea3-4dad-a315-f5801d481c9b",
+      "createdAt": "2025-07-28T08:46:06.663486+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Raoul",
+        "lastName": "Schmidt "
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "7dcedd29-aa28-4311-9189-72c2dd0df3c6",
+      "createdAt": "2025-07-28T08:09:27.925201+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Joseph",
+        "lastName": "Balasabas"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "139812d3-07bb-469e-ac68-d5bac4f4ff7f",
+      "createdAt": "2025-07-28T07:48:23.440707+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Emmanuel ",
+        "lastName": "Ico"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "79f02689-658e-46f3-b710-b9abfb594a2f",
+      "createdAt": "2025-07-28T05:20:14.913924+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Andre",
+        "lastName": "De Dios"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "9b78d16f-5de8-4a8c-aed4-d26ddf1868d0",
+      "createdAt": "2025-07-24T21:12:38.841446+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Dr Abraham",
+        "lastName": "Constantin"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "2e8f9f51-ec8d-48fc-bc6c-a9ad6bb3a0d5",
+      "createdAt": "2025-07-24T12:34:10.853415+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Cesar",
+        "lastName": "Pun Wong"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "450615ce-0686-45e9-951e-a45e2b131b77",
+      "createdAt": "2025-07-24T04:34:32.458814+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Paul",
+        "lastName": "Hamer"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 1
+    },
+    {
+      "registrationId": "dec89eb5-8a11-4f8b-b0ab-f814ee6958f8",
+      "createdAt": "2025-07-23T09:30:35.26288+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Emmanuel",
+        "lastName": "Maniago"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
+      "attendeeCount": 2
+    },
+    {
+      "registrationId": "69234d94-538f-449e-b357-74dc815baed7",
+      "createdAt": "2025-07-16T00:45:59.889009+00:00",
+      "registrationType": "individuals",
+      "bookingContact": {
+        "firstName": "Paul",
+        "lastName": "Hamer"
+      },
+      "eventTitle": "",
+      "ticketCount": 0,
       "attendeeCount": 1
     }
   ]

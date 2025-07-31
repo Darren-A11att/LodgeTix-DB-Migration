@@ -1,0 +1,111 @@
+/* Invoice PDF Optimization Styles */
+/* These styles ensure better rendering when converting to PDF with jsPDF */
+
+/* Ensure crisp text rendering */
+.invoice-pdf {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Force integer pixel values to avoid sub-pixel rendering issues */
+.invoice-pdf * {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Ensure consistent line heights */
+.invoice-pdf p,
+.invoice-pdf div,
+.invoice-pdf span,
+.invoice-pdf td,
+.invoice-pdf th {
+  line-height: 1.5;
+}
+
+/* Table optimizations for PDF */
+.invoice-pdf table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.invoice-pdf td,
+.invoice-pdf th {
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Ensure borders render properly */
+.invoice-pdf .border,
+.invoice-pdf .border-t,
+.invoice-pdf .border-b,
+.invoice-pdf .border-l,
+.invoice-pdf .border-r {
+  border-style: solid;
+}
+
+/* Fix for blurry images */
+.invoice-pdf img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Ensure proper page breaks for multi-page invoices */
+@media print {
+  .invoice-pdf {
+    page-break-inside: avoid;
+  }
+  
+  .invoice-pdf .page-break {
+    page-break-after: always;
+  }
+}
+
+/* High contrast for better readability */
+.invoice-pdf {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+.invoice-pdf .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.invoice-pdf .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+.invoice-pdf .bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+/* Ensure fixed widths for consistent layout */
+.invoice-pdf .w-full {
+  width: 100% !important;
+}
+
+/* Font size adjustments for PDF clarity */
+.invoice-pdf .text-xs {
+  font-size: 11px !important;
+}
+
+.invoice-pdf .text-sm {
+  font-size: 13px !important;
+}
+
+.invoice-pdf .text-base {
+  font-size: 15px !important;
+}
+
+.invoice-pdf .text-lg {
+  font-size: 17px !important;
+}
+
+.invoice-pdf .text-xl {
+  font-size: 19px !important;
+}
+
+.invoice-pdf .text-2xl {
+  font-size: 23px !important;
+}

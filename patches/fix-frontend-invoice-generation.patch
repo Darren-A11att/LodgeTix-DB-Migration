@@ -1,0 +1,71 @@
+--- a/mongodb-explorer/src/app/invoices/matches/page.tsx
++++ b/mongodb-explorer/src/app/invoices/matches/page.tsx
+@@ -219,51 +219,30 @@
+ 
+   // Generate custom individuals/lodge invoice for JSON preview
+   useEffect(() => {
+-    const generateCustomInvoiceForPreview = async () => {
++    const useBackendInvoiceForPreview = async () => {
+       const effectiveRegistration = selectedRegistration || currentMatch?.registration;
+       const effectivePayment = selectedPayment || currentMatch?.payment;
++      const backendInvoice = currentMatch?.invoice;
+       
+-      if (effectiveRegistration && effectivePayment && 
+-          (effectiveRegistration.registrationType === 'individuals' || effectiveRegistration.registrationType === 'lodge')) {
++      // Use the invoice preview from the backend if available
++      if (backendInvoice && effectiveRegistration && effectivePayment) {
+         try {
+-          // Create a base invoice structure similar to the button handler
+-          const invoiceNumbers = await generateInvoiceNumbers(new Date(effectivePayment.timestamp || effectivePayment.createdAt || new Date()));
+-          const baseInvoice = {
+-            customerInvoiceNumber: invoiceNumbers.customerInvoiceNumber,
+-            supplierInvoiceNumber: invoiceNumbers.supplierInvoiceNumber,
+-            paymentId: effectivePayment.paymentId || effectivePayment._id,
+-            registrationId: effectiveRegistration._id,
+-            // Additional base properties that might be needed
+-            date: effectivePayment.timestamp || effectivePayment.createdAt || new Date().toISOString(),
+-            status: 'paid'
+-          };
++          // Use the backend-generated invoice which already has properly fetched attendee names and ticket details
++          const customerInvoiceData = {
++            ...backendInvoice,
++            invoiceType: 'customer' as const
++          };
+           
+-          let customInvoice;
+-          if (effectiveRegistration.registrationType === 'individuals') {
+-            customInvoice = await generateCustomIndividualsInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+-          } else if (effectiveRegistration.registrationType === 'lodge') {
+-            customInvoice = await generateCustomLodgeInvoice(effectiveRegistration, effectivePayment, baseInvoice);
+-          }
++          setCustomerInvoice(customerInvoiceData);
+           
+-          if (customInvoice) {
+-            setCustomerInvoice(customInvoice);
+-            
+-            // Generate supplier invoice from customer invoice
+-            const supplierInvoiceData = transformToSupplierInvoice(customInvoice, effectivePayment, effectiveRegistration);
+-            setSupplierInvoice(supplierInvoiceData);
+-            
+-            console.log('🔄 Auto-generated invoice for JSON preview:', {
+-              registrationId: effectiveRegistration._id,
+-              confirmationNumber: effectiveRegistration.confirmationNumber,
+-              registrationType: effectiveRegistration.registrationType
+-            });
+-          }
++          // Generate supplier invoice from customer invoice
++          const supplierInvoiceData = transformToSupplierInvoice(customerInvoiceData, effectivePayment, effectiveRegistration);
++          setSupplierInvoice(supplierInvoiceData);
++          
++          console.log('✅ Using backend invoice preview with normalized data');
+         } catch (error) {
+-          console.error('❌ Error auto-generating invoice for JSON preview:', error);
+-          // Fall back to default behavior if custom generation fails
++          console.error('❌ Error using backend invoice:', error);
+         }
+       }
+     };
+     
+-    generateCustomInvoiceForPreview();
++    useBackendInvoiceForPreview();
+   }, [selectedRegistration, selectedPayment, currentMatch]);

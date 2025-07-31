@@ -10,17 +10,89 @@ interface InvoiceComponentProps {
 }
 
 const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className = '', logoBase64, confirmationNumber, functionName }) => {
-  // RGB color styles for PDF compatibility
+  // RGB color styles for PDF compatibility - avoiding oklch colors entirely
   const styles = {
-    text: { color: '#000000' },
-    textGray600: { color: '#4b5563' },
-    textGray500: { color: '#6b7280' },
-    textGray700: { color: '#374151' },
-    textBlue600: { color: '#2563eb' },
-    bgGray50: { backgroundColor: '#f9fafb' },
-    bgGray100: { backgroundColor: '#f3f4f6' },
-    borderGray300: { borderColor: '#d1d5db' },
-    borderGray200: { borderColor: '#e5e7eb' }
+    // Text colors
+    text: { color: 'rgb(0, 0, 0)' },
+    textGray500: { color: 'rgb(107, 114, 128)' },
+    textGray600: { color: 'rgb(75, 85, 99)' },
+    textGray700: { color: 'rgb(55, 65, 81)' },
+    textBlue600: { color: 'rgb(37, 99, 235)' },
+    textGreen600: { color: 'rgb(22, 163, 74)' },
+    textYellow600: { color: 'rgb(202, 138, 4)' },
+    textRed600: { color: 'rgb(220, 38, 38)' },
+    
+    // Background colors
+    bgWhite: { backgroundColor: 'rgb(255, 255, 255)' },
+    bgGray50: { backgroundColor: 'rgb(249, 250, 251)' },
+    bgGray100: { backgroundColor: 'rgb(243, 244, 246)' },
+    
+    // Border colors
+    borderGray200: { borderColor: 'rgb(229, 231, 235)' },
+    borderGray300: { borderColor: 'rgb(209, 213, 219)' },
+    
+    // Typography - Adjusted for PDF
+    text2xl: { fontSize: '1.25rem', fontWeight: '700' },
+    textBase: { fontSize: '0.875rem', fontWeight: '600' },
+    textSm: { fontSize: '0.8125rem' },
+    textXs: { fontSize: '0.75rem' },
+    fontBold: { fontWeight: '700' },
+    fontSemibold: { fontWeight: '600' },
+    fontMedium: { fontWeight: '500' },
+    
+    // Spacing - Reduced for PDF
+    mb1: { marginBottom: '0.125rem' },
+    mb2: { marginBottom: '0.25rem' },
+    mb3: { marginBottom: '0.5rem' },
+    mb6: { marginBottom: '1rem' },
+    mt1: { marginTop: '0.125rem' },
+    mt2: { marginTop: '0.25rem' },
+    mt6: { marginTop: '1rem' },
+    mt8: { marginTop: '1.5rem' },
+    p2: { padding: '0.25rem' },
+    p8: { padding: '1.5rem' },
+    py1: { paddingTop: '0.125rem', paddingBottom: '0.125rem' },
+    py2: { paddingTop: '0.25rem', paddingBottom: '0.25rem' },
+    pt4: { paddingTop: '0.75rem' },
+    pt6: { paddingTop: '1rem' },
+    pb3: { paddingBottom: '0.5rem' },
+    pl4: { paddingLeft: '0.75rem' },
+    
+    // Layout
+    flex: { display: 'flex' },
+    flexBetween: { display: 'flex', justifyContent: 'space-between' },
+    flexEnd: { display: 'flex', justifyContent: 'flex-end' },
+    flexWrap: { display: 'flex', flexWrap: 'wrap' },
+    grid: { display: 'grid' },
+    gridCols2: { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' },
+    gap6: { gap: '1.5rem' },
+    gapX6: { columnGap: '1.5rem' },
+    gapY1: { rowGap: '0.25rem' },
+    
+    // Width
+    wFull: { width: '100%' },
+    w12: { width: '3rem' },
+    w20: { width: '5rem' },
+    w48: { width: '12rem' },
+    
+    // Borders
+    borderB: { borderBottomWidth: '1px', borderBottomStyle: 'solid' },
+    borderT: { borderTopWidth: '1px', borderTopStyle: 'solid' },
+    borderT2: { borderTopWidth: '2px', borderTopStyle: 'solid' },
+    
+    // Other
+    rounded: { borderRadius: '0.375rem' },
+    underline: { textDecoration: 'underline' },
+    fontMono: { fontFamily: 'monospace' },
+    textRight: { textAlign: 'right' as const },
+    textLeft: { textAlign: 'left' as const },
+    itemsStart: { alignItems: 'flex-start' },
+    itemsCenter: { alignItems: 'center' }
+  };
+
+  // Helper function to combine multiple style objects
+  const combineStyles = (...styleObjects: any[]) => {
+    return Object.assign({}, ...styleObjects);
   };
 
   const formatDate = (date: Date) => {
@@ -78,10 +150,10 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
   };
 
   return (
-    <div className={`bg-white p-8 ${className}`} style={{ backgroundColor: '#ffffff' }}>
+    <div style={combineStyles(styles.bgWhite, styles.p8, { lineHeight: '1.3', fontSize: '0.875rem' })}>
       {/* Header with Logo */}
-      <div className="flex justify-between items-start mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: '#000000' }}>Tax Invoice</h1>
+      <div style={combineStyles(styles.flexBetween, styles.itemsStart, styles.mb6)}>
+        <h1 style={combineStyles(styles.text2xl, styles.text)}>Tax Invoice</h1>
         {invoice.invoiceType === 'customer' && (
           <img 
             src={logoBase64 || "/images/lodgetix-logo.svg"} 
@@ -92,34 +164,34 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
       </div>
 
       {/* Bill To and Supplier Section */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div style={combineStyles(styles.gridCols2, styles.gap6, styles.mb6)}>
         {/* Bill To Section (Customer - Left Side) */}
         <div>
-          <h2 className="text-base font-semibold mb-1" style={{ color: '#000000' }}>Bill To:</h2>
+          <h2 style={combineStyles(styles.textBase, styles.mb1, styles.text)}>Bill To:</h2>
           {invoice.billTo.businessName && (
             <>
-              <p className="text-sm font-medium">{invoice.billTo.businessName}</p>
+              <p style={combineStyles(styles.textSm, styles.fontMedium)}>{invoice.billTo.businessName}</p>
               {invoice.billTo.businessNumber && (
-                <p className="text-xs text-gray-600" style={styles.textGray600}>ABN: {invoice.billTo.businessNumber}</p>
+                <p style={combineStyles(styles.textXs, styles.textGray600)}>ABN: {invoice.billTo.businessNumber}</p>
               )}
             </>
           )}
           {(invoice.billTo.firstName || invoice.billTo.lastName) && (
-            <p className="text-sm font-medium">{invoice.billTo.firstName} {invoice.billTo.lastName}</p>
+            <p style={combineStyles(styles.textSm, styles.fontMedium)}>{invoice.billTo.firstName} {invoice.billTo.lastName}</p>
           )}
           {invoice.billTo.email && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>{invoice.billTo.email}</p>
+            <p style={combineStyles(styles.textXs, styles.textGray600)}>{invoice.billTo.email}</p>
           )}
           {invoice.billTo.addressLine1 && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>{invoice.billTo.addressLine1}</p>
+            <p style={combineStyles(styles.textXs, styles.textGray600)}>{invoice.billTo.addressLine1}</p>
           )}
           {(invoice.billTo.city || invoice.billTo.postalCode) && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>
+            <p style={combineStyles(styles.textXs, styles.textGray600)}>
               {invoice.billTo.city} {invoice.billTo.postalCode}
             </p>
           )}
           {(invoice.billTo.stateProvince || invoice.billTo.country) && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>
+            <p style={combineStyles(styles.textXs, styles.textGray600)}>
               {invoice.billTo.stateProvince}{invoice.billTo.stateProvince && invoice.billTo.country && ', '}{invoice.billTo.country}
             </p>
           )}
@@ -127,50 +199,50 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
 
         {/* Supplier Section (Right Side) */}
         <div>
-          <h2 className="text-base font-semibold mb-1" style={styles.text}>From:</h2>
+          <h2 style={combineStyles(styles.textBase, styles.mb1, styles.text)}>From:</h2>
           {invoice.supplier.name && (
-            <p className="text-sm font-medium">{invoice.supplier.name}</p>
+            <p style={combineStyles(styles.textSm, styles.fontMedium)}>{invoice.supplier.name}</p>
           )}
           {invoice.supplier.abn && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>ABN: {invoice.supplier.abn}</p>
+            <p style={combineStyles(styles.textXs, styles.textGray600)}>ABN: {invoice.supplier.abn}</p>
           )}
           {invoice.supplier.address && (
-            <p className="text-xs text-gray-600" style={styles.textGray600}>{invoice.supplier.address}</p>
+            <p style={combineStyles(styles.textXs, styles.textGray600)}>{invoice.supplier.address}</p>
           )}
           {invoice.invoiceType !== 'supplier' && invoice.supplier.issuedBy && (
-            <p className="text-xs text-gray-500 mt-1" style={styles.textGray500}>Issued By: {invoice.supplier.issuedBy}</p>
+            <p style={combineStyles(styles.textXs, styles.textGray500, styles.mt1)}>Issued By: {invoice.supplier.issuedBy}</p>
           )}
         </div>
       </div>
 
       {/* Invoice Details */}
-      <div className="flex justify-between items-center mb-6 pb-3 border-b" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#e5e7eb' }}>
-        <div className="flex items-center space-x-4">
-          <span className="text-xs">
-            <span className="font-semibold">Date:</span> {formatDate(invoice.date)}
+      <div style={combineStyles(styles.flexBetween, styles.itemsCenter, styles.mb6, styles.pb3, styles.borderB, styles.borderGray200)}>
+        <div style={combineStyles(styles.flex, styles.itemsCenter, { gap: '1rem' })}>
+          <span style={styles.textXs}>
+            <span style={styles.fontSemibold}>Date:</span> {formatDate(invoice.date)}
           </span>
-          <span className="text-xs">
-            <span className="font-semibold">Status:</span>{' '}
-            <span className={`font-medium ${getStatusColor(invoice.status)}`} style={getStatusStyle(invoice.status)}>
+          <span style={styles.textXs}>
+            <span style={styles.fontSemibold}>Status:</span>{' '}
+            <span style={combineStyles(styles.fontMedium, getStatusStyle(invoice.status))}>
               {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
             </span>
           </span>
-          <span className="text-xs">
-            <span className="font-semibold">Invoice No:</span> {invoice.invoiceNumber || '[To be assigned]'}
+          <span style={styles.textXs}>
+            <span style={styles.fontSemibold}>Invoice No:</span> {invoice.invoiceNumber || '[To be assigned]'}
           </span>
         </div>
       </div>
 
       {/* Items Table */}
-      <div className="mb-6">
-        <h3 className="text-base font-semibold mb-3">Items:</h3>
-        <table className="w-full text-sm">
+      <div style={styles.mb6}>
+        <h3 style={combineStyles(styles.textBase, styles.fontSemibold, styles.mb3)}>Items:</h3>
+        <table style={combineStyles(styles.wFull, styles.textSm, { borderCollapse: 'collapse' })}>
           <thead>
-            <tr className="border-b border-gray-300" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#d1d5db' }}>
-              <th className="text-left py-2 text-xs font-semibold" style={styles.text}>Description</th>
-              <th className="text-right py-2 w-12 text-xs font-semibold" style={styles.text}>Qty</th>
-              <th className="text-right py-2 w-20 text-xs font-semibold" style={styles.text}>Unit Price</th>
-              <th className="text-right py-2 w-20 text-xs font-semibold" style={styles.text}>Total</th>
+            <tr style={combineStyles(styles.borderB, styles.borderGray300)}>
+              <th style={combineStyles(styles.textLeft, styles.py1, styles.textXs, styles.fontSemibold, styles.text)}>Description</th>
+              <th style={combineStyles(styles.textRight, styles.py1, styles.w12, styles.textXs, styles.fontSemibold, styles.text)}>Qty</th>
+              <th style={combineStyles(styles.textRight, styles.py1, styles.w20, styles.textXs, styles.fontSemibold, styles.text)}>Unit Price</th>
+              <th style={combineStyles(styles.textRight, styles.py1, styles.w20, styles.textXs, styles.fontSemibold, styles.text)}>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -182,17 +254,17 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
               const hideAmounts = toNumber(item.quantity) === 0 && toNumber(item.price) === 0;
               
               return (
-                <tr key={index} className="border-b border-gray-200" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#e5e7eb' }}>
-                  <td className={`py-2 text-xs ${isSubItem ? 'pl-4' : ''}`}>
+                <tr key={index} style={combineStyles(styles.borderB, styles.borderGray200)}>
+                  <td style={combineStyles(styles.py1, styles.textXs, isSubItem ? styles.pl4 : {})}>
                     {item.description}
                   </td>
-                  <td className="text-right py-2 text-xs">
+                  <td style={combineStyles(styles.textRight, styles.py1, styles.textXs)}>
                     {hideAmounts ? '' : toNumber(item.quantity)}
                   </td>
-                  <td className="text-right py-2 text-xs">
+                  <td style={combineStyles(styles.textRight, styles.py1, styles.textXs)}>
                     {hideAmounts ? '' : formatCurrency(item.price)}
                   </td>
-                  <td className="text-right py-2 text-xs">
+                  <td style={combineStyles(styles.textRight, styles.py1, styles.textXs)}>
                     {hideAmounts ? '' : formatCurrency(toNumber(item.price) * toNumber(item.quantity))}
                   </td>
                 </tr>
@@ -203,21 +275,21 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
       </div>
 
       {/* Totals Section */}
-      <div className="flex justify-end">
-        <div className="w-48">
-          <div className="flex justify-between py-1 text-xs">
+      <div style={styles.flexEnd}>
+        <div style={styles.w48}>
+          <div style={combineStyles(styles.flexBetween, styles.py1, styles.textXs)}>
             <span>Subtotal:</span>
             <span>{formatCurrency(invoice.subtotal)}</span>
           </div>
-          <div className="flex justify-between py-1 text-xs">
+          <div style={combineStyles(styles.flexBetween, styles.py1, styles.textXs)}>
             <span>Processing Fees:</span>
             <span>{formatCurrency(invoice.processingFees)}</span>
           </div>
-          <div className="flex justify-between py-2 font-bold text-sm border-t border-gray-300" style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: '#d1d5db' }}>
+          <div style={combineStyles(styles.flexBetween, styles.py2, styles.fontBold, styles.textSm, styles.borderT, styles.borderGray300)}>
             <span>Total:</span>
             <span>{formatCurrency(invoice.total)}</span>
           </div>
-          <div className="flex justify-between py-1 text-xs text-gray-600" style={styles.textGray600}>
+          <div style={combineStyles(styles.flexBetween, styles.py1, styles.textXs, styles.textGray600)}>
             <span>GST Included:</span>
             <span>{formatCurrency(toNumber(invoice.total) / 11)}</span>
           </div>
@@ -226,13 +298,13 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
 
       {/* Payment Information Section */}
       {invoice.payment && (
-        <div className="mt-6 pt-4 border-t" style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: '#e5e7eb' }}>
-          <h3 className="text-sm font-semibold mb-2">Payment Information</h3>
-          <div className="bg-gray-50 p-2 rounded-md" style={{ backgroundColor: '#f9fafb' }}>
-            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
+        <div style={combineStyles(styles.mt6, styles.pt4, styles.borderT, styles.borderGray200)}>
+          <h3 style={combineStyles(styles.textSm, styles.fontSemibold, styles.mb2)}>Payment Information</h3>
+          <div style={combineStyles(styles.bgGray50, styles.p2, styles.rounded)}>
+            <div style={combineStyles(styles.flexWrap, styles.textXs, styles.gapX6, styles.gapY1)}>
               <div>
-                <span className="text-gray-600" style={styles.textGray600}>Method: </span>
-                <span className="font-medium">
+                <span style={styles.textGray600}>Method: </span>
+                <span style={styles.fontMedium}>
                   {invoice.payment.method ? 
                     invoice.payment.method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
                     'Unknown Method'
@@ -241,8 +313,8 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
                 </span>
               </div>
               <div>
-                <span className="text-gray-600" style={styles.textGray600}>Gateway: </span>
-                <span className="font-medium">
+                <span style={styles.textGray600}>Gateway: </span>
+                <span style={styles.fontMedium}>
                   {invoice.payment.source ? 
                     invoice.payment.source.charAt(0).toUpperCase() + invoice.payment.source.slice(1) : 
                     'Unknown'
@@ -250,32 +322,31 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
                 </span>
               </div>
               <div>
-                <span className="text-gray-600" style={styles.textGray600}>Date: </span>
-                <span className="font-medium">{formatDate(invoice.payment.paidDate)}</span>
+                <span style={styles.textGray600}>Date: </span>
+                <span style={styles.fontMedium}>{formatDate(invoice.payment.paidDate)}</span>
               </div>
               <div>
-                <span className="text-gray-600" style={styles.textGray600}>Amount: </span>
-                <span className="font-medium">{formatCurrency(invoice.payment.amount)}</span>
+                <span style={styles.textGray600}>Amount: </span>
+                <span style={styles.fontMedium}>{formatCurrency(invoice.payment.amount)}</span>
               </div>
               <div>
-                <span className="text-gray-600" style={styles.textGray600}>Payment ID: </span>
-                <span className="font-medium font-mono">{invoice.payment.paymentId || invoice.payment.transactionId}</span>
+                <span style={styles.textGray600}>Payment ID: </span>
+                <span style={combineStyles(styles.fontMedium, styles.fontMono)}>{invoice.payment.paymentId || invoice.payment.transactionId}</span>
               </div>
               {invoice.payment.statementDescriptor && (
                 <div>
-                  <span className="text-gray-600" style={styles.textGray600}>Statement: </span>
-                  <span className="font-medium">{invoice.payment.statementDescriptor}</span>
+                  <span style={styles.textGray600}>Statement: </span>
+                  <span style={styles.fontMedium}>{invoice.payment.statementDescriptor}</span>
                 </div>
               )}
             </div>
             {invoice.payment.receiptUrl && (
-                <div className="mt-2">
+                <div style={styles.mt2}>
                   <a 
                     href={invoice.payment.receiptUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline text-xs"
-                    style={styles.textBlue600}
+                    style={combineStyles(styles.textBlue600, styles.underline, styles.textXs)}
                   >
                     View Payment Receipt
                   </a>
@@ -303,49 +374,49 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
           
         return isRefunded;
       })() && (
-        <div className="mt-8 pt-6 border-t-2" style={{ borderTopWidth: '2px', borderTopStyle: 'solid', borderTopColor: '#e5e7eb' }}>
+        <div style={combineStyles(styles.mt8, styles.pt6, styles.borderT2, styles.borderGray200)}>
           {/* Credit Note Header */}
-          <div className="flex justify-between items-start mb-6">
-            <h1 className="text-2xl font-bold" style={{ color: '#000000' }}>CREDIT NOTE</h1>
-            <div className="text-right">
-              <div className="text-sm">
-                <span className="font-semibold">Credit Note No:</span> LTCN-{invoice.invoiceNumber?.replace('LTIV-', '') || invoice.invoiceNumber}
+          <div style={combineStyles(styles.flexBetween, styles.itemsStart, styles.mb6)}>
+            <h1 style={combineStyles(styles.text2xl, styles.text)}>CREDIT NOTE</h1>
+            <div style={styles.textRight}>
+              <div style={styles.textSm}>
+                <span style={styles.fontSemibold}>Credit Note No:</span> LTCN-{invoice.invoiceNumber?.replace('LTIV-', '') || invoice.invoiceNumber}
               </div>
             </div>
           </div>
           
           {/* Credit Note Items Table */}
-          <div className="mb-6">
-            <table className="w-full text-sm">
+          <div style={styles.mb6}>
+            <table style={combineStyles(styles.wFull, styles.textSm)}>
               <thead>
-                <tr className="border-b border-gray-300" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#d1d5db' }}>
-                  <th className="text-left py-2 text-xs font-semibold" style={styles.text}>Description</th>
-                  <th className="text-right py-2 w-12 text-xs font-semibold" style={styles.text}>Qty</th>
-                  <th className="text-right py-2 w-20 text-xs font-semibold" style={styles.text}>Unit Price</th>
-                  <th className="text-right py-2 w-20 text-xs font-semibold" style={styles.text}>Total</th>
+                <tr style={combineStyles(styles.borderB, styles.borderGray300)}>
+                  <th style={combineStyles(styles.textLeft, styles.py2, styles.textXs, styles.fontSemibold, styles.text)}>Description</th>
+                  <th style={combineStyles(styles.textRight, styles.py2, styles.w12, styles.textXs, styles.fontSemibold, styles.text)}>Qty</th>
+                  <th style={combineStyles(styles.textRight, styles.py2, styles.w20, styles.textXs, styles.fontSemibold, styles.text)}>Unit Price</th>
+                  <th style={combineStyles(styles.textRight, styles.py2, styles.w20, styles.textXs, styles.fontSemibold, styles.text)}>Total</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-gray-200" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: '#e5e7eb' }}>
-                  <td className="py-2 text-xs">
+                <tr style={combineStyles(styles.borderB, styles.borderGray200)}>
+                  <td style={combineStyles(styles.py2, styles.textXs)}>
                     Refund of Registration {confirmationNumber || invoice.invoiceNumber} for {functionName || 'Grand Proclamation 2025'}
                   </td>
-                  <td className="text-right py-2 text-xs">1</td>
-                  <td className="text-right py-2 text-xs">{formatCurrency(-toNumber(invoice.total))}</td>
-                  <td className="text-right py-2 text-xs">{formatCurrency(-toNumber(invoice.total))}</td>
+                  <td style={combineStyles(styles.textRight, styles.py2, styles.textXs)}>1</td>
+                  <td style={combineStyles(styles.textRight, styles.py2, styles.textXs)}>{formatCurrency(-toNumber(invoice.total))}</td>
+                  <td style={combineStyles(styles.textRight, styles.py2, styles.textXs)}>{formatCurrency(-toNumber(invoice.total))}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           {/* Credit Note Totals */}
-          <div className="flex justify-end">
-            <div className="w-48">
-              <div className="flex justify-between py-2 font-bold text-sm border-t border-gray-300" style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: '#d1d5db' }}>
+          <div style={styles.flexEnd}>
+            <div style={styles.w48}>
+              <div style={combineStyles(styles.flexBetween, styles.py2, styles.fontBold, styles.textSm, styles.borderT, styles.borderGray300)}>
                 <span>Total:</span>
                 <span>{formatCurrency(-toNumber(invoice.total))}</span>
               </div>
-              <div className="flex justify-between py-1 text-xs text-gray-600" style={styles.textGray600}>
+              <div style={combineStyles(styles.flexBetween, styles.py1, styles.textXs, styles.textGray600)}>
                 <span>GST Included:</span>
                 <span>{formatCurrency(-toNumber(invoice.total) / 11)}</span>
               </div>
