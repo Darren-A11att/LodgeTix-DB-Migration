@@ -83,8 +83,18 @@ async function extractPrimaryAdditionalAttendees() {
             if (existingAttendee) {
               console.log(`    Updating existing attendee: ${attendee.firstName} ${attendee.lastName}`);
               
-              // Create update object with all fields from the new format
+              // Create update object with all fields from the new format (including new data structure)
               const updateData = {
+                // NEW DATA STRUCTURE
+                jurisdiction: {},
+                constitution: await buildConstitutionObject(attendee, db),
+                membership: await buildMembershipObject(attendee, db),
+                legacyMembership: {
+                  GrandLodgeName: attendee.grand_lodge || attendee.grandLodge || existingAttendee.grand_lodge || '',
+                  GrandLodgeId: attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || existingAttendee.grand_lodge_id || null,
+                  LodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge_name_number || existingAttendee.lodgeNameNumber || '',
+                  LodgeId: attendee.lodge_id || attendee.lodgeOrganisationId || attendee.lodgeId || existingAttendee.lodge_id || null
+                },
                 // Core fields
                 email: attendee.primaryEmail || attendee.email || existingAttendee.email || '',
                 phone: attendee.primaryPhone || attendee.phone || existingAttendee.phone || '',
@@ -251,8 +261,17 @@ async function extractPrimaryAdditionalAttendees() {
                 // Organization (legacy field)
                 organization: attendee.organization || attendee.lodge || '',
                 
-                // Membership object for structured data
-                membership: {
+                // NEW DATA STRUCTURE: Jurisdiction object (empty for now)
+                jurisdiction: {},
+                
+                // NEW DATA STRUCTURE: Constitution object with Grand Lodge lookup
+                constitution: await buildConstitutionObject(attendee, db),
+                
+                // NEW DATA STRUCTURE: Enhanced Membership object with Lodge lookup
+                membership: await buildMembershipObject(attendee, db),
+                
+                // Legacy membership object (keep for backward compatibility)
+                legacyMembership: {
                   GrandLodgeName: attendee.grand_lodge || attendee.grandLodge || '',
                   GrandLodgeId: attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || null,
                   LodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
@@ -324,6 +343,110 @@ async function extractPrimaryAdditionalAttendees() {
   } finally {
     await mongoClient.close();
   }
+}
+
+/**
+ * Build constitution object by looking up grandLodges collection
+ */
+async function buildConstitutionObject(attendee, db) {
+  const grandLodgeId = attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || null;
+  
+  if (!grandLodgeId) {
+    return {
+      name: attendee.grand_lodge || attendee.grandLodge || '',
+      id: null,
+      country: '',
+      abbreviation: '',
+      stateRegion: '',
+      stateRegionCode: ''
+    };
+  }
+  
+  try {
+    const grandLodge = await db.collection('grandLodges').findOne({
+      $or: [
+        { grandLodgeId: grandLodgeId },
+        { organisationId: grandLodgeId }
+      ]
+    });
+    
+    if (grandLodge) {
+      return {
+        name: grandLodge.name || '',
+        id: grandLodge.grandLodgeId || grandLodge.organisationId || null,
+        country: grandLodge.country || '',
+        abbreviation: grandLodge.abbreviation || '',
+        stateRegion: grandLodge.stateRegion || '',
+        stateRegionCode: grandLodge.stateRegionCode || ''
+      };
+    }
+  } catch (error) {
+    console.warn(`Warning: Could not lookup grand lodge ${grandLodgeId}:`, error.message);
+  }
+  
+  // Fallback to basic data
+  return {
+    name: attendee.grand_lodge || attendee.grandLodge || '',
+    id: grandLodgeId,
+    country: '',
+    abbreviation: '',
+    stateRegion: '',
+    stateRegionCode: ''
+  };
+}
+
+/**
+ * Build membership object by looking up lodges collection
+ */
+async function buildMembershipObject(attendee, db) {
+  const lodgeId = attendee.lodge_id || attendee.lodgeOrganisationId || attendee.lodgeId || null;
+  
+  if (!lodgeId) {
+    return {
+      name: attendee.lodge || '',
+      number: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+      id: null,
+      displayName: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+      district: '',
+      meetingPlace: '',
+      areaType: ''
+    };
+  }
+  
+  try {
+    const lodge = await db.collection('lodges').findOne({
+      $or: [
+        { lodgeId: lodgeId },
+        { organisationId: lodgeId }
+      ]
+    });
+    
+    if (lodge) {
+      const number = lodge.number ? (typeof lodge.number === 'object' ? lodge.number.$numberDecimal : lodge.number.toString()) : '';
+      return {
+        name: lodge.name || '',
+        number: number,
+        id: lodge.lodgeId || lodge.organisationId || null,
+        displayName: lodge.displayName || `${lodge.name || ''} No. ${number}`.trim(),
+        district: lodge.district || '',
+        meetingPlace: lodge.meetingPlace || '',
+        areaType: lodge.areaType || ''
+      };
+    }
+  } catch (error) {
+    console.warn(`Warning: Could not lookup lodge ${lodgeId}:`, error.message);
+  }
+  
+  // Fallback to basic data
+  return {
+    name: attendee.lodge || '',
+    number: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+    id: lodgeId,
+    displayName: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+    district: '',
+    meetingPlace: '',
+    areaType: ''
+  };
 }
 
 // Run the extraction

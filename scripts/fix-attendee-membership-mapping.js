@@ -98,28 +98,34 @@ async function fixAttendeeMembershipMapping() {
           continue;
         }
         
-        // Build the membership object
+        // Build the new membership and constitution structure
         const membership = {
-          GrandLodgeName: originalData.grand_lodge || originalData.grandLodge || '',
-          GrandLodgeId: originalData.grand_lodge_id || originalData.grandLodgeOrganisationId || originalData.grandLodgeId || null,
-          LodgeNameNumber: originalData.lodgeNameNumber || originalData.lodge_name_number || '',
-          LodgeId: originalData.lodge_id || originalData.lodgeOrganisationId || originalData.lodgeId || null
+          lodgeName: originalData.lodge || originalData.lodgeName || '',
+          lodgeNumber: originalData.lodgeNumber || '',
+          lodgeNameNumber: originalData.lodgeNameNumber || originalData.lodge_name_number || '',
+          lodgeId: originalData.lodge_id || originalData.lodgeOrganisationId || originalData.lodgeId || null
+        };
+        
+        const constitution = {
+          grandLodgeName: originalData.grand_lodge || originalData.grandLodge || '',
+          grandLodgeId: originalData.grand_lodge_id || originalData.grandLodgeOrganisationId || originalData.grandLodgeId || null
         };
         
         // Also update individual fields if they're missing
         const updates = {
-          membership: membership
+          membership: membership,
+          constitution: constitution
         };
         
-        // Add individual fields if missing
-        if (!attendee.lodge_id && membership.LodgeId) {
-          updates.lodge_id = membership.LodgeId;
+        // Add individual fields if missing for backward compatibility
+        if (!attendee.lodge_id && membership.lodgeId) {
+          updates.lodge_id = membership.lodgeId;
         }
-        if (!attendee.lodgeNameNumber && membership.LodgeNameNumber) {
-          updates.lodgeNameNumber = membership.LodgeNameNumber;
+        if (!attendee.lodgeNameNumber && membership.lodgeNameNumber) {
+          updates.lodgeNameNumber = membership.lodgeNameNumber;
         }
-        if (!attendee.grand_lodge_id && membership.GrandLodgeId) {
-          updates.grand_lodge_id = membership.GrandLodgeId;
+        if (!attendee.grand_lodge_id && constitution.grandLodgeId) {
+          updates.grand_lodge_id = constitution.grandLodgeId;
         }
         if (!attendee.rank && originalData.rank) {
           updates.rank = originalData.rank;
@@ -144,6 +150,12 @@ async function fixAttendeeMembershipMapping() {
           field: 'membership',
           from: null,
           to: membership
+        });
+        
+        modificationEntry.changes.push({
+          field: 'constitution',
+          from: null,
+          to: constitution
         });
         
         if (updates.lodge_id) {
@@ -177,7 +189,7 @@ async function fixAttendeeMembershipMapping() {
           }
         );
         
-        console.log(`✅ Fixed ${attendee.firstName} ${attendee.lastName}: Lodge="${membership.LodgeNameNumber}", Grand Lodge="${membership.GrandLodgeName}" (from ${sourceCollection})`);
+        console.log(`✅ Fixed ${attendee.firstName} ${attendee.lastName}: Lodge="${membership.lodgeNameNumber}", Grand Lodge="${constitution.grandLodgeName}" (from ${sourceCollection})`);
         fixed++;
         
       } catch (error) {
@@ -202,9 +214,11 @@ async function fixAttendeeMembershipMapping() {
       
       fixedAttendees.forEach(attendee => {
         console.log(`${attendee.firstName} ${attendee.lastName}:`);
+        if (attendee.constitution) {
+          console.log(`  Grand Lodge: ${attendee.constitution.grandLodgeName || 'N/A'}`);
+        }
         if (attendee.membership) {
-          console.log(`  Grand Lodge: ${attendee.membership.GrandLodgeName || 'N/A'}`);
-          console.log(`  Lodge: ${attendee.membership.LodgeNameNumber || 'N/A'}`);
+          console.log(`  Lodge: ${attendee.membership.lodgeNameNumber || 'N/A'}`);
           console.log(`  Rank: ${attendee.rank || 'N/A'}`);
           console.log(`  Type: ${attendee.attendeeType || 'N/A'}`);
         }

@@ -62,8 +62,8 @@ async function generateAllAttendeesReport() {
         phone: attendee.phone || null,
         attendeeType: attendee.attendeeType || 'unknown',
         rank: attendee.rank || null,
-        lodge: attendee.lodgeNameNumber || null,
-        grandLodge: attendee.grand_lodge || null,
+        lodge: attendee.membership?.lodgeNameNumber || null,
+        grandLodge: attendee.constitution?.grandLodgeName || null,
         membership: attendee.membership || null,
         contactPreference: attendee.contactPreference || null,
         registrations: (attendee.registrations || []).map(r => ({
@@ -96,7 +96,7 @@ async function generateAllAttendeesReport() {
       
       if (attendee.email) report.statistics.byDataCompleteness.hasEmail++;
       if (attendee.phone) report.statistics.byDataCompleteness.hasPhone++;
-      if (attendee.membership && attendee.membership.LodgeNameNumber) {
+      if (attendee.membership && attendee.membership.lodgeNameNumber) {
         report.statistics.byDataCompleteness.hasMembership++;
       }
       if (attendee.contactPreference) report.statistics.byDataCompleteness.hasContactPreference++;

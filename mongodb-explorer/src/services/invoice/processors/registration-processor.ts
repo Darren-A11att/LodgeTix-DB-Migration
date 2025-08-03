@@ -55,7 +55,7 @@ export class RegistrationProcessor {
         firstName: attendee.firstName,
         lastName: attendee.lastName,
         lodgeInfo: this.extractAttendeeLodgeInfo(attendee),
-        lodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge,
+        lodgeNameNumber: attendee.membership?.lodgeNameNumber,
         tickets: [] // Will be populated by assignTicketsToAttendees
       };
       
@@ -93,21 +93,19 @@ export class RegistrationProcessor {
    * Extract lodge information for an attendee
    */
   private extractAttendeeLodgeInfo(attendee: any): string {
-    if (attendee.lodgeNameNumber) {
-      return attendee.lodgeNameNumber;
+    // Use new structure only
+    if (attendee.membership?.lodgeNameNumber) {
+      return attendee.membership.lodgeNameNumber;
     }
     
-    if (attendee.lodge) {
-      return attendee.lodge;
+    if (attendee.membership?.lodgeName && attendee.membership?.lodgeNumber) {
+      return `${attendee.membership.lodgeName} ${attendee.membership.lodgeNumber}`;
     }
     
-    if (attendee.lodgeName && attendee.lodgeNumber) {
-      return `${attendee.lodgeName} ${attendee.lodgeNumber}`;
+    if (attendee.membership?.lodgeName) {
+      return attendee.membership.lodgeName;
     }
     
-    if (attendee.lodgeName) {
-      return attendee.lodgeName;
-    }
     
     return '';
   }

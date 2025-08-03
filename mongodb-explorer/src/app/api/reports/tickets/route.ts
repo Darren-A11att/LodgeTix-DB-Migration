@@ -23,12 +23,49 @@ export async function GET(request: NextRequest) {
     // Process each ticket
     const processedTickets = await Promise.all(tickets.map(async (ticket) => {
       let ownerName = '';
+      let attendeeType = '';
+      let lodgeNameNumber = '';
+      let partnerOfName = '';
       
       // Look up owner based on type
       if (ticket.ownerType === 'attendee' && ticket.ownerId) {
         const attendee = await attendeesCollection.findOne({ attendeeId: ticket.ownerId });
         if (attendee) {
-          ownerName = `${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
+          // Format owner name based on attendee type
+          if (attendee.attendeeType === 'mason') {
+            if (attendee.rank === 'GL') {
+              // Mason with GL rank: title firstName lastName suffix
+              ownerName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''} ${attendee.suffix || ''}`.trim();
+            } else {
+              // Mason non-GL: title firstName lastName rank
+              ownerName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''} ${attendee.rank || ''}`.trim();
+            }
+          } else if (attendee.attendeeType === 'guest') {
+            // Guest: title firstName lastName suffix
+            ownerName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''} ${attendee.suffix || ''}`.trim();
+          } else {
+            // Default format
+            ownerName = `${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
+          }
+          
+          // Get attendee type from attendee document
+          attendeeType = attendee.attendeeType || '';
+          // Get lodge name and number from attendee document - use new structure
+          if (attendee.membership?.lodgeName || attendee.membership?.lodgeNumber) {
+            lodgeNameNumber = `${attendee.membership.lodgeName || ''} ${attendee.membership.lodgeNumber || ''}`.trim();
+          }
+          
+          // Look up partner information
+          if (attendee.partner || attendee.partnerOf) {
+            const partnerAttendeeId = attendee.partner || attendee.partnerOf;
+            const partnerAttendee = await attendeesCollection.findOne({ attendeeId: partnerAttendeeId });
+            if (partnerAttendee) {
+              const partnerName = `${partnerAttendee.title || ''} ${partnerAttendee.firstName || ''} ${partnerAttendee.lastName || ''} ${partnerAttendee.suffix || ''}`.trim();
+              // Use relationship from the partner attendee
+              const relationship = partnerAttendee.relationship || '';
+              partnerOfName = relationship ? `${partnerName} (${relationship})` : partnerName;
+            }
+          }
         } else {
           // Fallback: check customers collection
           const customer = await customersCollection.findOne({ attendeeId: ticket.ownerId });
@@ -40,6 +77,7 @@ export async function GET(request: NextRequest) {
         const lodge = await lodgesCollection.findOne({ lodgeId: ticket.ownerId });
         if (lodge) {
           ownerName = lodge.name || '';
+          lodgeNameNumber = `${lodge.name || ''} ${lodge.number || ''}`.trim();
         }
       }
       
@@ -52,28 +90,29 @@ export async function GET(request: NextRequest) {
         }
       }
       
-      // Look up registration for confirmation and invoice
+      // Look up registration for confirmation number
       let confirmationNumber = '';
-      let invoiceNumber = '';
       if (ticket.registrationId) {
         const registration = await registrationsCollection.findOne({ registrationId: ticket.registrationId });
         if (registration) {
           confirmationNumber = registration.confirmationNumber || '';
-          invoiceNumber = registration.invoiceNumber || '';
         }
       }
       
+      // Get invoice number from ticket details
+      const invoiceNumber = ticket.details?.invoice?.invoiceNumber || '';
+      
       return {
         ticketNumber: ticket._id?.toString() || '',
-        name: ticket.name || '',
+        name: ticket.eventName || ticket.name || '',
         quantity: ticket.quantity || 1,
         price: ticket.price || 0,
         ownerType: ticket.ownerType || '',
         ownerName: ownerName,
         ownerId: ticket.ownerId || '',
-        attendeeType: ticket.attendeeType || '',
-        partnerOfName: ticket.partnerOfName || '',
-        lodgeNameNumber: ticket.lodgeNameNumber || '',
+        attendeeType: attendeeType || ticket.attendeeType || '',
+        partnerOfName: partnerOfName || ticket.partnerOfName || '',
+        lodgeNameNumber: lodgeNameNumber || ticket.lodgeNameNumber || '',
         confirmationNumber: confirmationNumber,
         invoiceNumber: invoiceNumber,
         paymentStatus: paymentStatus,

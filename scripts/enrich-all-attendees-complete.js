@@ -42,7 +42,7 @@ function normalizePhoneNumber(phone) {
 }
 
 // Enrich ALL fields from source data
-async function enrichAllFields(attendee, sourceData) {
+async function enrichAllFields(attendee, sourceData, db) {
   const updates = {};
   let fieldsUpdated = 0;
   
@@ -152,19 +152,40 @@ async function enrichAllFields(attendee, sourceData) {
     }
   }
   
-  // Build/update membership object
-  const membership = {
+  // NEW DATA STRUCTURE: Build jurisdiction object (empty for now)
+  if (!attendee.jurisdiction) {
+    updates.jurisdiction = {};
+    fieldsUpdated++;
+  }
+  
+  // NEW DATA STRUCTURE: Build/update constitution object
+  const constitution = await buildConstitutionObject(sourceData, attendee, db);
+  if (!attendee.constitution || JSON.stringify(attendee.constitution) !== JSON.stringify(constitution)) {
+    updates.constitution = constitution;
+    progressTracker.fieldsEnriched.membership++;
+    fieldsUpdated++;
+  }
+  
+  // NEW DATA STRUCTURE: Build/update enhanced membership object
+  const membership = await buildMembershipObject(sourceData, attendee, db);
+  if (!attendee.membership || JSON.stringify(attendee.membership) !== JSON.stringify(membership)) {
+    updates.membership = membership;
+    progressTracker.fieldsEnriched.membership++;
+    fieldsUpdated++;
+  }
+  
+  // Legacy membership object (keep for backward compatibility)
+  const legacyMembership = {
     GrandLodgeName: sourceData.grand_lodge || sourceData.grandLodge || attendee.grand_lodge || '',
     GrandLodgeId: sourceData.grand_lodge_id || sourceData.grandLodgeOrganisationId || sourceData.grandLodgeId || attendee.grand_lodge_id || null,
     LodgeNameNumber: sourceData.lodgeNameNumber || sourceData.lodge_name_number || attendee.lodgeNameNumber || '',
     LodgeId: sourceData.lodge_id || sourceData.lodgeOrganisationId || sourceData.lodgeId || attendee.lodge_id || null
   };
   
-  // Only update membership if we have meaningful data and it's different
-  const hasValidMembershipData = Object.values(membership).some(v => v !== null && v !== '');
-  if (hasValidMembershipData && (!attendee.membership || JSON.stringify(attendee.membership) !== JSON.stringify(membership))) {
-    updates.membership = membership;
-    progressTracker.fieldsEnriched.membership++;
+  // Only update legacy membership if we have meaningful data and it's different
+  const hasValidLegacyMembershipData = Object.values(legacyMembership).some(v => v !== null && v !== '');
+  if (hasValidLegacyMembershipData && (!attendee.legacyMembership || JSON.stringify(attendee.legacyMembership) !== JSON.stringify(legacyMembership))) {
+    updates.legacyMembership = legacyMembership;
     fieldsUpdated++;
   }
   
@@ -220,6 +241,112 @@ async function findSourceData(attendee, db) {
   return { data: null, source: null };
 }
 
+/**
+ * Build constitution object by looking up grandLodges collection
+ */
+async function buildConstitutionObject(sourceData, attendee, db) {
+  const grandLodgeId = sourceData.grand_lodge_id || sourceData.grandLodgeOrganisationId || sourceData.grandLodgeId || 
+                      attendee.grand_lodge_id || null;
+  
+  if (!grandLodgeId) {
+    return {
+      name: sourceData.grand_lodge || sourceData.grandLodge || attendee.grand_lodge || '',
+      id: null,
+      country: '',
+      abbreviation: '',
+      stateRegion: '',
+      stateRegionCode: ''
+    };
+  }
+  
+  try {
+    const grandLodge = await db.collection('grandLodges').findOne({
+      $or: [
+        { grandLodgeId: grandLodgeId },
+        { organisationId: grandLodgeId }
+      ]
+    });
+    
+    if (grandLodge) {
+      return {
+        name: grandLodge.name || '',
+        id: grandLodge.grandLodgeId || grandLodge.organisationId || null,
+        country: grandLodge.country || '',
+        abbreviation: grandLodge.abbreviation || '',
+        stateRegion: grandLodge.stateRegion || '',
+        stateRegionCode: grandLodge.stateRegionCode || ''
+      };
+    }
+  } catch (error) {
+    console.warn(`Warning: Could not lookup grand lodge ${grandLodgeId}:`, error.message);
+  }
+  
+  // Fallback to basic data
+  return {
+    name: sourceData.grand_lodge || sourceData.grandLodge || attendee.grand_lodge || '',
+    id: grandLodgeId,
+    country: '',
+    abbreviation: '',
+    stateRegion: '',
+    stateRegionCode: ''
+  };
+}
+
+/**
+ * Build membership object by looking up lodges collection
+ */
+async function buildMembershipObject(sourceData, attendee, db) {
+  const lodgeId = sourceData.lodge_id || sourceData.lodgeOrganisationId || sourceData.lodgeId || 
+                 attendee.lodge_id || null;
+  
+  if (!lodgeId) {
+    return {
+      name: sourceData.lodge || attendee.lodge || '',
+      number: sourceData.lodgeNameNumber || sourceData.lodge_name_number || attendee.lodgeNameNumber || '',
+      id: null,
+      displayName: sourceData.lodgeNameNumber || sourceData.lodge_name_number || attendee.lodgeNameNumber || '',
+      district: '',
+      meetingPlace: '',
+      areaType: ''
+    };
+  }
+  
+  try {
+    const lodge = await db.collection('lodges').findOne({
+      $or: [
+        { lodgeId: lodgeId },
+        { organisationId: lodgeId }
+      ]
+    });
+    
+    if (lodge) {
+      const number = lodge.number ? (typeof lodge.number === 'object' ? lodge.number.$numberDecimal : lodge.number.toString()) : '';
+      return {
+        name: lodge.name || '',
+        number: number,
+        id: lodge.lodgeId || lodge.organisationId || null,
+        displayName: lodge.displayName || `${lodge.name || ''} No. ${number}`.trim(),
+        district: lodge.district || '',
+        meetingPlace: lodge.meetingPlace || '',
+        areaType: lodge.areaType || ''
+      };
+    }
+  } catch (error) {
+    console.warn(`Warning: Could not lookup lodge ${lodgeId}:`, error.message);
+  }
+  
+  // Fallback to basic data
+  return {
+    name: sourceData.lodge || attendee.lodge || '',
+    number: sourceData.lodgeNameNumber || sourceData.lodge_name_number || attendee.lodgeNameNumber || '',
+    id: lodgeId,
+    displayName: sourceData.lodgeNameNumber || sourceData.lodge_name_number || attendee.lodgeNameNumber || '',
+    district: '',
+    meetingPlace: '',
+    areaType: ''
+  };
+}
+
 // Enrich a single attendee
 async function enrichSingleAttendee(attendee, db) {
   try {
@@ -234,7 +361,7 @@ async function enrichSingleAttendee(attendee, db) {
     progressTracker.dataSourceBreakdown[source]++;
     
     // Enrich all fields
-    const { updates, fieldsUpdated } = await enrichAllFields(attendee, sourceData);
+    const { updates, fieldsUpdated } = await enrichAllFields(attendee, sourceData, db);
     
     // If no updates needed, skip
     if (Object.keys(updates).length === 0) {

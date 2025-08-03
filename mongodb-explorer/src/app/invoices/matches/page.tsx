@@ -714,8 +714,8 @@ export default function InvoiceMatchesPage() {
       attendees.forEach((attendee: any) => {
         // Add attendee line
         const attendeeName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
-        // Handle multiple possible field names for lodge info
-        const lodgeInfo = attendee.lodgeNameNumber || attendee.organization || attendee.lodge || '';
+        // Get lodge info from new structure
+        const lodgeInfo = attendee.membership?.lodgeNameNumber || attendee.organization || '';
         items.push({
           description: `${attendeeName} | ${lodgeInfo}`,
           quantity: 0,
