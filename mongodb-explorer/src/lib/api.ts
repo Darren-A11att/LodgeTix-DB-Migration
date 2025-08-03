@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Use dynamic API URL from environment or fallback to default
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3006/api';
+// Use relative API URL for Next.js routes
+const API_BASE_URL = '/api';
 
 export interface Collection {
   name: string;

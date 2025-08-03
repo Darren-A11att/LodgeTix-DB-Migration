@@ -347,7 +347,70 @@ export default function InvoiceMatchesPage() {
       });
       
       // Get lodge info and tickets from registration data
-      const allTickets = effectiveRegistration.registrationData?.tickets || [];
+      let allTickets = effectiveRegistration.registrationData?.tickets || [];
+      
+      // Check if tickets are just ObjectIds and fetch full documents
+      const isTicketReference = allTickets && allTickets.length > 0 && 
+        allTickets[0] && allTickets[0]._id && 
+        Object.keys(allTickets[0]).length === 1;
+        
+      if (isTicketReference) {
+        console.log('📥 Fetching full ticket documents from tickets collection for lodge...');
+        const ticketIds = allTickets.map((t: any) => t._id);
+        const ticketPromises = ticketIds.map((id: string) => apiService.getDocument('tickets', id));
+        
+        try {
+          const results = await Promise.allSettled(ticketPromises);
+          const fetchedTickets = results
+            .filter(result => result.status === 'fulfilled')
+            .map(result => (result as PromiseFulfilledResult<any>).value);
+          
+          const failedCount = results.filter(r => r.status === 'rejected').length;
+          if (failedCount > 0) {
+            console.warn(`⚠️ Failed to fetch ${failedCount} out of ${ticketIds.length} tickets for lodge`);
+          }
+          
+          if (fetchedTickets.length > 0) {
+            allTickets = fetchedTickets;
+            console.log(`✅ Successfully fetched ${allTickets.length} ticket documents for lodge`);
+          }
+        } catch (error) {
+          console.error('❌ Error fetching tickets for lodge:', error);
+          allTickets = [];
+        }
+      }
+      
+      // Also fetch attendees if they exist (some lodge registrations might have attendees)
+      let attendees = effectiveRegistration.registrationData?.attendees || [];
+      const isAttendeeReference = attendees && attendees.length > 0 && 
+        attendees[0] && attendees[0]._id && 
+        Object.keys(attendees[0]).length === 1;
+        
+      if (isAttendeeReference) {
+        console.log('📥 Fetching full attendee documents from attendees collection for lodge...');
+        const attendeeIds = attendees.map((a: any) => a._id);
+        const attendeePromises = attendeeIds.map((id: string) => apiService.getDocument('attendees', id));
+        
+        try {
+          const results = await Promise.allSettled(attendeePromises);
+          const fetchedAttendees = results
+            .filter(result => result.status === 'fulfilled')
+            .map(result => (result as PromiseFulfilledResult<any>).value);
+          
+          const failedCount = results.filter(r => r.status === 'rejected').length;
+          if (failedCount > 0) {
+            console.warn(`⚠️ Failed to fetch ${failedCount} out of ${attendeeIds.length} attendees for lodge`);
+          }
+          
+          if (fetchedAttendees.length > 0) {
+            attendees = fetchedAttendees;
+            console.log(`✅ Successfully fetched ${attendees.length} attendee documents for lodge`);
+          }
+        } catch (error) {
+          console.error('❌ Error fetching attendees for lodge:', error);
+          attendees = [];
+        }
+      }
       
       console.log('🏛️ Processing lodge tickets (JSON Preview):', {
         totalTickets: allTickets.length,
@@ -379,8 +442,10 @@ export default function InvoiceMatchesPage() {
         const ticketTotal = roundToMoney(ticketQuantity * ticketPrice);
         subtotal = roundToMoney(subtotal + ticketTotal);
         
+        // Handle multiple possible field names for ticket name
+        const ticketName = ticket.name || ticket.ticketName || ticket.eventName || 'Ticket';
         console.log(`💰 Adding ticket to lodge invoice (JSON Preview):`, {
-          ticketName: ticket.name,
+          ticketName: ticketName,
           quantity: ticketQuantity,
           price: ticketPrice,
           ticketTotal,
@@ -388,7 +453,7 @@ export default function InvoiceMatchesPage() {
         });
         
         items.push({
-          description: `  - ${ticket.name || 'Ticket'}`,
+          description: `  - ${ticketName}`,
           quantity: ticketQuantity,
           price: ticketPrice,
           total: ticketTotal
@@ -547,15 +612,85 @@ export default function InvoiceMatchesPage() {
       });
       
       // Get attendees and tickets from registration data
-      const attendees = effectiveRegistration.registrationData?.attendees || [];
-      const allTickets = effectiveRegistration.registrationData?.tickets || [];
+      let attendees = effectiveRegistration.registrationData?.attendees || [];
+      let allTickets = effectiveRegistration.registrationData?.tickets || [];
+      
+      // Check if attendees are just ObjectIds and fetch full documents
+      const isAttendeeReference = attendees && attendees.length > 0 && 
+        attendees[0] && attendees[0]._id && 
+        Object.keys(attendees[0]).length === 1;
+        
+      if (isAttendeeReference) {
+        console.log('📥 Fetching full attendee documents from attendees collection...');
+        const attendeeIds = attendees.map((a: any) => a._id);
+        const attendeePromises = attendeeIds.map((id: string) => apiService.getDocument('attendees', id));
+        
+        try {
+          // Use Promise.allSettled to handle partial failures
+          const results = await Promise.allSettled(attendeePromises);
+          const fetchedAttendees = results
+            .filter(result => result.status === 'fulfilled')
+            .map(result => (result as PromiseFulfilledResult<any>).value);
+          
+          const failedCount = results.filter(r => r.status === 'rejected').length;
+          if (failedCount > 0) {
+            console.warn(`⚠️ Failed to fetch ${failedCount} out of ${attendeeIds.length} attendees`);
+          }
+          
+          if (fetchedAttendees.length > 0) {
+            attendees = fetchedAttendees;
+            console.log(`✅ Successfully fetched ${attendees.length} attendee documents`);
+          } else {
+            console.error('❌ No attendees could be fetched successfully');
+            attendees = [];
+          }
+        } catch (error) {
+          console.error('❌ Error fetching attendees:', error);
+          attendees = [];
+        }
+      }
+      
+      // Check if tickets are just ObjectIds and fetch full documents
+      const isTicketReference = allTickets && allTickets.length > 0 && 
+        allTickets[0] && allTickets[0]._id && 
+        Object.keys(allTickets[0]).length === 1;
+        
+      if (isTicketReference) {
+        console.log('📥 Fetching full ticket documents from tickets collection...');
+        const ticketIds = allTickets.map((t: any) => t._id);
+        const ticketPromises = ticketIds.map((id: string) => apiService.getDocument('tickets', id));
+        
+        try {
+          // Use Promise.allSettled to handle partial failures
+          const results = await Promise.allSettled(ticketPromises);
+          const fetchedTickets = results
+            .filter(result => result.status === 'fulfilled')
+            .map(result => (result as PromiseFulfilledResult<any>).value);
+          
+          const failedCount = results.filter(r => r.status === 'rejected').length;
+          if (failedCount > 0) {
+            console.warn(`⚠️ Failed to fetch ${failedCount} out of ${ticketIds.length} tickets`);
+          }
+          
+          if (fetchedTickets.length > 0) {
+            allTickets = fetchedTickets;
+            console.log(`✅ Successfully fetched ${allTickets.length} ticket documents`);
+          } else {
+            console.error('❌ No tickets could be fetched successfully');
+            allTickets = [];
+          }
+        } catch (error) {
+          console.error('❌ Error fetching tickets:', error);
+          allTickets = [];
+        }
+      }
       
       console.log('👥 Processing attendees and tickets (JSON Preview):', {
         attendeesCount: attendees.length,
         totalTickets: allTickets.length,
         attendeeNames: attendees.map((a: any) => `${a.firstName} ${a.lastName}`),
         ticketOwnership: allTickets.map((t: any) => ({
-          name: t.name,
+          name: t.name || t.ticketName || t.eventName || 'Ticket',
           ownerType: t.ownerType,
           ownerId: t.ownerId,
           price: t.price,
@@ -579,7 +714,8 @@ export default function InvoiceMatchesPage() {
       attendees.forEach((attendee: any) => {
         // Add attendee line
         const attendeeName = `${attendee.title || ''} ${attendee.firstName || ''} ${attendee.lastName || ''}`.trim();
-        const lodgeInfo = attendee.lodgeNameNumber || '';
+        // Handle multiple possible field names for lodge info
+        const lodgeInfo = attendee.lodgeNameNumber || attendee.organization || attendee.lodge || '';
         items.push({
           description: `${attendeeName} | ${lodgeInfo}`,
           quantity: 0,
@@ -587,32 +723,26 @@ export default function InvoiceMatchesPage() {
           total: 0
         });
         
-        // Add tickets for this attendee with fallback strategy
-        // First try exact match
+        // Add tickets for this attendee - always use string comparison to avoid type mismatches
         let attendeeTickets = allTickets.filter((ticket: any) => 
-          ticket.ownerType === 'attendee' && ticket.ownerId === attendee.attendeeId
+          ticket.ownerType === 'attendee' && String(ticket.ownerId) === String(attendee.attendeeId || attendee._id)
         );
         
-        // If no exact match, try string comparison (in case of type mismatch)
-        if (attendeeTickets.length === 0) {
-          attendeeTickets = allTickets.filter((ticket: any) => 
-            ticket.ownerType === 'attendee' && String(ticket.ownerId) === String(attendee.attendeeId)
-          );
-          if (attendeeTickets.length > 0) {
-            console.log(`🔧 Found tickets using string comparison for attendee ${attendeeName}:`, {
-              ticketCount: attendeeTickets.length,
-              matchedTickets: attendeeTickets.map(t => ({ name: t.name, ownerId: t.ownerId }))
-            });
-          }
+        if (attendeeTickets.length > 0) {
+          console.log(`✅ Found ${attendeeTickets.length} tickets for attendee ${attendeeName}`);
         }
         
         console.log(`🎫 Ticket filtering for attendee ${attendeeName} (JSON Preview):`, {
           attendeeId: attendee.attendeeId,
           directMatchTickets: attendeeTickets.length,
-          ticketDetails: attendeeTickets.map(t => ({ name: t.name, price: t.price, quantity: t.quantity })),
+          ticketDetails: attendeeTickets.map(t => ({ 
+            name: t.name || t.ticketName || t.eventName || 'Ticket', 
+            price: t.price, 
+            quantity: t.quantity 
+          })),
           // Enhanced debugging info
           allTicketsOwnership: allTickets.map(t => ({ 
-            name: t.name, 
+            name: t.name || t.ticketName || t.eventName || 'Ticket', 
             ownerType: t.ownerType, 
             ownerId: t.ownerId,
             ownerIdMatch: t.ownerId === attendee.attendeeId ? 'MATCH' : 'NO_MATCH'
@@ -707,16 +837,18 @@ export default function InvoiceMatchesPage() {
           const ticketPrice = roundToMoney(ticket.price || 0);
           const ticketTotal = roundToMoney((ticket.quantity || 1) * ticketPrice);
           subtotal = roundToMoney(subtotal + ticketTotal);
+          // Handle multiple possible field names for ticket name
+          const ticketName = ticket.name || ticket.ticketName || ticket.eventName || 'Ticket';
           console.log(`💰 Adding ticket to invoice (JSON Preview):`, {
             attendeeName,
-            ticketName: ticket.name,
+            ticketName: ticketName,
             quantity: ticket.quantity || 1,
             price: ticketPrice,
             ticketTotal,
             runningSubtotal: subtotal
           });
           items.push({
-            description: `  - ${ticket.name || 'Ticket'}`,
+            description: `  - ${ticketName}`,
             quantity: ticket.quantity || 1,
             price: ticketPrice,
             total: ticketTotal

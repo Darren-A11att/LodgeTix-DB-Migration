@@ -4,17 +4,19 @@ require('dotenv').config({ path: '.env.local' });
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { MongoClient } = require('mongodb');
 
 /**
  * Master Data Sync Script
  * 
  * This script orchestrates the entire data import and processing workflow:
- * 1. Setup collections and indexes
- * 2. Import payments from Square to staging
- * 3. Import registrations from Supabase to staging
- * 4. Process staged imports with payment-registration matching
- * 5. Cleanup and validation
- * 6. Generate invoices for matched payments
+ * 1. Import payments from Square to staging
+ * 2. Process staged imports with payment-registration matching
+ * 3. Bulk import registrations from Supabase to staging (as backup)
+ * 4. Re-process staged imports if new registrations found
+ * 5. Generate invoices for matched payments
+ * 
+ * All sync operations are logged to the import_log collection for tracking
  */
 
 // Load sync configuration
@@ -143,36 +145,99 @@ async function runScript(scriptPath, args = [], description = '') {
 async function syncAllData() {
   logger.info('=== STARTING COMPLETE DATA SYNC ===', { config: CONFIG });
   
+  // Initialize import log
+  const importLog = {
+    syncId: `SYNC-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    startedAt: new Date(),
+    completedAt: null,
+    success: {
+      payments: [],
+      registrations: []
+    },
+    failures: [],
+    steps: []
+  };
+  
+  const mongoClient = new MongoClient(process.env.MONGODB_URI);
+  const db = mongoClient.db(process.env.MONGODB_DATABASE || 'LodgeTix-migration-test-1');
+  
   try {
-    // Step 1: Setup collections
-    logger.info('\n📋 Step 1: Setting up collections and indexes');
-    await runScript(
-      path.join(__dirname, 'setup-payment-import-collections.js'),
-      [],
-      'Setup payment import collections'
-    );
+    await mongoClient.connect();
     
-    // Step 2: Import payments from Square to staging
+    // Step 1: Import payments from Square to staging
     if (!CONFIG.SKIP_SQUARE_IMPORT) {
-      logger.info('\n💳 Step 2: Importing Square payments to staging');
+      logger.info('\n💳 Step 1: Importing Square payments to staging');
+      const stepStart = Date.now();
       try {
         // Import all Square payments to staging collection
-        await runScript(
+        const result = await runScript(
           path.join(__dirname, 'sync-all-square-payments.js'),
           [],
           'Import all Square payments to staging'
         );
+        
+        // Track imported payments
+        const importedPayments = await db.collection('payment_imports').find({
+          importId: { $exists: true },
+          importedAt: { $gte: importLog.startedAt }
+        }).toArray();
+        
+        importLog.success.payments = importedPayments.map(p => ({
+          paymentId: p.squarePaymentId || p.stripePaymentId,
+          objectId: p._id.toString()
+        }));
+        
+        importLog.steps.push({
+          step: 1,
+          name: 'Import Square Payments',
+          status: 'success',
+          duration: Date.now() - stepStart,
+          itemsProcessed: importedPayments.length
+        });
       } catch (error) {
         logger.error('Square sync failed', { error: error.message });
+        importLog.failures.push({
+          step: 1,
+          type: 'payment',
+          error: error.message,
+          timestamp: new Date()
+        });
         throw new Error('Square payment sync is critical for payment verification. Fix the error or use --skip-square flag.');
       }
     } else {
-      logger.info('\n⏭️  Step 2: Skipping Square import (SKIP_SQUARE_IMPORT=true)');
+      logger.info('\n⏭️  Step 1: Skipping Square import (SKIP_SQUARE_IMPORT=true)');
+      importLog.steps.push({
+        step: 1,
+        name: 'Import Square Payments',
+        status: 'skipped',
+        reason: 'SKIP_SQUARE_IMPORT=true'
+      });
     }
     
-    // Step 3: Import registrations from Supabase to staging
+    // Step 2: Process staged imports with matching, attendee and ticket extraction
+    logger.info('\n⚙️  Step 2: Processing staged imports with payment-registration matching, attendee and ticket extraction');
+    const step2Start = Date.now();
+    const processResult = await runScript(
+      path.join(__dirname, 'process-staged-imports-with-extraction.js'),
+      [],
+      'Process payments and registrations from staging with automatic matching, attendee and ticket extraction'
+    );
+    
+    importLog.steps.push({
+      step: 2,
+      name: 'Process Staged Imports',
+      status: 'success',
+      duration: Date.now() - step2Start
+    });
+    
+    // Step 3: Bulk import registrations from Supabase (as backup)
+    let newRegistrationsFound = false;
     if (!CONFIG.SKIP_SUPABASE_IMPORT) {
-      logger.info('\n📝 Step 3: Importing registrations from Supabase to staging');
+      logger.info('\n📝 Step 3: Bulk importing registrations from Supabase (backup sync)');
+      const step3Start = Date.now();
+      
+      // Get count before bulk import
+      const countBefore = await db.collection('registration_imports').countDocuments();
       
       // Import ALL registrations to staging collection
       await runScript(
@@ -180,46 +245,96 @@ async function syncAllData() {
         [],
         'Import all Supabase registrations to staging'
       );
+      
+      // Get count after bulk import
+      const countAfter = await db.collection('registration_imports').countDocuments();
+      const newRegistrations = countAfter - countBefore;
+      
+      if (newRegistrations > 0) {
+        newRegistrationsFound = true;
+        logger.info(`Found ${newRegistrations} new registrations from bulk import`);
+        
+        // Track imported registrations
+        const importedRegs = await db.collection('registration_imports').find({
+          importedAt: { $gte: importLog.startedAt },
+          importedFrom: 'supabase'
+        }).toArray();
+        
+        importLog.success.registrations = importedRegs.map(r => ({
+          registrationId: r.registrationId,
+          objectId: r._id.toString()
+        }));
+      }
+      
+      importLog.steps.push({
+        step: 3,
+        name: 'Bulk Supabase Import',
+        status: 'success',
+        duration: Date.now() - step3Start,
+        itemsProcessed: newRegistrations
+      });
     } else {
-      logger.info('\n⏭️  Step 3: Skipping Supabase import (SKIP_SUPABASE_IMPORT=true)');
+      logger.info('\n⏭️  Step 3: Skipping Supabase bulk import (SKIP_SUPABASE_IMPORT=true)');
+      importLog.steps.push({
+        step: 3,
+        name: 'Bulk Supabase Import',
+        status: 'skipped',
+        reason: 'SKIP_SUPABASE_IMPORT=true'
+      });
     }
     
-    // Step 4: Process staged imports with matching and ticket extraction
-    logger.info('\n⚙️  Step 4: Processing staged imports with payment-registration matching and ticket extraction');
-    await runScript(
-      path.join(__dirname, 'process-staged-imports-with-ticket-extraction.js'),
-      [],
-      'Process payments and registrations from staging with automatic matching and ticket extraction'
-    );
+    // Step 4: Re-run process-staged-imports if new registrations were found
+    if (newRegistrationsFound) {
+      logger.info('\n🔄 Step 4: Re-processing staged imports due to new registrations');
+      const step4Start = Date.now();
+      
+      await runScript(
+        path.join(__dirname, 'process-staged-imports-with-extraction.js'),
+        [],
+        'Re-process staged imports after bulk registration import'
+      );
+      
+      importLog.steps.push({
+        step: 4,
+        name: 'Re-process Staged Imports',
+        status: 'success',
+        duration: Date.now() - step4Start,
+        reason: 'New registrations found from bulk import'
+      });
+    }
     
-    // Step 5: Cleanup and validation
-    logger.info('\n🧹 Step 5: Running cleanup and validation');
-    
-    // Clean up duplicate payment imports
-    await runScript(
-      path.join(__dirname, '..', 'src', 'scripts', 'cleanup-payment-imports.ts'),
-      ['--mark-processed'],
-      'Mark processed payment imports'
-    );
-    
-    // Show data quality summary
-    await runScript(
-      path.join(__dirname, '..', 'src', 'scripts', 'show-data-quality-summary.ts'),
-      [],
-      'Show data quality summary'
-    );
-    
-    // Step 6: Generate invoices for matched payments
+    // Step 5: Generate invoices for matched payments
+    const invoiceStep = newRegistrationsFound ? 5 : 4;
     if (!CONFIG.SKIP_INVOICE_GENERATION) {
-      logger.info('\n📄 Step 6: Generating invoices for matched payments');
+      logger.info(`\n📄 Step ${invoiceStep}: Generating invoices for matched payments`);
+      const stepStart = Date.now();
+      
       await runScript(
         path.join(__dirname, 'post-import-invoice-processing.js'),
         [],
         'Generate invoices for newly matched payments'
       );
+      
+      importLog.steps.push({
+        step: invoiceStep,
+        name: 'Generate Invoices',
+        status: 'success',
+        duration: Date.now() - stepStart
+      });
     } else {
-      logger.info('\n⏭️  Step 6: Skipping invoice generation (SKIP_INVOICE_GENERATION=true)');
+      logger.info(`\n⏭️  Step ${invoiceStep}: Skipping invoice generation (SKIP_INVOICE_GENERATION=true)`);
+      importLog.steps.push({
+        step: invoiceStep,
+        name: 'Generate Invoices',
+        status: 'skipped',
+        reason: 'SKIP_INVOICE_GENERATION=true'
+      });
     }
+    
+    // Save import log
+    importLog.completedAt = new Date();
+    importLog.status = 'success';
+    await db.collection('import_log').insertOne(importLog);
     
     logger.success('\n✅ COMPLETE DATA SYNC FINISHED SUCCESSFULLY!');
     
@@ -227,13 +342,38 @@ async function syncAllData() {
     const totalTime = ((Date.now() - logger.startTime) / 1000).toFixed(2);
     logger.info('Summary', {
       totalTime: `${totalTime}s`,
-      stepsCompleted: 6,
-      status: 'success'
+      stepsCompleted: importLog.steps.length,
+      status: 'success',
+      paymentsImported: importLog.success.payments.length,
+      registrationsImported: importLog.success.registrations.length,
+      failures: importLog.failures.length
     });
     
   } catch (error) {
-    logger.error('\n❌ DATA SYNC FAILED', { error: error.message });
+    // Save error to import log
+    importLog.completedAt = new Date();
+    importLog.status = 'failed';
+    importLog.error = {
+      message: error.message,
+      stack: error.stack,
+      type: error.constructor.name
+    };
+    
+    try {
+      await db.collection('import_log').insertOne(importLog);
+    } catch (logError) {
+      logger.error('Failed to save import log', { error: logError.message });
+    }
+    
+    logger.error('\n❌ DATA SYNC FAILED', { 
+      error: error.message,
+      stack: error.stack,
+      errorType: error.constructor.name
+    });
+    console.error('Full error:', error);
     process.exit(1);
+  } finally {
+    await mongoClient.close();
   }
 }
 

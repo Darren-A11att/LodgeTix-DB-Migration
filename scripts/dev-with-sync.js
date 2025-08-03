@@ -89,18 +89,20 @@ async function runSync() {
 
 // Start development servers
 async function startDevServers() {
-  log('🚀 Starting development servers...', 'blue');
+  log('🚀 Starting MongoDB Explorer...', 'blue');
   
-  // Use the start-dev.js script to start all services
-  const startDevPath = path.join(__dirname, 'start-dev.js');
+  // Change to mongodb-explorer directory and run npm dev
+  const mongodbExplorerPath = path.join(__dirname, '..', 'mongodb-explorer');
   
-  const devProcess = spawn('node', [startDevPath], {
+  const devProcess = spawn('npm', ['run', 'dev'], {
     stdio: 'inherit',
-    env: process.env
+    cwd: mongodbExplorerPath,
+    env: process.env,
+    shell: true
   });
   
   devProcess.on('error', (err) => {
-    log(`❌ Failed to start dev servers: ${err.message}`, 'red');
+    log(`❌ Failed to start dev server: ${err.message}`, 'red');
     process.exit(1);
   });
   

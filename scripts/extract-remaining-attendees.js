@@ -85,30 +85,68 @@ async function extractRemainingAttendees() {
               }
             }];
             
-            // Create the new attendee document
+            // Create the new attendee document with ALL fields
             const newAttendee = {
               _id: newAttendeeId,
               
-              // Identity fields
+              // Core identity fields
               attendeeId: attendee.attendeeId || new ObjectId().toString(),
               firstName: attendee.firstName || '',
               lastName: attendee.lastName || '',
-              email: attendee.primaryEmail || attendee.email || null,
-              phone: attendee.primaryPhone || attendee.phone || null,
+              email: attendee.primaryEmail || attendee.email || '',
+              phone: attendee.primaryPhone || attendee.phone || '',
               
-              // Attendee details
+              // Title and name fields
+              title: attendee.title || '',
+              suffix: attendee.suffix || '',
+              postNominals: attendee.postNominals || '',
+              
+              // Type and status fields
               attendeeType: attendee.attendeeType || attendee.type || 'guest',
               isPrimary: attendee.isPrimary || false,
-              isPartner: attendee.isPartner || false,
-              partnerOf: attendee.partnerOf || null,
+              isCheckedIn: attendee.isCheckedIn || false,
+              firstTime: attendee.firstTime || false,
               
-              // Optional details
-              title: attendee.title || null,
-              rank: attendee.rank || null,
-              postNominals: attendee.postNominals || null,
-              dietaryRequirements: attendee.dietaryRequirements || null,
-              specialNeeds: attendee.specialNeeds || null,
-              notes: attendee.notes || null,
+              // Partner/relationship fields
+              partner: attendee.partner || null,
+              partnerOf: attendee.partnerOf || null,
+              isPartner: attendee.isPartner || null,
+              relationship: attendee.relationship || '',
+              guestOfId: attendee.guestOfId || null,
+              
+              // Contact preferences
+              contactPreference: attendee.contactPreference || 'directly',
+              contactConfirmed: attendee.contactConfirmed || false,
+              
+              // Dietary and special needs
+              dietaryRequirements: attendee.dietaryRequirements || attendee.dietary || '',
+              specialNeeds: attendee.specialNeeds || attendee.accessibility || '',
+              notes: attendee.notes || '',
+              
+              // Lodge/organization fields
+              rank: attendee.rank || '',
+              lodge: attendee.lodge || '',
+              lodge_id: attendee.lodge_id || attendee.lodgeId || attendee.lodgeOrganisationId || null,
+              lodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+              grand_lodge: attendee.grand_lodge || attendee.grandLodge || '',
+              grand_lodge_id: attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || null,
+              grandOfficerStatus: attendee.grandOfficerStatus || '',
+              useSameLodge: attendee.useSameLodge || false,
+              
+              // Organization (legacy field)
+              organization: attendee.organization || attendee.lodge || '',
+              
+              // Membership object for structured data
+              membership: {
+                GrandLodgeName: attendee.grand_lodge || attendee.grandLodge || '',
+                GrandLodgeId: attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || null,
+                LodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+                LodgeId: attendee.lodge_id || attendee.lodgeOrganisationId || attendee.lodgeId || null
+              },
+              
+              // Payment and table info
+              paymentStatus: attendee.paymentStatus || 'pending',
+              tableAssignment: attendee.tableAssignment || null,
               
               // Registration references
               registrations: [{
@@ -121,7 +159,7 @@ async function extractRemainingAttendees() {
                 bookingContactId: registrationInfo.bookingContactId
               }],
               
-              // Auth user ID (usually blank as you mentioned)
+              // Auth user ID
               authUserId: attendee.authUserId || attendee.auth_user_id || null,
               
               // Event tickets for this attendee
@@ -133,6 +171,7 @@ async function extractRemainingAttendees() {
               
               // Timestamps
               createdAt: attendee.createdAt || registration.createdAt || new Date(),
+              updatedAt: attendee.updatedAt || new Date(),
               modifiedAt: new Date(),
               
               // Modification tracking

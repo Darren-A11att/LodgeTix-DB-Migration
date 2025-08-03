@@ -117,22 +117,68 @@ async function extractAttendeesToCollection() {
             
             modificationHistory.push(creationEntry);
             
-            // Build the new attendee document
+            // Build the new attendee document with ALL fields
             const newAttendee = {
               _id: newAttendeeId,
               
-              // Original attendee fields
+              // Core identity fields
               attendeeId: attendee.attendeeId || attendee.id || newAttendeeId.toString(),
               firstName: attendee.firstName || attendee.first_name || '',
               lastName: attendee.lastName || attendee.last_name || '',
-              email: attendee.email || attendee.emailAddress || '',
-              phone: attendee.phone || attendee.phoneNumber || '',
+              email: attendee.primaryEmail || attendee.email || attendee.emailAddress || '',
+              phone: attendee.primaryPhone || attendee.phone || attendee.phoneNumber || '',
               
-              // Additional attendee fields if they exist
+              // Title and name fields
               title: attendee.title || '',
+              suffix: attendee.suffix || '',
+              postNominals: attendee.postNominals || '',
+              
+              // Type and status fields
+              attendeeType: attendee.attendeeType || attendee.type || 'guest',
+              isPrimary: attendee.isPrimary || false,
+              isCheckedIn: attendee.isCheckedIn || false,
+              firstTime: attendee.firstTime || false,
+              
+              // Partner/relationship fields
+              partner: attendee.partner || null,
+              partnerOf: attendee.partnerOf || null,
+              isPartner: attendee.isPartner || null,
+              relationship: attendee.relationship || '',
+              guestOfId: attendee.guestOfId || null,
+              
+              // Contact preferences
+              contactPreference: attendee.contactPreference || 'directly',
+              contactConfirmed: attendee.contactConfirmed || false,
+              
+              // Dietary and special needs
+              dietaryRequirements: attendee.dietaryRequirements || attendee.dietary || '',
+              specialNeeds: attendee.specialNeeds || attendee.accessibility || '',
+              notes: attendee.notes || '',
+              
+              // Lodge/organization fields
+              rank: attendee.rank || '',
+              lodge: attendee.lodge || '',
+              lodge_id: attendee.lodge_id || attendee.lodgeId || attendee.lodgeOrganisationId || null,
+              lodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+              grand_lodge: attendee.grand_lodge || attendee.grandLodge || '',
+              grand_lodge_id: attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || null,
+              grandOfficerStatus: attendee.grandOfficerStatus || '',
+              useSameLodge: attendee.useSameLodge || false,
+              
+              // Organization (legacy field)
               organization: attendee.organization || attendee.lodge || '',
-              dietary: attendee.dietary || attendee.dietaryRequirements || '',
-              accessibility: attendee.accessibility || attendee.accessibilityRequirements || '',
+              
+              // Membership object for structured data
+              membership: {
+                GrandLodgeName: attendee.grand_lodge || attendee.grandLodge || '',
+                GrandLodgeId: attendee.grand_lodge_id || attendee.grandLodgeOrganisationId || attendee.grandLodgeId || null,
+                LodgeNameNumber: attendee.lodgeNameNumber || attendee.lodge_name_number || '',
+                LodgeId: attendee.lodge_id || attendee.lodgeOrganisationId || attendee.lodgeId || null
+              },
+              
+              // Payment and table info
+              paymentStatus: attendee.paymentStatus || 'pending',
+              tableAssignment: attendee.tableAssignment || null,
               
               // Registration info
               registrations: [{
@@ -146,7 +192,7 @@ async function extractAttendeesToCollection() {
                 bookingContactId: registrationInfo.bookingContactId
               }],
               
-              // Auth user ID (usually blank as you mentioned)
+              // Auth user ID
               authUserId: attendee.authUserId || attendee.auth_user_id || null,
               
               // Event tickets for this attendee
@@ -158,6 +204,7 @@ async function extractAttendeesToCollection() {
               
               // Timestamps
               createdAt: attendee.createdAt || registration.createdAt || new Date(),
+              updatedAt: attendee.updatedAt || new Date(),
               modifiedAt: new Date(),
               
               // Modification tracking

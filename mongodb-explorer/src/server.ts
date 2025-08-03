@@ -12,6 +12,7 @@ import path from 'path';
 import { ObjectId } from 'mongodb';
 import { PaymentRegistrationMatcher, PaymentData } from './services/payment-registration-matcher';
 import { InvoicePreviewGenerator } from './services/invoice-preview-generator';
+import { NormalizedInvoicePreviewGenerator } from './services/invoice-preview-generator-normalized';
 import { InvoiceSequence } from './utils/invoice-sequence';
 import { DEFAULT_INVOICE_SUPPLIER } from './constants/invoice';
 import fs from 'fs/promises';

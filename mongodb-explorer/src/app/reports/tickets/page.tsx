@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import apiService from '@/lib/api';
+import TicketEditModal from '@/components/TicketEditModal';
+import OwnerEditModal from '@/components/OwnerEditModal';
 
 interface Ticket {
   ticketNumber: string;
@@ -11,6 +13,7 @@ interface Ticket {
   price: number;
   ownerType: string;
   ownerName: string;
+  ownerId?: string;
   attendeeType: string;
   partnerOfName: string;
   lodgeNameNumber: string;
@@ -39,8 +42,15 @@ export default function TicketsReportPage() {
   const [ownerTypeFilter, setOwnerTypeFilter] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string | null>(null);
+  const [selectedOwnerType, setSelectedOwnerType] = useState<'attendee' | 'lodge' | null>(null);
+  const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false);
 
   useEffect(() => {
+    console.log('🎫 MongoDB Explorer: Tickets Report Page loaded');
+    console.log('🎫 MongoDB Explorer: Running on port', window.location.port);
     fetchTicketsData();
   }, []);
 
@@ -53,11 +63,16 @@ export default function TicketsReportPage() {
   const fetchTicketsData = async () => {
     try {
       setLoading(true);
+      console.log('🎫 MongoDB Explorer: Fetching tickets data from API...');
       const result = await apiService.get('/reports/tickets');
+      console.log('🎫 MongoDB Explorer: Received tickets data:', {
+        totalTickets: result.tickets.length,
+        summary: result.summary
+      });
       setData(result);
       setFilteredTickets(result.tickets);
     } catch (err) {
-      console.error('Error fetching tickets:', err);
+      console.error('🎫 MongoDB Explorer: Error fetching tickets:', err);
       setError(err instanceof Error ? err.message : 'Failed to load tickets report');
     } finally {
       setLoading(false);
@@ -117,6 +132,40 @@ export default function TicketsReportPage() {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleTicketClick = (ticketNumber: string) => {
+    setSelectedTicketId(ticketNumber);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedTicketId(null);
+  };
+
+  const handleModalSave = () => {
+    // Refresh the tickets data after save
+    fetchTicketsData();
+  };
+
+  const handleOwnerClick = (ticket: Ticket) => {
+    if (ticket.ownerId && ticket.ownerType && (ticket.ownerType === 'attendee' || ticket.ownerType === 'lodge')) {
+      setSelectedOwnerId(ticket.ownerId);
+      setSelectedOwnerType(ticket.ownerType as 'attendee' | 'lodge');
+      setIsOwnerModalOpen(true);
+    }
+  };
+
+  const handleOwnerModalClose = () => {
+    setIsOwnerModalOpen(false);
+    setSelectedOwnerId(null);
+    setSelectedOwnerType(null);
+  };
+
+  const handleOwnerModalSave = () => {
+    // Refresh the tickets data after save
+    fetchTicketsData();
   };
 
   if (loading) {
@@ -275,7 +324,14 @@ export default function TicketsReportPage() {
                 filteredTickets.map((ticket, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {ticket.ticketNumber || '-'}
+                      {ticket.ticketNumber ? (
+                        <button
+                          onClick={() => handleTicketClick(ticket.ticketNumber)}
+                          className="text-blue-500 hover:text-blue-700 hover:underline"
+                        >
+                          {ticket.ticketNumber}
+                        </button>
+                      ) : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {ticket.name || '-'}
@@ -296,7 +352,14 @@ export default function TicketsReportPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {ticket.ownerName || '-'}
+                      {ticket.ownerName && ticket.ownerId ? (
+                        <button
+                          onClick={() => handleOwnerClick(ticket)}
+                          className="text-blue-500 hover:text-blue-700 hover:underline"
+                        >
+                          {ticket.ownerName}
+                        </button>
+                      ) : ticket.ownerName || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -351,6 +414,25 @@ export default function TicketsReportPage() {
             </tbody>
           </table>
       </div>
+
+      {selectedTicketId && (
+        <TicketEditModal
+          ticketId={selectedTicketId}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSave={handleModalSave}
+        />
+      )}
+
+      {selectedOwnerId && selectedOwnerType && (
+        <OwnerEditModal
+          ownerId={selectedOwnerId}
+          ownerType={selectedOwnerType}
+          isOpen={isOwnerModalOpen}
+          onClose={handleOwnerModalClose}
+          onSave={handleOwnerModalSave}
+        />
+      )}
     </main>
   );
 }
