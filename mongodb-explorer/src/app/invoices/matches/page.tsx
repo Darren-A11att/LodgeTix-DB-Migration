@@ -3426,26 +3426,38 @@ export default function InvoiceMatchesPage() {
                   <h3 className="text-lg font-semibold">Invoice Preview</h3>
                   <button
                     onClick={async () => {
-                      const invoiceWrapper = document.getElementById('invoice-preview');
-                      // Try to find the invoice component's root div
-                      let invoiceElement = invoiceWrapper?.querySelector('div[style*="backgroundColor"]') as HTMLElement;
-                      if (!invoiceElement && invoiceWrapper) {
-                        // Fallback: get the first child div
-                        invoiceElement = invoiceWrapper.querySelector('div') as HTMLElement;
-                      }
-                      if (invoiceElement) {
-                        try {
-                          // Wait a moment for any pending renders
-                          await new Promise(resolve => setTimeout(resolve, 100));
-                          
-                          const { downloadPDF } = await import('@/utils/pdf-generator');
-                          const filename = editableInvoice.invoiceNumber || `invoice_${Date.now()}`;
-                          console.log('Downloading PDF with filename:', filename);
-                          await downloadPDF(invoiceElement, filename);
-                        } catch (error) {
-                          console.error('Error downloading PDF:', error);
-                          alert('Failed to download PDF. Please try again.');
+                      try {
+                        const paymentToUse = selectedPayment || currentMatch?.payment;
+                        if (!paymentToUse?._id) {
+                          alert('No payment selected for invoice preview');
+                          return;
                         }
+                        // Call server preview endpoint (PDFKit, no side effects)
+                        const res = await fetch('/api/invoices/preview', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ paymentId: paymentToUse._id })
+                        });
+                        const data = await res.json();
+                        if (!res.ok || !data.pdfBase64) {
+                          throw new Error(data.error || 'Preview generation failed');
+                        }
+                        // Download the PDF
+                        const pdfBlob = new Blob(
+                          [Uint8Array.from(atob(data.pdfBase64), c => c.charCodeAt(0))],
+                          { type: 'application/pdf' }
+                        );
+                        const url = URL.createObjectURL(pdfBlob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${data.invoiceNumber || 'invoice'}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      } catch (error) {
+                        console.error('Error downloading server PDF:', error);
+                        alert('Failed to download server-generated PDF.');
                       }
                     }}
                     className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center gap-2"

@@ -86,11 +86,14 @@ export class UnifiedInvoiceService {
   constructor(db: Db) {
     this.db = db;
     
-    // Initialize Supabase if credentials available
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+    // Initialize Supabase (prefer service role for server automation)
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
+    const anonKey = process.env.SUPABASE_ANON_KEY;
+    if (supabaseUrl && (serviceRoleKey || anonKey)) {
       this.supabase = createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_ANON_KEY
+        supabaseUrl,
+        serviceRoleKey || anonKey as string
       );
     }
   }
@@ -184,6 +187,22 @@ export class UnifiedInvoiceService {
         error: error.message
       };
     }
+  }
+
+  /**
+   * Generate a preview PDF on the server without side effects
+   */
+  async generatePreview(paymentId: string): Promise<{ invoiceNumber: string; pdfBuffer: Buffer; }> {
+    // Fetch payment
+    const payment = await this.db.collection('payments').findOne({ _id: new ObjectId(paymentId) });
+    if (!payment) throw new Error('Payment not found');
+    if (!payment.matchedRegistrationId) throw new Error('Payment has no matched registration');
+
+    // Build invoice data (does not persist anything)
+    const invoiceData = await this.generateInvoiceData(payment);
+    // Render PDF (server PDFKit)
+    const pdfBuffer = await this.createPDF(invoiceData);
+    return { invoiceNumber: invoiceData.invoiceNumber, pdfBuffer };
   }
 
   /**
@@ -318,11 +337,14 @@ export class UnifiedInvoiceService {
       });
     } catch (error) {
       console.error('[InvoiceService] PDF generation failed:', error);
-      // Last resort: try jsPDF directly
-      return await PDFGeneratorService.generatePDF({
-        invoiceData,
-        preferredEngine: 'jspdf'
-      });
+      // Only attempt jsPDF fallback in the browser
+      if (typeof window !== 'undefined') {
+        return await PDFGeneratorService.generatePDF({
+          invoiceData,
+          preferredEngine: 'jspdf'
+        });
+      }
+      throw error;
     }
   }
 

@@ -4,8 +4,9 @@ export class PuppeteerEngine implements PDFEngine {
   name = 'puppeteer';
 
   async isAvailable(): Promise<boolean> {
-    // Check if we're in a server environment where Puppeteer can run
-    return typeof window === 'undefined' && process.env.VERCEL !== '1';
+    // This engine calls our API route, so it can run in both
+    // browser and server environments as long as fetch is available.
+    return true;
   }
 
   async generatePDF(

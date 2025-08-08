@@ -20,8 +20,8 @@ export class PDFEngineFactory {
       preferredEngine = localStorage.getItem('pdfEngine') || undefined;
     }
 
-    // Determine which engine to use
-    const enginePreference = preferredEngine || process.env.NEXT_PUBLIC_PDF_ENGINE || 'jspdf';
+    // Determine which engine to use (prefer server-based by default)
+    const enginePreference = preferredEngine || process.env.NEXT_PUBLIC_PDF_ENGINE || 'puppeteer';
 
     // Try preferred engine first
     if (enginePreference === 'jspdf' && await this.jspdfEngine.isAvailable()) {

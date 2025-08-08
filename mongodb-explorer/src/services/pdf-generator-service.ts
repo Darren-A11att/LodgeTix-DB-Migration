@@ -2,11 +2,10 @@
  * PDF Generator Service
  * 
  * Handles PDF generation with fallback support for different environments
- * Primary: PDFKit (better quality, works in most environments)
- * Fallback: jsPDF (works everywhere but lower quality)
+ * Primary: PDFKit (server-based, higher quality)
+ * Fallback: jsPDF (browser-only fallback)
  */
 
-import jsPDF from 'jspdf';
 
 export interface PDFGeneratorOptions {
   invoiceData: any;
@@ -25,13 +24,20 @@ export class PDFGeneratorService {
       try {
         return await this.generateWithPDFKit(invoiceData);
       } catch (error) {
-        console.warn('PDFKit failed, falling back to jsPDF:', error.message);
-        return await this.generateWithJsPDF(invoiceData);
+        console.warn('PDFKit failed:', (error as any)?.message || error);
+        // Only attempt jsPDF fallback in browser environments
+        if (typeof window !== 'undefined') {
+          return await this.generateWithJsPDF(invoiceData);
+        }
+        throw error;
       }
     }
     
-    // Use jsPDF directly
-    return await this.generateWithJsPDF(invoiceData);
+    // Use jsPDF directly (browser-only)
+    if (typeof window !== 'undefined') {
+      return await this.generateWithJsPDF(invoiceData);
+    }
+    throw new Error('jsPDF fallback is not available on the server');
   }
   
   /**
@@ -42,9 +48,10 @@ export class PDFGeneratorService {
     let PDFDocument: any;
     
     if (typeof window === 'undefined') {
-      // Server environment - use dynamic import to avoid Next.js bundling issues
+      // Server environment - use dynamic import with fallback for CJS/ESM interop
       try {
-        PDFDocument = (await import('pdfkit')).default;
+        const mod: any = await import('pdfkit');
+        PDFDocument = mod?.default || mod; // Support both default and named export
       } catch (error) {
         console.error('[PDFKit] Failed to load PDFKit:', error);
         throw new Error('PDFKit not available in server environment');
@@ -105,6 +112,10 @@ export class PDFGeneratorService {
    * Generate PDF using jsPDF (works everywhere)
    */
   private static async generateWithJsPDF(invoiceData: any): Promise<Buffer> {
+    // Lazy-load jsPDF to avoid server-side import issues
+    const mod = await import('jspdf');
+    const { jsPDF } = mod as any;
+
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
