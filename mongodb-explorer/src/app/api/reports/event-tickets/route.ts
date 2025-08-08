@@ -25,12 +25,17 @@ interface EventTicketSalesData {
 
 export async function GET(request: NextRequest) {
   try {
-    const { db } = await connectMongoDB();
+    const { client } = await connectMongoDB();
     
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
     const format = searchParams.get('format') || 'json';
     const eventId = searchParams.get('eventId');
+    const database = searchParams.get('database');
+    
+    // Use the specified database or default
+    const dbName = database === 'lodgetix' ? 'lodgetix' : process.env.MONGODB_DB;
+    const db = client.db(dbName);
     
     // Build query for eventTickets_computed
     const eventTicketsQuery: any = {};

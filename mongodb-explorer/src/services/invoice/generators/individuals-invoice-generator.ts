@@ -57,8 +57,8 @@ export class IndividualsInvoiceGenerator extends BaseInvoiceGenerator {
       // We have the full payment amount, work backwards to get fees
       totals = calculateCustomerInvoiceTotalsFromTotal(paymentAmount, paymentInfo.source);
     } else {
-      // Calculate fees from subtotal
-      totals = calculateCustomerInvoiceTotals(itemsSubtotal, paymentInfo.source);
+      // Calculate fees from subtotal, using actual fees if available
+      totals = calculateCustomerInvoiceTotals(itemsSubtotal, paymentInfo.source, paymentInfo.fees);
     }
     
     // Extract billing details

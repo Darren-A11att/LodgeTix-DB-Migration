@@ -210,16 +210,21 @@ export default function InvoicesListPage() {
       payments.slice(0, 3).forEach((payment, index) => {
         console.log(`Payment ${index}:`, {
           _id: payment._id,
-          transactionId: payment.transactionId,
-          paymentId: payment.paymentId,
-          customerEmail: payment.customerEmail,
-          'Customer Email': payment['Customer Email'],
-          amount: payment.amount || payment.grossAmount,
-          timestamp: payment.timestamp,
-          source: payment.source,
-          customerName: payment.customerName,
-          hasOriginalData: !!payment.originalData,
-          originalDataCustomerEmail: payment.originalData?.['Customer Email'],
+          id: payment.id,                                    // Unified ID
+          sourcePaymentId: payment.sourcePaymentId,          // Unified source payment ID
+          transactionId: payment.id || payment.transactionId, // Unified transaction ID
+          paymentId: payment.paymentId,                      // Legacy field
+          customerEmail: payment.customerEmail,              // Unified customer email
+          'Customer Email': payment['Customer Email'],       // Legacy field
+          amount: payment.amount,                            // Unified amount (in dollars)
+          createdAt: payment.createdAt,                      // Unified timestamp
+          timestamp: payment.timestamp,                      // Legacy timestamp
+          source: payment.source,                            // Unified source
+          currency: payment.currency,                        // Unified currency
+          status: payment.status,                            // Unified status
+          customerName: payment.customerName,                // Unified customer name
+          hasRawData: !!payment.rawData,                     // Unified raw data
+          hasOriginalData: !!payment.originalData,           // Legacy field
           allTopLevelKeys: Object.keys(payment).sort()
         });
       });
@@ -714,7 +719,7 @@ export default function InvoicesListPage() {
                 >
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900 break-all">
-                      {match.payment.transactionId || match.payment.paymentId || match.payment._id || 'N/A'}
+                      {match.payment.id || match.payment.sourcePaymentId || match.payment.transactionId || match.payment.paymentId || match.payment._id || 'N/A'}
                     </div>
                     <div className="text-sm text-gray-500 break-words">
                       {(() => {
@@ -722,17 +727,17 @@ export default function InvoicesListPage() {
                         if (match.invoice?.customerInvoice?.billTo?.email) {
                           return match.invoice.customerInvoice.billTo.email;
                         }
-                        // Otherwise fall back to payment email search
+                        // Use unified customer email field first, then fallback
                         return match.payment.customerEmail || findEmailInPayment(match.payment) || 'No email';
                       })()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {new Date(match.payment.timestamp || match.payment.createdAt).toLocaleDateString()}
+                      {new Date(match.payment.createdAt || match.payment.timestamp).toLocaleDateString()}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {new Date(match.payment.timestamp || match.payment.createdAt).toLocaleTimeString()}
+                      {new Date(match.payment.createdAt || match.payment.timestamp).toLocaleTimeString()}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -751,7 +756,7 @@ export default function InvoicesListPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      ${toNumber(match.payment.amount || match.payment.grossAmount || 0)}
+                      {match.payment.currency || 'AUD'} ${toNumber(match.payment.amount || match.payment.grossAmount || 0)}
                     </div>
                     {match.registration && (
                       <div className="text-sm text-gray-500">

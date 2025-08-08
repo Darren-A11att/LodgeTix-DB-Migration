@@ -63,14 +63,15 @@ export abstract class BaseInvoiceGenerator {
 
   /**
    * Get invoice date from payment
+   * Updated to use unified payment structure with backward compatibility
    */
   protected getInvoiceDate(options: InvoiceGeneratorOptions): Date {
     const { payment } = options;
     
-    // Try various date fields
-    const dateValue = payment.paymentDate || 
-                     payment.timestamp || 
-                     payment.createdAt || 
+    // Try unified structure first, then legacy fields
+    const dateValue = payment.createdAt ||         // Unified structure
+                     payment.paymentDate ||        // Legacy field
+                     payment.timestamp ||          // Legacy field
                      new Date();
     
     // Ensure it's a Date object
@@ -94,15 +95,17 @@ export abstract class BaseInvoiceGenerator {
 
   /**
    * Get invoice status based on payment status
+   * Updated to use unified payment status structure
    */
   protected getInvoiceStatus(paymentStatus?: string): 'paid' | 'pending' | 'cancelled' {
     const normalized = (paymentStatus || '').toLowerCase();
     
-    if (['paid', 'completed', 'succeeded', 'success'].includes(normalized)) {
+    // Handle unified status values
+    if (['completed', 'paid', 'succeeded', 'success'].includes(normalized)) {
       return 'paid';
     }
     
-    if (['cancelled', 'canceled', 'failed', 'refunded'].includes(normalized)) {
+    if (['failed', 'cancelled', 'canceled', 'refunded'].includes(normalized)) {
       return 'cancelled';
     }
     
@@ -124,11 +127,13 @@ export abstract class BaseInvoiceGenerator {
 
   /**
    * Get function name with fallback
+   * Updated to use unified payment structure event context
    */
   protected getFunctionName(options: InvoiceGeneratorOptions): string {
     return options.functionName || 
            options.registration.functionName || 
            options.relatedDocuments?.functionDetails?.name ||
+           options.payment.event?.functionName ||
            'Event';
   }
 

@@ -39,12 +39,191 @@ export interface InvoicePayment {
   method: string;
   transactionId: string;
   paidDate: string | Date;
-  amount: number;
-  currency: string;
-  last4?: string;
+  amount: number;                     // Amount in dollars (unified)
+  currency: string;                   // Uppercase currency code
+  last4?: string;                     // Unified field name
   cardBrand?: string;
+  status: string;                     // Normalized status
+  source: 'stripe' | 'square';       // Payment source
+  sourcePaymentId?: string;           // Original ID from source
+  receiptUrl?: string;                // Square receipt URL
+  fees?: number;                      // Total fees
+}
+
+// Comprehensive unified payment structure
+export interface UnifiedPayment {
+  // Core Identity
+  id: string;
+  sourcePaymentId: string;
+  source: 'stripe' | 'square';
+  
+  // Import Metadata
+  importId: string;
+  importedAt: Date;
+  importedBy: string;
+  processingStatus: string;
+  processed: boolean;
+  processedAt?: Date;
+  
+  // Account/Location
+  accountName?: string;
+  accountNumber?: number;
+  locationId?: string;
+  
+  // Amounts (normalized to dollars)
+  amount: number;
+  amountFormatted: string;
+  currency: string;
+  fees: number;
+  netAmount: number;
+  
+  // Fees Breakdown
+  feeDetails: {
+    platformFee?: number;
+    stripeFee?: number;
+    squareFee?: number;
+    platformFeePercentage?: number;
+    processingFees?: Array<{
+      type: string;
+      amount: number;
+      effectiveAt: Date;
+    }>;
+  };
+  
+  // Status
   status: string;
-  source: string;
+  statusOriginal: string;
+  
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+  paymentDate: Date;
+  closedAt?: Date;
+  
+  // Customer Data
+  customer: {
+    id?: string;
+    email?: string;
+    name?: string;
+    givenName?: string;
+    familyName?: string;
+    phone?: string;
+    creationSource?: string;
+    preferences?: {
+      emailUnsubscribed?: boolean;
+    };
+  };
+  
+  // Billing Address
+  billingAddress?: {
+    line1?: string;
+    line2?: string;
+    locality?: string;
+    region?: string;
+    postalCode?: string;
+    country?: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  
+  // Payment Method
+  paymentMethod: {
+    type: string;
+    id?: string;
+    brand?: string;
+    last4?: string;
+    expMonth?: number;
+    expYear?: number;
+    fingerprint?: string;
+    cardType?: string;
+    prepaidType?: string;
+    bin?: string;
+    entryMethod?: string;
+    cvvStatus?: string;
+    avsStatus?: string;
+    authResultCode?: string;
+    statementDescriptor?: string;
+  };
+  
+  // Order Details
+  order?: {
+    id: string;
+    reference?: string;
+    state?: string;
+    lineItems?: Array<{
+      id: string;
+      name?: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+      note?: string;
+      type?: string;
+    }>;
+    totalAmount?: number;
+    totalTax?: number;
+    totalDiscount?: number;
+    totalTip?: number;
+    totalServiceCharge?: number;
+    source?: {
+      name: string;
+    };
+  };
+  
+  // Receipt Info
+  receipt?: {
+    url?: string;
+    number?: string;
+    email?: string;
+  };
+  
+  // Event/Function Context
+  event?: {
+    id?: string;
+    functionId?: string;
+    registrationId?: string;
+    registrationType?: string;
+    confirmationNumber?: string;
+    sessionId?: string;
+  };
+  
+  // Organization Context
+  organization?: {
+    id?: string;
+    name?: string;
+    type?: string;
+  };
+  
+  // Metadata
+  metadata?: {
+    appVersion?: string;
+    deviceType?: string;
+    environment?: string;
+    isDomestic?: string;
+    ticketsCount?: number;
+    totalAttendees?: number;
+    subtotal?: number;
+    [key: string]: any;
+  };
+  
+  // Risk Evaluation
+  risk?: {
+    level?: string;
+    score?: number;
+    evaluatedAt?: Date;
+  };
+  
+  // Transfer/Destination
+  transfer?: {
+    destinationAccount?: string;
+    transferGroup?: string;
+    amount?: number;
+  };
+  
+  // Raw Data Preservation
+  rawData: {
+    stripe?: any;
+    square?: any;
+  };
 }
 
 export interface Invoice {
@@ -135,24 +314,41 @@ export interface RegistrationData {
 
 export interface PaymentData {
   _id?: string;
-  paymentId?: string;
-  transactionId?: string;
-  amount?: number;
-  grossAmount?: number;
+  id?: string;                        // Unified payment ID
+  paymentId?: string;                 // Legacy field, now maps to id
+  sourcePaymentId?: string;           // Original ID from source system
+  source: 'stripe' | 'square';       // Payment source
+  transactionId?: string;             // Legacy field
+  amount: number;                     // Amount in dollars (unified structure)
+  grossAmount?: number;               // Legacy field
   fees?: number;
-  currency?: string;
+  currency: string;                   // Uppercase currency code
   paymentMethod?: string;
-  paymentDate?: string | Date;
-  timestamp?: string | Date;
-  createdAt?: string | Date;
-  customerEmail?: string;
-  customerName?: string;
+  paymentDate?: string | Date;        // Legacy field
+  createdAt: Date;                    // ISO 8601 timestamp (unified)
+  timestamp?: string | Date;          // Legacy field
+  customerEmail: string;              // Unified customer email
+  customerName?: string;              // Unified customer name
+  customerId?: string;                // Unified customer ID
+  orderId?: string;                   // Square order reference
+  registrationId?: string;            // From metadata (Stripe) or order ref
+  receiptEmail?: string;              // For invoice delivery
   cardLast4?: string;
   cardBrand?: string;
-  status?: string;
-  source?: string;
-  sourceFile?: string;
-  originalData?: any;
+  last4?: string;                     // Unified field name
+  status: string;                     // Normalized status
+  statusOriginal?: string;            // Original status from source
+  billingAddress?: {                  // Complete address object
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    stateProvince?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  sourceFile?: string;                // Legacy field
+  originalData?: any;                 // Legacy field
+  rawData?: any;                      // Complete original response (unified)
   [key: string]: any;
 }
 

@@ -50,20 +50,38 @@ export async function GET(request: NextRequest) {
           
           // Get attendee type from attendee document
           attendeeType = attendee.attendeeType || '';
-          // Get lodge name and number from attendee document - use new structure
-          if (attendee.membership?.lodgeName || attendee.membership?.lodgeNumber) {
-            lodgeNameNumber = `${attendee.membership.lodgeName || ''} ${attendee.membership.lodgeNumber || ''}`.trim();
-          }
           
-          // Look up partner information
+          // Get lodge name and number
+          let partnerAttendee = null;
+          
+          // Look up partner information first (we'll need it for lodge info too)
           if (attendee.partner || attendee.partnerOf) {
             const partnerAttendeeId = attendee.partner || attendee.partnerOf;
-            const partnerAttendee = await attendeesCollection.findOne({ attendeeId: partnerAttendeeId });
+            partnerAttendee = await attendeesCollection.findOne({ attendeeId: partnerAttendeeId });
             if (partnerAttendee) {
               const partnerName = `${partnerAttendee.title || ''} ${partnerAttendee.firstName || ''} ${partnerAttendee.lastName || ''} ${partnerAttendee.suffix || ''}`.trim();
               // Use relationship from the partner attendee
               const relationship = partnerAttendee.relationship || '';
               partnerOfName = relationship ? `${partnerName} (${relationship})` : partnerName;
+            }
+          }
+          
+          // Set lodge name/number based on attendee type
+          if (attendee.attendeeType === 'guest' && partnerAttendee && partnerAttendee.attendeeType === 'mason') {
+            // For guests with mason partners, use partner's lodge info
+            if (partnerAttendee.membership?.name || partnerAttendee.constitution?.abbreviation) {
+              const parts = [];
+              if (partnerAttendee.membership?.name) parts.push(partnerAttendee.membership.name);
+              if (partnerAttendee.constitution?.abbreviation) parts.push(partnerAttendee.constitution.abbreviation);
+              lodgeNameNumber = parts.join(' | ');
+            }
+          } else {
+            // For all others, use their own membership info
+            if (attendee.membership?.name || attendee.constitution?.abbreviation) {
+              const parts = [];
+              if (attendee.membership?.name) parts.push(attendee.membership.name);
+              if (attendee.constitution?.abbreviation) parts.push(attendee.constitution.abbreviation);
+              lodgeNameNumber = parts.join(' | ');
             }
           }
         } else {
@@ -90,9 +108,15 @@ export async function GET(request: NextRequest) {
         }
       }
       
-      // Look up registration for confirmation number
+      // Look up registration for confirmation number using details.registrationId
       let confirmationNumber = '';
-      if (ticket.registrationId) {
+      if (ticket.details?.registrationId) {
+        const registration = await registrationsCollection.findOne({ registrationId: ticket.details.registrationId });
+        if (registration) {
+          confirmationNumber = registration.confirmationNumber || '';
+        }
+      } else if (ticket.registrationId) {
+        // Fallback to top-level registrationId if details.registrationId doesn't exist
         const registration = await registrationsCollection.findOne({ registrationId: ticket.registrationId });
         if (registration) {
           confirmationNumber = registration.confirmationNumber || '';

@@ -106,6 +106,16 @@ export class SquarePaymentImportService {
             
             // Insert into payment_imports collection
             await this.db.collection<PaymentImport>('payment_imports').insertOne(paymentImport);
+            
+            // Also insert to unified 'payments' collection for new unified structure
+            if (paymentImport.unifiedPayment) {
+              try {
+                await this.db.collection('payments').insertOne(paymentImport.unifiedPayment);
+              } catch (unifiedError) {
+                console.warn(`Warning: Could not add to unified payments - ${unifiedError}`);
+              }
+            }
+            
             batch.importedPayments++;
             
           } catch (error) {
@@ -188,7 +198,7 @@ export class SquarePaymentImportService {
   }
   
   /**
-   * Convert Square payment to PaymentImport format
+   * Convert Square payment to PaymentImport format with unified structure
    */
   private async convertToPaymentImport(
     squarePayment: any,
@@ -240,12 +250,47 @@ export class SquarePaymentImportService {
       }
     }
     
+    // Create unified payment structure
+    const unifiedPayment = {
+      // Core Identity (unified schema)
+      id: `square_${squarePayment.id}`, // Unified payment ID
+      sourcePaymentId: squarePayment.id, // Original ID from source
+      source: 'square' as const,
+      
+      // Amount Fields (normalized)
+      amount: amountInDollars,
+      currency: currency.toUpperCase(),
+      
+      // Status (normalized)
+      status: this.normalizeSquareStatus(squarePayment.status || 'UNKNOWN'),
+      statusOriginal: squarePayment.status || 'UNKNOWN',
+      
+      // Timestamps
+      createdAt: new Date(squarePayment.createdAt!),
+      
+      // Customer Data
+      customerEmail: squarePayment.buyerEmailAddress || null,
+      customerName: customerName || null,
+      customerId: squarePayment.customerId || null,
+      
+      // References
+      orderId: squarePayment.orderId || null,
+      registrationId: null, // Will be populated by matching logic
+      
+      // Invoice Fields
+      receiptEmail: squarePayment.buyerEmailAddress || null,
+      billingAddress: this.extractBillingAddress(squarePayment),
+      
+      // Preserve Original
+      rawData: squarePayment
+    };
+    
     const paymentImport: PaymentImport = {
       importId,
       importedAt: new Date(),
       importedBy,
       
-      // Square Payment Data
+      // Legacy Square Payment Data (for backward compatibility)
       squarePaymentId: squarePayment.id!,
       transactionId: squarePayment.id!,
       amount: amountInDollars,
@@ -255,12 +300,12 @@ export class SquarePaymentImportService {
       createdAt: new Date(squarePayment.createdAt!),
       updatedAt: new Date(squarePayment.updatedAt || squarePayment.createdAt!),
       
-      // Customer Information
+      // Customer Information (legacy)
       customerEmail: squarePayment.buyerEmailAddress,
       customerName,
       buyerId: squarePayment.customerId,
       
-      // Payment Details
+      // Payment Details (legacy)
       paymentMethod: squarePayment.sourceType,
       cardBrand: cardDetails?.cardBrand,
       last4: cardDetails?.last4,
@@ -269,14 +314,14 @@ export class SquarePaymentImportService {
       // Processing Status
       processingStatus: 'pending',
       
-      // Location Info
+      // Location Info (legacy)
       locationId: squarePayment.locationId,
       
-      // Order Info
+      // Order Info (legacy)
       orderId: squarePayment.orderId,
       orderReference,
       
-      // Metadata
+      // Metadata (legacy)
       metadata: {
         ...squarePayment.metadata,
         orderDetails: orderDetails ? {
@@ -286,11 +331,68 @@ export class SquarePaymentImportService {
         } : undefined
       },
       
-      // Raw data for reference
-      rawSquareData: squarePayment
+      // Raw data for reference (legacy)
+      rawSquareData: squarePayment,
+      
+      // NEW: Unified payment structure
+      unifiedPayment: unifiedPayment
     };
     
     return paymentImport;
+  }
+  
+  /**
+   * Normalize Square payment status to unified status
+   */
+  private normalizeSquareStatus(squareStatus: string): 'completed' | 'pending' | 'failed' | 'refunded' | 'cancelled' {
+    const STATUS_MAP: Record<string, 'completed' | 'pending' | 'failed' | 'refunded' | 'cancelled'> = {
+      'COMPLETED': 'completed',
+      'FAILED': 'failed',
+      'REFUNDED': 'refunded',
+      'CANCELED': 'cancelled',
+      'PENDING': 'pending'
+    };
+    
+    return STATUS_MAP[squareStatus] || 'pending';
+  }
+  
+  /**
+   * Extract billing address for invoice generation
+   */
+  private extractBillingAddress(payment: any) {
+    // Try billing address first
+    if (payment.billingAddress) {
+      return {
+        name: payment.billingAddress.name || null,
+        firstName: payment.billingAddress.firstName || null,
+        lastName: payment.billingAddress.lastName || null,
+        addressLine1: payment.billingAddress.addressLine1 || null,
+        addressLine2: payment.billingAddress.addressLine2 || null,
+        locality: payment.billingAddress.locality || null,
+        administrativeDistrictLevel1: payment.billingAddress.administrativeDistrictLevel1 || null,
+        postalCode: payment.billingAddress.postalCode || null,
+        country: payment.billingAddress.country || null,
+        phone: payment.billingAddress.phone || null
+      };
+    }
+    
+    // Try shipping address as fallback
+    if (payment.shippingAddress) {
+      return {
+        name: payment.shippingAddress.name || null,
+        firstName: payment.shippingAddress.firstName || null,  
+        lastName: payment.shippingAddress.lastName || null,
+        addressLine1: payment.shippingAddress.addressLine1 || null,
+        addressLine2: payment.shippingAddress.addressLine2 || null,
+        locality: payment.shippingAddress.locality || null,
+        administrativeDistrictLevel1: payment.shippingAddress.administrativeDistrictLevel1 || null,
+        postalCode: payment.shippingAddress.postalCode || null,
+        country: payment.shippingAddress.country || null,
+        phone: payment.shippingAddress.phone || null
+      };
+    }
+    
+    return null;
   }
   
   /**

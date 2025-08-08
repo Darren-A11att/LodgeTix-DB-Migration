@@ -78,7 +78,7 @@ async function fixTicketSchemaIssues() {
           name: eventTicketInfo.name,
           price: ticket.price || eventTicketInfo.price || 0,
           quantity: ticket.quantity || 1,
-          ownerType: reg.registrationType === 'lodge' ? 'lodge' : 'individual',
+          ownerType: reg.registrationType === 'lodge' ? 'lodge' : 'attendee',
           status: 'sold'
         };
 
@@ -143,7 +143,7 @@ async function fixTicketSchemaIssues() {
           name: ticket.name || eventTicketInfo.name,
           price: ticket.price ?? eventTicketInfo.price ?? 0,
           quantity: ticket.quantity || 1,
-          ownerType: ticket.ownerType || (reg.registrationType === 'lodge' ? 'lodge' : 'individual'),
+          ownerType: ticket.ownerType || (reg.registrationType === 'lodge' ? 'lodge' : 'attendee'),
           status: ticket.status || 'sold'
         };
 

@@ -47,12 +47,13 @@ export default function TicketsReportPage() {
   const [selectedOwnerId, setSelectedOwnerId] = useState<string | null>(null);
   const [selectedOwnerType, setSelectedOwnerType] = useState<'attendee' | 'lodge' | null>(null);
   const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false);
+  const [selectedDatabase, setSelectedDatabase] = useState('main');
 
   useEffect(() => {
     console.log('🎫 MongoDB Explorer: Tickets Report Page loaded');
     console.log('🎫 MongoDB Explorer: Running on port', window.location.port);
     fetchTicketsData();
-  }, []);
+  }, [selectedDatabase]);
 
   useEffect(() => {
     if (data) {
@@ -64,10 +65,14 @@ export default function TicketsReportPage() {
     try {
       setLoading(true);
       console.log('🎫 MongoDB Explorer: Fetching tickets data from API...');
-      const result = await apiService.get('/reports/tickets');
+      const url = selectedDatabase === 'lodgetix' 
+        ? '/reports/tickets?database=lodgetix'
+        : '/reports/tickets';
+      const result = await apiService.get(url);
       console.log('🎫 MongoDB Explorer: Received tickets data:', {
         totalTickets: result.tickets.length,
-        summary: result.summary
+        summary: result.summary,
+        database: selectedDatabase
       });
       setData(result);
       setFilteredTickets(result.tickets);
@@ -202,8 +207,23 @@ export default function TicketsReportPage() {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Tickets Report</h1>
-        <p className="text-gray-600">All tickets from registrations with owner details and invoice information</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Tickets Report</h1>
+            <p className="text-gray-600">All tickets from registrations with owner details and invoice information</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+            <select
+              value={selectedDatabase}
+              onChange={(e) => setSelectedDatabase(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="main">Main Database</option>
+              <option value="lodgetix">Lodgetix Database</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -340,7 +360,7 @@ export default function TicketsReportPage() {
                       {ticket.quantity}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${(ticket.price || 0).toFixed(2)}
+                      ${(Number(ticket.price) || 0).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

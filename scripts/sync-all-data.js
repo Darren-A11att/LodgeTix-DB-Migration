@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '../../.env.local' });
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -22,7 +22,7 @@ const { MongoClient } = require('mongodb');
 // Load sync configuration
 let syncConfig = {};
 try {
-  const configPath = path.join(__dirname, '..', '.sync-config.json');
+  const configPath = path.join(__dirname, '../..', '.sync-config.json');
   if (fs.existsSync(configPath)) {
     syncConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   }
@@ -42,6 +42,8 @@ const CONFIG = {
   
   // Feature flags
   SKIP_SQUARE_IMPORT: process.env.SKIP_SQUARE_IMPORT === 'true',
+  SKIP_STRIPE_IMPORT: process.env.SKIP_STRIPE_IMPORT === 'true',
+  SKIP_STRIPE_CONNECT_IMPORT: process.env.SKIP_STRIPE_CONNECT_IMPORT === 'true',
   SKIP_SUPABASE_IMPORT: process.env.SKIP_SUPABASE_IMPORT === 'true',
   SKIP_INVOICE_GENERATION: process.env.SKIP_INVOICE_GENERATION === 'true' || 
                            syncConfig.sync?.invoices?.skipGeneration === true ||
@@ -164,40 +166,36 @@ async function syncAllData() {
   try {
     await mongoClient.connect();
     
-    // Step 1: Import payments from Square to staging
+    // Step 1: Import payments from payment providers to staging
+    let paymentImportStep = 1;
+    
+    // Step 1a: Import Square payments
     if (!CONFIG.SKIP_SQUARE_IMPORT) {
-      logger.info('\n💳 Step 1: Importing Square payments to staging');
+      logger.info(`\n💳 Step ${paymentImportStep}a: Importing Square payments to staging`);
       const stepStart = Date.now();
       try {
         // Import all Square payments to staging collection
-        const result = await runScript(
-          path.join(__dirname, 'sync-all-square-payments.js'),
-          [],
-          'Import all Square payments to staging'
-        );
+        const { syncAllSquarePayments } = require('./sync-all-square-payments.js');
+        const squareResults = await syncAllSquarePayments();
         
-        // Track imported payments
-        const importedPayments = await db.collection('payment_imports').find({
-          importId: { $exists: true },
-          importedAt: { $gte: importLog.startedAt }
-        }).toArray();
-        
-        importLog.success.payments = importedPayments.map(p => ({
-          paymentId: p.squarePaymentId || p.stripePaymentId,
-          objectId: p._id.toString()
-        }));
+        // Aggregate Square import results
+        if (squareResults) {
+          importLog.success.payments.push(...(squareResults.success.payments || []));
+          importLog.success.registrations.push(...(squareResults.success.registrations || []));
+          importLog.failures.push(...(squareResults.failures || []));
+        }
         
         importLog.steps.push({
-          step: 1,
+          step: `${paymentImportStep}a`,
           name: 'Import Square Payments',
           status: 'success',
           duration: Date.now() - stepStart,
-          itemsProcessed: importedPayments.length
+          itemsProcessed: squareResults ? squareResults.success.payments.filter(p => p.action === 'IMPORTED').length : 0
         });
       } catch (error) {
         logger.error('Square sync failed', { error: error.message });
         importLog.failures.push({
-          step: 1,
+          step: `${paymentImportStep}a`,
           type: 'payment',
           error: error.message,
           timestamp: new Date()
@@ -205,12 +203,101 @@ async function syncAllData() {
         throw new Error('Square payment sync is critical for payment verification. Fix the error or use --skip-square flag.');
       }
     } else {
-      logger.info('\n⏭️  Step 1: Skipping Square import (SKIP_SQUARE_IMPORT=true)');
+      logger.info(`\n⏭️  Step ${paymentImportStep}a: Skipping Square import (SKIP_SQUARE_IMPORT=true)`);
       importLog.steps.push({
-        step: 1,
+        step: `${paymentImportStep}a`,
         name: 'Import Square Payments',
         status: 'skipped',
         reason: 'SKIP_SQUARE_IMPORT=true'
+      });
+    }
+    
+    // Step 1b: Import Stripe payments
+    if (!CONFIG.SKIP_STRIPE_IMPORT) {
+      logger.info(`\n💳 Step ${paymentImportStep}b: Importing Stripe payments to staging`);
+      const stepStart = Date.now();
+      try {
+        // Import all Stripe payments to staging collection (multi-account version)
+        const { syncAllStripePayments } = require('./sync-all-stripe-payments-multi-account.js');
+        const stripeResults = await syncAllStripePayments();
+        
+        // Aggregate Stripe import results
+        if (stripeResults) {
+          importLog.success.payments.push(...(stripeResults.success.payments || []));
+          importLog.success.registrations.push(...(stripeResults.success.registrations || []));
+          importLog.failures.push(...(stripeResults.failures || []));
+        }
+        
+        importLog.steps.push({
+          step: `${paymentImportStep}b`,
+          name: 'Import Stripe Payments',
+          status: 'success',
+          duration: Date.now() - stepStart,
+          itemsProcessed: stripeResults ? stripeResults.success.payments.filter(p => p.action === 'IMPORTED').length : 0
+        });
+      } catch (error) {
+        logger.error('Stripe sync failed', { error: error.message });
+        importLog.failures.push({
+          step: `${paymentImportStep}b`,
+          type: 'payment',
+          error: error.message,
+          timestamp: new Date()
+        });
+        // Stripe sync is not critical, continue with other steps
+        logger.info('Continuing with other sync steps...');
+      }
+    } else {
+      logger.info(`\n⏭️  Step ${paymentImportStep}b: Skipping Stripe import (SKIP_STRIPE_IMPORT=true)`);
+      importLog.steps.push({
+        step: `${paymentImportStep}b`,
+        name: 'Import Stripe Payments',
+        status: 'skipped',
+        reason: 'SKIP_STRIPE_IMPORT=true'
+      });
+    }
+    
+    // Step 1c: Import Stripe Connect payments
+    if (!CONFIG.SKIP_STRIPE_CONNECT_IMPORT) {
+      logger.info(`\n💳 Step ${paymentImportStep}c: Importing Stripe Connect payments to staging`);
+      const stepStart = Date.now();
+      try {
+        // Import all Stripe Connect payments to staging collection (multi-account version)
+        const { syncStripeConnectPayments } = require('./sync-stripe-connect-payments-multi-account.js');
+        const stripeConnectResults = await syncStripeConnectPayments();
+        
+        // Aggregate Stripe Connect import results
+        if (stripeConnectResults) {
+          importLog.success.payments.push(...(stripeConnectResults.success.payments || []));
+          importLog.success.registrations.push(...(stripeConnectResults.success.registrations || []));
+          importLog.success.connectedAccounts = stripeConnectResults.success.connectedAccounts || [];
+          importLog.failures.push(...(stripeConnectResults.failures || []));
+        }
+        
+        importLog.steps.push({
+          step: `${paymentImportStep}c`,
+          name: 'Import Stripe Connect Payments',
+          status: 'success',
+          duration: Date.now() - stepStart,
+          itemsProcessed: stripeConnectResults ? stripeConnectResults.success.payments.filter(p => p.action === 'IMPORTED').length : 0
+        });
+      } catch (error) {
+        logger.error('Stripe Connect sync failed', { error: error.message });
+        importLog.failures.push({
+          step: `${paymentImportStep}c`,
+          type: 'payment',
+          error: error.message,
+          timestamp: new Date()
+        });
+        // Stripe Connect sync is not critical, continue with other steps
+        logger.info('Continuing with other sync steps...');
+      }
+    } else {
+      logger.info(`\n⏭️  Step ${paymentImportStep}c: Skipping Stripe Connect import (SKIP_STRIPE_CONNECT_IMPORT=true)`);
+      importLog.steps.push({
+        step: `${paymentImportStep}c`,
+        name: 'Import Stripe Connect Payments',
+        status: 'skipped',
+        reason: 'SKIP_STRIPE_CONNECT_IMPORT=true'
       });
     }
     
@@ -218,7 +305,7 @@ async function syncAllData() {
     logger.info('\n⚙️  Step 2: Processing staged imports with payment-registration matching, attendee and ticket extraction');
     const step2Start = Date.now();
     const processResult = await runScript(
-      path.join(__dirname, 'process-staged-imports-with-extraction.js'),
+      './process-staged-imports-with-extraction.js',
       [],
       'Process payments and registrations from staging with automatic matching, attendee and ticket extraction'
     );
@@ -240,11 +327,8 @@ async function syncAllData() {
       const countBefore = await db.collection('registration_imports').countDocuments();
       
       // Import ALL registrations to staging collection
-      await runScript(
-        path.join(__dirname, 'sync-all-supabase-registrations.js'),
-        [],
-        'Import all Supabase registrations to staging'
-      );
+      const { syncAllSupabaseRegistrations } = require('./sync-all-supabase-registrations.js');
+      const supabaseResults = await syncAllSupabaseRegistrations();
       
       // Get count after bulk import
       const countAfter = await db.collection('registration_imports').countDocuments();
@@ -253,17 +337,13 @@ async function syncAllData() {
       if (newRegistrations > 0) {
         newRegistrationsFound = true;
         logger.info(`Found ${newRegistrations} new registrations from bulk import`);
-        
-        // Track imported registrations
-        const importedRegs = await db.collection('registration_imports').find({
-          importedAt: { $gte: importLog.startedAt },
-          importedFrom: 'supabase'
-        }).toArray();
-        
-        importLog.success.registrations = importedRegs.map(r => ({
-          registrationId: r.registrationId,
-          objectId: r._id.toString()
-        }));
+      }
+      
+      // Aggregate Supabase import results
+      if (supabaseResults) {
+        importLog.success.payments.push(...(supabaseResults.success.payments || []));
+        importLog.success.registrations.push(...(supabaseResults.success.registrations || []));
+        importLog.failures.push(...(supabaseResults.failures || []));
       }
       
       importLog.steps.push({
@@ -271,7 +351,7 @@ async function syncAllData() {
         name: 'Bulk Supabase Import',
         status: 'success',
         duration: Date.now() - step3Start,
-        itemsProcessed: newRegistrations
+        itemsProcessed: supabaseResults ? supabaseResults.success.registrations.filter(r => r.action === 'IMPORTED').length : 0
       });
     } else {
       logger.info('\n⏭️  Step 3: Skipping Supabase bulk import (SKIP_SUPABASE_IMPORT=true)');
@@ -289,7 +369,7 @@ async function syncAllData() {
       const step4Start = Date.now();
       
       await runScript(
-        path.join(__dirname, 'process-staged-imports-with-extraction.js'),
+        './process-staged-imports-with-extraction.js',
         [],
         'Re-process staged imports after bulk registration import'
       );
@@ -310,7 +390,7 @@ async function syncAllData() {
       const stepStart = Date.now();
       
       await runScript(
-        path.join(__dirname, 'post-import-invoice-processing.js'),
+        './post-import-invoice-processing.js',
         [],
         'Generate invoices for newly matched payments'
       );
@@ -388,6 +468,8 @@ Usage: node sync-all-data.js [options]
 Options:
   --dry-run              Show what would be done without making changes
   --skip-square          Skip Square payment import
+  --skip-stripe          Skip Stripe payment import
+  --skip-stripe-connect  Skip Stripe Connect payment import
   --skip-supabase        Skip Supabase registration import
   --days <n>             Number of days to import (default: 30)
   --batch-size <n>       Batch size for processing (default: 100)
@@ -415,6 +497,12 @@ This script orchestrates the complete data import and processing workflow.
   }
   if (args.includes('--skip-square')) {
     CONFIG.SKIP_SQUARE_IMPORT = true;
+  }
+  if (args.includes('--skip-stripe')) {
+    CONFIG.SKIP_STRIPE_IMPORT = true;
+  }
+  if (args.includes('--skip-stripe-connect')) {
+    CONFIG.SKIP_STRIPE_CONNECT_IMPORT = true;
   }
   if (args.includes('--skip-supabase')) {
     CONFIG.SKIP_SUPABASE_IMPORT = true;

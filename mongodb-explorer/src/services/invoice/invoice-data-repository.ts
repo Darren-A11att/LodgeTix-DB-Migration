@@ -19,11 +19,15 @@ export class InvoiceDataRepository {
 
   /**
    * Fetch a payment by various ID fields
-   * Follows the same pattern as server.ts payment queries
+   * Updated to use unified payment structure with backward compatibility
    */
   async getPayment(paymentId: string): Promise<PaymentData | null> {
     const payment = await this.paymentsCollection.findOne({
       $or: [
+        // Unified structure fields
+        { id: paymentId },
+        { sourcePaymentId: paymentId },
+        // Legacy fields for backward compatibility
         { paymentId },
         { _id: paymentId },
         { transactionId: paymentId },
@@ -49,11 +53,12 @@ export class InvoiceDataRepository {
 
   /**
    * Fetch a registration by payment ID
-   * Uses the same $or pattern as PaymentRegistrationMatcher
+   * Updated to include unified payment ID fields with backward compatibility
    */
   async getRegistrationByPaymentId(paymentId: string): Promise<RegistrationData | null> {
     const registration = await this.registrationsCollection.findOne({
       $or: [
+        // Legacy fields for backward compatibility
         { stripePaymentIntentId: paymentId },
         { stripe_payment_intent_id: paymentId },
         { squarePaymentId: paymentId },
@@ -111,9 +116,11 @@ export class InvoiceDataRepository {
     // Try to find registration by confirmation number first
     let registration: RegistrationData | null = null;
     
-    // Extract confirmation number from payment metadata or description
+    // Extract confirmation number from unified payment structure
     const confirmationNumber = 
+      payment.registrationId ||  // Direct registrationId from unified structure
       payment.metadata?.confirmationNumber ||
+      payment.rawData?.metadata?.confirmationNumber ||  // From rawData in unified structure
       payment.description?.match(/[A-Z]{3}-\d{6}[A-Z]{2}/)?.[0];
     
     if (confirmationNumber) {
@@ -130,7 +137,7 @@ export class InvoiceDataRepository {
 
   /**
    * Update payment with invoice information
-   * Follows the pattern from server.ts
+   * Updated to use unified payment structure with backward compatibility
    */
   async updatePaymentWithInvoice(
     paymentId: string, 
@@ -138,7 +145,16 @@ export class InvoiceDataRepository {
     invoiceNumber: string
   ): Promise<boolean> {
     const result = await this.paymentsCollection.updateOne(
-      { paymentId },
+      {
+        $or: [
+          // Unified structure fields
+          { id: paymentId },
+          { sourcePaymentId: paymentId },
+          // Legacy fields for backward compatibility
+          { paymentId },
+          { _id: paymentId }
+        ]
+      },
       {
         $set: {
           invoiceId,

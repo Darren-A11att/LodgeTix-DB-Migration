@@ -25,10 +25,14 @@ export async function GET(request: NextRequest) {
       body: JSON.stringify({
         query: {
           $or: [
+            // Unified payment structure fields
             { customerEmail: { $regex: query, $options: 'i' } },
+            { customerName: { $regex: query, $options: 'i' } },
+            { id: { $regex: query, $options: 'i' } },
+            { sourcePaymentId: { $regex: query, $options: 'i' } },
+            // Legacy fields for backward compatibility
             { email: { $regex: query, $options: 'i' } },
             { 'customer.email': { $regex: query, $options: 'i' } },
-            { customerName: { $regex: query, $options: 'i' } },
             { 'customer.name': { $regex: query, $options: 'i' } },
             { transactionId: { $regex: query, $options: 'i' } },
             { paymentId: { $regex: query, $options: 'i' } }
@@ -87,16 +91,19 @@ export async function GET(request: NextRequest) {
       query,
       totalFound: payments.length,
       payments: payments.map((p: any) => ({
-        id: p._id,
-        transactionId: p.transactionId || p.paymentId,
-        amount: p.amount || p.grossAmount,
-        date: p.timestamp || p.createdAt,
-        customerEmail: findEmailInPayment(p),
-        customerName: p.customerName || p.customer?.name,
+        id: p.id || p._id,                                        // Unified ID
+        transactionId: p.id || p.sourcePaymentId || p.transactionId || p.paymentId, // Unified transaction ID
+        amount: p.amount || p.grossAmount,                        // Unified amount
+        date: p.createdAt || p.timestamp,                         // Unified timestamp
+        customerEmail: p.customerEmail || findEmailInPayment(p),  // Unified customer email
+        customerName: p.customerName || p.customer?.name,         // Unified customer name
+        source: p.source,                                         // Unified source
+        currency: p.currency,                                     // Unified currency
+        status: p.status,                                         // Unified status
         invoiceCreated: p.invoiceCreated || false,
         invoiceDeclined: p.invoiceDeclined || false,
         invoiceNumber: p.invoiceNumber || null,
-        status: p.invoiceCreated ? 'Processed' : p.invoiceDeclined ? 'Declined' : 'Unprocessed'
+        processStatus: p.invoiceCreated ? 'Processed' : p.invoiceDeclined ? 'Declined' : 'Unprocessed'
       }))
     };
     

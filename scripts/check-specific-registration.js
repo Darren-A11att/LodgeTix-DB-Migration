@@ -1,55 +1,61 @@
 #!/usr/bin/env node
 
-const { MongoClient } = require('mongodb');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+require('dotenv').config({ path: '.env.local' });
+const { createClient } = require('@supabase/supabase-js');
 
-async function checkSpecificRegistration() {
-  const uri = process.env.MONGODB_URI;
-  const client = new MongoClient(uri);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function checkRegistration() {
+  const registrationId = '2cb923f1-c674-4a52-8bab-05aa94c5148f';
+  
+  console.log(`Checking if registration ${registrationId} exists in Supabase...\n`);
 
   try {
-    await client.connect();
-    
-    const db = client.db(process.env.MONGODB_DB || 'lodgetix');
-    const coll = db.collection('registrations');
+    const { data: registration, error } = await supabase
+      .from('registrations')
+      .select('registration_id, confirmation_number, created_at, registration_data')
+      .eq('registration_id', registrationId)
+      .single();
 
-    // Check a specific registration
-    const reg = await coll.findOne({ confirmation_number: 'LDG-569943MS' });
+    if (error) {
+      console.error('Error fetching registration:', error);
+      return;
+    }
+
+    if (!registration) {
+      console.log('Registration not found');
+      return;
+    }
+
+    console.log('✅ YES - Registration exists in Supabase!');
+    console.log('Registration ID:', registration.registration_id);
+    console.log('Confirmation Number:', registration.confirmation_number);
+    console.log('Created At:', registration.created_at);
     
-    if (reg) {
-      console.log('Registration LDG-569943MS has both formats:');
-      console.log('=====================================');
-      
-      // Check for camelCase versions
-      console.log('\nCamelCase fields:');
-      console.log('- confirmationNumber:', reg.confirmationNumber);
-      console.log('- registrationId:', reg.registrationId);
-      console.log('- registrationType:', reg.registrationType);
-      console.log('- totalAmountPaid:', reg.totalAmountPaid);
-      console.log('- attendeeCount:', reg.attendeeCount);
-      
-      console.log('\nSnake_case fields:');
-      console.log('- confirmation_number:', reg.confirmation_number);
-      console.log('- registration_id:', reg.registration_id);
-      console.log('- registration_type:', reg.registration_type);
-      console.log('- total_amount_paid:', reg.total_amount_paid);
-      console.log('- attendee_count:', reg.attendee_count);
-      
-      console.log('\nAll root-level fields:');
-      Object.keys(reg).forEach(key => {
-        if (!key.startsWith('_') && key !== 'registrationData') {
-          console.log(`- ${key}`);
+    if (registration.registration_data && registration.registration_data.tickets) {
+      console.log('\nTickets in registration:');
+      registration.registration_data.tickets.forEach((ticket, index) => {
+        console.log(`\nTicket ${index + 1}:`);
+        console.log('  isPackage:', ticket.isPackage);
+        console.log('  ticketDefinitionId:', ticket.ticketDefinitionId);
+        console.log('  packageId:', ticket.packageId);
+        
+        if (ticket.isPackage === true && ticket.ticketDefinitionId !== undefined) {
+          console.log('  ⚠️  This ticket needs updating: has isPackage=true and ticketDefinitionId');
         }
       });
+    } else {
+      console.log('No tickets found in registration_data');
     }
 
   } catch (error) {
-    console.error('Error:', error);
-  } finally {
-    await client.close();
+    console.error('Unexpected error:', error);
   }
+  
+  process.exit(0);
 }
 
-// Run check
-checkSpecificRegistration();
+checkRegistration();

@@ -8,10 +8,17 @@ export interface MatchResult {
 export const ID_FIELD_MAPPINGS = {
   paymentId: {
     paymentPaths: [
+      // Unified payment structure fields (highest priority)
+      'id',
+      'sourcePaymentId',
+      // Legacy fields (for backward compatibility)
       'paymentId',
       'transactionId',
       'originalData.PaymentIntent ID',
-      'originalData.metadata.paymentId'
+      'originalData.metadata.paymentId',
+      // Additional unified structure paths
+      'rawData.id',
+      'rawData.sourcePaymentId'
     ],
     registrationPaths: [
       'stripePaymentIntentId',
@@ -30,11 +37,17 @@ export const ID_FIELD_MAPPINGS = {
   },
   registrationId: {
     paymentPaths: [
+      // Unified payment structure field (highest priority)
+      'registrationId',
+      // Legacy fields (for backward compatibility)
       'linkedRegistrationId',
       'matchedRegistrationId',
       'originalData.metadata.registrationId',
       'originalData.metadata.registration_id',
-      'originalData.registrationId (metadata)'
+      'originalData.registrationId (metadata)',
+      // Additional unified structure paths
+      'rawData.metadata.registrationId',
+      'rawData.metadata.registration_id'
     ],
     registrationPaths: [
       '_id',

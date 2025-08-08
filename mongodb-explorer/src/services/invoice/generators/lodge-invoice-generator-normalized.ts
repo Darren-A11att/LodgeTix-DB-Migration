@@ -63,14 +63,15 @@ export class NormalizedLodgeInvoiceGenerator extends BaseInvoiceGenerator {
       total,
       payment: {
         method: this.mapPaymentMethod(payment),
-        transactionId: payment.transactionId || payment.paymentId || '',
-        paidDate: payment.timestamp || payment.createdAt || new Date(),
+        transactionId: payment.id || payment.sourcePaymentId || payment.transactionId || payment.paymentId || '',
+        paidDate: payment.createdAt || payment.timestamp || new Date(),
         amount: payment.amount || payment.grossAmount || total,
         currency: payment.currency || 'AUD',
-        status: 'completed',
-        source: payment.source || payment.paymentSource || ''
+        status: payment.status === 'completed' ? 'completed' : 'paid',
+        source: payment.source || payment.paymentSource || '',
+        sourcePaymentId: payment.sourcePaymentId
       },
-      paymentId: payment._id?.toString() || payment.paymentId,
+      paymentId: payment.id || payment._id?.toString() || payment.paymentId,
       registrationId: registration._id?.toString() || registration.registrationId,
       notes: this.generateNotes(registration, functionName)
     };

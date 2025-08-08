@@ -9,15 +9,18 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
     
-    // Get all payments that need invoicing
+    // Get all payments that need invoicing - updated for unified structure
     const payments = await db.collection('payments')
       .find({
         $or: [
+          // Unified structure status values
+          { status: 'completed' },
           { status: 'paid' },
+          // Legacy status fields for backward compatibility
           { paymentStatus: 'paid' }
         ]
       })
-      .sort({ timestamp: -1, createdAt: -1 })
+      .sort({ createdAt: -1, timestamp: -1 })  // Unified structure first
       .skip(offset)
       .limit(limit)
       .toArray();
@@ -25,7 +28,10 @@ export async function GET(request: NextRequest) {
     // Get total count
     const total = await db.collection('payments').countDocuments({
       $or: [
+        // Unified structure status values
+        { status: 'completed' },
         { status: 'paid' },
+        // Legacy status fields for backward compatibility
         { paymentStatus: 'paid' }
       ]
     });
@@ -38,8 +44,12 @@ export async function GET(request: NextRequest) {
       
       // STRICT MATCHING: Payment ID must exist in registration
       
-      // Extract payment IDs from the payment
+      // Extract payment IDs from the payment - updated for unified structure
       const paymentIds = [];
+      // Unified structure fields (highest priority)
+      if (payment.id) paymentIds.push({ id: payment.id, field: 'id' });
+      if (payment.sourcePaymentId) paymentIds.push({ id: payment.sourcePaymentId, field: 'sourcePaymentId' });
+      // Legacy fields for backward compatibility
       if (payment.paymentId) paymentIds.push({ id: payment.paymentId, field: 'paymentId' });
       if (payment.transactionId) paymentIds.push({ id: payment.transactionId, field: 'transactionId' });
       if (payment['PaymentIntent ID']) paymentIds.push({ id: payment['PaymentIntent ID'], field: 'PaymentIntent ID' });

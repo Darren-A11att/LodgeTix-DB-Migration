@@ -37,9 +37,16 @@ export const SOFTWARE_UTILIZATION_RATES = {
  * Standard formula: 2.5% + $0.30
  * @param subtotal - The subtotal amount before fees
  * @param source - Payment source (stripe, square, etc.)
+ * @param actualFees - Optional actual fees from payment data
  * @returns Processing fees rounded to 2 decimal places
  */
-export function calculateProcessingFees(subtotal: number, source: string = 'default'): number {
+export function calculateProcessingFees(subtotal: number, source: string = 'default', actualFees?: number): number {
+  // If actual fees are provided, use them
+  if (actualFees !== undefined && actualFees > 0) {
+    return roundToMoney(actualFees);
+  }
+  
+  // Otherwise calculate using standard rates
   const rates = PROCESSING_FEE_RATES[source.toLowerCase() as keyof typeof PROCESSING_FEE_RATES] || PROCESSING_FEE_RATES.default;
   const percentageFee = subtotal * rates.percentage;
   const totalFee = percentageFee + rates.fixed;
@@ -93,10 +100,11 @@ export function calculateGSTToAdd(baseAmount: number, gstRate: number = 0.10): n
  * Calculate all fees for a customer invoice
  * @param subtotal - Base amount before fees
  * @param paymentSource - Payment source for fee calculation
+ * @param actualFees - Optional actual fees from payment data
  * @returns Object containing all calculated amounts
  */
-export function calculateCustomerInvoiceTotals(subtotal: number, paymentSource: string = 'default') {
-  const processingFees = calculateProcessingFees(subtotal, paymentSource);
+export function calculateCustomerInvoiceTotals(subtotal: number, paymentSource: string = 'default', actualFees?: number) {
+  const processingFees = calculateProcessingFees(subtotal, paymentSource, actualFees);
   const totalBeforeGST = subtotal + processingFees;
   const gstIncluded = calculateGSTIncluded(totalBeforeGST);
   const total = totalBeforeGST; // GST is included in the total

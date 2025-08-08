@@ -72,7 +72,7 @@ export class NormalizedIndividualsInvoiceGenerator extends BaseInvoiceGenerator 
     const invoice: Invoice = {
       invoiceType: 'customer',
       invoiceNumber: this.getInvoiceNumber(options),
-      paymentId: payment._id?.toString() || payment.paymentId,
+      paymentId: payment.id || payment._id?.toString() || payment.paymentId,
       registrationId: registration._id?.toString() || registration.registrationId,
       date: invoiceDate,
       dueDate: dueDate,

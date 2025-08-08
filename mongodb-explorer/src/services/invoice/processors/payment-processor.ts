@@ -9,6 +9,7 @@ import { getMonetaryValue } from '../calculators/monetary';
 export class PaymentProcessor {
   /**
    * Process payment data and extract formatted payment information
+   * Updated to use unified payment structure
    */
   process(payment: PaymentData): InvoicePayment {
     return {
@@ -20,7 +21,10 @@ export class PaymentProcessor {
       last4: this.extractLast4(payment),
       cardBrand: this.extractCardBrand(payment),
       status: this.normalizePaymentStatus(payment),
-      source: this.detectPaymentSource(payment)
+      source: this.detectPaymentSource(payment) as 'stripe' | 'square',
+      sourcePaymentId: payment.sourcePaymentId,
+      receiptUrl: this.extractReceiptUrl(payment),
+      fees: this.extractProcessingFees(payment)
     };
   }
 
@@ -28,7 +32,11 @@ export class PaymentProcessor {
    * Format payment method removing duplicates and normalizing
    */
   formatPaymentMethod(payment: PaymentData): string {
-    let method = payment.paymentMethod || payment.method || 'credit_card';
+    // Check unified payment method structure first
+    let method = payment.paymentMethod?.type || 
+                 payment.paymentMethod || 
+                 payment.method || 
+                 'credit_card';
     
     // Normalize method string
     method = method.toLowerCase().replace(/_/g, ' ');
@@ -62,25 +70,30 @@ export class PaymentProcessor {
 
   /**
    * Extract transaction ID with fallbacks
+   * Updated to use unified payment structure
    */
   private extractTransactionId(payment: PaymentData): string {
-    return payment.transactionId || 
-           payment.paymentId || 
-           payment.originalData?.id || 
-           payment.stripePaymentIntentId ||
-           payment.squarePaymentId ||
+    return payment.id ||                          // Unified ID
+           payment.sourcePaymentId ||              // Original source ID
+           payment.transactionId ||                // Legacy field
+           payment.paymentId ||                    // Legacy field
+           payment.rawData?.id ||                  // From rawData
+           payment.originalData?.id ||             // Legacy originalData
+           payment.stripePaymentIntentId ||        // Legacy Stripe field
+           payment.squarePaymentId ||              // Legacy Square field
            payment._id?.toString() ||
            '';
   }
 
   /**
    * Extract payment date with fallbacks
+   * Updated to use unified payment structure
    */
   private extractPaymentDate(payment: PaymentData): string | Date {
-    const date = payment.paymentDate || 
-                 payment.timestamp || 
-                 payment.createdAt || 
-                 payment.created ||
+    const date = payment.createdAt ||              // Unified timestamp
+                 payment.paymentDate ||            // Legacy field
+                 payment.timestamp ||              // Legacy field
+                 payment.created ||                // Legacy field
                  new Date();
     
     // Ensure it's a valid date
@@ -104,23 +117,34 @@ export class PaymentProcessor {
 
   /**
    * Extract last 4 digits of card
+   * Updated to use unified payment structure
    */
   private extractLast4(payment: PaymentData): string {
-    return payment.cardLast4 || 
-           payment.last4 || 
-           payment.originalData?.source?.last4 ||
-           payment.card?.last4 ||
+    // Check unified payment method structure first
+    if (payment.paymentMethod?.last4) {
+      return payment.paymentMethod.last4;
+    }
+    
+    return payment.last4 ||                       // Unified field name
+           payment.cardLast4 ||                   // Legacy field
+           payment.rawData?.last4 ||              // From rawData
+           payment.originalData?.source?.last4 || // Legacy originalData
+           payment.card?.last4 ||                 // Legacy field
            '';
   }
 
   /**
    * Extract card brand
+   * Updated to use unified payment structure
    */
   private extractCardBrand(payment: PaymentData): string {
-    const brand = payment.cardBrand || 
-                  payment.brand || 
-                  payment.originalData?.source?.brand ||
-                  payment.card?.brand ||
+    // Check unified payment method structure first
+    const brand = payment.paymentMethod?.brand ||    // Unified structure
+                  payment.cardBrand ||              // Legacy field
+                  payment.brand ||                  // Legacy field
+                  payment.rawData?.cardBrand ||     // From rawData
+                  payment.originalData?.source?.brand || // Legacy originalData
+                  payment.card?.brand ||            // Legacy field
                   '';
     
     // Normalize common brand names
@@ -171,14 +195,15 @@ export class PaymentProcessor {
 
   /**
    * Detect payment source from various fields
+   * Updated to use unified payment structure
    */
   detectPaymentSource(payment: PaymentData): string {
-    // Explicit source field
+    // Unified source field (primary)
     if (payment.source) {
       return payment.source.toLowerCase();
     }
     
-    // Check source file
+    // Check source file (legacy)
     if (payment.sourceFile) {
       const sourceFile = payment.sourceFile.toLowerCase();
       if (sourceFile.includes('stripe')) return 'stripe';
@@ -195,7 +220,7 @@ export class PaymentProcessor {
       return 'square';
     }
     
-    // Check for platform-specific fields
+    // Check for platform-specific fields (legacy)
     if (payment.stripePaymentIntentId || payment.stripeChargeId) {
       return 'stripe';
     }
@@ -209,12 +234,14 @@ export class PaymentProcessor {
 
   /**
    * Extract statement descriptor for display
+   * Updated to use unified payment structure
    */
   extractStatementDescriptor(payment: PaymentData): string | undefined {
-    return payment.statementDescriptor || 
-           payment.statement_descriptor ||
-           payment.originalData?.statement_descriptor ||
-           payment.description;
+    return payment.statementDescriptor ||           // Legacy field
+           payment.statement_descriptor ||          // Legacy field
+           payment.rawData?.statement_descriptor || // From rawData
+           payment.originalData?.statement_descriptor || // Legacy originalData
+           payment.description;                     // Legacy field
   }
 
   /**
@@ -244,8 +271,40 @@ export class PaymentProcessor {
    * Extract processing fees if available
    */
   extractProcessingFees(payment: PaymentData): number | undefined {
+    // Check unified fees first
     if (payment.fees !== undefined) {
       return getMonetaryValue(payment.fees);
+    }
+    
+    // Check fee details structure for comprehensive fees
+    if (payment.feeDetails) {
+      let totalFees = 0;
+      
+      // Add platform fees
+      if (payment.feeDetails.platformFee) {
+        totalFees += getMonetaryValue(payment.feeDetails.platformFee);
+      }
+      
+      // Add Stripe fees
+      if (payment.feeDetails.stripeFee) {
+        totalFees += getMonetaryValue(payment.feeDetails.stripeFee);
+      }
+      
+      // Add Square fees
+      if (payment.feeDetails.squareFee) {
+        totalFees += getMonetaryValue(payment.feeDetails.squareFee);
+      }
+      
+      // Add processing fees array (Square)
+      if (payment.feeDetails.processingFees && Array.isArray(payment.feeDetails.processingFees)) {
+        payment.feeDetails.processingFees.forEach(fee => {
+          totalFees += getMonetaryValue(fee.amount);
+        });
+      }
+      
+      if (totalFees > 0) {
+        return totalFees;
+      }
     }
     
     // Calculate from gross and net if available
@@ -255,6 +314,33 @@ export class PaymentProcessor {
       return gross - net;
     }
     
+    // Try netAmount calculation
+    if (payment.amount !== undefined && payment.netAmount !== undefined) {
+      const amount = getMonetaryValue(payment.amount);
+      const net = getMonetaryValue(payment.netAmount);
+      return amount - net;
+    }
+    
     return undefined;
+  }
+
+  /**
+   * Extract receipt URL from payment data
+   * Updated to use unified payment structure
+   */
+  private extractReceiptUrl(payment: PaymentData): string | undefined {
+    // Check unified receipt structure
+    if (payment.receipt?.url) {
+      return payment.receipt.url;
+    }
+    
+    // Legacy fields
+    return payment.receiptUrl || 
+           payment.receipt_url ||
+           payment.rawData?.receiptUrl ||
+           payment.rawData?.receipt_url ||
+           payment.rawData?.stripe?.charges?.data?.[0]?.receipt_url ||
+           payment.rawData?.square?.receiptUrl ||
+           undefined;
   }
 }

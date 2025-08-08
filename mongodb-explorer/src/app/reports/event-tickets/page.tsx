@@ -55,6 +55,7 @@ export default function EventTicketsReportPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [eventId, setEventId] = useState('');
+  const [selectedDatabase, setSelectedDatabase] = useState('main');
 
   // Format number with commas
   const formatNumber = (num: number) => {
@@ -75,6 +76,7 @@ export default function EventTicketsReportPage() {
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
       if (eventId) params.append('eventId', eventId);
+      if (selectedDatabase === 'lodgetix') params.append('database', 'lodgetix');
       
       const response = await fetch(`/api/reports/event-tickets?${params}`);
       if (!response.ok) throw new Error('Failed to fetch report');
@@ -90,13 +92,14 @@ export default function EventTicketsReportPage() {
 
   useEffect(() => {
     fetchReport();
-  }, []);
+  }, [selectedDatabase]);
 
   const downloadCSV = async () => {
     const params = new URLSearchParams();
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (eventId) params.append('eventId', eventId);
+    if (selectedDatabase === 'lodgetix') params.append('database', 'lodgetix');
     params.append('format', 'csv');
     
     const response = await fetch(`/api/reports/event-tickets?${params}`);
@@ -140,8 +143,23 @@ export default function EventTicketsReportPage() {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Event Tickets Sales Report</h1>
-        <p className="text-gray-600 mb-6">Comprehensive analysis of event ticket sales, revenue, and utilization</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold mb-4">Event Tickets Sales Report</h1>
+            <p className="text-gray-600 mb-6">Comprehensive analysis of event ticket sales, revenue, and utilization</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+            <select
+              value={selectedDatabase}
+              onChange={(e) => setSelectedDatabase(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="main">Main Database</option>
+              <option value="lodgetix">Lodgetix Database</option>
+            </select>
+          </div>
+        </div>
         
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
