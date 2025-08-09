@@ -5,4 +5,4 @@ export {
   batchGenerateForPaymentMatches,
   isValidConfirmationNumber,
   getTypeFromConfirmationNumber
-} from '../../../src/services/reversed-timestamp-confirmation';
+} from '@/services/reversed-timestamp-confirmation';

@@ -1,5 +1,5 @@
-// @ts-nocheck
 #!/usr/bin/env node
+// @ts-nocheck
 
 const { MongoClient } = require('mongodb');
 require('dotenv').config();

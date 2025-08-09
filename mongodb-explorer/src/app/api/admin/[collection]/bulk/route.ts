@@ -4,9 +4,10 @@ import { ObjectId } from 'mongodb';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { collection: string } }
+  { params }: { params: Promise<{ collection: string }> }
 ) {
   try {
+    const { collection } = await params;
     const { action, ids } = await request.json();
     const client = await clientPromise;
     const db = client.db('commerce');
@@ -16,7 +17,7 @@ export async function POST(
     
     let result;
     
-    switch (params.collection) {
+    switch (collection) {
       case 'orders':
         result = await handleOrderBulkAction(db, action, objectIds);
         break;
@@ -27,7 +28,7 @@ export async function POST(
         result = await handleInventoryBulkAction(db, action, objectIds);
         break;
       default:
-        result = await handleGenericBulkAction(db, params.collection, action, objectIds);
+        result = await handleGenericBulkAction(db, collection, action, objectIds);
     }
     
     return NextResponse.json({ success: true, ...result });

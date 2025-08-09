@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectMongoDB } from '@/lib/mongodb';
-import { SquarePaymentImportServiceV2 } from '../../../../../src/services/square-payment-import-v2';
+import { SquarePaymentImportServiceV2 } from '@/services/square-payment-import-v2';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';

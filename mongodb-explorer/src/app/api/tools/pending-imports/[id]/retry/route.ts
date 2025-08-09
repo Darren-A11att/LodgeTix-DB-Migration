@@ -11,15 +11,16 @@ const squareClient = new Square.Client({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const connection = await connectMongoDB();
     const db = connection.db;
     
     // Get the pending import
     const pending = await db.collection('pending-imports').findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
     
     if (!pending) {
@@ -59,7 +60,7 @@ export async function POST(
     
     // Update check count and last check date
     await db.collection('pending-imports').updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           lastCheckDate: new Date(),

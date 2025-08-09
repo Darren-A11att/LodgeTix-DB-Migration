@@ -1,7 +1,7 @@
-// @ts-nocheck
 #!/usr/bin/env node
+// @ts-nocheck
 
-require('dotenv').config({ path: '../../.env.local' });
+require('./shared/load-env');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');

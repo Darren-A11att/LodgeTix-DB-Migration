@@ -4,15 +4,16 @@ import { ObjectId } from 'mongodb';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const connection = await connectMongoDB();
     const db = connection.db;
     
     // Get the pending import
     const pending = await db.collection('pending-imports').findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
     
     if (!pending) {
@@ -32,7 +33,7 @@ export async function POST(
     
     // Remove from pending imports
     await db.collection('pending-imports').deleteOne({ 
-      _id: new ObjectId(params.id) 
+      _id: new ObjectId(id) 
     });
     
     return NextResponse.json({ 

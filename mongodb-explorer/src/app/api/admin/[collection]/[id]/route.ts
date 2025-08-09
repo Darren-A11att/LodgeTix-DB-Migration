@@ -4,13 +4,14 @@ import { ObjectId } from 'mongodb';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { collection: string; id: string } }
+  { params }: { params: Promise<{ collection: string; id: string }> }
 ) {
   try {
+    const { collection, id } = await params;
     const client = await clientPromise;
     const db = client.db('commerce');
-    const item = await db.collection(params.collection).findOne({ 
-      _id: new ObjectId(params.id) 
+    const item = await db.collection(collection).findOne({ 
+      _id: new ObjectId(id) 
     });
     
     return NextResponse.json({ data: item });
@@ -22,9 +23,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { collection: string; id: string } }
+  { params }: { params: Promise<{ collection: string; id: string }> }
 ) {
   try {
+    const { collection, id } = await params;
     const body = await request.json();
     const { _id, ...updateData } = body; // Remove _id from update data
     
@@ -34,8 +36,8 @@ export async function PUT(
     const client = await clientPromise;
     const db = client.db('commerce');
     
-    const result = await db.collection(params.collection).updateOne(
-      { _id: new ObjectId(params.id) },
+    const result = await db.collection(collection).updateOne(
+      { _id: new ObjectId(id) },
       { $set: updateData }
     );
     
@@ -48,14 +50,15 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { collection: string; id: string } }
+  { params }: { params: Promise<{ collection: string; id: string }> }
 ) {
   try {
+    const { collection, id } = await params;
     const client = await clientPromise;
     const db = client.db('commerce');
     
-    const result = await db.collection(params.collection).deleteOne({ 
-      _id: new ObjectId(params.id) 
+    const result = await db.collection(collection).deleteOne({ 
+      _id: new ObjectId(id) 
     });
     
     return NextResponse.json({ success: true, deleted: result.deletedCount });

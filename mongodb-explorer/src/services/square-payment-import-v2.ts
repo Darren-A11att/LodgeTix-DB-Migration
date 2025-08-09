@@ -2,4 +2,4 @@
 export { 
   SquarePaymentImportServiceV2,
   importRecentSquarePayments 
-} from '../../../src/services/square-payment-import-v2';
+} from '@/services/square-payment-import-v2';

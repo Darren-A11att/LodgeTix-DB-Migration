@@ -3,10 +3,11 @@ import { activeWorkflows } from '../../start/route';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const run = activeWorkflows.get(params.id);
+    const { id } = await params;
+    const run = activeWorkflows.get(id);
     
     if (!run) {
       return NextResponse.json(

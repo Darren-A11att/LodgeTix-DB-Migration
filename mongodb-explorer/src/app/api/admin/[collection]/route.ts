@@ -3,12 +3,13 @@ import clientPromise from '@/lib/mongodb';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { collection: string } }
+  { params }: { params: Promise<{ collection: string }> }
 ) {
   try {
+    const { collection } = await params;
     const client = await clientPromise;
-    const db = client.db('commerce');
-    const data = await db.collection(params.collection).find({}).limit(100).toArray();
+    const db = client.db(process.env.MONGODB_DB);
+    const data = await db.collection(collection).find({}).limit(100).toArray();
     
     return NextResponse.json({ data });
   } catch (error) {
@@ -19,9 +20,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { collection: string } }
+  { params }: { params: Promise<{ collection: string }> }
 ) {
   try {
+    const { collection } = await params;
     const body = await request.json();
     const client = await clientPromise;
     const db = client.db('commerce');
@@ -33,7 +35,7 @@ export async function POST(
     body.createdAt = new Date();
     body.updatedAt = new Date();
     
-    const result = await db.collection(params.collection).insertOne(body);
+    const result = await db.collection(collection).insertOne(body);
     
     return NextResponse.json({ success: true, id: result.insertedId });
   } catch (error) {

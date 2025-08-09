@@ -5,9 +5,10 @@ import { ImportQueueItem, PaymentImport } from '@/types/payment-import';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { db } = await connectMongoDB();
     const body = await request.json();
     const { confirmTransformation, overrides } = body;
@@ -15,7 +16,7 @@ export async function POST(
     // Get queue item
     const queueItem = await db
       .collection<ImportQueueItem>('import_queue')
-      .findOne({ queueId: params.id });
+      .findOne({ queueId: id });
     
     if (!queueItem) {
       return NextResponse.json(
@@ -40,7 +41,7 @@ export async function POST(
     
     // Update status to processing
     await db.collection<ImportQueueItem>('import_queue').updateOne(
-      { queueId: params.id },
+      { queueId: id },
       { $set: { importStatus: 'processing' } }
     );
     
@@ -214,7 +215,7 @@ export async function POST(
       
       // Update queue item
       await db.collection<ImportQueueItem>('import_queue').updateOne(
-        { queueId: params.id },
+        { queueId: id },
         { 
           $set: { 
             importStatus: 'imported',
@@ -264,7 +265,7 @@ export async function POST(
     } catch (error) {
       // If import fails, update status
       await db.collection<ImportQueueItem>('import_queue').updateOne(
-        { queueId: params.id },
+        { queueId: id },
         { 
           $set: { 
             importStatus: 'failed',

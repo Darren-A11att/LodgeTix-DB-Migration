@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-nocheck
 
 /**
  * Master Database Setup Script
@@ -10,38 +11,32 @@
  * 4. Create computed fields and views
  */
 
-import { spawn } from 'child_process';
-import * as path from 'path';
+const { spawn } = require('child_process');
+const path = require('path');
 
 const scripts = [
-  '01-create-collections.ts',
-  '02-create-remaining-collections.ts',
-  '03-create-indexes.ts',
-  '04-create-computed-fields.ts'
+  '01-create-collections.js',
+  '02-create-remaining-collections.js',
+  '03-create-indexes.js',
+  '04-create-computed-fields.js'
 ];
 
-interface ScriptResult {
-  success: boolean;
-  code?: number;
-  error?: Error;
-}
-
-async function runScript(scriptName: string): Promise<void> {
+async function runScript(scriptName) {
   return new Promise((resolve, reject) => {
     console.log(`\n🚀 Running ${scriptName}...\n`);
     
     const scriptPath = path.join(__dirname, scriptName);
-    const child = spawn('npx', ['tsx', scriptPath], {
+    const child = spawn('node', [scriptPath], {
       stdio: 'inherit',
       env: process.env
     });
     
-    child.on('error', (error: Error) => {
+    child.on('error', (error) => {
       console.error(`❌ Failed to start ${scriptName}:`, error);
       reject(error);
     });
     
-    child.on('exit', (code: number | null) => {
+    child.on('exit', (code) => {
       if (code === 0) {
         console.log(`\n✅ ${scriptName} completed successfully\n`);
         resolve();
@@ -52,7 +47,7 @@ async function runScript(scriptName: string): Promise<void> {
   });
 }
 
-async function setupDatabase(): Promise<void> {
+async function setupDatabase() {
   console.log('🏗️  MongoDB Database Setup');
   console.log('========================\n');
   console.log('This script will create all collections, indexes, and computed fields');
@@ -77,7 +72,7 @@ async function setupDatabase(): Promise<void> {
     console.log('2. Set up scheduled jobs for aggregation functions');
     console.log('3. Test the computed views with sample queries\n');
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('\n❌ Database setup failed:', error.message);
     process.exit(1);
   }

@@ -358,21 +358,10 @@ const InvoiceComponent: React.FC<InvoiceComponentProps> = ({ invoice, className 
 
       {/* Credit Note Section for Refunded Payments */}
       {(() => {
-        // Check if payment exists and has any refunded status
         if (!invoice.payment) return false;
-        
-        // Check all possible locations for refunded status
-        const isRefunded = 
-          invoice.payment.status === 'refunded' || 
-          invoice.payment.status === 'Refunded' ||
-          invoice.payment.Status === 'refunded' || 
-          invoice.payment.Status === 'Refunded' ||
-          invoice.payment.originalData?.status === 'refunded' ||
-          invoice.payment.originalData?.status === 'Refunded' ||
-          invoice.payment.originalData?.Status === 'refunded' ||
-          invoice.payment.originalData?.Status === 'Refunded';
-          
-        return isRefunded;
+        const rawStatus = (invoice.payment as any)?.status ?? (invoice.payment as any)?.Status ?? (invoice.payment as any)?.originalData?.status ?? (invoice.payment as any)?.originalData?.Status ?? '';
+        const statusStr = String(rawStatus).toLowerCase();
+        return statusStr === 'refunded';
       })() && (
         <div style={combineStyles(styles.mt8, styles.pt6, styles.borderT2, styles.borderGray200)}>
           {/* Credit Note Header */}

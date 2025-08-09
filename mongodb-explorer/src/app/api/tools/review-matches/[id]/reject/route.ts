@@ -4,9 +4,10 @@ import { ObjectId } from 'mongodb';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const connection = await connectMongoDB();
     const db = connection.db;
     
@@ -15,7 +16,7 @@ export async function POST(
     
     // Get the pending import
     const pending = await db.collection('pending-imports').findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
     
     if (!pending) {
@@ -27,7 +28,7 @@ export async function POST(
     
     // Update the pending import with rejection info
     await db.collection('pending-imports').updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           lastReviewDate: new Date(),

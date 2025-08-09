@@ -1,3 +1,5 @@
+'use client';
+
 import DataTable from '@/components/admin/DataTable';
 
 export default function VendorsPage() {

@@ -1,5 +1,5 @@
-// @ts-nocheck
 #!/usr/bin/env node
+// @ts-nocheck
 
 const { spawn } = require('child_process');
 const path = require('path');

@@ -1,6 +1,7 @@
-// @ts-nocheck
 #!/usr/bin/env node
+// @ts-nocheck
 
+require('./shared/load-env');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');

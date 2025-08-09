@@ -312,7 +312,7 @@ export function extractNestedStructure(
         arrayLength: value.length,
         value: value
       });
-    } else if (value && typeof value === 'object' && !value.$numberDecimal) {
+    } else if (value && typeof value === 'object' && !(value as any).$numberDecimal) {
       // Recursively extract children for objects
       const children = extractNestedStructure(value, source, path, displayPath);
       fields.push({
@@ -330,7 +330,7 @@ export function extractNestedStructure(
         path,
         displayPath,
         type: 'primitive',
-        value: value?.$numberDecimal || value
+        value: (value as any)?.$numberDecimal || value
       });
     }
   });

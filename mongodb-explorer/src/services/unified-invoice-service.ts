@@ -8,9 +8,12 @@
  * - Updates database records
  */
 
+import React from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Db, ObjectId } from 'mongodb';
-import PDFGeneratorService from './pdf-generator-service';
+import PdfGenerator from './pdf/generator';
+import { ReactPdfRenderer } from './pdf/renderers/react-pdf-renderer';
+import InvoiceDocument from './pdf/templates/InvoiceDocument';
 
 export interface InvoiceGenerationOptions {
   paymentId: string;
@@ -328,24 +331,27 @@ export class UnifiedInvoiceService {
    * Create PDF using PDFKit with fallback to jsPDF
    */
   private async createPDF(invoiceData: InvoiceData): Promise<Buffer> {
-    try {
-      // Use the PDF generator service which handles environment detection and fallback
-      return await PDFGeneratorService.generatePDF({
-        invoiceData,
-        // Try PDFKit first for better quality, but will fallback to jsPDF if it fails
-        preferredEngine: 'pdfkit'
-      });
-    } catch (error) {
-      console.error('[InvoiceService] PDF generation failed:', error);
-      // Only attempt jsPDF fallback in the browser
-      if (typeof window !== 'undefined') {
-        return await PDFGeneratorService.generatePDF({
-          invoiceData,
-          preferredEngine: 'jspdf'
-        });
-      }
-      throw error;
-    }
+    // New shared generator + renderer abstraction
+    // Use React SSR → HTML → Puppeteer to guarantee parity with on-screen rendering
+    const reactRenderer = new ReactPdfRenderer(
+      () => React.createElement(InvoiceDocument, {
+        invoiceNumber: invoiceData.invoiceNumber,
+        date: invoiceData.date,
+        status: invoiceData.status,
+        customer: invoiceData.customer,
+        event: { name: invoiceData.event.name },
+        registration: { confirmationNumber: invoiceData.registration.confirmationNumber },
+        items: invoiceData.items,
+        subtotal: invoiceData.subtotal,
+        gstAmount: invoiceData.gstAmount,
+        totalAmount: invoiceData.totalAmount,
+        payment: { method: invoiceData.payment.method, date: invoiceData.payment.date },
+        organization: invoiceData.organization
+      }),
+      invoiceData.invoiceNumber
+    );
+
+    return await PdfGenerator.generate({ renderer: reactRenderer, preferredEngine: 'puppeteer' });
   }
 
   /**

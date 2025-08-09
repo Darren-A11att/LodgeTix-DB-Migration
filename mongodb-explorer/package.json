@@ -9,6 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
+    "typecheck:app": "tsc -p tsconfig.app-typecheck.json --noEmit",
     "test:square-api": "npx tsx test-square-api.ts",
     "test:square-init": "npx tsx test-square-init.ts",
     "setup:database": "npx tsx scripts/mongodb-setup/setup-database.ts",

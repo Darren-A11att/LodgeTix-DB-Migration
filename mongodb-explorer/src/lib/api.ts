@@ -132,6 +132,19 @@ class ApiService {
     const response = await axios.post(`${API_BASE_URL}${path}`, data);
     return response.data;
   }
+
+  async put(path: string, data: any): Promise<any> {
+    const response = await axios.put(`${API_BASE_URL}${path}`, data);
+    return response.data;
+  }
+
+  async updateDocument(collectionName: string, id: string, updates: any): Promise<any> {
+    const response = await axios.patch(
+      `${API_BASE_URL}/collections/${collectionName}/documents/${id}`,
+      updates
+    );
+    return response.data;
+  }
 }
 
 export default new ApiService();

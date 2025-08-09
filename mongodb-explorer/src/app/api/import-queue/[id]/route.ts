@@ -3,14 +3,15 @@ import { connectMongoDB } from '@/lib/mongodb';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { db } = await connectMongoDB();
     
     const result = await db
       .collection('import_queue')
-      .deleteOne({ queueId: params.id });
+      .deleteOne({ queueId: id });
     
     if (result.deletedCount === 0) {
       return NextResponse.json(

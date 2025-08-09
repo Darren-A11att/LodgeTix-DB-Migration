@@ -4,7 +4,7 @@ import clientPromise from '@/lib/mongodb';
 export async function GET(request: NextRequest) {
   try {
     const client = await clientPromise;
-    const db = client.db('commerce');
+    const db = client.db(process.env.MONGODB_DB);
     
     // Get today's date range
     const today = new Date();

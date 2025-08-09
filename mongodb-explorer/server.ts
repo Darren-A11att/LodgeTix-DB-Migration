@@ -30,7 +30,8 @@ function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
     const server = net.createServer();
     
-    server.listen(port, '127.0.0.1');
+    // Don't specify host to check both IPv4 and IPv6
+    server.listen(port);
     
     server.on('listening', () => {
       server.close();
@@ -44,9 +45,16 @@ function isPortAvailable(port: number): Promise<boolean> {
 }
 
 // Find an available port
-async function findAvailablePort(startPort: number, maxAttempts = 10): Promise<number> {
+async function findAvailablePort(startPort: number, maxAttempts = 10, skipPorts: number[] = []): Promise<number> {
   for (let i = 0; i < maxAttempts; i++) {
     const port = startPort + i;
+    
+    // Skip ports that are reserved (like the API port)
+    if (skipPorts.includes(port)) {
+      console.log(`Port ${port} is reserved for API, skipping...`);
+      continue;
+    }
+    
     const available = await isPortAvailable(port);
     
     if (available) {
@@ -126,9 +134,9 @@ async function startServer(): Promise<void> {
     const apiPort = await readApiPort();
     console.log(`📡 API server detected on port ${apiPort}`);
     
-    // Find available web port
+    // Find available web port (skip the API port)
     const defaultWebPort = parseInt(process.env.WEB_PORT || '3005');
-    const webPort = await findAvailablePort(defaultWebPort);
+    const webPort = await findAvailablePort(defaultWebPort, 10, [apiPort]);
     
     // Write environment configuration
     await writeEnvFile(webPort, apiPort);
@@ -150,8 +158,15 @@ async function startServer(): Promise<void> {
         res.end('internal server error');
       }
     })
-    .once('error', (err: Error) => {
-      console.error(err);
+    .once('error', (err: any) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${webPort} is still in use despite checks.`);
+        console.error(`   This might be due to a race condition or permission issue.`);
+        console.error(`   Please try again or manually kill the process using port ${webPort}`);
+        console.error(`   You can use: lsof -i :${webPort} to find the process`);
+      } else {
+        console.error('Server error:', err);
+      }
       process.exit(1);
     })
     .listen(webPort, () => {

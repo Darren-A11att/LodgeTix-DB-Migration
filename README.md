@@ -60,6 +60,19 @@ npm run sync:payments        # Sync payments only
 npm run sync:registrations   # Sync registrations only
 ```
 
+### TypeScript, Linting, and Formatting
+
+- Scripts now run via tsx and are written in TypeScript:
+  - `npm run dev`, `npm run sync:quick`, etc.
+- Typecheck:
+  - Core: `npm run typecheck`
+  - App (components/hooks/lib): `cd mongodb-explorer && npm run typecheck:app`
+- Lint & format:
+  - `npm run lint` / `npm run lint:fix`
+  - `npm run format` / `npm run format:check`
+
+See `docs/typing-plan.md` for the staged strictness plan.
+
 ## Features
 
 ### MedusaJS E-commerce Backend
@@ -206,3 +219,17 @@ For issues or questions, please contact the development team.
 - **Complete Implementation**: `/medusajs/IMPLEMENTATION-COMPLETE.md`
 - **API Documentation**: `/medusajs/API-DOCUMENTATION.md`
 - **Schema Reference**: `/medusajs/implementation/mongodb-schema.md`
+## Server-side Invoice PDF API
+
+- Endpoint: `GET /api/invoices/:paymentId/pdf`
+  - Returns an `application/pdf` response rendered on the server without side effects (no DB writes, no emails, no uploads).
+  - Uses `UnifiedInvoiceService.generatePreview` and the PDF generator service with PDFKit on Node and Puppeteer fallback.
+
+Example (from the `mongodb-explorer` app):
+
+```
+curl -L "http://localhost:3005/api/invoices/<paymentId>/pdf" \
+  -o invoice.pdf
+```
+
+If running the local dev servers via the root scripts, ensure the API and web ports are correctly configured (see `.port-config.json` and `mongodb-explorer/server.ts`).
