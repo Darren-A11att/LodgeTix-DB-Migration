@@ -25,8 +25,15 @@ export class PDFGeneratorService {
         return await this.generateWithPDFKit(invoiceData);
       } catch (error) {
         console.warn('PDFKit failed:', (error as any)?.message || error);
-        // Only attempt jsPDF fallback in browser environments
-        if (typeof window !== 'undefined') {
+        // Server fallback: Puppeteer
+        if (typeof window === 'undefined') {
+          try {
+            return await this.generateWithPuppeteer(invoiceData);
+          } catch (pErr) {
+            console.warn('Puppeteer fallback also failed:', (pErr as any)?.message || pErr);
+          }
+        } else {
+          // Browser fallback: jsPDF
           return await this.generateWithJsPDF(invoiceData);
         }
         throw error;
@@ -37,7 +44,8 @@ export class PDFGeneratorService {
     if (typeof window !== 'undefined') {
       return await this.generateWithJsPDF(invoiceData);
     }
-    throw new Error('jsPDF fallback is not available on the server');
+    // On server, try Puppeteer as a direct engine when preferredEngine is not pdfkit
+    return await this.generateWithPuppeteer(invoiceData);
   }
   
   /**
@@ -361,6 +369,109 @@ export class PDFGeneratorService {
     setFont('Helvetica').text(`Method: ${invoiceData.payment.method}`, 50, yPos);
     doc.text(`Date: ${invoiceData.payment.date.toLocaleDateString()}`, 200, yPos);
     doc.text(`Amount: $${invoiceData.totalAmount.toFixed(2)}`, 350, yPos);
+  }
+  
+  /**
+   * Generate PDF using Puppeteer on the server by rendering a simple HTML template
+   */
+  private static async generateWithPuppeteer(invoiceData: any): Promise<Buffer> {
+    if (typeof window !== 'undefined') {
+      throw new Error('Puppeteer generation is server-only');
+    }
+    const { default: puppeteer } = await import('puppeteer');
+
+    const html = this.buildInvoiceHtml(invoiceData);
+
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    try {
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }
+      });
+      return pdfBuffer;
+    } finally {
+      await browser.close();
+    }
+  }
+
+  /**
+   * Minimal, self-contained HTML for Puppeteer rendering
+   */
+  private static buildInvoiceHtml(invoiceData: any): string {
+    const css = `
+      body { font-family: Arial, sans-serif; color: #111; }
+      .container { padding: 16px; }
+      .header { display:flex; justify-content:space-between; align-items:flex-start; }
+      .title { font-size: 22px; font-weight: 700; }
+      .muted { color:#666; }
+      .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top: 12px; }
+      .section-title { font-weight:700; margin: 16px 0 8px; }
+      table { width:100%; border-collapse: collapse; }
+      th, td { text-align:left; padding:6px 4px; }
+      thead th { color:#666; font-weight:600; border-bottom:1px solid #ddd; }
+      tfoot td { border-top: 1px solid #ddd; }
+      .right { text-align:right; }
+    `;
+    const esc = (s:any) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const itemsRows = (invoiceData.items || []).map((it:any) => `
+      <tr>
+        <td>${esc(it.description)}</td>
+        <td class="right">${esc(it.quantity)}</td>
+        <td class="right">$${Number(it.unitPrice).toFixed(2)}</td>
+        <td class="right">$${Number(it.total).toFixed(2)}</td>
+      </tr>
+    `).join('');
+    return `<!doctype html>
+    <html><head><meta charset="utf-8"/><style>${css}</style></head>
+    <body><div class="container">
+      <div class="header">
+        <div>
+          <div class="title">Tax Invoice</div>
+          <div class="muted">Date: ${esc(new Date(invoiceData.date).toLocaleDateString())}</div>
+          <div class="muted">Invoice No: ${esc(invoiceData.invoiceNumber)}</div>
+          <div class="muted">Status: ${esc(invoiceData.status)}</div>
+        </div>
+        <div class="right">
+          <div><strong>${esc(invoiceData.organization?.name)}</strong></div>
+          <div>ABN: ${esc(invoiceData.organization?.abn)}</div>
+          <div>${esc(invoiceData.organization?.address)}</div>
+          <div>Issued By: ${esc(invoiceData.organization?.issuedBy)}</div>
+        </div>
+      </div>
+      <div class="grid">
+        <div>
+          <div class="section-title">Bill To</div>
+          <div>${esc(invoiceData.customer?.name)}</div>
+          <div class="muted">${esc(invoiceData.customer?.email || '')}</div>
+          <div class="muted">${esc(invoiceData.customer?.address || '')}</div>
+        </div>
+        <div>
+          <div class="section-title">Event Details</div>
+          <div>Event: ${esc(invoiceData.event?.name)}</div>
+          <div>Confirmation: ${esc(invoiceData.registration?.confirmationNumber)}</div>
+        </div>
+      </div>
+      <div class="section-title">Items</div>
+      <table>
+        <thead>
+          <tr><th>Description</th><th class="right">Qty</th><th class="right">Unit Price</th><th class="right">Total</th></tr>
+        </thead>
+        <tbody>
+          ${itemsRows}
+        </tbody>
+        <tfoot>
+          <tr><td></td><td></td><td class="right">Subtotal:</td><td class="right">$${Number(invoiceData.subtotal).toFixed(2)}</td></tr>
+          <tr><td></td><td></td><td class="right">GST (10%):</td><td class="right">$${Number(invoiceData.gstAmount).toFixed(2)}</td></tr>
+          <tr><td></td><td></td><td class="right"><strong>Total:</strong></td><td class="right"><strong>$${Number(invoiceData.totalAmount).toFixed(2)}</strong></td></tr>
+        </tfoot>
+      </table>
+      <div class="section-title">Payment</div>
+      <div class="muted">Method: ${esc(invoiceData.payment?.method)} | Date: ${esc(new Date(invoiceData.payment?.date).toLocaleDateString())} | Amount: $${Number(invoiceData.totalAmount).toFixed(2)}</div>
+    </div></body></html>`;
   }
 }
 
