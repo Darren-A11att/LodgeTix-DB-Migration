@@ -8,11 +8,40 @@ export async function GET(
 ) {
   try {
     const { collection, id } = await params;
+    
+    // Handle special endpoints
+    if (id === 'status-counts' && collection === 'orders') {
+      const client = await clientPromise;
+      const db = client.db('commerce');
+      
+      const statuses = ['pending', 'processing', 'paid', 'shipped', 'delivered', 'cancelled', 'refunded'];
+      const counts: Record<string, number> = {};
+      
+      for (const status of statuses) {
+        counts[status] = await db.collection('orders').countDocuments({ status });
+      }
+      
+      return NextResponse.json({ data: counts });
+    }
+    
+    // Regular item fetch
     const client = await clientPromise;
     const db = client.db('commerce');
-    const item = await db.collection(collection).findOne({ 
-      _id: new ObjectId(id) 
-    });
+    
+    // Try to parse as ObjectId, fallback to string id
+    let query: any;
+    try {
+      query = { _id: new ObjectId(id) };
+    } catch {
+      // If not a valid ObjectId, try as string id
+      query = { id: id };
+    }
+    
+    const item = await db.collection(collection).findOne(query);
+    
+    if (!item) {
+      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+    }
     
     return NextResponse.json({ data: item });
   } catch (error) {
@@ -36,8 +65,16 @@ export async function PUT(
     const client = await clientPromise;
     const db = client.db('commerce');
     
+    // Try to parse as ObjectId, fallback to string id
+    let query: any;
+    try {
+      query = { _id: new ObjectId(id) };
+    } catch {
+      query = { id: id };
+    }
+    
     const result = await db.collection(collection).updateOne(
-      { _id: new ObjectId(id) },
+      query,
       { $set: updateData }
     );
     
@@ -57,9 +94,15 @@ export async function DELETE(
     const client = await clientPromise;
     const db = client.db('commerce');
     
-    const result = await db.collection(collection).deleteOne({ 
-      _id: new ObjectId(id) 
-    });
+    // Try to parse as ObjectId, fallback to string id
+    let query: any;
+    try {
+      query = { _id: new ObjectId(id) };
+    } catch {
+      query = { id: id };
+    }
+    
+    const result = await db.collection(collection).deleteOne(query);
     
     return NextResponse.json({ success: true, deleted: result.deletedCount });
   } catch (error) {
