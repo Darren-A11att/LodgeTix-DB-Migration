@@ -8,13 +8,16 @@ export default function AdminLayout({
 }) {
   const menuItems = [
     { name: '📊 Dashboard', path: '/admin/dashboard', highlight: true },
+    { name: '🎯 Setup Wizard', path: '/admin/setup-wizard', highlight: true },
     { name: '📦 Orders', path: '/admin/orders' },
     { name: '🛍️ Products', path: '/admin/products' },
+    { name: '📂 Collections', path: '/admin/product-collections' },
     { name: '👥 Customers', path: '/admin/customers' },
     { name: '📈 Inventory', path: '/admin/inventory' },
     { name: '🏢 Vendors', path: '/admin/vendors' },
     { name: '🛒 Carts', path: '/admin/carts' },
     { name: '💳 Payments', path: '/admin/payments' },
+    { name: '🏦 Gateways', path: '/admin/payment-gateways' },
     { name: '🚚 Fulfillments', path: '/admin/fulfillments' },
   ];
 
