@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface Payment {
   _id: string;
@@ -128,7 +129,10 @@ export default function PaymentsPage() {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-4">Payments</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl font-bold">Payments</h1>
+          <SimpleDatabaseSelector className="w-64" />
+        </div>
         <Link href="/" className="text-blue-600 hover:underline">
           ← Back to Collections
         </Link>

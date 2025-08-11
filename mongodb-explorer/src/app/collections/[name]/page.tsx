@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import apiService, { DocumentsResponse } from '@/lib/api';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 export default function CollectionPage() {
   const params = useParams();
@@ -80,10 +81,11 @@ export default function CollectionPage() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div className="mb-6 flex justify-between items-center">
         <Link href="/" className="text-blue-500 hover:underline">
           ← Back to Collections
         </Link>
+        <SimpleDatabaseSelector className="w-64" />
       </div>
 
       <h1 className="text-3xl font-bold text-gray-800 mb-8">

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import apiService from '@/lib/api';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 export default function DocumentPage() {
   const params = useParams();
@@ -61,16 +62,19 @@ export default function DocumentPage() {
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-6 flex items-center gap-2 text-sm">
-        <Link href="/" className="text-blue-500 hover:underline">
-          Collections
-        </Link>
-        <span className="text-gray-400">/</span>
-        <Link href={`/collections/${collectionName}`} className="text-blue-500 hover:underline">
-          {collectionName}
-        </Link>
-        <span className="text-gray-400">/</span>
-        <span className="text-gray-600">{documentId}</span>
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center gap-2 text-sm">
+          <Link href="/" className="text-blue-500 hover:underline">
+            Collections
+          </Link>
+          <span className="text-gray-400">/</span>
+          <Link href={`/collections/${collectionName}`} className="text-blue-500 hover:underline">
+            {collectionName}
+          </Link>
+          <span className="text-gray-400">/</span>
+          <span className="text-gray-600">{documentId}</span>
+        </div>
+        <SimpleDatabaseSelector className="w-64" />
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-8">
