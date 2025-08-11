@@ -20,6 +20,7 @@ import { getSupplierInvoiceSupplier, DEFAULT_INVOICE_SUPPLIER } from '@/constant
 import { loadLogoAsBase64 } from '@/utils/logo-base64';
 import { getMonetaryValue, formatMoney, roundToMoney } from '@/utils/monetary';
 import { useUnifiedInvoice } from '@/hooks/useUnifiedInvoice';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface MatchDetail {
   valueType: 'paymentId' | 'registrationId' | 'confirmationNumber' | 'email' | 'amount' | 'accountId' | 'name' | 'address' | 'timestamp' | 'manual';
@@ -1861,9 +1862,12 @@ export default function InvoiceMatchesPage() {
         )}
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">
-        Process Payment to Invoice
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Process Payment to Invoice
+        </h1>
+        <SimpleDatabaseSelector className="w-64" />
+      </div>
 
       {/* Progress Bar */}
       <div className="bg-blue-500 text-white p-4 rounded-lg mb-6">

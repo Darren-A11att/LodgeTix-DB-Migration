@@ -27,6 +27,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { format } from 'date-fns';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface PaymentImport {
   _id: string;
@@ -231,7 +232,10 @@ export default function PaymentMatchingPage() {
           Back to Payment Import
         </Button>
         
-        <h1 className="text-3xl font-bold mb-2">Match Payment to Registration</h1>
+        <div className="flex justify-between items-center mb-2">
+          <h1 className="text-3xl font-bold">Match Payment to Registration</h1>
+          <SimpleDatabaseSelector className="w-64" />
+        </div>
         <p className="text-muted-foreground">
           Find and match the registration for this Square payment
         </p>

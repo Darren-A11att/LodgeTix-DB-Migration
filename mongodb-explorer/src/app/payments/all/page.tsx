@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import apiService from '@/lib/api';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 export default function AllPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
@@ -127,7 +128,10 @@ export default function AllPaymentsPage() {
         </Link>
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">All Payments</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">All Payments</h1>
+        <SimpleDatabaseSelector className="w-64" />
+      </div>
 
       {/* Search and Filter */}
       <div className="mb-6 flex gap-4">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import InvoiceComponent from '@/components/Invoice';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface InvoicePreview {
   invoiceNumber: string;
@@ -162,7 +163,10 @@ export default function InvoiceApprovalPage() {
   if (previews.length === 0) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Invoice Approval</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Invoice Approval</h1>
+          <SimpleDatabaseSelector className="w-64" />
+        </div>
         <p>No pending invoices to approve with confidence &gt;= {minConfidence}%</p>
         <div className="mt-4">
           <label className="block">
@@ -194,7 +198,10 @@ export default function InvoiceApprovalPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Invoice Approval</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Invoice Approval</h1>
+          <SimpleDatabaseSelector className="w-64" />
+        </div>
         <p className="text-gray-600">
           Reviewing {currentIndex + 1} of {previews.length} pending invoices
         </p>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import apiService from '@/lib/api';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 // Removed confidence thresholds import - now using simple ID-only matching
 
 declare global {
@@ -464,6 +465,7 @@ export default function InvoicesListPage() {
           {viewMode === 'all' ? 'All Payment Matches' : 'Processed Invoices'}
         </h1>
         <div className="flex gap-4">
+          <SimpleDatabaseSelector className="w-64" />
           <div className="bg-white rounded-lg shadow px-1 py-1 flex">
             <button
               onClick={() => {
