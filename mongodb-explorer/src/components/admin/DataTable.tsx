@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface DataTableProps {
   collection: string;
@@ -116,12 +117,21 @@ export default function DataTable({ collection, columns, searchFields = [] }: Da
                   </td>
                 ))}
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => setEditItem(item)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                  >
-                    Edit
-                  </button>
+                  {collection === 'products' ? (
+                    <Link
+                      href={`/admin/products/${item._id}/edit`}
+                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    >
+                      Edit
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => setEditItem(item)}
+                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    >
+                      Edit
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDelete(item._id)}
                     className="text-red-600 hover:text-red-900"

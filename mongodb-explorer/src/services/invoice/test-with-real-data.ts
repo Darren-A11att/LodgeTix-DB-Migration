@@ -3,13 +3,21 @@
  */
 
 import { MongoClient, Db } from 'mongodb';
+import dotenv from 'dotenv';
+import path from 'path';
 import { InvoiceDataRepository } from './invoice-data-repository';
+
+dotenv.config({ path: path.resolve(__dirname, '../../../.env.local') });
 import { InvoiceGeneratorFactory } from './generators/invoice-generator-factory';
 import { formatMoney } from './calculators/monetary';
 
 // MongoDB connection details
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_URI = process.env.MONGODB_URI;
 const DATABASE_NAME = process.env.MONGODB_DATABASE || process.env.MONGODB_DB || 'LodgeTix-migration-test-1';
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 // Payment IDs provided by the user
 const TEST_PAYMENT_IDS = {

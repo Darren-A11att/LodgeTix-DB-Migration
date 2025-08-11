@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface ImportQueueItem {
   _id: string;
@@ -117,14 +118,18 @@ export default function ImportQueuePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <div className="flex items-center gap-4 mb-2">
-          <BackButton />
-          <h1 className="text-3xl font-bold">Import Queue</h1>
-          <button
-            onClick={processQueue}
-            disabled={processing || stats.pending === 0}
-            className="ml-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-4">
+            <BackButton />
+            <h1 className="text-3xl font-bold">Import Queue</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <SimpleDatabaseSelector className="w-64" />
+            <button
+              onClick={processQueue}
+              disabled={processing || stats.pending === 0}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
             {processing ? (
               <>
                 <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +146,8 @@ export default function ImportQueuePage() {
                 Process Queue
               </>
             )}
-          </button>
+            </button>
+          </div>
         </div>
         <p className="text-gray-600">Monitor and manage import operations</p>
       </div>

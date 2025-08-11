@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface Registration {
   registrationId: string;
@@ -151,9 +152,17 @@ export default function EventTicketDetailsPage() {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{details.eventTicket.name}</h1>
-        <p className="text-gray-600">{details.eventTicket.description || 'Event ticket registrations details'}</p>
-        <p className="text-sm text-gray-500 mt-2">Ticket ID: {eventTicketId}</p>
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">{details.eventTicket.name}</h1>
+            <p className="text-gray-600">{details.eventTicket.description || 'Event ticket registrations details'}</p>
+            <p className="text-sm text-gray-500 mt-2">Ticket ID: {eventTicketId}</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+            <SimpleDatabaseSelector className="w-48" />
+          </div>
+        </div>
       </div>
 
       {/* Summary Cards */}

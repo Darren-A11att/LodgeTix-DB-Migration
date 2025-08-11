@@ -4,8 +4,15 @@
 
 const { MongoClient } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+// Load environment variables
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
+
+const MONGODB_URI = process.env.MONGODB_URI;
 const DATABASE_NAME = process.env.DATABASE_NAME || 'lodgetix';
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 async function verifyIndexes() {
   const client = new MongoClient(MONGODB_URI);

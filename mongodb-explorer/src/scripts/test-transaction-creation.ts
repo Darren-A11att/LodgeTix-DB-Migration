@@ -1,8 +1,13 @@
 // @ts-nocheck
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env.local') });
 const { MongoClient, ObjectId } = require('mongodb');
 
 // You'll need to update this with your actual connection string
-const uri = process.env.MONGODB_URI || 'mongodb+srv://username:password@lodgetix-migration-test-1.mongodb.net/';
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 const dbName = process.env.MONGODB_DB || 'lodgetix';
 
 async function testTransactionCreation(invoiceId) {

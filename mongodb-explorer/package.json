@@ -15,10 +15,15 @@
     "test:square-init": "npx tsx test-square-init.ts",
     "setup:database": "npx tsx scripts/mongodb-setup/setup-database.ts",
     "create:indexes": "npx tsx create-indexes-production.ts",
-    "check:invoice-status": "npx tsx src/scripts/check-invoice-status.ts"
+    "check:invoice-status": "npx tsx src/scripts/check-invoice-status.ts",
+    "migrate:analyze": "npx tsx scripts/test-migration-dry-run.ts",
+    "migrate:lodgetix": "npx tsx scripts/migrate-lodgetix-to-commerce.ts",
+    "migrate:clear": "npx tsx scripts/migrate-lodgetix-to-commerce.ts -- --clear",
+    "migrate:sample-data": "npx tsx scripts/create-sample-lodgetix-data.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
+    "@hookform/resolvers": "^5.2.1",
     "@react-pdf/renderer": "^4.3.0",
     "@supabase/supabase-js": "^2.50.2",
     "@types/pdfkit": "^0.17.2",
@@ -40,6 +45,7 @@
     "puppeteer": "^24.11.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.62.0",
     "resend": "^4.6.0",
     "square": "^43.0.0",
     "uuid": "^11.1.0",

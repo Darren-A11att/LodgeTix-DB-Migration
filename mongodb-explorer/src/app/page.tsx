@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import apiService, { Collection } from '@/lib/api';
+import DatabaseSelectorDropdown from '@/components/DatabaseSelector';
+import { DatabaseConfig } from '@/lib/database-selector';
 
 export default function Home() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -11,15 +13,17 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [selectedDatabase, setSelectedDatabase] = useState<DatabaseConfig | null>(null);
 
   useEffect(() => {
     fetchCollections();
   }, []);
 
-  const fetchCollections = async () => {
+  const fetchCollections = async (databaseName?: string) => {
     try {
       setLoading(true);
-      const data = await apiService.getCollections();
+      setError(null);
+      const data = await apiService.getCollections(databaseName);
       setCollections(data);
     } catch (err) {
       setError('Failed to load collections');
@@ -49,7 +53,14 @@ export default function Home() {
     setSearchResults([]);
   };
 
-  const totalDocuments = collections.reduce((sum, col) => sum + col.count, 0);
+  const handleDatabaseChange = (database: DatabaseConfig) => {
+    console.log('Database changed to:', database.name, 'ID:', database.id);
+    setSelectedDatabase(database);
+    // Fetch collections for the new database using ID to avoid name conflicts
+    fetchCollections(database.id);
+  };
+
+  const totalDocuments = Array.isArray(collections) ? collections.reduce((sum, col) => sum + col.count, 0) : 0;
 
   if (loading) {
     return (
@@ -69,9 +80,12 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-        MongoDB Database Explorer
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">
+          MongoDB Database Explorer
+        </h1>
+        <DatabaseSelectorDropdown onDatabaseChange={handleDatabaseChange} />
+      </div>
 
       {/* Quick Actions */}
       <div className="mb-8 max-w-4xl mx-auto">

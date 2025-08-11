@@ -18,7 +18,11 @@ export class NormalizedRegistrationProcessor {
   private dbName: string;
 
   constructor() {
-    const uri = process.env.MONGODB_URI || '';
+    const uri = process.env.MONGODB_URI;
+    
+    if (!uri) {
+      throw new Error('MONGODB_URI environment variable is required');
+    }
     this.dbName = process.env.MONGODB_DATABASE || process.env.MONGODB_DB || 'LodgeTix-migration-test-1';
     this.mongoClient = new MongoClient(uri);
   }

@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB || 'lodgetix';
+
+if (!uri) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 export async function GET(
   request: NextRequest,

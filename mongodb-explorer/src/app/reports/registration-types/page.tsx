@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface TypeBreakdown {
   registrationType: string;
@@ -106,8 +107,16 @@ export default function RegistrationTypesReport() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Registration Types Report</h1>
-        
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Registration Types Report</h1>
+            <p className="text-gray-600">Analyze registration breakdown by type (individual vs lodge)</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+            <SimpleDatabaseSelector className="w-48" />
+          </div>
+        </div>
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Filters</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

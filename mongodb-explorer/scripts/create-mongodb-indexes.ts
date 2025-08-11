@@ -4,9 +4,16 @@
 
 const { MongoClient } = require('mongodb');
 
+// Load environment variables
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
+
 // MongoDB connection configuration
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_URI = process.env.MONGODB_URI;
 const DATABASE_NAME = process.env.DATABASE_NAME || 'lodgetix';
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 // Index definitions for registration collection
 const REGISTRATION_INDEXES = [

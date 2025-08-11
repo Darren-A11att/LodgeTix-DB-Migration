@@ -10,11 +10,11 @@ async function main() {
     
     // Define the CSV files to import
     const csvFiles = [
-      path.join(__dirname, '../Payments-Export/items-2025-01-01-2026-01-01.csv'),
-      path.join(__dirname, '../Payments-Export/transactions-2025-01-01-2026-01-01.csv'),
-      path.join(__dirname, '../Payments-Export/Stripe - Lodge Tickets Exports.csv'),
-      path.join(__dirname, '../Payments-Export/Stripe - LodgeTix Darren Export.csv'),
-      path.join(__dirname, '../Payments-Export/Stripe - LodgeTix Export.csv')
+      path.join(__dirname, '../../Payments-Export/items-2025-01-01-2026-01-01.csv'),
+      path.join(__dirname, '../../Payments-Export/transactions-2025-01-01-2026-01-01.csv'),
+      path.join(__dirname, '../../Payments-Export/Stripe - Lodge Tickets Exports.csv'),
+      path.join(__dirname, '../../Payments-Export/Stripe - LodgeTix Darren Export.csv'),
+      path.join(__dirname, '../../Payments-Export/Stripe - LodgeTix Export.csv')
     ];
     
     // Import all payments

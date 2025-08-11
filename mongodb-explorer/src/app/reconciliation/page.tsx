@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface ReconciliationData {
   ticketCounts: {
@@ -76,11 +77,14 @@ export default function ReconciliationDashboard() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-4">Data Reconciliation Dashboard</h1>
-        <Link href="/" className="text-blue-600 hover:underline">
-          ← Back to Collections
-        </Link>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold mb-4">Data Reconciliation Dashboard</h1>
+          <Link href="/" className="text-blue-600 hover:underline">
+            ← Back to Collections
+          </Link>
+        </div>
+        <SimpleDatabaseSelector className="w-64" />
       </div>
 
       {/* Ticket Count Reconciliation */}

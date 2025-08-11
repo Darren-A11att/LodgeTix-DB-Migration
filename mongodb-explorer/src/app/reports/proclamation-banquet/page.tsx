@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface Registration {
   _id: string;
@@ -79,10 +80,19 @@ export default function ProclamationBanquetReport() {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-4">Proclamation Banquet Sales Report</h1>
-        <Link href="/" className="text-blue-600 hover:underline">
-          ← Back to Collections
-        </Link>
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Proclamation Banquet Sales Report</h1>
+            <p className="text-gray-600 mb-4">Specific report for Grand Proclamation banquet sales and attendee analysis</p>
+            <Link href="/reports" className="text-blue-600 hover:underline">
+              ← Back to Reports
+            </Link>
+          </div>
+          <div className="flex flex-col items-end">
+            <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+            <SimpleDatabaseSelector className="w-48" />
+          </div>
+        </div>
       </div>
 
       <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6">

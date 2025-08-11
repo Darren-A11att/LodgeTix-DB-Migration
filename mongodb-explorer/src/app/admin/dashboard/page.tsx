@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface DashboardMetrics {
   ordersToProcess: number;
@@ -96,7 +97,10 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Commerce Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Commerce Dashboard</h1>
+        <SimpleDatabaseSelector className="w-64" />
+      </div>
       
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

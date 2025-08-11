@@ -6,8 +6,14 @@
  * Run after collections have been created
  */
 
-const MONGODB_URI = 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix';
-const DATABASE_NAME = 'LodgeTix';
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env.local') });
+
+const MONGODB_URI = process.env.MONGODB_URI;
+const DATABASE_NAME = process.env.MONGODB_DB || 'LodgeTix';
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 const { MongoClient } = require('mongodb');
 

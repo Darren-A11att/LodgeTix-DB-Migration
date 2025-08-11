@@ -1,6 +1,7 @@
 'use client';
 
 import DataTable from '@/components/admin/DataTable';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 export default function CustomersPage() {
   const columns = [
@@ -13,7 +14,10 @@ export default function CustomersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Customers</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Customers</h1>
+        <SimpleDatabaseSelector className="w-64" />
+      </div>
       <DataTable 
         collection="customers" 
         columns={columns}

@@ -1,6 +1,7 @@
 'use client';
 
 import DataTable from '@/components/admin/DataTable';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 export default function PaymentGatewaysPage() {
   const columns = [
@@ -61,8 +62,14 @@ export default function PaymentGatewaysPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Payment Gateways</h1>
-      <p className="text-gray-600 mb-6">Configure payment gateway accounts for processing transactions</p>
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-2xl font-bold">Payment Gateways</h1>
+          <p className="text-gray-600">Configure payment gateway accounts for processing transactions</p>
+        </div>
+        <SimpleDatabaseSelector className="w-64" />
+      </div>
+      <div className="mb-6"></div>
       <DataTable 
         collection="payment_gateways"
         columns={columns}

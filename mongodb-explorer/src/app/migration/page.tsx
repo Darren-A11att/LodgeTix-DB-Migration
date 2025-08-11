@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 import JsonViewer from '@/components/JsonViewer';
 import JsonViewerWithHighlight from '@/components/JsonViewerWithHighlight';
 import EditableJsonViewer from '@/components/EditableJsonViewer';
@@ -816,15 +817,17 @@ export default function DataMigrationPage() {
   
   return (
     <main className="mx-auto px-4 py-8 w-[90%]">
-      <div className="mb-6">
-        <Link href="/" className="text-blue-500 hover:underline">
-          ← Back to Home
-        </Link>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-blue-500 hover:underline">
+            ← Back to Home
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Data Migration Tool
+          </h1>
+        </div>
+        <SimpleDatabaseSelector className="w-64" />
       </div>
-      
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Data Migration Tool
-      </h1>
       
       {/* Destination Database Stats */}
       {destinationStats && (

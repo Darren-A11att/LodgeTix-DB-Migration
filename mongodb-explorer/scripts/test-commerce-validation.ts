@@ -1,7 +1,15 @@
 import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+import path from 'path';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+
+const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = process.env.MONGODB_DB || 'lodgetix_commerce';
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 async function testCommerceValidation() {
   const client = new MongoClient(MONGODB_URI);

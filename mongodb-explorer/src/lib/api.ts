@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { DatabaseSelector } from './database-selector';
 
 // Use relative API URL for Next.js routes
 const API_BASE_URL = '/api';
@@ -17,9 +18,21 @@ export interface DocumentsResponse {
 }
 
 class ApiService {
-  async getCollections(): Promise<Collection[]> {
-    const response = await axios.get<Collection[]>(`${API_BASE_URL}/collections`);
-    return response.data;
+  async getCollections(databaseName?: string): Promise<Collection[]> {
+    const currentDb = databaseName || DatabaseSelector.getSelectedDatabase().name;
+    const response = await axios.get(`${API_BASE_URL}/collections`, {
+      params: { database: currentDb }
+    });
+    
+    // Handle both old and new response formats
+    const data = response.data;
+    if (data && typeof data === 'object' && 'collections' in data) {
+      // New format with nested collections
+      return data.collections || [];
+    }
+    
+    // Legacy format - direct array
+    return Array.isArray(data) ? data : [];
   }
 
   async getDocuments(collectionName: string, skip: number = 0, limit: number = 20, search?: string, sortBy?: string, sortOrder?: string): Promise<DocumentsResponse> {

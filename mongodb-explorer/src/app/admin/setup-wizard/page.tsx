@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface FunctionData {
   name: string;
@@ -51,21 +52,57 @@ interface PackageData {
   description: string;
 }
 
+interface Organization {
+  id?: string;
+  _id?: string;
+  name: string;
+  legalEntityName?: string;
+  businessNumber?: string;
+  address?: string;
+  website?: string;
+}
+
+interface Location {
+  id?: string;
+  _id?: string;
+  name: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+}
+
 export default function SetupWizardPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Organization search state
+  const [orgSearchTerm, setOrgSearchTerm] = useState('');
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [searchingOrgs, setSearchingOrgs] = useState(false);
+  const [showOrgDropdown, setShowOrgDropdown] = useState(false);
+  const [showNewOrgForm, setShowNewOrgForm] = useState(false);
+  
+  // Location search state
+  const [locSearchTerm, setLocSearchTerm] = useState('');
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [searchingLocs, setSearchingLocs] = useState(false);
+  const [showLocDropdown, setShowLocDropdown] = useState(false);
+  const [showNewLocForm, setShowNewLocForm] = useState(false);
   
   // Form data
   const [functionData, setFunctionData] = useState<FunctionData>({
     name: '',
     handle: '',
     description: '',
-    venue: '',
+    locationId: '',
+    locationName: '',
     startDate: '',
     endDate: '',
-    organizer: '',
-    organizerEmail: ''
+    organizationId: '',
+    organizationName: ''
   });
   
   const [events, setEvents] = useState<EventData[]>([]);
@@ -79,6 +116,96 @@ export default function SetupWizardPage() {
     { id: 4, name: 'Packages', description: 'Create bundled ticket packages (optional)' },
     { id: 5, name: 'Review', description: 'Review and submit' }
   ];
+
+  // Search organizations
+  const searchOrganizations = useCallback(async (query: string) => {
+    if (!query || query.length < 1) {
+      setOrganizations([]);
+      return;
+    }
+    
+    setSearchingOrgs(true);
+    try {
+      const response = await fetch(`/api/admin/organizations/search?q=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setOrganizations(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error searching organizations:', error);
+      setOrganizations([]);
+    } finally {
+      setSearchingOrgs(false);
+    }
+  }, []);
+
+  // Search locations
+  const searchLocations = useCallback(async (query: string) => {
+    if (!query || query.length < 1) {
+      setLocations([]);
+      return;
+    }
+    
+    setSearchingLocs(true);
+    try {
+      const response = await fetch(`/api/admin/locations/search?q=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error searching locations:', error);
+      setLocations([]);
+    } finally {
+      setSearchingLocs(false);
+    }
+  }, []);
+
+  // Debounced search for organizations
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (orgSearchTerm) {
+        searchOrganizations(orgSearchTerm);
+        setShowOrgDropdown(true);
+      } else {
+        setOrganizations([]);
+        setShowOrgDropdown(false);
+      }
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [orgSearchTerm, searchOrganizations]);
+  
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.org-search-container')) {
+        setShowOrgDropdown(false);
+      }
+      if (!target.closest('.loc-search-container')) {
+        setShowLocDropdown(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Debounced search for locations
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (locSearchTerm) {
+        searchLocations(locSearchTerm);
+        setShowLocDropdown(true);
+      } else {
+        setLocations([]);
+        setShowLocDropdown(false);
+      }
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [locSearchTerm, searchLocations]);
 
   const handleNext = () => {
     if (currentStep < steps.length) {
@@ -94,6 +221,92 @@ export default function SetupWizardPage() {
 
   const generateHandle = (name: string) => {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  };
+
+  const selectOrganization = (org: Organization) => {
+    setFunctionData({
+      ...functionData,
+      organizationId: org.id || org._id,
+      organizationName: org.name,
+      organizationData: org.legalEntityName ? {
+        legalEntityName: org.legalEntityName || '',
+        businessNumber: org.businessNumber || '',
+        address: org.address || '',
+        website: org.website || ''
+      } : undefined
+    });
+    setOrgSearchTerm(org.name);
+    setShowOrgDropdown(false);
+  };
+
+  const selectLocation = (loc: Location) => {
+    setFunctionData({
+      ...functionData,
+      locationId: loc.id || loc._id,
+      locationName: loc.name
+    });
+    const displayText = loc.address 
+      ? `${loc.name} - ${loc.address}` 
+      : loc.name;
+    setLocSearchTerm(displayText);
+    setShowLocDropdown(false);
+  };
+
+  const createNewOrganization = async (orgData: any) => {
+    try {
+      const response = await fetch('/api/admin/organizations/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orgData)
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        if (data.data && data.data.organization) {
+          selectOrganization(data.data.organization);
+          setShowNewOrgForm(false);
+        }
+      } else if (response.status === 409) {
+        // Organization already exists - use the existing one
+        console.log('Organization already exists, using existing:', data.existing);
+        if (data.existing) {
+          selectOrganization({
+            id: data.existing.id,
+            _id: data.existing.id,
+            name: data.existing.name,
+            ...orgData // Include the additional fields from the form
+          });
+          setShowNewOrgForm(false);
+        }
+      } else {
+        console.error('Error creating organization:', data.error);
+        alert(`Error: ${data.error || 'Failed to create organization'}`);
+      }
+    } catch (error) {
+      console.error('Error creating organization:', error);
+      alert('Failed to create organization');
+    }
+  };
+
+  const createNewLocation = async (locData: any) => {
+    try {
+      const response = await fetch('/api/admin/locations/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(locData)
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data) {
+          selectLocation(data.data);
+          setShowNewLocForm(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error creating location:', error);
+    }
   };
 
   const addEvent = () => {
@@ -192,10 +405,7 @@ export default function SetupWizardPage() {
 
       const result = await response.json();
       
-      // Show success message
       alert(`Successfully created function "${functionData.name}" with ${events.length} events and ${tickets.length} ticket types!`);
-      
-      // Redirect to products page
       router.push('/admin/products');
     } catch (error) {
       console.error('Error submitting wizard:', error);
@@ -207,8 +417,16 @@ export default function SetupWizardPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-2">Function Setup Wizard</h1>
-      <p className="text-gray-600 mb-8">Follow the steps to create a complete function with events and tickets</p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Function Setup Wizard</h1>
+          <p className="text-gray-600">Follow the steps to create a complete function with events and tickets</p>
+        </div>
+        <div className="flex flex-col items-end">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Database</label>
+          <SimpleDatabaseSelector />
+        </div>
+      </div>
 
       {/* Progress Steps */}
       <div className="mb-8">
@@ -308,38 +526,108 @@ export default function SetupWizardPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Venue</label>
-                <input
-                  type="text"
-                  value={functionData.venue}
-                  onChange={(e) => setFunctionData({ ...functionData, venue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="e.g., Grand Hotel Ballroom"
-                />
+              {/* Organization Autocomplete */}
+              <div className="relative org-search-container">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Organization *</label>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={orgSearchTerm}
+                      onChange={(e) => setOrgSearchTerm(e.target.value)}
+                      onFocus={() => orgSearchTerm && setShowOrgDropdown(true)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Search for organization..."
+                    />
+                    {showOrgDropdown && (organizations.length > 0 || searchingOrgs) && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {searchingOrgs ? (
+                          <div className="px-3 py-2 text-gray-500">Searching...</div>
+                        ) : organizations.length > 0 ? (
+                          organizations.map((org) => (
+                            <button
+                              key={org.id || org._id}
+                              type="button"
+                              onClick={() => selectOrganization(org)}
+                              className="w-full text-left px-3 py-2 hover:bg-gray-100 border-b last:border-b-0"
+                            >
+                              <div className="font-medium">{org.name}</div>
+                              {org.legalEntityName && (
+                                <div className="text-sm text-gray-500">{org.legalEntityName}</div>
+                              )}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-gray-500">No results found</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewOrgForm(true)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  >
+                    + New
+                  </button>
+                </div>
+                {functionData.organizationId && (
+                  <div className="mt-1 text-sm text-green-600">
+                    Selected: {functionData.organizationName}
+                  </div>
+                )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Organizer</label>
-                  <input
-                    type="text"
-                    value={functionData.organizer}
-                    onChange={(e) => setFunctionData({ ...functionData, organizer: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Organization name"
-                  />
+              {/* Location Autocomplete */}
+              <div className="relative loc-search-container">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location *</label>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={locSearchTerm}
+                      onChange={(e) => setLocSearchTerm(e.target.value)}
+                      onFocus={() => locSearchTerm && setShowLocDropdown(true)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Search for location..."
+                    />
+                    {showLocDropdown && (locations.length > 0 || searchingLocs) && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {searchingLocs ? (
+                          <div className="px-3 py-2 text-gray-500">Searching...</div>
+                        ) : locations.length > 0 ? (
+                          locations.map((loc) => (
+                            <button
+                              key={loc.id || loc._id}
+                              type="button"
+                              onClick={() => selectLocation(loc)}
+                              className="w-full text-left px-3 py-2 hover:bg-gray-100 border-b last:border-b-0"
+                            >
+                              <div className="font-medium">{loc.name}</div>
+                              {loc.address && (
+                                <div className="text-sm text-gray-500">{loc.address}</div>
+                              )}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-gray-500">No results found</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewLocForm(true)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  >
+                    + New
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Organizer Email</label>
-                  <input
-                    type="email"
-                    value={functionData.organizerEmail}
-                    onChange={(e) => setFunctionData({ ...functionData, organizerEmail: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="contact@example.com"
-                  />
-                </div>
+                {functionData.locationId && (
+                  <div className="mt-1 text-sm text-green-600">
+                    Selected: {functionData.locationName}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -710,9 +998,9 @@ export default function SetupWizardPage() {
                 <h3 className="font-medium text-lg mb-2">Function Details</h3>
                 <div className="bg-gray-50 rounded p-4 space-y-2">
                   <div><span className="font-medium">Name:</span> {functionData.name}</div>
-                  <div><span className="font-medium">Venue:</span> {functionData.venue}</div>
+                  <div><span className="font-medium">Organization:</span> {functionData.organizationName}</div>
+                  <div><span className="font-medium">Location:</span> {functionData.locationName}</div>
                   <div><span className="font-medium">Dates:</span> {functionData.startDate} to {functionData.endDate}</div>
-                  <div><span className="font-medium">Organizer:</span> {functionData.organizer}</div>
                 </div>
               </div>
 
@@ -779,6 +1067,7 @@ export default function SetupWizardPage() {
                 <h3 className="font-medium text-lg mb-2">What Will Be Created:</h3>
                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
                   <li>1 Product Collection (for the function)</li>
+                  <li>1 Vendor/Supplier record (for invoicing)</li>
                   <li>{events.length} Products (one for each event)</li>
                   <li>{tickets.length} Product Variants (ticket types)</li>
                   {packages.length > 0 && <li>{packages.length} Bundle Products (packages)</li>}
@@ -809,12 +1098,12 @@ export default function SetupWizardPage() {
           <button
             onClick={handleNext}
             disabled={
-              (currentStep === 1 && !functionData.name) ||
+              (currentStep === 1 && (!functionData.name || !functionData.organizationId || !functionData.locationId)) ||
               (currentStep === 2 && events.length === 0) ||
               (currentStep === 3 && tickets.length === 0)
             }
             className={`px-6 py-2 rounded ${
-              ((currentStep === 1 && !functionData.name) ||
+              ((currentStep === 1 && (!functionData.name || !functionData.organizationId || !functionData.locationId)) ||
               (currentStep === 2 && events.length === 0) ||
               (currentStep === 3 && tickets.length === 0))
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
@@ -837,6 +1126,178 @@ export default function SetupWizardPage() {
           </button>
         )}
       </div>
+
+      {/* New Organization Modal */}
+      {showNewOrgForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Create New Organization</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              createNewOrganization({
+                name: formData.get('name'),
+                legalEntityName: formData.get('legalEntityName'),
+                businessNumber: formData.get('businessNumber'),
+                address: formData.get('address'),
+                website: formData.get('website')
+              });
+            }}>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Legal Entity Name *</label>
+                  <input
+                    type="text"
+                    name="legalEntityName"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Business Number</label>
+                  <input
+                    type="text"
+                    name="businessNumber"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <textarea
+                    name="address"
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                  <input
+                    type="url"
+                    name="website"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end mt-4 space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowNewOrgForm(false)}
+                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* New Location Modal */}
+      {showNewLocForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Create New Location</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              createNewLocation({
+                name: formData.get('name'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                postalCode: formData.get('postalCode'),
+                country: formData.get('country')
+              });
+            }}>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location Name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                  <input
+                    type="text"
+                    name="address"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <input
+                      type="text"
+                      name="city"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">State/Province</label>
+                    <input
+                      type="text"
+                      name="state"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <input
+                      type="text"
+                      name="country"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end mt-4 space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowNewLocForm(false)}
+                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

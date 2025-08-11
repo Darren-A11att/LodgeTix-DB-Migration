@@ -1,6 +1,7 @@
 'use client';
 
 import EnhancedDataTable from '@/components/admin/EnhancedDataTable';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 import { useState } from 'react';
 
 export default function OrdersPage() {
@@ -236,7 +237,8 @@ export default function OrdersPage() {
           <h1 className="text-2xl font-bold">Orders</h1>
           <p className="text-gray-600">Manage and process customer orders</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <SimpleDatabaseSelector className="w-64" />
           <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
             📥 Import Orders
           </button>

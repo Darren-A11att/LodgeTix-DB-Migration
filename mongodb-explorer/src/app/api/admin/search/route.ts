@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db('commerce');
+    const db = client.db(process.env.MONGODB_DB);
     
     // Create search regex
     const searchRegex = new RegExp(query, 'i');

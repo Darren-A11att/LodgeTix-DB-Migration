@@ -1,8 +1,14 @@
 // @ts-nocheck
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env.local') });
 const { MongoClient } = require('mongodb');
 
 async function resetPaymentStatus(email) {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+  const uri = process.env.MONGODB_URI;
+  
+  if (!uri) {
+    throw new Error('MONGODB_URI environment variable is required');
+  }
+  
   const client = new MongoClient(uri);
   
   try {

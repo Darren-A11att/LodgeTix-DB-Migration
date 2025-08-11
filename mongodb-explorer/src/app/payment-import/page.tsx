@@ -18,6 +18,7 @@ import { Download, RefreshCw, Search, FileCheck, AlertCircle } from 'lucide-reac
 import { format } from 'date-fns';
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface PaymentImport {
   _id: string;
@@ -130,13 +131,18 @@ export default function PaymentImportPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <div className="flex items-center gap-4 mb-2">
-          <BackButton />
-          <h1 className="text-3xl font-bold">Payment Import</h1>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-4">
+            <BackButton />
+            <div>
+              <h1 className="text-3xl font-bold">Payment Import</h1>
+              <p className="text-muted-foreground">
+                Import payments from Square and match them to registrations
+              </p>
+            </div>
+          </div>
+          <SimpleDatabaseSelector className="w-64" />
         </div>
-        <p className="text-muted-foreground">
-          Import payments from Square and match them to registrations
-        </p>
       </div>
 
       {/* Stats Cards */}

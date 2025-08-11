@@ -53,7 +53,7 @@ export const config: Config = {
   },
   mongodb: {
     uri: getRequiredEnv('MONGODB_URI'),
-    database: getRequiredEnv('MONGODB_DATABASE'),
+    database: getRequiredEnv('MONGODB_DB'),
     username: getOptionalEnv('MONGODB_USERNAME', ''),
     password: getOptionalEnv('MONGODB_PASSWORD', ''),
   },

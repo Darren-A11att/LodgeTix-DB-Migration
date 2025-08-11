@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = process.env.MONGODB_DB || 'lodgetix_commerce';
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 
 interface WizardData {
   function: {
@@ -142,7 +146,7 @@ export async function POST(request: NextRequest) {
         prices: [
           {
             amount: ticket.price * 100, // Convert to cents
-            currency_code: 'ZAR',
+            currency_code: 'AUD',
             includes_tax: true
           }
         ],
@@ -291,7 +295,7 @@ export async function POST(request: NextRequest) {
           prices: [
             {
               amount: pkg.price * 100, // Convert to cents
-              currency_code: 'ZAR',
+              currency_code: 'AUD',
               includes_tax: true
             }
           ],

@@ -66,6 +66,7 @@ export class DataTransformationService {
   
   /**
    * Transform Supabase registration to MongoDB format
+   * Only processes registrations with completed/paid payment status
    */
   static transformSupabaseRegistration(supabaseReg: any): {
     registrationId: string;
@@ -80,7 +81,15 @@ export class DataTransformationService {
     attendees: any[];
     createdAt: Date;
     metadata: Record<string, any>;
-  } {
+  } | null {
+    // Skip registrations without completed payment status
+    const paymentStatus = supabaseReg.payment_status || supabaseReg.status || 'pending';
+    const validStatuses = ['completed', 'paid', 'succeeded', 'success'];
+    
+    if (!validStatuses.includes(paymentStatus.toLowerCase())) {
+      console.log(`⚠️ Skipping registration ${supabaseReg.id} - payment status: ${paymentStatus}`);
+      return null;
+    }
     // Handle different name field formats
     let fullName = supabaseReg.full_name;
     let firstName = supabaseReg.first_name;

@@ -1,6 +1,7 @@
 'use client';
 
 import DataTable from '@/components/admin/DataTable';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 export default function ProductCollectionsPage() {
   const columns = [
@@ -36,8 +37,14 @@ export default function ProductCollectionsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Product Collections</h1>
-      <p className="text-gray-600 mb-6">Organize products into collections (maps to LodgeTix functions)</p>
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-2xl font-bold">Product Collections</h1>
+          <p className="text-gray-600">Organize products into collections (maps to LodgeTix functions)</p>
+        </div>
+        <SimpleDatabaseSelector className="w-64" />
+      </div>
+      <div className="mb-6"></div>
       <DataTable 
         collection="product_collections"
         columns={columns}

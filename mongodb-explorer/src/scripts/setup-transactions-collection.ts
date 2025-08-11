@@ -1,8 +1,13 @@
 // @ts-nocheck
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env.local') });
 const { MongoClient } = require('mongodb');
 
 // Update with your MongoDB Atlas connection string
-const uri = process.env.MONGODB_URI || 'mongodb+srv://lodgetix-migration-test-1.mongodb.net/';
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
 const dbName = process.env.MONGODB_DB || 'lodgetix';
 
 async function setupTransactionsCollection() {

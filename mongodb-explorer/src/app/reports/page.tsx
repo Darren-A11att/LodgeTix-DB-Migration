@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface Report {
   id: string;
@@ -125,8 +126,16 @@ export default function ReportsPage() {
         </Link>
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Reports Center</h1>
-      <p className="text-gray-600 mb-8">Access all available reports and analytics tools</p>
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Reports Center</h1>
+          <p className="text-gray-600">Access all available reports and analytics tools</p>
+        </div>
+        <div className="flex flex-col items-end">
+          <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+          <SimpleDatabaseSelector className="w-48" />
+        </div>
+      </div>
 
       {/* Search and Filter Bar */}
       <div className="bg-white p-4 rounded-lg shadow-sm mb-8">

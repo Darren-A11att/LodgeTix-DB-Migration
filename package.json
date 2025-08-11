@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx tsx scripts/dev-with-sync.ts",
     "dev:lodgetix": "npx tsx scripts/dev-with-sync-lodgetix.ts",
-    "dev:nosync": "cd mongodb-explorer && npm run dev",
+    "dev:nosync": "npx tsx scripts/dev-nosync.ts",
     "api": "node medusajs/api/server.js",
     "build": "cd mongodb-explorer && npm run build",
     "start": "cd mongodb-explorer && npm run start",

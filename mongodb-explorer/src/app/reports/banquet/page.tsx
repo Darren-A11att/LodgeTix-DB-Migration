@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface BanquetReport {
   summary: {
@@ -92,8 +93,16 @@ export default function BanquetReportPage() {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Banquet Transactions Report</h1>
-        
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Banquet Transactions Report</h1>
+            <p className="text-gray-600">Analyze all transactions containing "banquet" in the description</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <label className="text-sm font-medium text-gray-700 mb-1">Database</label>
+            <SimpleDatabaseSelector className="w-48" />
+          </div>
+        </div>
         <div className="flex gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium mb-1">Start Date</label>

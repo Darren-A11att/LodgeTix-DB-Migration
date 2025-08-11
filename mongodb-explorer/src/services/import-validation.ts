@@ -66,12 +66,12 @@ export class ImportValidationService {
       });
     }
     
-    // Status validation
-    const validStatuses = ['COMPLETED', 'APPROVED', 'completed', 'approved'];
+    // Status validation - only allow completed/paid payments
+    const validStatuses = ['COMPLETED', 'APPROVED', 'completed', 'approved', 'paid', 'succeeded', 'success'];
     if (payment.status && !validStatuses.includes(payment.status)) {
       errors.push({
         field: 'status',
-        message: `Payment status '${payment.status}' is not valid for import`,
+        message: `Payment status '${payment.status}' is not valid for import. Only completed/paid payments are allowed.`,
         severity: 'error'
       });
     }

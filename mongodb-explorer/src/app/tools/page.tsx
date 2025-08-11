@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import BackButton from '@/components/BackButton';
+import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface Tool {
   id: string;
@@ -92,12 +93,15 @@ export default function ToolsDashboard() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-4 mb-8">
-        <BackButton />
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Tools Dashboard</h1>
-          <p className="text-gray-600 mt-1">Interactive tools for managing payments, registrations, and data quality</p>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <BackButton />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Tools Dashboard</h1>
+            <p className="text-gray-600 mt-1">Interactive tools for managing payments, registrations, and data quality</p>
+          </div>
         </div>
+        <SimpleDatabaseSelector className="w-64" />
       </div>
 
       {/* Quick Stats */}

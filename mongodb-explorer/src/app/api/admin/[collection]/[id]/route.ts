@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { getDatabaseName } from '@/lib/database-selector';
 import { ObjectId } from 'mongodb';
 
 export async function GET(
@@ -12,7 +13,7 @@ export async function GET(
     // Handle special endpoints
     if (id === 'status-counts' && collection === 'orders') {
       const client = await clientPromise;
-      const db = client.db('commerce');
+      const db = client.db(process.env.MONGODB_DB);
       
       const statuses = ['pending', 'processing', 'paid', 'shipped', 'delivered', 'cancelled', 'refunded'];
       const counts: Record<string, number> = {};
@@ -26,15 +27,16 @@ export async function GET(
     
     // Regular item fetch
     const client = await clientPromise;
-    const db = client.db('commerce');
+    const dbName = getDatabaseName(true); // true = admin route, use commerce database
+    const db = client.db(dbName);
     
     // Try to parse as ObjectId, fallback to string id
     let query: any;
-    try {
+    if (ObjectId.isValid(id) && id.length === 24) {
       query = { _id: new ObjectId(id) };
-    } catch {
-      // If not a valid ObjectId, try as string id
-      query = { id: id };
+    } else {
+      // Try as string _id first, then as id field
+      query = { _id: id };
     }
     
     const item = await db.collection(collection).findOne(query);
@@ -63,14 +65,16 @@ export async function PUT(
     updateData.updatedAt = new Date();
     
     const client = await clientPromise;
-    const db = client.db('commerce');
+    const dbName = getDatabaseName(true); // true = admin route, use commerce database
+    const db = client.db(dbName);
     
     // Try to parse as ObjectId, fallback to string id
     let query: any;
-    try {
+    if (ObjectId.isValid(id) && id.length === 24) {
       query = { _id: new ObjectId(id) };
-    } catch {
-      query = { id: id };
+    } else {
+      // Try as string _id first, then as id field
+      query = { _id: id };
     }
     
     const result = await db.collection(collection).updateOne(
@@ -92,14 +96,16 @@ export async function DELETE(
   try {
     const { collection, id } = await params;
     const client = await clientPromise;
-    const db = client.db('commerce');
+    const dbName = getDatabaseName(true); // true = admin route, use commerce database
+    const db = client.db(dbName);
     
     // Try to parse as ObjectId, fallback to string id
     let query: any;
-    try {
+    if (ObjectId.isValid(id) && id.length === 24) {
       query = { _id: new ObjectId(id) };
-    } catch {
-      query = { id: id };
+    } else {
+      // Try as string _id first, then as id field
+      query = { _id: id };
     }
     
     const result = await db.collection(collection).deleteOne(query);

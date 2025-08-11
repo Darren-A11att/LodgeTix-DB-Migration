@@ -10,7 +10,7 @@ export async function POST(
     const { collection } = await params;
     const { action, ids } = await request.json();
     const client = await clientPromise;
-    const db = client.db('commerce');
+    const db = client.db(process.env.MONGODB_DB);
     
     // Convert string IDs to ObjectIds
     const objectIds = ids.map((id: string) => new ObjectId(id));

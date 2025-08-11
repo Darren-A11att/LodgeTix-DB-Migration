@@ -3,10 +3,15 @@ const { MongoClient } = require('mongodb');
 
 async function searchPaymentAndRegistration(transactionId, confirmationNumber) {
   // Load environment variables
-  require('dotenv').config({ path: '.env.local' });
+  require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env.local') });
   
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+  const uri = process.env.MONGODB_URI;
   const dbName = process.env.MONGODB_DB || 'LodgeTix';
+  
+  if (!uri) {
+    throw new Error('MONGODB_URI environment variable is required');
+  }
+  
   const client = new MongoClient(uri);
   
   try {
