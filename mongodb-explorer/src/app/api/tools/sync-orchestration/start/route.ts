@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectMongoDB } from '@/connections/mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import { SquarePaymentImportService } from '@/services/square-payment-import';
+import { StripePaymentImportService } from '@/services/stripe-payment-import';
+import { config } from '@/config/environment';
 
 interface WorkflowStep {
   id: string;
@@ -45,8 +48,10 @@ export async function POST(request: NextRequest) {
       autoMode,
       steps: [
         { id: 'square-sync', name: 'Sync Square Payments', status: 'pending' },
-        { id: 'stripe-sync', name: 'Sync Stripe Payments', status: 'pending' },
-        { id: 'import-registrations', name: 'Import New Registrations', status: 'pending' },
+        { id: 'stripe-account1-sync', name: 'Sync Stripe Account 1 Payments', status: 'pending' },
+        { id: 'stripe-account2-sync', name: 'Sync Stripe Account 2 Payments', status: 'pending' },
+        { id: 'stripe-account3-sync', name: 'Sync Stripe Account 3 Payments', status: 'pending' },
+        { id: 'import-registrations', name: 'Import Registrations with Payments', status: 'pending' },
         { id: 'process-pending', name: 'Process Pending Imports', status: 'pending' },
         { id: 'cleanup-failed', name: 'Cleanup Failed Imports', status: 'pending' },
         { id: 'generate-report', name: 'Generate Sync Report', status: 'pending' }
@@ -94,18 +99,28 @@ async function executeWorkflow(runId: string, autoMode: boolean) {
   try {
     // Step 1: Sync Square Payments
     await executeStep(run, 'square-sync', async () => {
-      // Simulate Square sync (in real implementation, call Square API)
-      const result = await syncSquarePayments(db);
+      const result = await syncSquarePayments(db, autoMode);
       summary.paymentsImported += result.imported;
       return `Imported ${result.imported} new payments from Square`;
     });
     
-    // Step 2: Sync Stripe Payments
-    await executeStep(run, 'stripe-sync', async () => {
-      // Simulate Stripe sync (in real implementation, call Stripe API)
-      const result = await syncStripePayments(db);
+    // Step 2-4: Sync All Stripe Accounts
+    await executeStep(run, 'stripe-account1-sync', async () => {
+      const result = await syncStripePayments(db, config.stripe.account1, autoMode);
       summary.paymentsImported += result.imported;
-      return `Imported ${result.imported} new payments from Stripe`;
+      return `Imported ${result.imported} new payments from ${config.stripe.account1.name}`;
+    });
+    
+    await executeStep(run, 'stripe-account2-sync', async () => {
+      const result = await syncStripePayments(db, config.stripe.account2, autoMode);
+      summary.paymentsImported += result.imported;
+      return `Imported ${result.imported} new payments from ${config.stripe.account2.name}`;
+    });
+    
+    await executeStep(run, 'stripe-account3-sync', async () => {
+      const result = await syncStripePayments(db, config.stripe.account3, autoMode);
+      summary.paymentsImported += result.imported;
+      return `Imported ${result.imported} new payments from ${config.stripe.account3.name}`;
     });
     
     // Step 3: Import New Registrations
@@ -174,17 +189,57 @@ async function executeStep(
   }
 }
 
-// Simulated sync functions (replace with actual implementations)
-async function syncSquarePayments(db: any) {
-  // In real implementation, fetch from Square API
-  await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-  return { imported: Math.floor(Math.random() * 50) + 10 };
+// Real sync function implementations
+async function syncSquarePayments(db: any, autoMode: boolean) {
+  try {
+    const squareService = new SquarePaymentImportService(
+      db, 
+      config.square.accessToken, 
+      config.square.environment
+    );
+    
+    // Import payments from the last 7 days by default
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 7);
+    
+    const batch = await squareService.importPayments({
+      startDate,
+      endDate,
+      importedBy: 'sync-orchestration'
+    });
+    
+    return { imported: batch.importedPayments };
+    
+  } catch (error) {
+    console.error('Square sync error:', error);
+    throw error;
+  }
 }
 
-async function syncStripePayments(db: any) {
-  // In real implementation, fetch from Stripe API
-  await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-  return { imported: Math.floor(Math.random() * 30) + 5 };
+async function syncStripePayments(db: any, account: { secretKey: string; name: string }, autoMode: boolean) {
+  try {
+    const stripeService = new StripePaymentImportService(db);
+    
+    // Import payments from the last 7 days by default
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 7);
+    
+    const batch = await stripeService.importPaymentsFromAccount({
+      startDate,
+      endDate,
+      accountName: account.name,
+      secretKey: account.secretKey,
+      importedBy: 'sync-orchestration'
+    });
+    
+    return { imported: batch.importedPayments };
+    
+  } catch (error) {
+    console.error(`Stripe sync error for ${account.name}:`, error);
+    throw error;
+  }
 }
 
 async function importRegistrations(db: any, autoMode: boolean) {

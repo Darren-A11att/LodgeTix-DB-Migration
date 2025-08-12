@@ -107,12 +107,12 @@ async function writeEnvFile(webPort: number, apiPort: number): Promise<void> {
   envVars['NEXT_PUBLIC_WEB_PORT'] = webPort.toString();
   envVars['NEXT_PUBLIC_API_URL'] = `http://localhost:${apiPort}/api`;
   
-  // Add MongoDB variables if they don't exist - use production database
+  // Add MongoDB variables if they don't exist - use migration test database
   if (!envVars['MONGODB_URI']) {
-    envVars['MONGODB_URI'] = 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix';
+    envVars['MONGODB_URI'] = 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix-migration-test.wydwfu6.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1';
   }
   if (!envVars['MONGODB_DB']) {
-    envVars['MONGODB_DB'] = 'LodgeTix';
+    envVars['MONGODB_DB'] = 'lodgetix';
   }
   
   // Preserve SQUARE_ACCESS_TOKEN if it exists from parent env

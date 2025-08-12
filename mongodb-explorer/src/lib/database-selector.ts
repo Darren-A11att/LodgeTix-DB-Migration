@@ -30,8 +30,7 @@ export const CLUSTER_CONFIGS: ClusterConfig[] = [
         id: 'lodgetix-db',
         name: 'LodgeTix',
         description: 'Main production database',
-        connectionString: 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/LodgeTix?retryWrites=true&w=majority&appName=LodgeTix',
-        isDefault: true
+        connectionString: 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/LodgeTix?retryWrites=true&w=majority&appName=LodgeTix'
       },
       {
         id: 'lodgetix-migration-test-1-cluster1',
@@ -87,7 +86,8 @@ export const CLUSTER_CONFIGS: ClusterConfig[] = [
         id: 'lodgetix-clean-db',
         name: 'lodgetix',
         description: 'Clean completed transactions',
-        connectionString: 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix'
+        connectionString: 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix',
+        isDefault: true
       },
       {
         id: 'projectcleanup-db',
@@ -134,8 +134,8 @@ export const getDatabaseByName = (name: string): DatabaseConfig | null => {
 // Legacy function - updated to use new system
 export function getDatabaseName(isAdminRoute: boolean = false): string {
   if (isAdminRoute) {
-    // Commerce admin routes use the commerce database
-    return 'commerce';
+    // Admin routes now use the lodgetix database for sync processes
+    return 'lodgetix';
   }
   
   // Use the current selected database or default

@@ -16,6 +16,6 @@ export interface SendEmailOptions {
 }
 
 export interface EmailClient {
-  send(options: SendEmailOptions): Promise<{ id?: string; idempotencyKey?: string };
+  send(options: SendEmailOptions): Promise<{ id?: string; idempotencyKey?: string }>;
 }
 

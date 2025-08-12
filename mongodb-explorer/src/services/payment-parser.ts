@@ -48,6 +48,9 @@ export class PaymentParser {
     const connection = await connectMongoDB();
     this.paymentsCollection = connection.db.collection<StandardizedPayment>('payments');
     
+    // CSV parsing has been disabled - only API imports are allowed
+    console.warn('CSV parsing is disabled. Use API-based payment import services instead.');
+    
     // Create indexes for better query performance
     await this.paymentsCollection.createIndex({ transactionId: 1 });
     await this.paymentsCollection.createIndex({ timestamp: -1 });
@@ -166,6 +169,10 @@ export class PaymentParser {
   }
 
   async parseCSVFile(filePath: string): Promise<StandardizedPayment[]> {
+    throw new Error('CSV parsing is disabled. Use API-based payment import services (Square or Stripe) instead.');
+    
+    // Legacy code below - disabled for security and consistency
+    /*
     const payments: StandardizedPayment[] = [];
     const fileName = path.basename(filePath);
     const isSquareFile = fileName.includes('items-') || fileName.includes('transactions-');
@@ -200,9 +207,14 @@ export class PaymentParser {
       const stream = fs.createReadStream(filePath);
       stream.pipe(parser);
     });
+    */
   }
 
   async importPayments(csvFiles: string[]): Promise<void> {
+    throw new Error('CSV file import is disabled. Use API-based payment import services (Square or Stripe) instead.');
+    
+    // Legacy code below - disabled for security and consistency
+    /*
     console.log('🚀 Starting payment import process...');
     
     for (const file of csvFiles) {
@@ -232,6 +244,7 @@ export class PaymentParser {
     
     const totalCount = await this.paymentsCollection.countDocuments();
     console.log(`\n✅ Import complete! Total payments in database: ${totalCount}`);
+    */
   }
 
   async getPaymentsSummary() {

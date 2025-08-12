@@ -1,0 +1,5 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-12T03:08:14.895Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized

@@ -1,0 +1,28 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-12T03:10:32.536Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to payments_import
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to registrations_import
+6. Link and import to final collections
+7. Process attendees and tickets
+8. Process contacts with deduplication
+
+✓ Connected to MongoDB database: lodgetix
+
+━━━ Processing Square ━━━
+
+Fetching Square payments (cursor: blank)

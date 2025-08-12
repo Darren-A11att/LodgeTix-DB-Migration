@@ -3,16 +3,36 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Development with Automatic Sync (Restored from c3b7b3d)
+
+The default development command now includes automatic data synchronization:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+
+This will:
+1. Import completed payments from Square API
+2. Import succeeded payments from 3 Stripe accounts (DA-LODGETIX, WS-LODGETIX, WS-LODGETICKETS)
+3. Fetch registrations from Supabase using stripe_payment_intent_id
+4. Process and match payments to registrations
+5. Store all data in "lodgetix" database
+6. Start the Next.js development server
+
+### Development without Sync
+
+If you want to skip the sync and start the server immediately:
+
+```bash
+npm run dev:no-sync
+```
+
+### Manual Sync Only
+
+To run just the sync process without starting the server:
+
+```bash
+npm run sync
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

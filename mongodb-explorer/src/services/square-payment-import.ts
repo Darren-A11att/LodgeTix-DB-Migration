@@ -1,5 +1,6 @@
 import { Db } from 'mongodb';
-import { PaymentImport, ImportBatch } from '../types/payment-import';
+import { PaymentImport } from '../types/payment-import';
+import { ImportBatch } from '../types/import-batch';
 
 const square = require('square');
 
@@ -94,6 +95,12 @@ export class SquarePaymentImportService {
               batch.skippedPayments++;
               continue;
             }
+          }
+          
+          // Only import completed payments (skip refunded, pending, failed, cancelled)
+          if (!squarePayment.status || squarePayment.status !== 'COMPLETED') {
+            batch.skippedPayments++;
+            continue;
           }
           
           try {

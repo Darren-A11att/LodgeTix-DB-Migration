@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local' });
@@ -20,6 +20,24 @@ interface Config {
     database: string;
     username?: string;
     password?: string;
+  };
+  square: {
+    accessToken: string;
+    environment: string;
+  };
+  stripe: {
+    account1: {
+      secretKey: string;
+      name: string;
+    };
+    account2: {
+      secretKey: string;
+      name: string;
+    };
+    account3: {
+      secretKey: string;
+      name: string;
+    };
   };
   migration: {
     batchSize: number;
@@ -56,6 +74,24 @@ export const config: Config = {
     database: getRequiredEnv('MONGODB_DB'),
     username: getOptionalEnv('MONGODB_USERNAME', ''),
     password: getOptionalEnv('MONGODB_PASSWORD', ''),
+  },
+  square: {
+    accessToken: getRequiredEnv('SQUARE_ACCESS_TOKEN'),
+    environment: getOptionalEnv('SQUARE_ENVIRONMENT', 'production'),
+  },
+  stripe: {
+    account1: {
+      secretKey: getRequiredEnv('STRIPE_ACCOUNT1_SECRET_KEY'),
+      name: getOptionalEnv('STRIPE_ACCOUNT1_NAME', 'Account 1'),
+    },
+    account2: {
+      secretKey: getRequiredEnv('STRIPE_ACCOUNT2_SECRET_KEY'),
+      name: getOptionalEnv('STRIPE_ACCOUNT2_NAME', 'Account 2'),
+    },
+    account3: {
+      secretKey: getRequiredEnv('STRIPE_ACCOUNT3_SECRET_KEY'),
+      name: getOptionalEnv('STRIPE_ACCOUNT3_NAME', 'Account 3'),
+    },
   },
   migration: {
     batchSize: parseInt(getOptionalEnv('BATCH_SIZE', '1000'), 10),

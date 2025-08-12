@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx tsx server.ts",
+    "dev": "node scripts/dev-with-sync.js",
+    "dev:no-sync": "npx tsx server.ts",
     "dev:next": "next dev -p 3005",
     "dev:api": "npx tsx api-server.ts",
     "build": "next build",
@@ -19,7 +20,8 @@
     "migrate:analyze": "npx tsx scripts/test-migration-dry-run.ts",
     "migrate:lodgetix": "npx tsx scripts/migrate-lodgetix-to-commerce.ts",
     "migrate:clear": "npx tsx scripts/migrate-lodgetix-to-commerce.ts -- --clear",
-    "migrate:sample-data": "npx tsx scripts/create-sample-lodgetix-data.ts"
+    "migrate:sample-data": "npx tsx scripts/create-sample-lodgetix-data.ts",
+    "sync": "node scripts/sync-all-data.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -48,6 +50,7 @@
     "react-hook-form": "^7.62.0",
     "resend": "^4.6.0",
     "square": "^43.0.0",
+    "stripe": "^18.4.0",
     "uuid": "^11.1.0",
     "zod": "^4.0.16"
   },
