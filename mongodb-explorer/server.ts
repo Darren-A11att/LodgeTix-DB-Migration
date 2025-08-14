@@ -15,11 +15,11 @@ interface EnvVars {
   [key: string]: string;
 }
 
-// Load parent environment variables first
-const parentEnvPath = path.join(__dirname, '..', '.env.local');
-if (fsSync.existsSync(parentEnvPath)) {
-  console.log('Loading parent .env.local from:', parentEnvPath);
-  dotenv.config({ path: parentEnvPath });
+// Load environment variables from .env.explorer
+const envPath = path.join(__dirname, '.env.explorer');
+if (fsSync.existsSync(envPath)) {
+  console.log('Loading .env.explorer from:', envPath);
+  dotenv.config({ path: envPath });
 }
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -82,40 +82,36 @@ async function readApiPort(): Promise<number> {
 
 // Write environment file for Next.js
 async function writeEnvFile(webPort: number, apiPort: number): Promise<void> {
-  const envPath = path.join(__dirname, '.env.local');
-  let existingContent = '';
+  const localEnvPath = path.join(__dirname, '.env.local');
+  const explorerEnvPath = path.join(__dirname, '.env.explorer');
   
-  // Read existing .env.local file
-  try {
-    existingContent = await fs.readFile(envPath, 'utf-8');
-  } catch (error) {
-    // File doesn't exist, that's okay
-  }
-  
-  // Parse existing content into key-value pairs
+  // Start with variables from .env.explorer if it exists
   const envVars: EnvVars = {};
-  existingContent.split('\n').forEach(line => {
-    if (line.trim() && !line.startsWith('#')) {
-      const [key, ...valueParts] = line.split('=');
-      if (key) {
-        envVars[key.trim()] = valueParts.join('=').trim();
+  
+  // Read from .env.explorer first (primary source)
+  try {
+    const explorerContent = await fs.readFile(explorerEnvPath, 'utf-8');
+    explorerContent.split('\n').forEach(line => {
+      if (line.trim() && !line.startsWith('#')) {
+        const [key, ...valueParts] = line.split('=');
+        if (key) {
+          envVars[key.trim()] = valueParts.join('=').trim();
+        }
       }
-    }
-  });
+    });
+    console.log(`Loaded ${Object.keys(envVars).length} variables from .env.explorer`);
+  } catch (error) {
+    console.log('.env.explorer not found, using process.env values');
+    // Fall back to process.env values
+    if (process.env.MONGODB_URI) envVars['MONGODB_URI'] = process.env.MONGODB_URI;
+    // Don't copy MONGODB_DB since we're hardcoding database names in scripts
+  }
   
   // Update only the NEXT_PUBLIC variables
   envVars['NEXT_PUBLIC_WEB_PORT'] = webPort.toString();
   envVars['NEXT_PUBLIC_API_URL'] = `http://localhost:${apiPort}/api`;
   
-  // Add MongoDB variables if they don't exist - use migration test database
-  if (!envVars['MONGODB_URI']) {
-    envVars['MONGODB_URI'] = 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix-migration-test.wydwfu6.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1';
-  }
-  if (!envVars['MONGODB_DB']) {
-    envVars['MONGODB_DB'] = 'lodgetix';
-  }
-  
-  // Preserve SQUARE_ACCESS_TOKEN if it exists from parent env
+  // Preserve important variables from process.env if not in .env.explorer
   if (process.env.SQUARE_ACCESS_TOKEN && !envVars['SQUARE_ACCESS_TOKEN']) {
     envVars['SQUARE_ACCESS_TOKEN'] = process.env.SQUARE_ACCESS_TOKEN;
   }
@@ -125,7 +121,8 @@ async function writeEnvFile(webPort: number, apiPort: number): Promise<void> {
     .map(([key, value]) => `${key}=${value}`)
     .join('\n');
   
-  await fs.writeFile(envPath, newContent);
+  await fs.writeFile(localEnvPath, newContent);
+  console.log(`Wrote ${Object.keys(envVars).length} variables to .env.local`);
 }
 
 async function startServer(): Promise<void> {

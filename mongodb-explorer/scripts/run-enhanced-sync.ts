@@ -4,14 +4,20 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import EnhancedPaymentSyncService from '../src/services/sync/enhanced-payment-sync';
 
-// Load environment variables
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
-// Also load parent env if exists
-dotenv.config({ path: path.resolve(process.cwd(), '../.env.local') });
+// Load environment variables from .env.explorer ONLY
+// This has the correct MongoDB cluster/database settings
+const envPath = path.resolve(__dirname, '..', '.env.explorer');
+console.log(`Loading environment from: ${envPath}`);
+const result = dotenv.config({ path: envPath });
+if (result.error) {
+  console.error('Failed to load .env.explorer:', result.error);
+} else {
+  console.log(`Loaded ${Object.keys(result.parsed || {}).length} environment variables`);
+}
 
 async function main() {
   console.log('=== ENHANCED PAYMENT SYNC ===');
-  console.log(`Target Database: ${process.env.MONGODB_DB || 'lodgetix'}`);
+  console.log(`Target Database: lodgetix`);  // Hardcoded database name
   console.log(`MongoDB URI: ${process.env.MONGODB_URI?.replace(/\/\/[^:]+:[^@]+@/, '//*****:*****@')}`);
   console.log('\nFeatures:');
   console.log('✓ Square payments with orders and customers');

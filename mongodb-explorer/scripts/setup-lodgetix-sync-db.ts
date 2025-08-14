@@ -1,5 +1,8 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
-require('dotenv').config({ path: '.env.local' });
+// Load environment variables from .env.explorer ONLY
+// STANDARDIZED: All sync scripts use .env.explorer as the single source of truth
+require('dotenv').config({ path: '.env.explorer' });
+console.log('Loading environment from: .env.explorer');
 
 async function setupLodgetixDatabase() {
   const client = new MongoClient(process.env.MONGODB_URI, {

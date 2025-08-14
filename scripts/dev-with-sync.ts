@@ -60,16 +60,19 @@ async function runSync() {
   return new Promise((resolve, reject) => {
     log('🔄 Running data sync...', 'blue');
     
-    const syncArgs = [path.join(__dirname, 'sync-all-data.js')];
+    // Use the enhanced sync script in mongodb-explorer
+    const syncScript = path.join(__dirname, '..', 'mongodb-explorer', 'scripts', 'run-enhanced-sync.ts');
+    const syncArgs = ['tsx', syncScript];
     
-    // Use quick sync settings if enabled
+    // Use quick sync settings if enabled (limit number of payments for testing)
     if (config.development.quickSync.enabled) {
-      syncArgs.push('--days', String(QUICK_SYNC_DAYS));
+      syncArgs.push('--limit', String(QUICK_SYNC_DAYS));
     }
     
-    const syncProcess = spawn('node', syncArgs, {
+    const syncProcess = spawn('npx', syncArgs, {
       stdio: 'inherit',
-      env: process.env
+      env: process.env,
+      cwd: path.join(__dirname, '..', 'mongodb-explorer')
     });
     
     syncProcess.on('close', (code) => {
@@ -93,10 +96,10 @@ async function runSync() {
 async function startDevServers() {
   log('🚀 Starting MongoDB Explorer...', 'blue');
   
-  // Change to mongodb-explorer directory and run npm dev
+  // Change to mongodb-explorer directory and run dev:no-sync (since we already ran sync)
   const mongodbExplorerPath = path.join(__dirname, '..', 'mongodb-explorer');
   
-  const devProcess = spawn('npm', ['run', 'dev'], {
+  const devProcess = spawn('npm', ['run', 'dev:no-sync'], {
     stdio: 'inherit',
     cwd: mongodbExplorerPath,
     env: process.env,

@@ -4,9 +4,9 @@ const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
 
-// Load environment variables from both local and parent .env.local
-require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
-require('dotenv').config({ path: path.join(__dirname, '../../.env.local') });
+// Load environment variables from .env.explorer ONLY
+// This has the correct MongoDB cluster/database settings
+require('dotenv').config({ path: path.join(__dirname, '../.env.explorer') });
 
 console.log('🔄 Starting complete data synchronization...\n');
 
@@ -77,14 +77,7 @@ async function runScript(scriptName, args = [], description = '') {
     
     const childProcess = spawn(command, commandArgs, {
       stdio: 'inherit',
-      env: {
-        ...process.env,
-        // Ensure target database is set - parent scripts expect MONGODB_DATABASE
-        MONGODB_DATABASE: CONFIG.TARGET_DATABASE,
-        TARGET_DATABASE: CONFIG.TARGET_DATABASE,
-        // Override any existing database setting to ensure lodgetix is used
-        MONGODB_DB_NAME: CONFIG.TARGET_DATABASE
-      }
+      env: process.env  // Just pass through the environment as-is
     });
     
     childProcess.on('close', (code) => {
