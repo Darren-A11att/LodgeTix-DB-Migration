@@ -89,6 +89,7 @@ export class EnhancedPaymentSyncService {
   private logFilePath: string;
   private processedContacts: Map<string, ObjectId> = new Map();
   private referenceDataService: ReferenceDataService | null = null;
+  private syncRunId: string = `sync-${Date.now()}`;
 
   constructor() {
     // Environment variables should already be loaded by parent scripts
@@ -118,6 +119,60 @@ export class EnhancedPaymentSyncService {
     if (this.logFilePath) {
       const logMessage = `${message}\n`;
       fs.appendFileSync(this.logFilePath, logMessage);
+    }
+  }
+
+  private async logError(
+    entityType: 'payment' | 'registration' | 'ticket' | 'customer' | 'contact' | 'attendee',
+    entityId: string,
+    errorType: 'UNMATCHED' | 'INVALID_STATUS' | 'PROCESSING_ERROR' | 'VALIDATION_ERROR' | 'DUPLICATE',
+    errorMessage: string,
+    originalData: any,
+    context?: any
+  ) {
+    if (!this.db) return;
+
+    const now = Math.floor(Date.now() / 1000); // Unix timestamp
+    
+    try {
+      // Log to error_log collection
+      await this.db.collection('error_log').insertOne({
+        timestamp: now,
+        syncRunId: this.syncRunId,
+        errorLevel: errorType === 'PROCESSING_ERROR' ? 'ERROR' : 'WARNING',
+        entityType,
+        entityId,
+        operation: 'sync',
+        errorMessage,
+        errorCode: errorType,
+        context: {
+          source: context?.source || 'unknown',
+          provider: context?.provider || 'unknown',
+          ...context
+        },
+        resolution: {
+          status: 'PENDING'
+        }
+      });
+
+      // Also save the full record to the appropriate error collection
+      const errorCollectionName = `error_${entityType}s`;
+      await this.db.collection(errorCollectionName).insertOne({
+        originalId: entityId,
+        [`${entityType}Id`]: entityId,
+        errorType,
+        errorMessage,
+        attemptedAt: now,
+        originalData,
+        metadata: {
+          syncRunId: this.syncRunId,
+          provider: context?.provider,
+          source: context?.source
+        }
+      });
+
+    } catch (error) {
+      this.writeToLog(`    ⚠️ Failed to log error to error collections: ${error}`);
     }
   }
 
@@ -236,12 +291,23 @@ export class EnhancedPaymentSyncService {
       } catch (error: any) {
         this.writeToLog(`Error processing ${provider.name}: ${error.message}`);
         this.errorCount++;
+        await this.logError(
+          'payment',
+          provider.name,
+          'PROCESSING_ERROR',
+          `Provider processing failed: ${error.message}`,
+          { provider: provider.name },
+          { provider: provider.name, source: 'provider_processing' }
+        );
       }
     }
 
     // Perform selective sync from import collections to production collections
     this.writeToLog('\n🔄 Starting selective production sync...');
     await this.performSelectiveSync();
+
+    // Run error verification as final step
+    await this.runErrorVerification();
 
     this.writeToLog('\n=== SYNC COMPLETE ===');
     this.writeToLog(`✅ Processed: ${this.processedCount}`);
@@ -329,9 +395,17 @@ export class EnhancedPaymentSyncService {
       } catch (error: any) {
         this.writeToLog(`Error fetching Square payments: ${error.message}`);
         this.errorCount++;
+        await this.logError(
+          'payment',
+          'square-fetch',
+          'PROCESSING_ERROR',
+          `Square API fetch failed: ${error.message}`,
+          { cursor, hasMore },
+          { provider: 'square', source: 'api_fetch' }
+        );
         break;
       }
-    } while (cursor || totalFetched === 0); // Continue while we have a cursor OR if we haven't fetched any yet
+    } while (cursor); // Continue while we have a cursor
     
     this.writeToLog(`✓ Processed ${processedInProvider} Square payments (total fetched: ${totalFetched})`);
   }
@@ -340,18 +414,20 @@ export class EnhancedPaymentSyncService {
     try {
       this.writeToLog(`\n📝 Processing Square payment: ${payment.id}`);
       
-      // Check payment status
-      if (payment.status !== 'COMPLETED') {
-        this.writeToLog(`  ⏭️ Skipping - status: ${payment.status}`);
-        this.skippedCount++;
-        return;
+      // Check payment status - track all payments but note which ones should move to production
+      const shouldMoveToProduction = payment.status === 'COMPLETED' && 
+                                    (!payment.refundedMoney || payment.refundedMoney.amount === 0);
+      
+      if (!shouldMoveToProduction) {
+        this.writeToLog(`  📥 Importing non-completed payment - status: ${payment.status} (will not move to production)`);
+        this.skippedCount++; // Still count as skipped for production purposes
+      } else {
+        this.writeToLog(`  ✅ Importing completed payment - status: ${payment.status}`);
       }
 
-      // Check if refunded
+      // Refunded status is already checked in shouldMoveToProduction above
       if (payment.refundedMoney && payment.refundedMoney.amount > 0) {
-        this.writeToLog(`  ⏭️ Skipping - refunded`);
-        this.skippedCount++;
-        return;
+        this.writeToLog(`  💰 Payment has refunds: ${Number(payment.refundedMoney.amount) / 100} ${payment.refundedMoney.currency}`);
       }
 
       // Check if already processed in import collection
@@ -427,14 +503,25 @@ export class EnhancedPaymentSyncService {
       }
 
       // 1. Import payment to import_payments with field transformation
+      // Determine payment status properly
+      let paymentStatus = payment.status.toLowerCase();
+      if (payment.status === 'FAILED') {
+        paymentStatus = 'failed';
+      } else if (payment.status === 'CANCELLED' || payment.status === 'CANCELED') {
+        paymentStatus = 'cancelled';
+      } else if (payment.refundedMoney && payment.refundedMoney.amount > 0) {
+        // If there's any refund amount, mark as refunded
+        paymentStatus = 'refunded';
+      }
+
       const paymentImportData = {
         id: payment.id,
         provider: provider.name,
         // Convert BigInt to number for Square amounts
         amount: payment.totalMoney?.amount ? Number(payment.totalMoney.amount) / 100 : 0,
         currency: payment.totalMoney?.currency || 'USD',
-        status: payment.status.toLowerCase(),
-        refunded: false,
+        status: paymentStatus,
+        refunded: payment.refundedMoney && payment.refundedMoney.amount > 0,
         amountRefunded: payment.refundedMoney?.amount ? Number(payment.refundedMoney.amount) / 100 : 0,
         created: new Date(payment.createdAt),
         metadata: payment.note ? { note: payment.note } : {},
@@ -442,7 +529,8 @@ export class EnhancedPaymentSyncService {
         orderData: orderData,
         customerData: customerData,
         customerId: payment.customerId,
-        receiptEmail: customerData?.emailAddress
+        receiptEmail: customerData?.emailAddress,
+        _shouldMoveToProduction: shouldMoveToProduction
       };
 
       const paymentImport = createImportDocument(
@@ -462,17 +550,36 @@ export class EnhancedPaymentSyncService {
       const registration = await this.fetchRegistrationByPaymentId(payment.id);
       
       if (!registration) {
-        this.writeToLog(`  ❌ No registration found for payment: ${payment.id}`);
+        const logPrefix = shouldMoveToProduction ? '❌' : '📝';
+        this.writeToLog(`  ${logPrefix} No registration found for payment: ${payment.id}`);
         // Update import_payments with "no-match" for registrationId
         await db.collection('import_payments').updateOne(
           { id: payment.id },
           { $set: { registrationId: 'no-match' } }
         );
         this.writeToLog(`  ✓ Updated import_payments with registrationId: no-match`);
-        this.errorCount++;
+        
+        // Only log as error if payment is successful/completed and not refunded
+        if (payment.status === 'COMPLETED' && 
+            (!payment.refundedMoney || payment.refundedMoney.amount === 0)) {
+          this.errorCount++;
+          await this.logError(
+            'payment',
+            payment.id,
+            'UNMATCHED',
+            'No matching registration found for completed Square payment',
+            payment,
+            { provider: 'square', source: 'payment_registration_match' }
+          );
+        } else {
+          // Failed or refunded payments without match are not errors
+          this.skippedCount++;
+          this.writeToLog(`  ℹ️ Failed/refunded payment - no match is not an error`);
+        }
         return;
       }
-      this.writeToLog(`  ✓ Found registration: ${registration.id}`);
+      const logPrefix = shouldMoveToProduction ? '✓' : '📝';
+      this.writeToLog(`  ${logPrefix} Found registration: ${registration.id}`);
       
       // Update import_payments with the found registrationId
       await db.collection('import_payments').updateOne(
@@ -485,7 +592,8 @@ export class EnhancedPaymentSyncService {
       const registrationImportData = {
         ...registration, // Include ALL fields from Supabase
         paymentId: payment.id, // Square payment ID
-        gateway: provider.name // 'Square'
+        gateway: provider.name, // 'Square'
+        _shouldMoveToProduction: shouldMoveToProduction
       };
 
       const registrationImport = createImportDocument(
@@ -499,10 +607,12 @@ export class EnhancedPaymentSyncService {
         registrationImport,
         { upsert: true }
       );
-      this.writeToLog(`  ✓ Imported FULL registration to import_registrations with field transformation`);
+      const regLogPrefix = shouldMoveToProduction ? '✓' : '📝';
+      this.writeToLog(`  ${regLogPrefix} Imported FULL registration to import_registrations with field transformation`);
 
       // Production sync deferred to selective sync phase
-      this.writeToLog(`  ⏸️ Production sync deferred to selective sync phase`);
+      const syncStatus = shouldMoveToProduction ? 'eligible for production sync' : 'not eligible for production sync';
+      this.writeToLog(`  ⏸️ Production sync deferred to selective sync phase (${syncStatus})`);
 
       // 4. Process booking contact as customer (use the imported registration with transformed fields)
       await this.processCustomerFromRegistration(registrationImport, db);
@@ -511,11 +621,20 @@ export class EnhancedPaymentSyncService {
       await this.processAttendeesTicketsAndContacts(registration, db);
 
       this.processedCount++;
-      this.writeToLog(`  ✅ Completed processing Square payment ${payment.id}`);
+      const completionPrefix = shouldMoveToProduction ? '✅' : '📝';
+      this.writeToLog(`  ${completionPrefix} Completed processing Square payment ${payment.id} (${shouldMoveToProduction ? 'production eligible' : 'import only'})`);
       
     } catch (error: any) {
       this.writeToLog(`  ❌ Error processing Square payment ${payment.id}: ${error.message}`);
       this.errorCount++;
+      await this.logError(
+        'payment',
+        payment.id,
+        'PROCESSING_ERROR',
+        `Square payment processing failed: ${error.message}`,
+        payment,
+        { provider: 'square', source: 'payment_processing' }
+      );
     }
   }
 
@@ -551,6 +670,14 @@ export class EnhancedPaymentSyncService {
       } catch (error) {
         this.writeToLog(`Error fetching charges from ${provider.name}: ${error}`);
         this.errorCount++;
+        await this.logError(
+          'payment',
+          provider.name,
+          'PROCESSING_ERROR',
+          `Stripe charge fetch failed: ${error}`,
+          { provider: provider.name },
+          { provider: provider.name, source: 'stripe_charge_fetch' }
+        );
         break;
       }
     }
@@ -565,17 +692,25 @@ export class EnhancedPaymentSyncService {
     try {
       this.writeToLog(`\n📝 Processing charge: ${charge.id}`);
       
-      // Skip if not paid or fully refunded
-      if (!charge.paid) {
-        this.writeToLog(`  ⏭️ Skipping - not paid`);
-        this.skippedCount++;
-        return;
+      // Check charge status - track all charges but note which ones should move to production
+      const shouldMoveToProduction = charge.paid && (!charge.refunded || charge.amount_refunded < charge.amount);
+      
+      if (!shouldMoveToProduction) {
+        if (!charge.paid) {
+          this.writeToLog(`  📥 Importing unpaid charge - status: ${charge.status} (will not move to production)`);
+        } else if (charge.refunded && charge.amount_refunded === charge.amount) {
+          this.writeToLog(`  📥 Importing fully refunded charge - refunded: ${charge.amount_refunded / 100} ${charge.currency} (will not move to production)`);
+        } else {
+          this.writeToLog(`  📥 Importing charge with issues - paid: ${charge.paid}, refunded: ${charge.refunded} (will not move to production)`);
+        }
+        this.skippedCount++; // Still count as skipped for production purposes
+      } else {
+        this.writeToLog(`  ✅ Importing successful charge - status: ${charge.status}`);
       }
 
-      if (charge.refunded && charge.amount_refunded === charge.amount) {
-        this.writeToLog(`  ⏭️ Skipping - fully refunded`);
-        this.skippedCount++;
-        return;
+      // Log refunded status for successful charges
+      if (charge.refunded && charge.amount_refunded > 0 && shouldMoveToProduction) {
+        this.writeToLog(`  💰 Charge has partial refunds: ${charge.amount_refunded / 100} ${charge.currency}`);
       }
 
       // Check if already processed in import collection
@@ -595,13 +730,21 @@ export class EnhancedPaymentSyncService {
       }
 
       // 1. Import charge to import_payments with field transformation
+      // Determine charge status properly
+      let chargeStatus = charge.status;
+      if (charge.refunded === true) {
+        chargeStatus = 'refunded';
+      } else if (charge.status === 'failed') {
+        chargeStatus = 'failed';
+      }
+
       const chargeImportData = {
         id: charge.id,
         paymentIntentId: charge.payment_intent as string || '',
         provider: provider.name,
         amount: charge.amount / 100,
         currency: charge.currency,
-        status: charge.status,
+        status: chargeStatus,
         refunded: charge.refunded,
         amountRefunded: charge.amount_refunded / 100,
         created: new Date(charge.created * 1000),
@@ -609,7 +752,8 @@ export class EnhancedPaymentSyncService {
         cardBrand: charge.payment_method_details?.card?.brand,
         cardLast4: charge.payment_method_details?.card?.last4,
         receiptEmail: charge.receipt_email || undefined,
-        customerId: charge.customer as string || undefined
+        customerId: charge.customer as string || undefined,
+        _shouldMoveToProduction: shouldMoveToProduction
       };
 
       const chargeImport = createImportDocument(
@@ -634,24 +778,58 @@ export class EnhancedPaymentSyncService {
           { $set: { registrationId: 'no-match' } }
         );
         this.writeToLog(`  ✓ Updated import_payments with registrationId: no-match`);
-        this.errorCount++;
+        
+        // Only log as error if charge is successful and not refunded
+        if (charge.paid && !charge.refunded) {
+          this.errorCount++;
+          await this.logError(
+            'payment',
+            charge.id,
+            'UNMATCHED',
+            'Stripe charge has no payment intent ID - cannot find registration',
+            charge,
+            { provider: provider.name, source: 'charge_no_pi' }
+          );
+        } else {
+          // Failed or refunded charges without match are not errors
+          this.skippedCount++;
+          this.writeToLog(`  ℹ️ Failed/refunded charge - no match is not an error`);
+        }
         return;
       }
 
       const registration = await this.fetchRegistrationByPaymentId(charge.payment_intent as string);
       
       if (!registration) {
-        this.writeToLog(`  ❌ No registration found for payment intent: ${charge.payment_intent}`);
+        const logPrefix = shouldMoveToProduction ? '❌' : '📝';
+        this.writeToLog(`  ${logPrefix} No registration found for payment intent: ${charge.payment_intent}`);
         // Update import_payments with "no-match" for registrationId
         await db.collection('import_payments').updateOne(
           { id: charge.id },
           { $set: { registrationId: 'no-match' } }
         );
         this.writeToLog(`  ✓ Updated import_payments with registrationId: no-match`);
-        this.errorCount++;
+        
+        // Only log as error if charge is successful and not refunded
+        if (charge.paid && !charge.refunded) {
+          this.errorCount++;
+          await this.logError(
+            'payment',
+            charge.id,
+            'UNMATCHED',
+            `No matching registration found for successful Stripe charge (payment intent: ${charge.payment_intent})`,
+            charge,
+            { provider: provider.name, source: 'charge_pi_match' }
+          );
+        } else {
+          // Failed or refunded charges without match are not errors
+          this.skippedCount++;
+          this.writeToLog(`  ℹ️ Failed/refunded charge - no match is not an error`);
+        }
         return;
       }
-      this.writeToLog(`  ✓ Found registration: ${registration.id}`);
+      const logPrefix = shouldMoveToProduction ? '✓' : '📝';
+      this.writeToLog(`  ${logPrefix} Found registration: ${registration.id}`);
       
       // Update import_payments with the found registrationId
       await db.collection('import_payments').updateOne(
@@ -665,7 +843,8 @@ export class EnhancedPaymentSyncService {
         ...registration, // Include ALL fields from Supabase
         paymentId: charge.id, // Use consistent paymentId field
         originalPaymentIntentId: charge.payment_intent as string,
-        gateway: provider.name // Use gateway with specific account name
+        gateway: provider.name, // Use gateway with specific account name
+        _shouldMoveToProduction: shouldMoveToProduction
       };
 
       const registrationImport = createImportDocument(
@@ -679,10 +858,12 @@ export class EnhancedPaymentSyncService {
         registrationImport,
         { upsert: true }
       );
-      this.writeToLog(`  ✓ Imported FULL registration to import_registrations with field transformation`);
+      const regLogPrefix = shouldMoveToProduction ? '✓' : '📝';
+      this.writeToLog(`  ${regLogPrefix} Imported FULL registration to import_registrations with field transformation`);
 
       // Production sync deferred to selective sync phase
-      this.writeToLog(`  ⏸️ Production sync deferred to selective sync phase`);
+      const syncStatus = shouldMoveToProduction ? 'eligible for production sync' : 'not eligible for production sync';
+      this.writeToLog(`  ⏸️ Production sync deferred to selective sync phase (${syncStatus})`);
 
       // 4. Process booking contact as customer (use the imported registration with transformed fields)
       await this.processCustomerFromRegistration(registrationImport, db);
@@ -691,11 +872,20 @@ export class EnhancedPaymentSyncService {
       await this.processAttendeesTicketsAndContacts(registration, db);
 
       this.processedCount++;
-      this.writeToLog(`  ✅ Completed processing charge ${charge.id}`);
+      const completionPrefix = shouldMoveToProduction ? '✅' : '📝';
+      this.writeToLog(`  ${completionPrefix} Completed processing charge ${charge.id} (${shouldMoveToProduction ? 'production eligible' : 'import only'})`);
       
     } catch (error: any) {
       this.writeToLog(`  ❌ Error processing charge ${charge.id}: ${error.message}`);
       this.errorCount++;
+      await this.logError(
+        'payment',
+        charge.id,
+        'PROCESSING_ERROR',
+        `Stripe charge processing failed: ${error.message}`,
+        charge,
+        { provider: provider.name, source: 'charge_processing' }
+      );
     }
   }
 
@@ -722,11 +912,13 @@ export class EnhancedPaymentSyncService {
         'supabase-ticket'
       );
 
-      await db.collection('import_tickets').replaceOne(
+      this.writeToLog(`    💾 Saving ticket to import_tickets: ${ticket.ticketId} (${ticket.eventName}, qty: ${ticket.quantity})`);
+      const result = await db.collection('import_tickets').replaceOne(
         { ticketId: ticket.ticketId },
         ticketImport,
         { upsert: true }
       );
+      this.writeToLog(`      ${result.upsertedCount ? '✅ Created' : '🔄 Updated'} ticket document`);
       
       // Generate or get existing ObjectId for linking
       const existingTicket = await db.collection('import_tickets').findOne({ ticketId: ticket.ticketId });
@@ -872,6 +1064,14 @@ export class EnhancedPaymentSyncService {
     } catch (error: any) {
       this.writeToLog(`    ❌ Error processing customer: ${error.message}`);
       this.errorCount++;
+      await this.logError(
+        'customer',
+        customerData?.id || 'unknown',
+        'PROCESSING_ERROR',
+        `Customer processing failed: ${error.message}`,
+        customerData,
+        { provider, source: 'customer_processing' }
+      );
     }
   }
 
@@ -1288,6 +1488,7 @@ export class EnhancedPaymentSyncService {
     let processedCount = 0;
     let updatedCount = 0;
     let createdCount = 0;
+    let skippedForProduction = 0;
 
     try {
       // Get all documents from import collection
@@ -1298,6 +1499,13 @@ export class EnhancedPaymentSyncService {
         const importId = importDoc[mapping.idField];
         if (!importId) {
           this.writeToLog(`  ⚠️ Skipping document missing ${mapping.idField}`);
+          continue;
+        }
+
+        // Check if document should move to production
+        if (importDoc._shouldMoveToProduction === false) {
+          this.writeToLog(`  📝 Skipping ${importId} - not eligible for production sync`);
+          skippedForProduction++;
           continue;
         }
 
@@ -1344,7 +1552,7 @@ export class EnhancedPaymentSyncService {
           // Perform selective field update
           const importMeta = importDoc._productionMeta as ProductionMeta;
           if (!importMeta) {
-            this.writeToLog(`  ⚠️ No production metadata for ${idValue}, skipping`);
+            this.writeToLog(`  ⚠️ No production metadata for ${importId}, skipping`);
             continue;
           }
 
@@ -1382,7 +1590,7 @@ export class EnhancedPaymentSyncService {
         processedCount++;
       }
 
-      this.writeToLog(`✅ ${mapping.import} sync complete: ${processedCount} processed, ${createdCount} created, ${updatedCount} updated`);
+      this.writeToLog(`✅ ${mapping.import} sync complete: ${processedCount} processed, ${createdCount} created, ${updatedCount} updated, ${skippedForProduction} skipped (not production eligible)`);
       
     } catch (error: any) {
       this.writeToLog(`❌ Error syncing ${mapping.import}: ${error.message}`);
@@ -1399,6 +1607,7 @@ export class EnhancedPaymentSyncService {
     // Remove import-specific fields
     delete newDoc._id; // Will get new ObjectId on insert
     delete newDoc._productionMeta;
+    delete newDoc.Id; // Remove any duplicate Id field if it exists
     
     // Generate new production IDs based on collection type
     if (mapping.production === 'attendees') {
@@ -1465,21 +1674,54 @@ export class EnhancedPaymentSyncService {
 
   private async fetchTicketsFromRegistration(registrationId: string, registration?: any): Promise<any[]> {
     try {
-      // Extract tickets from registration_data field
-      if (registration && registration.registration_data?.tickets) {
-        const ticketsFromData = registration.registration_data.tickets;
-        this.writeToLog(`    Extracting ${ticketsFromData.length} tickets from registration_data`);
+      // Extract tickets from registration_data field - check both 'tickets' and 'selectedTickets'
+      const ticketsFromData = registration?.registration_data?.tickets || 
+                              registration?.registration_data?.selectedTickets || 
+                              registration?.registrationData?.tickets || 
+                              registration?.registrationData?.selectedTickets;
+      
+      if (ticketsFromData && ticketsFromData.length > 0) {
+        const ticketSource = registration?.registration_data?.tickets ? 'tickets' : 
+                            registration?.registration_data?.selectedTickets ? 'selectedTickets' :
+                            registration?.registrationData?.tickets ? 'tickets (registrationData)' : 
+                            'selectedTickets (registrationData)';
+        this.writeToLog(`    Extracting ${ticketsFromData.length} tickets from registration_data.${ticketSource}`);
         
         // For each ticket, we need to fetch the event ticket details
         const processedTickets = [];
         
         for (const ticket of ticketsFromData) {
+          // Check what eventTicketId field is available and track which field was used
+          let eventTicketId: string | undefined;
+          let fieldUsed: string = '';
+          
+          if (ticket.eventTicketId) {
+            eventTicketId = ticket.eventTicketId;
+            fieldUsed = 'eventTicketId';
+          } else if (ticket.event_ticket_id) {
+            eventTicketId = ticket.event_ticket_id;
+            fieldUsed = 'event_ticket_id';
+          } else if (ticket.ticketId) {
+            eventTicketId = ticket.ticketId;
+            fieldUsed = 'ticketId';
+          } else if (ticket.id) {
+            eventTicketId = ticket.id;
+            fieldUsed = 'id';
+          }
+          
+          if (!eventTicketId) {
+            this.writeToLog(`    ⚠️ Ticket missing eventTicketId. Available fields: ${Object.keys(ticket).join(', ')}`);
+          } else if (fieldUsed !== 'eventTicketId') {
+            // Log when we use a fallback field
+            this.writeToLog(`    📝 Using ${fieldUsed} for eventTicketId: ${eventTicketId}`);
+          }
+          
           // Try to fetch event ticket details from event_tickets collection or Supabase
-          const eventTicketDetails = await this.fetchEventTicketDetails(ticket.eventTicketId);
+          const eventTicketDetails = await this.fetchEventTicketDetails(eventTicketId);
           
           // Check for missing attendeeId and log warning
           if (!ticket.attendeeId) {
-            this.writeToLog(`    ⚠️ Ticket missing attendeeId (eventTicketId: ${ticket.eventTicketId}), using registrationId as fallback`);
+            this.writeToLog(`    ⚠️ Ticket missing attendeeId (eventTicketId: ${eventTicketId}), using registrationId as fallback`);
           }
           
           // Find the attendee index based on the ticket's attendeeId
@@ -1513,24 +1755,31 @@ export class EnhancedPaymentSyncService {
           }
           
           processedTickets.push({
-            // Core identifiers - use import-specific IDs (only _id, no duplicate Id field)
+            // Core identifiers - use import-specific IDs (only _id, NO duplicate Id field)
             _id: new ObjectId(), // MongoDB document ID for import collection
+            // NO Id field - we only use _id for MongoDB documents
             ticketId: `import_${registrationId}_ticket_${ticketsFromData.indexOf(ticket)}`, // Import-specific ticket ID
-            originalTicketId: ticket.id || `${ticket.attendeeId || registrationId}-${ticket.eventTicketId}`, // Preserve original ID
-            eventTicketId: ticket.eventTicketId, // Reference to constant collection (allowed)
-            ticketNumber: `TKT-${Date.now()}${ticketsFromData.indexOf(ticket)}`,
+            originalTicketId: ticket.id || ticket.ticketId || `${ticket.attendeeId || registrationId}-${eventTicketId}`, // Preserve original ID
+            eventTicketId: eventTicketId, // Reference to constant collection (allowed)
+            ticketNumber: ticket.ticketNumber || `TKT-${Date.now()}${ticketsFromData.indexOf(ticket)}`,
             
             // Event details - from event ticket lookup or defaults
             eventName: eventTicketDetails?.eventName || eventTicketDetails?.name || 'Unknown Event',
-            price: ticket.price !== undefined ? ticket.price : (eventTicketDetails?.price || 0),
-            quantity: 1,
+            // Always use price from eventTicketDetails if available, otherwise use ticket price or 0
+            price: eventTicketDetails?.price !== undefined ? eventTicketDetails.price : (ticket.price || 0),
+            // Quantity logic: 
+            // - For individual registrations: always 1
+            // - For lodge registrations: use ticket.quantity, or calculate from subtotal/115 if not specified
+            quantity: isLodgeRegistration 
+              ? (ticket.quantity || Math.round((registration.subtotal || registration.total_amount_paid || 0) / 115))
+              : 1,
             
             // Owner info - properly set based on ticket assignment and registration type
             ownerType: ownerType,
             ownerId: ownerId,
             
-            // Status - based on payment status
-            status: registration.payment_status === 'paid' ? 'sold' : 
+            // Status - based on payment status (paid or completed = sold)
+            status: (registration.payment_status === 'paid' || registration.payment_status === 'completed') ? 'sold' : 
                    registration.payment_status === 'refunded' ? 'cancelled' : 'pending',
             
             // Attributes
@@ -1558,12 +1807,12 @@ export class EnhancedPaymentSyncService {
                 {
                   field: 'status',
                   from: null,
-                  to: registration.payment_status === 'paid' ? 'sold' : 'pending'
+                  to: (registration.payment_status === 'paid' || registration.payment_status === 'completed') ? 'sold' : 'pending'
                 },
                 {
                   field: 'price',
                   from: null,
-                  to: ticket.price || 0
+                  to: eventTicketDetails?.price !== undefined ? eventTicketDetails.price : (ticket.price || 0)
                 }
               ],
               description: 'Ticket extracted from registration during sync',
@@ -1575,61 +1824,66 @@ export class EnhancedPaymentSyncService {
           });
         }
         
+        this.writeToLog(`    📦 Returning ${processedTickets.length} processed tickets from registration_data`);
         return processedTickets;
       }
       
-      // Fallback: try to fetch from tickets table in Supabase
-      const { data, error } = await this.supabase
-        .from('tickets')
-        .select('*')
-        .eq('registration_id', registrationId);
-
-      if (error || !data) {
-        return [];
-      }
-
-      return data.map((ticket: any, index: number) => ({
-        eventTicketId: ticket.id,
-        ticketId: ticket.id,
-        ticketNumber: `TKT-${Date.now()}${index}`,
-        eventName: ticket.event_name || 'Unknown Event',
-        price: ticket.price || 0,
-        quantity: 1,
-        ownerType: 'individual',
-        ownerId: registration?.user_id,
-        status: ticket.status || 'active',
-        attributes: [],
-        details: {
-          registrationId: registrationId,
-          bookingContactId: null,
-          invoice: {
-            invoiceNumber: `LTIV-${Date.now()}`
-          },
-          paymentId: registration?.stripe_payment_intent_id || registration?.square_payment_id || ''
-        },
-        createdAt: ticket.created_at || new Date().toISOString(),
-        modifiedAt: new Date(),
-        lastModificationId: new ObjectId(),
-        modificationHistory: [{
-          id: new ObjectId(),
-          type: 'creation',
-          changes: [
-            {
-              field: 'status',
-              from: null,
-              to: ticket.status || 'active'
-            }
-          ],
-          description: 'Ticket fetched from Supabase table',
-          timestamp: new Date(),
-          userId: 'system-sync',
-          source: 'enhanced-payment-sync'
-        }],
-        qrCode: null
-      }));
+      // No tickets in registration_data - return empty array
+      this.writeToLog(`    ℹ️ No tickets found in registration_data`);
+      return [];
     } catch (error) {
       this.writeToLog(`Error fetching tickets: ${error}`);
       return [];
+    }
+  }
+
+  private async runErrorVerification(): Promise<void> {
+    try {
+      this.writeToLog('\n🔍 Starting Error Verification...');
+      this.writeToLog('Checking error documents against test database...\n');
+      
+      // Import the verification service
+      const { ErrorVerificationService } = await import('./error-verification-service.js');
+      
+      const verificationService = new ErrorVerificationService();
+      
+      // Get MongoDB URIs - use the same connection string but point to test DB
+      const importUri = this.mongoUri || process.env.MONGODB_URI || '';
+      // For test DB, we use the same cluster but different database
+      const testUri = importUri ? importUri.replace('/lodgetix', '/lodgetix-test') : '';
+      
+      // Connect and run verification
+      await verificationService.connect(importUri, testUri);
+      const report = await verificationService.runFullVerification();
+      
+      // Log verification summary
+      this.writeToLog('\n📊 VERIFICATION RESULTS:');
+      this.writeToLog(`Error Payments - Found: ${report.stats.errorPayments.found}, Not Found: ${report.stats.errorPayments.notFound}`);
+      this.writeToLog(`Error Registrations - Found: ${report.stats.errorRegistrations.found}, Not Found: ${report.stats.errorRegistrations.notFound}`);
+      this.writeToLog(`Orphaned Registrations - Found: ${report.stats.orphanedRegistrations.found}, Not Found: ${report.stats.orphanedRegistrations.notFound}`);
+      
+      const totalErrors = report.stats.errorPayments.total + report.stats.errorRegistrations.total + report.stats.orphanedRegistrations.total;
+      const totalFound = report.stats.errorPayments.found + report.stats.errorRegistrations.found + report.stats.orphanedRegistrations.found;
+      const totalNotFound = report.stats.errorPayments.notFound + report.stats.errorRegistrations.notFound + report.stats.orphanedRegistrations.notFound;
+      
+      if (totalErrors > 0) {
+        const foundPercentage = ((totalFound / totalErrors) * 100).toFixed(2);
+        this.writeToLog(`\n📈 Overall: ${foundPercentage}% of error documents exist in test DB`);
+        
+        if (parseFloat(foundPercentage) > 70) {
+          this.writeToLog('⚠️  High found rate suggests sync is working but error handling needs review');
+        } else if (parseFloat(foundPercentage) < 30) {
+          this.writeToLog('⚠️  Low found rate indicates genuine sync failures');
+        }
+      }
+      
+      await verificationService.disconnect();
+      this.writeToLog('✅ Error verification completed\n');
+      
+    } catch (error: any) {
+      this.writeToLog(`⚠️  Error verification failed: ${error.message}`);
+      this.writeToLog('Continuing without verification...\n');
+      // Don't throw - verification is optional and shouldn't stop the sync
     }
   }
 }
