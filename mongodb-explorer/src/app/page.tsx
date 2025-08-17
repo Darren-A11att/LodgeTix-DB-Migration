@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import apiService, { Collection } from '@/lib/api';
 import DatabaseSelectorDropdown from '@/components/DatabaseSelector';
@@ -53,12 +53,12 @@ export default function Home() {
     setSearchResults([]);
   };
 
-  const handleDatabaseChange = (database: DatabaseConfig) => {
+  const handleDatabaseChange = useCallback((database: DatabaseConfig) => {
     console.log('Database changed to:', database.name, 'ID:', database.id);
     setSelectedDatabase(database);
     // Fetch collections for the new database using ID to avoid name conflicts
     fetchCollections(database.id);
-  };
+  }, []);
 
   const totalDocuments = Array.isArray(collections) ? collections.reduce((sum, col) => sum + col.count, 0) : 0;
 

@@ -1,0 +1,36 @@
+================================================================================
+ERROR VERIFICATION SUMMARY
+================================================================================
+
+Verification completed at: 2025-08-16 23:53:45
+
+📊 ERROR PAYMENTS:
+  Total: 48
+  Verified: 48
+  Found in Test DB: 0 (0.00%)
+  Not Found: 48 (100.00%)
+  Errors: 0
+
+📊 ERROR REGISTRATIONS:
+  Total: 0
+  Verified: 0
+  Found in Test DB: 0 (0.00%)
+  Not Found: 0 (0.00%)
+  Errors: 0
+
+📊 ORPHANED REGISTRATIONS:
+  Total: 0
+  Verified: 0
+  Found in Test DB: 0 (0.00%)
+  Not Found: 0 (0.00%)
+  Errors: 0
+
+================================================================================
+OVERALL STATISTICS:
+================================================================================
+Total Documents Processed: 48
+Total Found in Test DB: 0
+Total Not Found: 48
+Total Verification Errors: 0
+
+================================================================================

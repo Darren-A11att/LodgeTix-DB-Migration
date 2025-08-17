@@ -1,0 +1,2647 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-16T13:42:35.675Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: zMfh4O5L6fT6UJxue10qrTC7C9NZY
+    ✓ Order fetched
+  👤 Fetching customer: QWW6PXCPMQK1NYTBQ8XQGGDDA0
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ✓ Updated import_payments with registrationId: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Ian Hogan
+    ✓ Created new customer: Ian Hogan
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 5 tickets from registration_data.selectedTickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_3 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_4 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Ian Hogan
+  ✅ Completed processing Square payment 37uzagXg6306GrJSUUf574HvB0CZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: jtwvvCSh0dwASWgUW1TAfF2l635YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 7yaaYVdcdEKNVAONK7yjFOSXI5YZY
+    ✓ Order fetched
+  👤 Fetching customer: 95DXMSZ5F6T26CNSDZKASYSXVC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 1dfc42bb-7fae-4cff-a763-f57934a880e0
+  ✓ Updated import_payments with registrationId: 1dfc42bb-7fae-4cff-a763-f57934a880e0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jonathan Vergara
+    ✓ Created new customer: Jonathan Vergara
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 3 tickets from registration_data.selectedTickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_1dfc42bb-7fae-4cff-a763-f57934a880e0_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_1dfc42bb-7fae-4cff-a763-f57934a880e0_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_1dfc42bb-7fae-4cff-a763-f57934a880e0_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jonathan Vergara
+    ✓ Processed contact: Lyndie Vergara
+  ✅ Completed processing Square payment jtwvvCSh0dwASWgUW1TAfF2l635YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: 7nHbZYYBn7M1thYdSmgNo9n28yKZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: BdkhqdA7K07dYEot5ELbumhNq5NZY
+    ✓ Order fetched
+  👤 Fetching customer: MNKR0AM5HCMYB5TAJJ2CJSVWY4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: e976c5a7-e506-4acf-a718-d893ded67f10
+  ✓ Updated import_payments with registrationId: e976c5a7-e506-4acf-a718-d893ded67f10
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Abraham Constantin
+    ✓ Created new customer: Abraham Constantin
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.selectedTickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_e976c5a7-e506-4acf-a718-d893ded67f10_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Abraham Constantin
+  ✅ Completed processing Square payment 7nHbZYYBn7M1thYdSmgNo9n28yKZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 4 (cursor: provided)
+
+📝 Processing Square payment: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: Ts560QoctAIxc4p53odwFYbARhdZY
+    ✓ Order fetched
+  👤 Fetching customer: D8VRXK9JQB32E9RDYWMJFW5YJW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 385f58c7-9a3b-4b45-9e3c-d461fdc6b19d
+  ✓ Updated import_payments with registrationId: 385f58c7-9a3b-4b45-9e3c-d461fdc6b19d
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Gregg Summerhayes
+    ✓ Created new customer: Gregg Summerhayes
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_385f58c7-9a3b-4b45-9e3c-d461fdc6b19d_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_385f58c7-9a3b-4b45-9e3c-d461fdc6b19d_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_385f58c7-9a3b-4b45-9e3c-d461fdc6b19d_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Gregg Summerhayes
+  ✅ Completed processing Square payment p4g7czFGnXbMPrHYOtWSnqCieZLZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 5 (cursor: provided)
+
+📝 Processing Square payment: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: n8GnYoEqmNkQlt51ZZ3NuRcIBYKZY
+    ✓ Order fetched
+  👤 Fetching customer: XZ9GVRZQN2JXT6JXPAEQBHW2EM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: cdc7fc39-8828-4f75-9314-66e54534da7a
+  ✓ Updated import_payments with registrationId: cdc7fc39-8828-4f75-9314-66e54534da7a
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jaime Flores
+    ✓ Created new customer: Jaime Flores
+    ✓ Updated registration with customer ObjectId
+    Extracting 4 attendees from registration_data
+  ✓ Found 4 attendee(s)
+    Extracting 4 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 4 processed tickets from registration_data
+  ✓ Found 4 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_cdc7fc39-8828-4f75-9314-66e54534da7a_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_cdc7fc39-8828-4f75-9314-66e54534da7a_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_cdc7fc39-8828-4f75-9314-66e54534da7a_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_cdc7fc39-8828-4f75-9314-66e54534da7a_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jaime Flores
+    ✓ Processed contact: Amelita Flores
+    ✓ Processed contact: Ali Mercado
+    ✓ Processed contact: Alyssa Jannie Flores
+  ✅ Completed processing Square payment JOBqwBmraQ1ECS1fVhtdy55ZrrMZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 6 (cursor: provided)
+
+📝 Processing Square payment: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: FPmQ5qiVt7iViWKP2SiY0FaxNFVZY
+    ✓ Order fetched
+  👤 Fetching customer: MJZGR09135ERMH9SSEKP41TB2R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ad076c4f-95a4-4fb0-9e50-521916386d64
+  ✓ Updated import_payments with registrationId: ad076c4f-95a4-4fb0-9e50-521916386d64
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Shannan Summers
+    ✓ Created new customer: Shannan Summers
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_ad076c4f-95a4-4fb0-9e50-521916386d64_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ad076c4f-95a4-4fb0-9e50-521916386d64_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Shannan Summers
+  ✅ Completed processing Square payment bHpqGQWwCK6aDNnbhv6ChzltfedZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 7 (cursor: provided)
+
+📝 Processing Square payment: TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: PmrqVJtirgH1fdESY0p1cy8J9PJZY
+    ✓ Order fetched
+  👤 Fetching customer: A09RKAAZVBGMWKHG63NQ9MWDK4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: a27ae77c-5e64-463f-a20e-c39febc3b537
+  ✓ Updated import_payments with registrationId: a27ae77c-5e64-463f-a20e-c39febc3b537
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Sydney D Melville
+    ✓ Created new customer: Sydney D Melville
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 5 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_a27ae77c-5e64-463f-a20e-c39febc3b537_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a27ae77c-5e64-463f-a20e-c39febc3b537_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a27ae77c-5e64-463f-a20e-c39febc3b537_ticket_2 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a27ae77c-5e64-463f-a20e-c39febc3b537_ticket_3 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a27ae77c-5e64-463f-a20e-c39febc3b537_ticket_4 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: David Melville
+    ✓ Processed contact: Christina Melville
+  ✅ Completed processing Square payment TFOQEKkW2rQS4WHUBdIjyoSj0EJZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 8 (cursor: provided)
+
+📝 Processing Square payment: ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: dNP0foHRyJX71IcgjllYOP4nal7YY
+    ✓ Order fetched
+  👤 Fetching customer: PM82SG2V8EXAX1QF1D1ARP1D4G
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 796c4447-b3f8-404b-8610-322b61f92985
+  ✓ Updated import_payments with registrationId: 796c4447-b3f8-404b-8610-322b61f92985
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: William Jarwin  Sy
+    ✓ Created new customer: William Jarwin  Sy
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_796c4447-b3f8-404b-8610-322b61f92985_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_796c4447-b3f8-404b-8610-322b61f92985_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Rodney Benedicto
+  ✅ Completed processing Square payment ZGvLjl0ZA3MT9vf33jacwBNG5ycZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 9 (cursor: provided)
+
+📝 Processing Square payment: h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: ltBcU3AhUBpJNKnwUr1Af6H8qcIZY
+    ✓ Order fetched
+  👤 Fetching customer: M24SZ52MDNDS8EBQQ2QF7SVR2W
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: fa2a849a-1276-444e-bd93-a2303871e5f5
+  ✓ Updated import_payments with registrationId: fa2a849a-1276-444e-bd93-a2303871e5f5
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Scott MAYER
+    ✓ Created new customer: Scott MAYER
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_fa2a849a-1276-444e-bd93-a2303871e5f5_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_fa2a849a-1276-444e-bd93-a2303871e5f5_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Scott MAYER
+  ✅ Completed processing Square payment h8gN46mZTfnGV8xDOWY7q4nnsVPZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 10 (cursor: provided)
+
+📝 Processing Square payment: NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 9Twt8vGtP7spniLTAyiXrM3dVvQZY
+    ✓ Order fetched
+  👤 Fetching customer: CNBS19TD5QKYGR9FRVHKDG6HG4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b
+  ✓ Updated import_payments with registrationId: f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Bob Burbank
+    ✓ Created new customer: Bob Burbank
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Bob Burbank
+    ✓ Processed contact: Wendy Burbank
+  ✅ Completed processing Square payment NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 11 (cursor: provided)
+
+📝 Processing Square payment: 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 9ppiz3e32Y8XhEo3HWVOfMGonuFZY
+    ✓ Order fetched
+  👤 Fetching customer: 2S5AZ8HTW2RETTYVFKW0V4103W
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3
+  ✓ Updated import_payments with registrationId: d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Greg Hind
+    ✓ Created new customer: Greg Hind
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Greg Hind
+  ✅ Completed processing Square payment 3l9mbrzU72IPMJ1vscl47aM5EzeZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 12 (cursor: provided)
+
+📝 Processing Square payment: jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: Rr94kz2q0ynGYLp1cjhpi2stM6bZY
+    ✓ Order fetched
+  👤 Fetching customer: 13D7AHDZPXR0H63P5YK28B0AZ4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 19cea4d0-6f5a-489a-abc8-56c4980b37d0
+  ✓ Updated import_payments with registrationId: 19cea4d0-6f5a-489a-abc8-56c4980b37d0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Romy Nieto
+    ✓ Created new customer: Romy Nieto
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_19cea4d0-6f5a-489a-abc8-56c4980b37d0_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_19cea4d0-6f5a-489a-abc8-56c4980b37d0_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_19cea4d0-6f5a-489a-abc8-56c4980b37d0_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Romy Nieto
+    ✓ Processed contact: Ellen Nieto
+  ✅ Completed processing Square payment jfPss6uLfMf6Sy8Z7WtPH9FLERKZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 13 (cursor: provided)
+
+📝 Processing Square payment: VaU4RCrbBAky4Jpe4pvV1GBwRSJZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: XEUaA2VChCDdrTsMfGKOtSze5bJZY
+    ✓ Order fetched
+  👤 Fetching customer: XDWVTVPPYZEPDHVK55TA1YTS7R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: aaef562e-92c4-4f6e-860c-e9874dec341e
+  ✓ Updated import_payments with registrationId: aaef562e-92c4-4f6e-860c-e9874dec341e
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Juan Carlos Flores
+    ✓ Created new customer: Juan Carlos Flores
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_aaef562e-92c4-4f6e-860c-e9874dec341e_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_aaef562e-92c4-4f6e-860c-e9874dec341e_ticket_1 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Juan Carlos  Flores
+    ✓ Processed contact: Elia Babi
+  ✅ Completed processing Square payment VaU4RCrbBAky4Jpe4pvV1GBwRSJZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 14 (cursor: provided)
+
+📝 Processing Square payment: T1AjRFv4v2jHjyoHPOvHp3jF2BJZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: tj4l17DY50XOIO1kKNYMDWOZK8FZY
+    ✓ Order fetched
+  👤 Fetching customer: KF1GGP49BFENFBS1JBT51PV82G
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63
+  ✓ Updated import_payments with registrationId: d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Gustavo Fiestas
+    ✓ Created new customer: Gustavo Fiestas
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 5 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63_ticket_3 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63_ticket_4 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Gustavo Fiestas
+  ✅ Completed processing Square payment T1AjRFv4v2jHjyoHPOvHp3jF2BJZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 15 (cursor: provided)
+
+📝 Processing Square payment: DLDhRUZVwCaYfLXVguPIa7c2TBTZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: jWwz7Uxidz4PeSLPg918oz0X3wXZY
+    ✓ Order fetched
+  👤 Fetching customer: 6AV409Q89NWNMCVYXM82HSX4RM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: DLDhRUZVwCaYfLXVguPIa7c2TBTZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 16 (cursor: provided)
+
+📝 Processing Square payment: jhU6YnfsNom1Wu5UEwTpuTUOfkbZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: lRHUbFrVLiFaXJ7gCrKirTsbMfJZY
+    ✓ Order fetched
+  👤 Fetching customer: 6AV409Q89NWNMCVYXM82HSX4RM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: jhU6YnfsNom1Wu5UEwTpuTUOfkbZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 17 (cursor: provided)
+
+📝 Processing Square payment: ByHBzneYeEzSiok0AlGqi7v7N6NZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: JXP7Z0ckjqFu5oTSv7OudCIjzFRZY
+    ✓ Order fetched
+  👤 Fetching customer: 6AV409Q89NWNMCVYXM82HSX4RM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: ByHBzneYeEzSiok0AlGqi7v7N6NZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 18 (cursor: provided)
+
+📝 Processing Square payment: hmHkLkSEY6gu1Nngf1LYIBaLnPJZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: hdkX92qVGPjrnucp472nFPOFO9CZY
+    ✓ Order fetched
+  👤 Fetching customer: 6AV409Q89NWNMCVYXM82HSX4RM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: hmHkLkSEY6gu1Nngf1LYIBaLnPJZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 19 (cursor: provided)
+
+📝 Processing Square payment: zNueSiS1Y3GP59FJH7A62k4tMrTZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: Z58Ht3g5mkYiMQhTmacmMT1Ala8YY
+    ✓ Order fetched
+  👤 Fetching customer: H2TBDHAN3T930V4GB1TGQX8C1C
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 2d56701e-263f-4d25-b037-6a77e4e56b7b
+  ✓ Updated import_payments with registrationId: 2d56701e-263f-4d25-b037-6a77e4e56b7b
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Blake Ritchie
+    ✓ Created new customer: Blake Ritchie
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_2d56701e-263f-4d25-b037-6a77e4e56b7b_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Blake Ritchie
+  ✅ Completed processing Square payment zNueSiS1Y3GP59FJH7A62k4tMrTZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 20 (cursor: provided)
+
+📝 Processing Square payment: r9ACcx4DHuxDspPsS8xlhWFWKk7YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: LOQIEp0fpoo284GW6rJFN4AF1UDZY
+    ✓ Order fetched
+  👤 Fetching customer: HTPP5EW2G6NDF4QS1TM5J7JBH8
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: fc71d5ec-a70d-4874-86d1-ef1e2c05d162
+  ✓ Updated import_payments with registrationId: fc71d5ec-a70d-4874-86d1-ef1e2c05d162
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Conrad Hermosura
+    ✓ Created new customer: Conrad Hermosura
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_fc71d5ec-a70d-4874-86d1-ef1e2c05d162_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_fc71d5ec-a70d-4874-86d1-ef1e2c05d162_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Conrad Hermosura
+    ✓ Processed contact: Divina  Hermosura
+  ✅ Completed processing Square payment r9ACcx4DHuxDspPsS8xlhWFWKk7YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 21 (cursor: provided)
+
+📝 Processing Square payment: BYKXKLGaomF5fqksWnC2BDShYz9YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 3ipF8JMxHBLO2ogMnD1uNmZr2WDZY
+    ✓ Order fetched
+  👤 Fetching customer: 03BXCTNECW3Q0PS6ZHHQFPZKHW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 4637d778-f452-4f79-b7a8-0391b1845a90
+  ✓ Updated import_payments with registrationId: 4637d778-f452-4f79-b7a8-0391b1845a90
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Servillano Jr Pablo
+    ✓ Created new customer: Servillano Jr Pablo
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_4637d778-f452-4f79-b7a8-0391b1845a90_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_4637d778-f452-4f79-b7a8-0391b1845a90_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Servillano Jr Pablo
+  ✅ Completed processing Square payment BYKXKLGaomF5fqksWnC2BDShYz9YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 22 (cursor: provided)
+
+📝 Processing Square payment: H7MsmC9fLnNjwZCB50pm6oUhDZCZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: boTPJNwfwPvRTWaXWScSeoUlKyeZY
+    ✓ Order fetched
+  👤 Fetching customer: 0D2A7GXNC745B2VT4YRPN30014
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 58603dca-656b-406a-afa4-3f4770fb13f0
+  ✓ Updated import_payments with registrationId: 58603dca-656b-406a-afa4-3f4770fb13f0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: YOSHIYUKI MIYAUCHI
+    ✓ Created new customer: YOSHIYUKI MIYAUCHI
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_58603dca-656b-406a-afa4-3f4770fb13f0_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_58603dca-656b-406a-afa4-3f4770fb13f0_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_58603dca-656b-406a-afa4-3f4770fb13f0_ticket_2 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: YOSHIYUKI MIYAUCHI
+  ✅ Completed processing Square payment H7MsmC9fLnNjwZCB50pm6oUhDZCZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 23 (cursor: provided)
+
+📝 Processing Square payment: Xbs2Q3X1vEvZJnSLSnrbaOF4z1EZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: jEzTQ8HbksW7bIfngRIiBmxlviSZY
+    ✓ Order fetched
+  👤 Fetching customer: Q09WRSTJWYVHCKF207VF4583FR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ac888821-9ecb-4783-ad3f-08a035cfef88
+  ✓ Updated import_payments with registrationId: ac888821-9ecb-4783-ad3f-08a035cfef88
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Nick Pagonis
+    ✓ Created new customer: Nick Pagonis
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_ac888821-9ecb-4783-ad3f-08a035cfef88_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ac888821-9ecb-4783-ad3f-08a035cfef88_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Nick Pagonis
+    ✓ Processed contact: Con Mavrocordatos
+  ✅ Completed processing Square payment Xbs2Q3X1vEvZJnSLSnrbaOF4z1EZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 24 (cursor: provided)
+
+📝 Processing Square payment: 1iYmmAImrRvMZ9FE839tL7f6ZJDZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: HYKGav4fJYRsoBUB3xHAAoQxWmTZY
+    ✓ Order fetched
+  👤 Fetching customer: F4Q22YT3MKS6ZFRJABJ950ECTR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 41139e7f-dc81-4b0e-a937-04be23115719
+  ✓ Updated import_payments with registrationId: 41139e7f-dc81-4b0e-a937-04be23115719
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Lynden  Norgate 
+    ✓ Created new customer: Lynden  Norgate 
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 5 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_41139e7f-dc81-4b0e-a937-04be23115719_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_41139e7f-dc81-4b0e-a937-04be23115719_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_41139e7f-dc81-4b0e-a937-04be23115719_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_41139e7f-dc81-4b0e-a937-04be23115719_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_41139e7f-dc81-4b0e-a937-04be23115719_ticket_4 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Lynden  Norgate 
+    ✓ Processed contact: Virginie  Norgate 
+  ✅ Completed processing Square payment 1iYmmAImrRvMZ9FE839tL7f6ZJDZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 25 (cursor: provided)
+
+📝 Processing Square payment: LHxGj2N2xehd2SVPRgahL09Z4bOZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: XEGtndCqAf4f1ABfaZuVtGS4HVCZY
+    ✓ Order fetched
+  👤 Fetching customer: WSPWWVDESSSE0K3DJ46QPG7ENC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 6b9d5cfe-7d0e-4524-b3b0-998d4b1d4307
+  ✓ Updated import_payments with registrationId: 6b9d5cfe-7d0e-4524-b3b0-998d4b1d4307
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Reggie Acre
+    ✓ Created new customer: Reggie Acre
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_6b9d5cfe-7d0e-4524-b3b0-998d4b1d4307_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Reggie Acre
+  ✅ Completed processing Square payment LHxGj2N2xehd2SVPRgahL09Z4bOZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 26 (cursor: provided)
+
+📝 Processing Square payment: HnMhwDtTEYP9hcTF0UHH7Y8UTbBZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: F1bR9avUuc9iTrZkrZP6Xa1VdMWZY
+    ✓ Order fetched
+  👤 Fetching customer: K354S7CHGF4EXFGNNGCXK23Z6G
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 4cbfbf96-09a7-48b7-9f5d-defc560f4437
+  ✓ Updated import_payments with registrationId: 4cbfbf96-09a7-48b7-9f5d-defc560f4437
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Joel Diego
+    ✓ Created new customer: Joel Diego
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_4cbfbf96-09a7-48b7-9f5d-defc560f4437_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_4cbfbf96-09a7-48b7-9f5d-defc560f4437_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Joel Diego
+    ✓ Processed contact: Joan Diego
+  ✅ Completed processing Square payment HnMhwDtTEYP9hcTF0UHH7Y8UTbBZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 27 (cursor: provided)
+
+📝 Processing Square payment: 3tJyXZgwjgLBCHoyV2uARwGBswdZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: V7EIymYDC7yW3oKILWOFhmfrWbJZY
+    ✓ Order fetched
+  👤 Fetching customer: ZXYM7MEPP9RCXHD77SW7AAQMDR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 7c2c244d-e49d-42f8-91e9-b17eaf4c524e
+  ✓ Updated import_payments with registrationId: 7c2c244d-e49d-42f8-91e9-b17eaf4c524e
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Raymund Joseph Ian Mendoza
+    ✓ Created new customer: Raymund Joseph Ian Mendoza
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 8 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 8 processed tickets from registration_data
+  ✓ Found 8 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_3 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_4 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_5 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_6 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7c2c244d-e49d-42f8-91e9-b17eaf4c524e_ticket_7 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Raymund Joseph Ian Mendoza
+    ✓ Processed contact: Francis Albert Buenafe
+  ✅ Completed processing Square payment 3tJyXZgwjgLBCHoyV2uARwGBswdZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 28 (cursor: provided)
+
+📝 Processing Square payment: vlvOb3ZJBzQJ0XzoCOOCm3lVn2VZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: fi1gMPy5tJ0VU3VcsDwGyFpo3GTZY
+    ✓ Order fetched
+  👤 Fetching customer: VAZ79FDMGQN24J5D9A4510B6NW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 0ffcc96c-c707-4734-b9ee-01e88f7f6287
+  ✓ Updated import_payments with registrationId: 0ffcc96c-c707-4734-b9ee-01e88f7f6287
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Robert  Upton 
+    ✓ Created new customer: Robert  Upton 
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_0ffcc96c-c707-4734-b9ee-01e88f7f6287_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Robert  Upton 
+  ✅ Completed processing Square payment vlvOb3ZJBzQJ0XzoCOOCm3lVn2VZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 29 (cursor: provided)
+
+📝 Processing Square payment: F8t2nIaFgyXCsaClrIb76CGn5fKZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: ZvtuP9MMxfj5KBVsZL4Utt71gBfZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 4a7a7ca5-ed7d-4251-b04a-b9169fde77a8
+  ✓ Updated import_payments with registrationId: 4a7a7ca5-ed7d-4251-b04a-b9169fde77a8
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Rod Cohen
+    ✓ Created new customer: Rod Cohen
+    ✓ Updated registration with customer ObjectId
+  ✓ Found 0 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    ⚠️ Ticket missing attendeeId (eventTicketId: fd12d7f0-f346-49bf-b1eb-0682ad226216), using registrationId as fallback
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_4a7a7ca5-ed7d-4251-b04a-b9169fde77a8_ticket_0 (Proclamation Banquet - Best Available, qty: 10)
+      ✅ Created ticket document
+  ✅ Completed processing Square payment F8t2nIaFgyXCsaClrIb76CGn5fKZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 30 (cursor: provided)
+
+📝 Processing Square payment: DbJ0DmwrCW68Xy80jcjBhSu1TSTZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: ZjVvuS4Wu2NCifKxENeFMpKfo8dZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: b95234d7-8980-4d48-8854-af9d1fc06b49
+  ✓ Updated import_payments with registrationId: b95234d7-8980-4d48-8854-af9d1fc06b49
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Joshua Newman
+    ✓ Created new customer: Joshua Newman
+    ✓ Updated registration with customer ObjectId
+  ✓ Found 0 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    ⚠️ Ticket missing attendeeId (eventTicketId: fd12d7f0-f346-49bf-b1eb-0682ad226216), using registrationId as fallback
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_b95234d7-8980-4d48-8854-af9d1fc06b49_ticket_0 (Proclamation Banquet - Best Available, qty: 10)
+      ✅ Created ticket document
+  ✅ Completed processing Square payment DbJ0DmwrCW68Xy80jcjBhSu1TSTZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 31 (cursor: provided)
+
+📝 Processing Square payment: 3ZJ3HBSr4UdPafNCaBainy55wc7YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 1D6JIYsyPosqijXocbFPCziiNcbZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: 3ZJ3HBSr4UdPafNCaBainy55wc7YY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 32 (cursor: provided)
+
+📝 Processing Square payment: XZvsmRdAo7cOcbytf8tXyQopLI6YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: Xs2L35wjYWhx3HvrklClX3a0BuNZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: XZvsmRdAo7cOcbytf8tXyQopLI6YY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 33 (cursor: provided)
+
+📝 Processing Square payment: lqOt4jZnIiTTlE97PDYCV3tShsPZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: r4PTP2Qxwslt7ZxZaKlLzqYSShcZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: lqOt4jZnIiTTlE97PDYCV3tShsPZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 34 (cursor: provided)
+
+📝 Processing Square payment: zVoh8VCpVfGVFHDPCb6tQiG9uJ8YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: DARLGQPmU3VLYeCjH2NCxjYWrgHZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: zVoh8VCpVfGVFHDPCb6tQiG9uJ8YY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 35 (cursor: provided)
+
+📝 Processing Square payment: ZggJj2u2p8iwhRWOajCzg0zZ2YEZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: fCV69dX4Zze30HVeTpuzqAjjWUaZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: ZggJj2u2p8iwhRWOajCzg0zZ2YEZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 36 (cursor: provided)
+
+📝 Processing Square payment: jjZo8QIRaYRVHjWEF6kGT2A8SqYZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: PsYp8u1YP1En0Te0r2ckAR3x3xCZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: jjZo8QIRaYRVHjWEF6kGT2A8SqYZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 37 (cursor: provided)
+
+📝 Processing Square payment: XbYcqGOlLYy34w8GRh6oDKYqSKKZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: P69g27WnaUvxwgatO0njdtNHp5SZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: XbYcqGOlLYy34w8GRh6oDKYqSKKZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 38 (cursor: provided)
+
+📝 Processing Square payment: xECGubABWxwHhK8cYuzZJdzEfONZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 7MX0fi49HRM9cSl6CI6J8uMU9sCZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: xECGubABWxwHhK8cYuzZJdzEfONZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 39 (cursor: provided)
+
+📝 Processing Square payment: xSlYUjRPlvBqdFASpTgzxyAq1RHZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: hr7zXW4nU2W6e1anMyyghhVmF0YZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: xSlYUjRPlvBqdFASpTgzxyAq1RHZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 40 (cursor: provided)
+
+📝 Processing Square payment: 7NcA5XmQQnii5C4wyZ49VRv4O6bZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: nsMMDuSVkztzJFtyVuhVmcuCbW8YY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: 7NcA5XmQQnii5C4wyZ49VRv4O6bZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 41 (cursor: provided)
+
+📝 Processing Square payment: jXbMStnAmtjde3RrcJyeFi1fUuRZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: FvQPGKRNYcvNCGXEUKrIL9vRogWZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: jXbMStnAmtjde3RrcJyeFi1fUuRZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 42 (cursor: provided)
+
+📝 Processing Square payment: NkToF5EmmRnVVpX6UAqwfq6nBLNZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 1BBLtJ7rsJaJqWuJoOkm4HDpMbVZY
+    ✓ Order fetched
+  ✓ Imported to import_payments with field transformation
+  ❌ No registration found for payment: NkToF5EmmRnVVpX6UAqwfq6nBLNZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 43 (cursor: provided)
+
+📝 Processing Square payment: 3zOzdaBQtF8P6LmaVkIriaGTYKeZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: Zda3ulo2lx7K0sWMUU7LetfDdGZZY
+    ✓ Order fetched
+  👤 Fetching customer: KKBQ0JYEK8N208P10W4K7VT55R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: de41c05d-883d-4d81-8076-61ec5d4118f7
+  ✓ Updated import_payments with registrationId: de41c05d-883d-4d81-8076-61ec5d4118f7
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Bryce Gibson
+    ✓ Created new customer: Bryce Gibson
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 4 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 4 processed tickets from registration_data
+  ✓ Found 4 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_de41c05d-883d-4d81-8076-61ec5d4118f7_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_de41c05d-883d-4d81-8076-61ec5d4118f7_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_de41c05d-883d-4d81-8076-61ec5d4118f7_ticket_2 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_de41c05d-883d-4d81-8076-61ec5d4118f7_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Bryce Gibson
+    ✓ Processed contact: Dale Goldie OAM
+  ✅ Completed processing Square payment 3zOzdaBQtF8P6LmaVkIriaGTYKeZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 44 (cursor: provided)
+
+📝 Processing Square payment: LZkdOfjFmPKMhwgBnK0HTv3arvJZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: ZblRsTOTUFnaHvgDxgzCi7rURHdZY
+    ✓ Order fetched
+  👤 Fetching customer: XNK3WRTX4SPTGSDBK30M224RZM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 81a0efea-6c33-44e5-a774-15f7503103ef
+  ✓ Updated import_payments with registrationId: 81a0efea-6c33-44e5-a774-15f7503103ef
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: David Tong
+    ✓ Created new customer: David Tong
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_81a0efea-6c33-44e5-a774-15f7503103ef_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_81a0efea-6c33-44e5-a774-15f7503103ef_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: David Tong
+  ✅ Completed processing Square payment LZkdOfjFmPKMhwgBnK0HTv3arvJZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 45 (cursor: provided)
+
+📝 Processing Square payment: 9Q1czaAuSZ3MLpRIjWwQ5qK8LlOZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 5dylFXdXwOr2WaKBgjLVTqO250cZY
+    ✓ Order fetched
+  👤 Fetching customer: BV4VJP6Z18T2YGZ581HYJDZHYR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 87f05b8d-b855-4257-8ff6-4e1e3054f284
+  ✓ Updated import_payments with registrationId: 87f05b8d-b855-4257-8ff6-4e1e3054f284
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Herbert Mailey
+    ✓ Created new customer: Herbert Mailey
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_87f05b8d-b855-4257-8ff6-4e1e3054f284_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_87f05b8d-b855-4257-8ff6-4e1e3054f284_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Herb Mailey
+  ✅ Completed processing Square payment 9Q1czaAuSZ3MLpRIjWwQ5qK8LlOZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 46 (cursor: provided)
+
+📝 Processing Square payment: bX925MCTlcedZE16Y5isSOiOY47YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: F9RyFMP0eUGyLslgRzR8SEcZ7hfZY
+    ✓ Order fetched
+  👤 Fetching customer: C0FNGG4M0K7TGKN04F98B7Z320
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: c78c299a-6d27-466d-83e0-52bbdea0ce6d
+  ✓ Updated import_payments with registrationId: c78c299a-6d27-466d-83e0-52bbdea0ce6d
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Amador  Cabrera
+    ✓ Created new customer: Amador  Cabrera
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_c78c299a-6d27-466d-83e0-52bbdea0ce6d_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_c78c299a-6d27-466d-83e0-52bbdea0ce6d_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Amador  Cabrera
+    ✓ Processed contact: Christine  Cabrera
+  ✅ Completed processing Square payment bX925MCTlcedZE16Y5isSOiOY47YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 47 (cursor: provided)
+
+📝 Processing Square payment: TFQpQg9T6EMRNsVMCRqzqF9mg1WZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: tNr6WIkXITVxPVgxQUpMTFUF1mZZY
+    ✓ Order fetched
+  👤 Fetching customer: 9HWZQYQ538CXDQSV435ERTQA2R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 5f5e6262-ee70-442b-b60d-13a1e9d05b59
+  ✓ Updated import_payments with registrationId: 5f5e6262-ee70-442b-b60d-13a1e9d05b59
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Brian Kramer
+    ✓ Created new customer: Brian Kramer
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_5f5e6262-ee70-442b-b60d-13a1e9d05b59_ticket_0 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Brian Kramer
+  ✅ Completed processing Square payment TFQpQg9T6EMRNsVMCRqzqF9mg1WZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 48 (cursor: provided)
+
+📝 Processing Square payment: ZAMti0WeQC6bzau6xzcwAt5brqKZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: dr43srAoZyyxGfr9x381DeI0008YY
+    ✓ Order fetched
+  👤 Fetching customer: 40BERCTXF281Q8NJE5943A2SCW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 7cd73df6-1f8f-4ef9-ac58-4add682a22fb
+  ✓ Updated import_payments with registrationId: 7cd73df6-1f8f-4ef9-ac58-4add682a22fb
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Christian Manalo
+    ✓ Created new customer: Christian Manalo
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_7cd73df6-1f8f-4ef9-ac58-4add682a22fb_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7cd73df6-1f8f-4ef9-ac58-4add682a22fb_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Christian Manalo
+  ✅ Completed processing Square payment ZAMti0WeQC6bzau6xzcwAt5brqKZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 49 (cursor: provided)
+
+📝 Processing Square payment: NgzFLVSyeKvPqooHJ4eqTIp0k0KZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: dxHhoUEY94aaHPWWjhO9uAuz9HOZY
+    ✓ Order fetched
+  👤 Fetching customer: KG9J2174E17QVN0DKFJSBY52S8
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 7e45338c-6b8f-402b-bc64-c6060b1dbf3a
+  ✓ Updated import_payments with registrationId: 7e45338c-6b8f-402b-bc64-c6060b1dbf3a
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: mohamad nahas
+    ✓ Created new customer: mohamad nahas
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_7e45338c-6b8f-402b-bc64-c6060b1dbf3a_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7e45338c-6b8f-402b-bc64-c6060b1dbf3a_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: mohamad nahas
+  ✅ Completed processing Square payment NgzFLVSyeKvPqooHJ4eqTIp0k0KZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 50 (cursor: provided)
+
+📝 Processing Square payment: vH42rszQNFswJ7wiC9myBYYRVSUZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 7MNBubHvGEHtsQTDy0zKrcO8PSAZY
+    ✓ Order fetched
+  👤 Fetching customer: VKR13KFX9NJE4RYQ6S6MSHZX20
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 5e960fef-18b2-4cb9-879b-3b6d421094f3
+  ✓ Updated import_payments with registrationId: 5e960fef-18b2-4cb9-879b-3b6d421094f3
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: charbel chelala
+    ✓ Created new customer: charbel chelala
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_5e960fef-18b2-4cb9-879b-3b6d421094f3_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: charbel chelala
+  ✅ Completed processing Square payment vH42rszQNFswJ7wiC9myBYYRVSUZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 51 (cursor: provided)
+
+📝 Processing Square payment: J88iNwjm7wF9AcNLYNHXedPYbo6YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: HeBKlc9g5Rqljz9D7ibJSACtCIcZY
+    ✓ Order fetched
+  👤 Fetching customer: XBFZ0BPM667AQ8RZBSH0XVN574
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: aaefe8b5-8fe0-4d42-ab55-d6041b5f368b
+  ✓ Updated import_payments with registrationId: aaefe8b5-8fe0-4d42-ab55-d6041b5f368b
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Arnel Landicho
+    ✓ Created new customer: Arnel Landicho
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_aaefe8b5-8fe0-4d42-ab55-d6041b5f368b_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_aaefe8b5-8fe0-4d42-ab55-d6041b5f368b_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Arnel Landicho
+  ✅ Completed processing Square payment J88iNwjm7wF9AcNLYNHXedPYbo6YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 52 (cursor: provided)
+
+📝 Processing Square payment: RC5yWMBETbgS58lLWRMWrtwEzD9YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: RJUQYI68kDRej2X63vMdYj987ZbZY
+    ✓ Order fetched
+  👤 Fetching customer: 5548D3SVVCRFY22M8H2CSQHK00
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 32d21494-e4f5-4b47-bde3-a0b2ee3e5168
+  ✓ Updated import_payments with registrationId: 32d21494-e4f5-4b47-bde3-a0b2ee3e5168
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jonathan Leeming
+    ✓ Created new customer: Jonathan Leeming
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_32d21494-e4f5-4b47-bde3-a0b2ee3e5168_ticket_0 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_32d21494-e4f5-4b47-bde3-a0b2ee3e5168_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_32d21494-e4f5-4b47-bde3-a0b2ee3e5168_ticket_2 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jonathan Leeming
+  ✅ Completed processing Square payment RC5yWMBETbgS58lLWRMWrtwEzD9YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 53 (cursor: provided)
+
+📝 Processing Square payment: tWs6GU9fkOLQyYgcvz6V9Le0mAdZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: lLswTV8JKkTnLc41YMvqA1QLwd6YY
+    ✓ Order fetched
+  👤 Fetching customer: PM82SG2V8EXAX1QF1D1ARP1D4G
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 280d8507-8f26-4dff-929f-bee4fb08df3c
+  ✓ Updated import_payments with registrationId: 280d8507-8f26-4dff-929f-bee4fb08df3c
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: William Jarwin Sy
+    ✓ Updated existing customer: William Jarwin Sy
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_280d8507-8f26-4dff-929f-bee4fb08df3c_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_280d8507-8f26-4dff-929f-bee4fb08df3c_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: William Jarwin Sy
+  ✅ Completed processing Square payment tWs6GU9fkOLQyYgcvz6V9Le0mAdZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 54 (cursor: provided)
+
+📝 Processing Square payment: FgpZ0BTR7kELg8mqty50XffR9TPZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: DCU69iodJCQxjkW0VCEJO3PRveWZY
+    ✓ Order fetched
+  👤 Fetching customer: BCMNTWES9NN021SHC4AG7B2PDM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: a628400f-70d0-4dd4-a911-085d832f7ef0
+  ✓ Updated import_payments with registrationId: a628400f-70d0-4dd4-a911-085d832f7ef0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Ian Fletcher
+    ✓ Created new customer: Ian Fletcher
+    ✓ Updated registration with customer ObjectId
+    Extracting 6 attendees from registration_data
+  ✓ Found 6 attendee(s)
+    Extracting 11 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 11 processed tickets from registration_data
+  ✓ Found 11 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_2 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_4 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_5 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_7 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_8 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_9 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a628400f-70d0-4dd4-a911-085d832f7ef0_ticket_10 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Joseph Bedwany
+    ✓ Processed contact: Stephen Wagner
+    ✓ Processed contact: Stephen Wong
+    ✓ Processed contact: Steven Hewlett
+    ✓ Processed contact: Anastasios Maltezos
+    ✓ Processed contact: Mohammed Sadeq
+  ✅ Completed processing Square payment FgpZ0BTR7kELg8mqty50XffR9TPZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 55 (cursor: provided)
+
+📝 Processing Square payment: zrVcZLjCpVPZwvQrkA8GIZTrVS9YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: vGJNL6V2AfJBcy7GtSuNK2k4WAcZY
+    ✓ Order fetched
+  👤 Fetching customer: K9XWF1RMV1Z55RRN5ZAZ3JWS8M
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 7eeaa0c0-940e-419e-acfb-74cc749ae9f7
+  ✓ Updated import_payments with registrationId: 7eeaa0c0-940e-419e-acfb-74cc749ae9f7
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Edgar Dela Cruz
+    ✓ Created new customer: Edgar Dela Cruz
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_7eeaa0c0-940e-419e-acfb-74cc749ae9f7_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7eeaa0c0-940e-419e-acfb-74cc749ae9f7_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Edgar Dela Cruz
+  ✅ Completed processing Square payment zrVcZLjCpVPZwvQrkA8GIZTrVS9YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 56 (cursor: provided)
+
+📝 Processing Square payment: NaIV57IiGy496z8NvR7Z5Mc17SZZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: xPP2Xeed9mpU1iuHev8VBHGKAvJZY
+    ✓ Order fetched
+  👤 Fetching customer: P05274SC2MTXWE0DT9Y0FB5W44
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: b5319e51-5e80-4d52-92ec-ea04d04d4b17
+  ✓ Updated import_payments with registrationId: b5319e51-5e80-4d52-92ec-ea04d04d4b17
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: D MARSHALL
+    ✓ Created new customer: D MARSHALL
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_b5319e51-5e80-4d52-92ec-ea04d04d4b17_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_b5319e51-5e80-4d52-92ec-ea04d04d4b17_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_b5319e51-5e80-4d52-92ec-ea04d04d4b17_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: David Marshall
+    ✓ Processed contact: Gail Marshall
+  ✅ Completed processing Square payment NaIV57IiGy496z8NvR7Z5Mc17SZZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 57 (cursor: provided)
+
+📝 Processing Square payment: 12Y9un9kSKeqSxMjwcNTefoysTEZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: VzmVB3iCdJp7hff6a3KHkhNrbjYZY
+    ✓ Order fetched
+  👤 Fetching customer: E2ZQFGD2FT19JJTDY0BNZ86BWW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: dceb2353-edbb-40b5-8e0b-3397b52f5251
+  ✓ Updated import_payments with registrationId: dceb2353-edbb-40b5-8e0b-3397b52f5251
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jeremiah Diestro
+    ✓ Created new customer: Jeremiah Diestro
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_dceb2353-edbb-40b5-8e0b-3397b52f5251_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dceb2353-edbb-40b5-8e0b-3397b52f5251_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jeremiah Diestro
+  ✅ Completed processing Square payment 12Y9un9kSKeqSxMjwcNTefoysTEZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 58 (cursor: provided)
+
+📝 Processing Square payment: rJSoyuFWlC5k0S5hOxIyksf0pH9YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: T2WGMw4gpfdotsRlJXFSXNh23BaZY
+    ✓ Order fetched
+  👤 Fetching customer: PSYJG2FJG4S7JXJ4R853B2YMN4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 7e849067-7a9f-47e9-a7ef-afbf41287526
+  ✓ Updated import_payments with registrationId: 7e849067-7a9f-47e9-a7ef-afbf41287526
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Owen Guarin
+    ✓ Created new customer: Owen Guarin
+    ✓ Updated registration with customer ObjectId
+    Extracting 3 attendees from registration_data
+  ✓ Found 3 attendee(s)
+    Extracting 4 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 4 processed tickets from registration_data
+  ✓ Found 4 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_7e849067-7a9f-47e9-a7ef-afbf41287526_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7e849067-7a9f-47e9-a7ef-afbf41287526_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7e849067-7a9f-47e9-a7ef-afbf41287526_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_7e849067-7a9f-47e9-a7ef-afbf41287526_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Owen Guarin
+    ✓ Processed contact: Nigel  Guarin
+    ✓ Processed contact: Leilani Guerrero-Guarin
+  ✅ Completed processing Square payment rJSoyuFWlC5k0S5hOxIyksf0pH9YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 59 (cursor: provided)
+
+📝 Processing Square payment: Rc8t4dVR4bflbR2WdcWFR22XtNSZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: RLzFHWKFwiIpBhNUCIGlPzOcv99YY
+    ✓ Order fetched
+  👤 Fetching customer: TNBHSNRPSPW7HXJRMYNYS0072M
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: e59a4310-1b71-4d40-b54f-9b257119ce0c
+  ✓ Updated import_payments with registrationId: e59a4310-1b71-4d40-b54f-9b257119ce0c
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Clarence Reyes
+    ✓ Created new customer: Clarence Reyes
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_e59a4310-1b71-4d40-b54f-9b257119ce0c_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Clarence  Reyes
+  ✅ Completed processing Square payment Rc8t4dVR4bflbR2WdcWFR22XtNSZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 60 (cursor: provided)
+
+📝 Processing Square payment: jnZ3YaueDdy6TpeRv240eWTnIPZZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: fAyhHWofU09fNqRtoH4xUNZS80YZY
+    ✓ Order fetched
+  👤 Fetching customer: KS7ACMGKASCSR10P1PQXWVHB4R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ba6e1cd9-e6dc-44f3-bd6e-147e97757322
+  ✓ Updated import_payments with registrationId: ba6e1cd9-e6dc-44f3-bd6e-147e97757322
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Dan Sara
+    ✓ Created new customer: Dan Sara
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_ba6e1cd9-e6dc-44f3-bd6e-147e97757322_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ba6e1cd9-e6dc-44f3-bd6e-147e97757322_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Dan Sara
+  ✅ Completed processing Square payment jnZ3YaueDdy6TpeRv240eWTnIPZZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 61 (cursor: provided)
+
+📝 Processing Square payment: ZGblTCt4beBAQimRQuctL5KP3jNZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: v6jV3M6b0WDDbFpEP0wZfQFf1YJZY
+    ✓ Order fetched
+  👤 Fetching customer: WJ86NR1VDY281NW56AZ8GZ3BWG
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ae264762-37a8-4855-96f1-731de78101c3
+  ✓ Updated import_payments with registrationId: ae264762-37a8-4855-96f1-731de78101c3
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Elias Jreij
+    ✓ Created new customer: Elias Jreij
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 5 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_ae264762-37a8-4855-96f1-731de78101c3_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ae264762-37a8-4855-96f1-731de78101c3_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ae264762-37a8-4855-96f1-731de78101c3_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ae264762-37a8-4855-96f1-731de78101c3_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ae264762-37a8-4855-96f1-731de78101c3_ticket_4 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Elias Jreij
+    ✓ Processed contact: Jane Phanmanee 
+  ✅ Completed processing Square payment ZGblTCt4beBAQimRQuctL5KP3jNZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 62 (cursor: provided)
+
+📝 Processing Square payment: xWPsMDzpot3yUl3Fmp5QfRZVpoZZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: ngy4qEWBZqIpcfSBZNON9906xmZZY
+    ✓ Order fetched
+  👤 Fetching customer: 3X98V07YJB7BVKPHMJGAKEJ07C
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: c07e9082-74d6-40c5-9706-4a182bbae469
+  ✓ Updated import_payments with registrationId: c07e9082-74d6-40c5-9706-4a182bbae469
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: John Whitehouse
+    ✓ Created new customer: John Whitehouse
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 5 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_c07e9082-74d6-40c5-9706-4a182bbae469_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_c07e9082-74d6-40c5-9706-4a182bbae469_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_c07e9082-74d6-40c5-9706-4a182bbae469_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_c07e9082-74d6-40c5-9706-4a182bbae469_ticket_3 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_c07e9082-74d6-40c5-9706-4a182bbae469_ticket_4 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: John Whitehouse
+    ✓ Processed contact: Tanya Whitehouse
+  ✅ Completed processing Square payment xWPsMDzpot3yUl3Fmp5QfRZVpoZZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 63 (cursor: provided)
+
+📝 Processing Square payment: 33u6VwpAUxrUitZKoLmcK4PYFVcZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: TI1tmAhszXrf4RSsAm050t7MmmaZY
+    ✓ Order fetched
+  👤 Fetching customer: PD8E57DKY3FW0EE2W3C550S3TR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 6de84192-3fc4-483c-8f88-cfd041da7d4d
+  ✓ Updated import_payments with registrationId: 6de84192-3fc4-483c-8f88-cfd041da7d4d
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Dennis Custodio
+    ✓ Created new customer: Dennis Custodio
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_6de84192-3fc4-483c-8f88-cfd041da7d4d_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_6de84192-3fc4-483c-8f88-cfd041da7d4d_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Dennis Custodio
+  ✅ Completed processing Square payment 33u6VwpAUxrUitZKoLmcK4PYFVcZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 64 (cursor: provided)
+
+📝 Processing Square payment: 7Hbz0OpZ4JX09X4l7SdUxJPnx5cZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 5fbTyrn0gphmrG1PGJ8cleagu2cZY
+    ✓ Order fetched
+  👤 Fetching customer: QH818S4BAYXE654G8KMD0SNP0W
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: b6323eba-bc87-4af2-b1e7-ef2596a309a3
+  ✓ Updated import_payments with registrationId: b6323eba-bc87-4af2-b1e7-ef2596a309a3
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Bruin Hutchings
+    ✓ Created new customer: Bruin Hutchings
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_b6323eba-bc87-4af2-b1e7-ef2596a309a3_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_b6323eba-bc87-4af2-b1e7-ef2596a309a3_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Bruin Hutchings
+  ✅ Completed processing Square payment 7Hbz0OpZ4JX09X4l7SdUxJPnx5cZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 65 (cursor: provided)
+
+📝 Processing Square payment: heNjYYSFTdby4tmeKEAMnwdbkDRZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: P8Ept1WGQVhR5XWbKRIzzInh9aYZY
+    ✓ Order fetched
+  👤 Fetching customer: VAP62J2BF01K81W6FFBXMR3FEW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 06af9237-4b36-4b3a-a0be-f2b6621163e2
+  ✓ Updated import_payments with registrationId: 06af9237-4b36-4b3a-a0be-f2b6621163e2
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jeffrey Mendoza
+    ✓ Created new customer: Jeffrey Mendoza
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_06af9237-4b36-4b3a-a0be-f2b6621163e2_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_06af9237-4b36-4b3a-a0be-f2b6621163e2_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jonathan  Cuesta
+    ✓ Processed contact: Abigail Cuesta
+  ✅ Completed processing Square payment heNjYYSFTdby4tmeKEAMnwdbkDRZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 66 (cursor: provided)
+
+📝 Processing Square payment: P1x35soIc6XBESLOezIkKls90HaZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: 5diXu1FnVk9xfTnGODqXNCzE44AZY
+    ✓ Order fetched
+  👤 Fetching customer: VAP62J2BF01K81W6FFBXMR3FEW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: P1x35soIc6XBESLOezIkKls90HaZY
+  ✓ Updated import_payments with registrationId: no-match
+  Got cursor for next payment
+  Fetched payment 67 (cursor: provided)
+
+📝 Processing Square payment: fRho4gi1mRNNspthVjJ4Q8NZOiAZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: juojWHj6lgIFVeBajoYovNpWqdTZY
+    ✓ Order fetched
+  👤 Fetching customer: 96EMX3P22FP2B9ZCCXKJ0HXX3M
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: fb64e002-786a-477a-bf28-a1d70b8956d5
+  ✓ Updated import_payments with registrationId: fb64e002-786a-477a-bf28-a1d70b8956d5
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Carmelo Limon
+    ✓ Created new customer: Carmelo Limon
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_fb64e002-786a-477a-bf28-a1d70b8956d5_ticket_0 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_fb64e002-786a-477a-bf28-a1d70b8956d5_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_fb64e002-786a-477a-bf28-a1d70b8956d5_ticket_2 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Carmelo Limon
+    ✓ Processed contact: Maricel Limon
+  ✅ Completed processing Square payment fRho4gi1mRNNspthVjJ4Q8NZOiAZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 68 (cursor: provided)
+
+📝 Processing Square payment: PhTXoxEY7t83xZ0W6Gm6HM44KPeZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: DgpbOpvwEpXq1dniSAV5zosmdITZY
+    ✓ Order fetched
+  👤 Fetching customer: AJF1BPKTHW14DEKEAQ74T14P8R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0
+  ✓ Updated import_payments with registrationId: 4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Keith Richard De Leon
+    ✓ Created new customer: Keith Richard De Leon
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Keith Richard De Leon
+    ✓ Processed contact: Marichris Corpuz
+  ✅ Completed processing Square payment PhTXoxEY7t83xZ0W6Gm6HM44KPeZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 69 (cursor: provided)
+
+📝 Processing Square payment: NS6wzujAidAaj1cx9PKzy5D37BeZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 9XaT3mHsi8KSzyknzwTvcypKAx9YY
+    ✓ Order fetched
+  👤 Fetching customer: 6W1WJW4BD433BF08S8WVT12QF0
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: f8ef3cf1-c1f2-4436-955b-ba03783db8c4
+  ✓ Updated import_payments with registrationId: f8ef3cf1-c1f2-4436-955b-ba03783db8c4
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Arnel Carreon
+    ✓ Created new customer: Arnel Carreon
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_f8ef3cf1-c1f2-4436-955b-ba03783db8c4_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Arnel Carreon
+  ✅ Completed processing Square payment NS6wzujAidAaj1cx9PKzy5D37BeZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 70 (cursor: provided)
+
+📝 Processing Square payment: NEBRGj6op7oISf96uhiwqfZQNdFZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 1PWC9XYsGLKaurnc2SF5I8Ba3KcZY
+    ✓ Order fetched
+  👤 Fetching customer: TPXYDD1QMJFV3YN6NG5TRE84CR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 1bb667a3-772c-4128-ad01-195f1a390b26
+  ✓ Updated import_payments with registrationId: 1bb667a3-772c-4128-ad01-195f1a390b26
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Vincent Michael  Dela Cruz
+    ✓ Created new customer: Vincent Michael  Dela Cruz
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_1bb667a3-772c-4128-ad01-195f1a390b26_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_1bb667a3-772c-4128-ad01-195f1a390b26_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_1bb667a3-772c-4128-ad01-195f1a390b26_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Vincent Michael  Dela Cruz
+  ✅ Completed processing Square payment NEBRGj6op7oISf96uhiwqfZQNdFZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 71 (cursor: provided)
+
+📝 Processing Square payment: zpKzPrFhACfx4abc3krHZTpasNfZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: pj9tyKEsMfn8eFKSvkDSCVnfswFZY
+    ✓ Order fetched
+  👤 Fetching customer: XSVJZ79HYGC2CE9AJ39K5DKRQ4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 8822a242-33f0-465f-a36f-e9fe3e0bfa42
+  ✓ Updated import_payments with registrationId: 8822a242-33f0-465f-a36f-e9fe3e0bfa42
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Alfonso Toh
+    ✓ Created new customer: Alfonso Toh
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_8822a242-33f0-465f-a36f-e9fe3e0bfa42_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_8822a242-33f0-465f-a36f-e9fe3e0bfa42_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_8822a242-33f0-465f-a36f-e9fe3e0bfa42_ticket_2 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Alfonso Toh
+  ✅ Completed processing Square payment zpKzPrFhACfx4abc3krHZTpasNfZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 72 (cursor: provided)
+
+📝 Processing Square payment: vPOXbkIHyMa1qTHchB83b7PAGiLZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: nMss91sBP2oalV7gvjfvdFSVC9TZY
+    ✓ Order fetched
+  👤 Fetching customer: TPD6S0V65GKTJ8HYY4XEJYDWDG
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 76dfe363-bd34-4cf7-aea3-e9aa8aba6a92
+  ✓ Updated import_payments with registrationId: 76dfe363-bd34-4cf7-aea3-e9aa8aba6a92
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Randolph Dela Pena
+    ✓ Created new customer: Randolph Dela Pena
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_76dfe363-bd34-4cf7-aea3-e9aa8aba6a92_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Randolph Dela Pena
+  ✅ Completed processing Square payment vPOXbkIHyMa1qTHchB83b7PAGiLZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 73 (cursor: provided)
+
+📝 Processing Square payment: L1c2qMTVFThxDa6g5hHiv71hF75YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: pZkDqcBaNpU9MUpkTO7XBIw6dpYZY
+    ✓ Order fetched
+  👤 Fetching customer: WSY5KT9AW4FF2FFBEHD9XYQ83R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: bebf3902-d258-4f59-b196-b325a0a13067
+  ✓ Updated import_payments with registrationId: bebf3902-d258-4f59-b196-b325a0a13067
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Rey Quebec 
+    ✓ Created new customer: Rey Quebec 
+    ✓ Updated registration with customer ObjectId
+    Extracting 3 attendees from registration_data
+  ✓ Found 3 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_bebf3902-d258-4f59-b196-b325a0a13067_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_bebf3902-d258-4f59-b196-b325a0a13067_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_bebf3902-d258-4f59-b196-b325a0a13067_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Rey Quebec 
+    ✓ Processed contact: Cristine  Edroso 
+    ✓ Processed contact: Kim Franco
+  ✅ Completed processing Square payment L1c2qMTVFThxDa6g5hHiv71hF75YY (production eligible)
+  Got cursor for next payment
+  Fetched payment 74 (cursor: provided)
+
+📝 Processing Square payment: lstUUZGLoUiRPOLIFCoKop60WmWZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: dzkNB5QRx8knQJVWip8mpEFn4vOZY
+    ✓ Order fetched
+  👤 Fetching customer: 11H1F1Y45RJ3ET76JHN5Z2T19W
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 9824649f-23fd-4b35-8c98-6689d165e0e5
+  ✓ Updated import_payments with registrationId: 9824649f-23fd-4b35-8c98-6689d165e0e5
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Joseph Bassil
+    ✓ Created new customer: Joseph Bassil
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_9824649f-23fd-4b35-8c98-6689d165e0e5_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_9824649f-23fd-4b35-8c98-6689d165e0e5_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Joseph Bassil
+  ✅ Completed processing Square payment lstUUZGLoUiRPOLIFCoKop60WmWZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 75 (cursor: provided)
+
+📝 Processing Square payment: xwSr2tqK3Ii14EMZuLhNpqgt6VPZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: vwkkhQzGE6XiJnONDanlL6vlkCLZY
+    ✓ Order fetched
+  👤 Fetching customer: P978ZCR4DCP0E1FNJNXYEFA094
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: d86cacab-f4a3-42b8-b036-c9d87879362a
+  ✓ Updated import_payments with registrationId: d86cacab-f4a3-42b8-b036-c9d87879362a
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jason Doherty
+    ✓ Created new customer: Jason Doherty
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_d86cacab-f4a3-42b8-b036-c9d87879362a_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d86cacab-f4a3-42b8-b036-c9d87879362a_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_d86cacab-f4a3-42b8-b036-c9d87879362a_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jason Doherty
+  ✅ Completed processing Square payment xwSr2tqK3Ii14EMZuLhNpqgt6VPZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 76 (cursor: provided)
+
+📝 Processing Square payment: 5UStBUAn3Df0PfNLZgrmROQoHGVZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: NlRvmT9iDyLhk0H7CDXo3eqLNDZZY
+    ✓ Order fetched
+  👤 Fetching customer: VAP62J2BF01K81W6FFBXMR3FEW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 05b60b38-d9a4-441c-8719-e159dca33801
+  ✓ Updated import_payments with registrationId: 05b60b38-d9a4-441c-8719-e159dca33801
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jeffrey Mendoza
+    ✓ Updated existing customer: Jeffrey Mendoza
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_05b60b38-d9a4-441c-8719-e159dca33801_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_05b60b38-d9a4-441c-8719-e159dca33801_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jeffrey Mendoza
+    ✓ Processed contact: Michele Mendoza
+  ✅ Completed processing Square payment 5UStBUAn3Df0PfNLZgrmROQoHGVZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 77 (cursor: provided)
+
+📝 Processing Square payment: dgFOK3VFNhwlyf0K1egTNMulrANZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: N5Pz5sABLt5erxCyYPnPcFw8iCbZY
+    ✓ Order fetched
+  👤 Fetching customer: J8FBSTSHJGX1Z57PJQGZM10TKC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 5f8c5038-506d-4415-8e99-b31d9aafd97c
+  ✓ Updated import_payments with registrationId: 5f8c5038-506d-4415-8e99-b31d9aafd97c
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Feyzi Kuru
+    ✓ Created new customer: Feyzi Kuru
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_5f8c5038-506d-4415-8e99-b31d9aafd97c_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Feyzi Kuru
+  ✅ Completed processing Square payment dgFOK3VFNhwlyf0K1egTNMulrANZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 78 (cursor: provided)
+
+📝 Processing Square payment: VQd3h8r4ehs0xTXRRCidLDM820CZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 32luw3cdjoRX45icV06FaolXFRMZY
+    ✓ Order fetched
+  👤 Fetching customer: 5DKY9SZHPCMGDJQXPB0QQ9WA10
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: a6c1b7d4-2652-48af-b463-dcc1c0672e1c
+  ✓ Updated import_payments with registrationId: a6c1b7d4-2652-48af-b463-dcc1c0672e1c
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Erwin Crisostomo
+    ✓ Created new customer: Erwin Crisostomo
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_a6c1b7d4-2652-48af-b463-dcc1c0672e1c_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a6c1b7d4-2652-48af-b463-dcc1c0672e1c_ticket_1 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_a6c1b7d4-2652-48af-b463-dcc1c0672e1c_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Erwin Crisostomo
+  ✅ Completed processing Square payment VQd3h8r4ehs0xTXRRCidLDM820CZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 79 (cursor: provided)
+
+📝 Processing Square payment: RcQdd293kG3tgKPwmzdaMdNo7NNZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: fuDII4gT3fS7ZQWowfazmP2IXJHZY
+    ✓ Order fetched
+  👤 Fetching customer: 3CZYRZTY1CRQQXD1QE14MVCXNW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 55f5efa0-7fa6-49b0-8af5-e8d99b8e63c7
+  ✓ Updated import_payments with registrationId: 55f5efa0-7fa6-49b0-8af5-e8d99b8e63c7
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Chris Smith 
+    ✓ Created new customer: Chris Smith 
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_55f5efa0-7fa6-49b0-8af5-e8d99b8e63c7_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_55f5efa0-7fa6-49b0-8af5-e8d99b8e63c7_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Chris Smith 
+  ✅ Completed processing Square payment RcQdd293kG3tgKPwmzdaMdNo7NNZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 80 (cursor: provided)
+
+📝 Processing Square payment: FczBZ5YQy1PlX6djXrtgCKrEG1UZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: DMLdgjnfnQuijiRk4Fyh3UBdxBGZY
+    ✓ Order fetched
+  👤 Fetching customer: EB1CBR1QG10NC7A9CM1T0CRNHC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 5ae82936-f475-4bed-8949-909240cca6b0
+  ✓ Updated import_payments with registrationId: 5ae82936-f475-4bed-8949-909240cca6b0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: PHILLIP DAVIES
+    ✓ Created new customer: PHILLIP DAVIES
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_5ae82936-f475-4bed-8949-909240cca6b0_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_5ae82936-f475-4bed-8949-909240cca6b0_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: PHILLIP DAVIES
+  ✅ Completed processing Square payment FczBZ5YQy1PlX6djXrtgCKrEG1UZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 81 (cursor: provided)
+
+📝 Processing Square payment: pC7qSVdmwZYAhAN2w3NPs36Nb0SZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 5bpvmeyQkqNFfoK4AKxFEkZwUPWZY
+    ✓ Order fetched
+  👤 Fetching customer: QBFTEFBRB58NEKDKYEJ9GTVSNM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 5a6c07f5-a7c6-428a-b644-1b483b123cd1
+  ✓ Updated import_payments with registrationId: 5a6c07f5-a7c6-428a-b644-1b483b123cd1
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Aaron Cleavely-Millwood
+    ✓ Created new customer: Aaron Cleavely-Millwood
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 5 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_5a6c07f5-a7c6-428a-b644-1b483b123cd1_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_5a6c07f5-a7c6-428a-b644-1b483b123cd1_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_5a6c07f5-a7c6-428a-b644-1b483b123cd1_ticket_2 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_5a6c07f5-a7c6-428a-b644-1b483b123cd1_ticket_3 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_5a6c07f5-a7c6-428a-b644-1b483b123cd1_ticket_4 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Aaron Cleavely-Millwood
+    ✓ Processed contact: Tiara-Kirsten Cleavely-Millwood
+  ✅ Completed processing Square payment pC7qSVdmwZYAhAN2w3NPs36Nb0SZY (production eligible)
+  Got cursor for next payment
+  Fetched payment 82 (cursor: provided)
+
+📝 Processing Square payment: RosmA28Xi9BzzQwwES3tsOWRdYeZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: TOYvZTK40AnIjxF6FlE7TNL8UzTZY
+    ✓ Order fetched
+  👤 Fetching customer: P63YXBY1ERPQZ3TV4AC95W26G0
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: b099cb88-4b59-4bfa-8614-00168efe4506
+  ✓ Updated import_payments with registrationId: b099cb88-4b59-4bfa-8614-00168efe4506
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Darren  May
+    ✓ Created new customer: Darren  May
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_b099cb88-4b59-4bfa-8614-00168efe4506_ticket_0 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_b099cb88-4b59-4bfa-8614-00168efe4506_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Darren  May
+  ✅ Completed processing Square payment RosmA28Xi9BzzQwwES3tsOWRdYeZY (production eligible)
+  Got cursor for next payment

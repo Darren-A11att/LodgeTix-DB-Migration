@@ -1,0 +1,78 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-14T16:06:37.490Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 4 (cursor: provided)
+
+📝 Processing Square payment: TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 5 (cursor: provided)
+
+📝 Processing Square payment: ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 6 (cursor: provided)
+
+📝 Processing Square payment: h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 7 (cursor: provided)
+
+📝 Processing Square payment: NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 8 (cursor: provided)
+
+📝 Processing Square payment: 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 9 (cursor: provided)
+
+📝 Processing Square payment: jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment

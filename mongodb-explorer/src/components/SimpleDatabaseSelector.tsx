@@ -58,11 +58,13 @@ export default function SimpleDatabaseSelector({
     // Listen for database changes
     const cleanup = DatabaseSelector.onDatabaseChange((database) => {
       setSelectedDatabase(database);
-      onDatabaseChange?.(database);
+      if (onDatabaseChange) {
+        onDatabaseChange(database);
+      }
     });
 
     return cleanup;
-  }, [onDatabaseChange]);
+  }, []); // Remove onDatabaseChange from dependencies to prevent infinite loops
 
   const handleDatabaseChange = (databaseId: string) => {
     DatabaseSelector.setSelectedDatabase(databaseId);

@@ -1,0 +1,15 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-17T05:37:28.080Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+  🧹 Checking for stale error_payments records for payment: ch_3RZInfHDfNBUEWUu08WSM1W1
+  📊 Found 1 stale error_payments record(s) to clean up
+  ✅ Cleaned up 1 stale error record(s)
+  🧹 Checking for stale error_payments records for payment: ch_3RZInfHDfNBUEWUu08WSM1W1

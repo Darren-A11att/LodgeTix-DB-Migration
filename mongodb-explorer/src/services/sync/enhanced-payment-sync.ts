@@ -17,7 +17,7 @@ import {
   determineCustomerType,
   createCustomerFromBookingContact
 } from './field-transform-utils';
-import { ReferenceDataService } from './reference-data-service';
+import { ReferenceDataService, PackageDetails } from './reference-data-service';
 
 interface PaymentProvider {
   name: string;
@@ -122,59 +122,57 @@ export class EnhancedPaymentSyncService {
     }
   }
 
-  private async logError(
-    entityType: 'payment' | 'registration' | 'ticket' | 'customer' | 'contact' | 'attendee',
-    entityId: string,
-    errorType: 'UNMATCHED' | 'INVALID_STATUS' | 'PROCESSING_ERROR' | 'VALIDATION_ERROR' | 'DUPLICATE',
+  private async recordPaymentError(
+    errorType: 'UNMATCHED' | 'FAILED' | 'REFUNDED',
     errorMessage: string,
-    originalData: any,
-    context?: any
+    paymentData: any,
+    db: Db
   ) {
-    if (!this.db) return;
-
-    const now = Math.floor(Date.now() / 1000); // Unix timestamp
+    const now = Math.floor(Date.now() / 1000);
     
     try {
       // Log to error_log collection
-      await this.db.collection('error_log').insertOne({
+      await db.collection('error_log').insertOne({
         timestamp: now,
         syncRunId: this.syncRunId,
-        errorLevel: errorType === 'PROCESSING_ERROR' ? 'ERROR' : 'WARNING',
-        entityType,
-        entityId,
+        errorLevel: 'WARNING',
+        entityType: 'payment',
+        entityId: paymentData.id,
         operation: 'sync',
         errorMessage,
         errorCode: errorType,
         context: {
-          source: context?.source || 'unknown',
-          provider: context?.provider || 'unknown',
-          ...context
+          source: 'payment_registration_match',
+          provider: paymentData.provider || 'unknown',
+          status: paymentData.status,
+          amount: paymentData.amount,
+          currency: paymentData.currency
         },
         resolution: {
           status: 'PENDING'
         }
       });
 
-      // Also save the full record to the appropriate error collection
-      const errorCollectionName = `error_${entityType}s`;
-      await this.db.collection(errorCollectionName).insertOne({
-        originalId: entityId,
-        [`${entityType}Id`]: entityId,
+      // Also save the full record to error_payments collection
+      await db.collection('error_payments').insertOne({
+        originalId: paymentData.id,
+        paymentId: paymentData.id,
         errorType,
         errorMessage,
         attemptedAt: now,
-        originalData,
+        originalData: paymentData,
         metadata: {
           syncRunId: this.syncRunId,
-          provider: context?.provider,
-          source: context?.source
+          provider: paymentData.provider,
+          source: 'payment_registration_match'
         }
       });
 
     } catch (error) {
-      this.writeToLog(`    ⚠️ Failed to log error to error collections: ${error}`);
+      this.writeToLog(`    ⚠️ Failed to record payment error: ${error}`);
     }
   }
+
 
   private initializeSupabase() {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -291,13 +289,11 @@ export class EnhancedPaymentSyncService {
       } catch (error: any) {
         this.writeToLog(`Error processing ${provider.name}: ${error.message}`);
         this.errorCount++;
-        await this.logError(
-          'payment',
-          provider.name,
-          'PROCESSING_ERROR',
+        await this.recordPaymentError(
+          'FAILED',
           `Provider processing failed: ${error.message}`,
-          { provider: provider.name },
-          { provider: provider.name, source: 'provider_processing' }
+          { id: provider.name, provider: provider.name },
+          db
         );
       }
     }
@@ -316,6 +312,85 @@ export class EnhancedPaymentSyncService {
     this.writeToLog(`👥 Unique contacts: ${this.processedContacts.size}`);
     this.writeToLog(`📊 Total: ${this.processedCount + this.skippedCount + this.errorCount}`);
   }
+
+  /**
+   * Cleans up error_payments records for a specific paymentId
+   * @param paymentId - The payment ID (can be Stripe charge ID or Square payment ID)
+   * @param db - MongoDB database instance
+   * @returns Promise<number> - Number of deleted records
+   */
+  public async cleanupErrorRecords(paymentId: string, db: Db): Promise<number> {
+    if (!paymentId || !db) {
+      this.writeToLog(`  ⚠️ Invalid parameters for cleanup: paymentId=${paymentId}, db=${!!db}`);
+      return 0;
+    }
+
+    try {
+      this.writeToLog(`  🧹 Checking for stale error_payments records for payment: ${paymentId}`);
+      
+      // Search for error records by both 'paymentId' and 'originalId' fields
+      const query = {
+        $or: [
+          { paymentId: paymentId },
+          { originalId: paymentId }
+        ]
+      };
+
+      // First, count how many records we'll be deleting
+      const countToDelete = await db.collection('error_payments').countDocuments(query);
+      
+      if (countToDelete === 0) {
+        return 0;
+      }
+
+      this.writeToLog(`  📊 Found ${countToDelete} stale error_payments record(s) to clean up`);
+
+      // Perform the deletion
+      const deleteResult = await db.collection('error_payments').deleteMany(query);
+      
+      // Audit logging
+      const now = Math.floor(Date.now() / 1000);
+      try {
+        await db.collection('error_log').insertOne({
+          timestamp: now,
+          syncRunId: this.syncRunId,
+          errorLevel: 'INFO',
+          entityType: 'payment',
+          entityId: paymentId,
+          operation: 'cleanup',
+          errorMessage: `Cleaned up ${deleteResult.deletedCount} stale error_payments records before reprocessing`,
+          errorCode: 'CLEANUP_SUCCESS',
+          context: {
+            source: 'cleanup_error_records',
+            deletedCount: deleteResult.deletedCount
+          },
+          resolution: {
+            status: 'RESOLVED',
+            action: 'error_records_cleaned_up',
+            resolvedAt: now
+          }
+        });
+      } catch (auditError) {
+        // Silent fail for audit logging
+      }
+
+      this.writeToLog(`  ✅ Cleaned up ${deleteResult.deletedCount} stale error record(s)`);
+      return deleteResult.deletedCount;
+
+    } catch (error: any) {
+      this.writeToLog(`  ⚠️ Error during cleanup: ${error.message}`);
+      return 0;
+    }
+  }
+
+  /**
+   * Records a payment error to the error_payments collection
+   * @param errorType - Type of error (UNMATCHED, FAILED, REFUNDED, DUPLICATE)
+   * @param errorMessage - Descriptive error message
+   * @param paymentData - Original payment data object
+   * @param db - MongoDB database instance
+   * @returns Promise<void>
+   */
 
   private async ensureCollections(db: Db): Promise<void> {
     const collections = [
@@ -395,13 +470,11 @@ export class EnhancedPaymentSyncService {
       } catch (error: any) {
         this.writeToLog(`Error fetching Square payments: ${error.message}`);
         this.errorCount++;
-        await this.logError(
-          'payment',
-          'square-fetch',
-          'PROCESSING_ERROR',
+        await this.recordPaymentError(
+          'FAILED',
           `Square API fetch failed: ${error.message}`,
-          { cursor, hasMore },
-          { provider: 'square', source: 'api_fetch' }
+          { id: 'square-fetch', provider: 'square', cursor },
+          db
         );
         break;
       }
@@ -432,10 +505,106 @@ export class EnhancedPaymentSyncService {
 
       // Check if already processed in import collection
       const existingPayment = await db.collection('import_payments').findOne({ id: payment.id });
-      if (existingPayment) {
-        this.writeToLog(`  ⏭️ Already imported - skipping`);
+      
+      // Check if already exists in production collection
+      const existingProductionPayment = await db.collection('payments').findOne({ id: payment.id });
+      if (existingProductionPayment) {
+        this.writeToLog(`  ✓ Payment already exists in production - skipping`);
         this.skippedCount++;
         return;
+      }
+      
+      if (existingPayment) {
+        // Check if payment has been modified since last import
+        const sourceUpdatedAt = payment.updatedAt ? new Date(payment.updatedAt).getTime() : 0;
+        const importUpdatedAt = existingPayment.updatedAt ? new Date(existingPayment.updatedAt).getTime() : 0;
+        
+        // Check for duplicate payment (same ID, amount, and timestamp)
+        const sourceAmount = payment.totalMoney?.amount || 0;
+        const existingAmount = existingPayment.totalMoney?.amount || 0;
+        
+        if (sourceUpdatedAt === importUpdatedAt && sourceAmount === existingAmount) {
+          this.writeToLog(`  ⚠️ Duplicate payment detected - recording as error`);
+          await this.recordPaymentError(
+            'FAILED',
+            `Duplicate Square payment ${payment.id} - previously processed at ${new Date(payment.updatedAt).toISOString()}`,
+            { ...payment, provider: 'square' },
+            db
+          );
+          this.skippedCount++;
+          return;
+        }
+        
+        if (sourceUpdatedAt > importUpdatedAt) {
+          this.writeToLog(`  🔄 Payment has been updated - cleaning up and reprocessing`);
+          // Clean up any existing error records before reprocessing
+          await this.cleanupErrorRecords(payment.id, db);
+          // Continue processing to update the payment
+        } else {
+          this.writeToLog(`  ⏭️ Already imported - skipping`);
+          this.skippedCount++;
+          return;
+        }
+      }
+
+      // Check for duplicates based on orderId appearing multiple times
+      if (payment.orderId) {
+        const existingOrderPayments = await db.collection('import_payments').find({ 
+          orderId: payment.orderId,
+          id: { $ne: payment.id } // Exclude current payment
+        }).toArray();
+        
+        if (existingOrderPayments.length > 0) {
+          this.writeToLog(`  ⚠️ Duplicate orderId detected - recording as error`);
+          await this.recordPaymentError(
+            'FAILED',
+            `Duplicate orderId detected: ${payment.orderId} already exists for payment(s): ${existingOrderPayments.map(p => p.id).join(', ')}`,
+            payment,
+            db
+          );
+          this.skippedCount++;
+          return;
+        }
+      }
+
+      // Check for duplicates based on amount + customerId + timestamp within 60 seconds
+      if (payment.customerId && payment.totalMoney?.amount) {
+        const paymentTime = payment.updatedAt ? new Date(payment.updatedAt).getTime() : Date.now();
+        const timeWindow = 60 * 1000; // 60 seconds in milliseconds
+        
+        const duplicateTimePayments = await db.collection('import_payments').find({
+          customerId: payment.customerId,
+          'totalMoney.amount': payment.totalMoney.amount,
+          id: { $ne: payment.id }, // Exclude current payment
+          updatedAt: {
+            $gte: new Date(paymentTime - timeWindow).toISOString(),
+            $lte: new Date(paymentTime + timeWindow).toISOString()
+          }
+        }).toArray();
+        
+        if (duplicateTimePayments.length > 0) {
+          this.writeToLog(`  ⚠️ Duplicate payment within time window detected - recording as error`);
+          await this.recordPaymentError(
+            'payment',
+            payment.id,
+            'DUPLICATE',
+            `Duplicate Square payment ${payment.id} - previously processed at ${new Date(payment.updatedAt).toISOString()}`,
+            payment,
+            { 
+              provider: 'square', 
+              source: 'time_window_duplicate_detection',
+              processingStage: 'duplicate_checking',
+              registrationSearchAttempted: false,
+              relatedDocuments: {
+                importPaymentId: payment.id,
+                orderId: payment.orderId,
+                customerId: payment.customerId
+              }
+            }
+          );
+          this.skippedCount++;
+          return;
+        }
       }
 
       // Fetch order if order_id exists
@@ -552,6 +721,17 @@ export class EnhancedPaymentSyncService {
       if (!registration) {
         const logPrefix = shouldMoveToProduction ? '❌' : '📝';
         this.writeToLog(`  ${logPrefix} No registration found for payment: ${payment.id}`);
+        
+        // Create enhanced payment data with Order and Customer objects
+        const enhancedPaymentData = {
+          ...paymentImportData,
+          originalData: {
+            payment: payment,
+            order: orderData,
+            customer: customerData
+          }
+        };
+        
         // Update import_payments with "no-match" for registrationId
         await db.collection('import_payments').updateOne(
           { id: payment.id },
@@ -559,22 +739,23 @@ export class EnhancedPaymentSyncService {
         );
         this.writeToLog(`  ✓ Updated import_payments with registrationId: no-match`);
         
-        // Only log as error if payment is successful/completed and not refunded
+        // Record payment error based on status
         if (payment.status === 'COMPLETED' && 
             (!payment.refundedMoney || payment.refundedMoney.amount === 0)) {
+          // COMPLETED payments with no match are errors
           this.errorCount++;
-          await this.logError(
-            'payment',
-            payment.id,
+          const amount = payment.totalMoney?.amount ? Number(payment.totalMoney.amount) / 100 : 0;
+          const currency = payment.totalMoney?.currency || 'USD';
+          await this.recordPaymentError(
             'UNMATCHED',
-            'No matching registration found for completed Square payment',
-            payment,
-            { provider: 'square', source: 'payment_registration_match' }
+            `No registration found for completed Square payment ${payment.id} with order ${payment.orderId || 'none'}`,
+            { ...payment, provider: 'square', orderData, customerData },
+            db
           );
         } else {
-          // Failed or refunded payments without match are not errors
+          // Failed, refunded, and other non-completed payments without match are NOT errors
           this.skippedCount++;
-          this.writeToLog(`  ℹ️ Failed/refunded payment - no match is not an error`);
+          this.writeToLog(`  ℹ️ ${payment.status} payment - no match is not an error`);
         }
         return;
       }
@@ -627,13 +808,11 @@ export class EnhancedPaymentSyncService {
     } catch (error: any) {
       this.writeToLog(`  ❌ Error processing Square payment ${payment.id}: ${error.message}`);
       this.errorCount++;
-      await this.logError(
-        'payment',
-        payment.id,
-        'PROCESSING_ERROR',
+      await this.recordPaymentError(
+        'FAILED',
         `Square payment processing failed: ${error.message}`,
-        payment,
-        { provider: 'square', source: 'payment_processing' }
+        { ...payment, provider: 'square' },
+        db
       );
     }
   }
@@ -670,13 +849,11 @@ export class EnhancedPaymentSyncService {
       } catch (error) {
         this.writeToLog(`Error fetching charges from ${provider.name}: ${error}`);
         this.errorCount++;
-        await this.logError(
-          'payment',
-          provider.name,
-          'PROCESSING_ERROR',
+        await this.recordPaymentError(
+          'FAILED',
           `Stripe charge fetch failed: ${error}`,
-          { provider: provider.name },
-          { provider: provider.name, source: 'stripe_charge_fetch' }
+          { id: provider.name, provider: provider.name },
+          db
         );
         break;
       }
@@ -715,10 +892,33 @@ export class EnhancedPaymentSyncService {
 
       // Check if already processed in import collection
       const existingPayment = await db.collection('import_payments').findOne({ id: charge.id });
-      if (existingPayment) {
-        this.writeToLog(`  ⏭️ Already imported - skipping`);
+      
+      // Check if already exists in production collection
+      const existingProductionPayment = await db.collection('payments').findOne({ id: charge.id });
+      if (existingProductionPayment) {
+        this.writeToLog(`  ✓ Charge already exists in production - skipping`);
         this.skippedCount++;
         return;
+      }
+      
+      if (existingPayment) {
+        // Check if charge has been modified since last import
+        const sourceCreatedAt = charge.created ? charge.created * 1000 : 0; // Convert to milliseconds
+        const importCreatedAt = existingPayment.createdAt ? new Date(existingPayment.createdAt).getTime() : 0;
+        const sourceRefunded = charge.refunded || false;
+        const importRefunded = existingPayment.refunded || false;
+        
+        // Check if status changed (e.g., payment was refunded)
+        if (sourceRefunded !== importRefunded || sourceCreatedAt > importCreatedAt) {
+          this.writeToLog(`  🔄 Charge has been updated (refund status: ${importRefunded} → ${sourceRefunded}) - cleaning up and reprocessing`);
+          // Clean up any existing error records before reprocessing
+          await this.cleanupErrorRecords(charge.id, db);
+          // Continue processing to update the charge
+        } else {
+          this.writeToLog(`  ⏭️ Already imported - skipping`);
+          this.skippedCount++;
+          return;
+        }
       }
 
       // Check for test payment
@@ -733,7 +933,7 @@ export class EnhancedPaymentSyncService {
       // Determine charge status properly
       let chargeStatus = charge.status;
       if (charge.refunded === true) {
-        chargeStatus = 'refunded';
+        chargeStatus = 'succeeded'; // Use 'succeeded' instead of 'refunded' to match Stripe Status type
       } else if (charge.status === 'failed') {
         chargeStatus = 'failed';
       }
@@ -772,6 +972,15 @@ export class EnhancedPaymentSyncService {
       // 2. Find registration using payment intent ID
       if (!charge.payment_intent) {
         this.writeToLog(`  ⚠️ No payment intent ID - cannot find registration`);
+        
+        // Create enhanced payment data
+        const enhancedPaymentData = {
+          ...chargeImportData,
+          originalData: {
+            charge: charge
+          }
+        };
+        
         // Update import_payments with "no-match" for registrationId
         await db.collection('import_payments').updateOne(
           { id: charge.id },
@@ -779,21 +988,44 @@ export class EnhancedPaymentSyncService {
         );
         this.writeToLog(`  ✓ Updated import_payments with registrationId: no-match`);
         
-        // Only log as error if charge is successful and not refunded
+        // Record payment error based on status
         if (charge.paid && !charge.refunded) {
+          // Successful charges with no payment intent are errors
           this.errorCount++;
-          await this.logError(
+          const amount = charge.amount / 100;
+          await this.recordPaymentError(
             'payment',
             charge.id,
             'UNMATCHED',
-            'Stripe charge has no payment intent ID - cannot find registration',
+            `Stripe charge ${charge.id} has no payment intent ID - cannot find registration for $${amount} ${charge.currency}`,
             charge,
-            { provider: provider.name, source: 'charge_no_pi' }
+            { 
+              provider: provider.name, 
+              source: 'charge_no_pi',
+              registrationSearchAttempted: false,
+              searchCriteria: {
+                paymentId: charge.id
+              },
+              processingStage: 'payment_intent_validation',
+              relatedDocuments: {
+                importPaymentId: charge.id,
+                customerId: charge.customer as string
+              }
+            }
           );
-        } else {
-          // Failed or refunded charges without match are not errors
+        } else if (charge.status === 'failed') {
+          // Failed charges with no payment intent
           this.skippedCount++;
-          this.writeToLog(`  ℹ️ Failed/refunded charge - no match is not an error`);
+          this.writeToLog(`  ℹ️ Failed Stripe payment ${charge.id} - no registration match attempted`);
+        } else if (charge.refunded) {
+          // Refunded charges with no payment intent
+          this.skippedCount++;
+          const amount = charge.amount / 100;
+          this.writeToLog(`  ℹ️ Refunded payment ${charge.id} for $${amount} ${charge.currency} - no registration found`);
+        } else {
+          // Other statuses without payment intent are not errors
+          this.skippedCount++;
+          this.writeToLog(`  ℹ️ Charge status ${charge.status} - no payment intent is not an error`);
         }
         return;
       }
@@ -803,6 +1035,15 @@ export class EnhancedPaymentSyncService {
       if (!registration) {
         const logPrefix = shouldMoveToProduction ? '❌' : '📝';
         this.writeToLog(`  ${logPrefix} No registration found for payment intent: ${charge.payment_intent}`);
+        
+        // Create enhanced payment data
+        const enhancedPaymentData = {
+          ...chargeImportData,
+          originalData: {
+            charge: charge
+          }
+        };
+        
         // Update import_payments with "no-match" for registrationId
         await db.collection('import_payments').updateOne(
           { id: charge.id },
@@ -810,21 +1051,21 @@ export class EnhancedPaymentSyncService {
         );
         this.writeToLog(`  ✓ Updated import_payments with registrationId: no-match`);
         
-        // Only log as error if charge is successful and not refunded
+        // Record payment error based on status
         if (charge.paid && !charge.refunded) {
+          // Successful charges with no registration match are errors
           this.errorCount++;
-          await this.logError(
-            'payment',
-            charge.id,
+          const amount = charge.amount / 100;
+          await this.recordPaymentError(
             'UNMATCHED',
-            `No matching registration found for successful Stripe charge (payment intent: ${charge.payment_intent})`,
-            charge,
-            { provider: provider.name, source: 'charge_pi_match' }
+            `No registration found for successful Stripe charge (payment intent: ${charge.payment_intent})`,
+            enhancedPaymentData,
+            db
           );
         } else {
-          // Failed or refunded charges without match are not errors
+          // Failed, refunded, and other non-succeeded charges without match are NOT errors
           this.skippedCount++;
-          this.writeToLog(`  ℹ️ Failed/refunded charge - no match is not an error`);
+          this.writeToLog(`  ℹ️ ${charge.status}${charge.refunded ? ' (refunded)' : ''} charge - no match is not an error`);
         }
         return;
       }
@@ -878,13 +1119,22 @@ export class EnhancedPaymentSyncService {
     } catch (error: any) {
       this.writeToLog(`  ❌ Error processing charge ${charge.id}: ${error.message}`);
       this.errorCount++;
-      await this.logError(
+      await this.recordPaymentError(
         'payment',
         charge.id,
         'PROCESSING_ERROR',
         `Stripe charge processing failed: ${error.message}`,
         charge,
-        { provider: provider.name, source: 'charge_processing' }
+        { 
+          provider: provider.name, 
+          source: 'charge_processing',
+          processingStage: 'charge_processing',
+          registrationSearchAttempted: false,
+          relatedDocuments: {
+            importPaymentId: charge.id,
+            customerId: charge.customer as string
+          }
+        }
       );
     }
   }
@@ -933,7 +1183,7 @@ export class EnhancedPaymentSyncService {
       const attendeeTickets = tickets
         .filter((t: any, idx: number) => idx % attendees.length === i)
         .map((t: any) => ({
-          _id: ticketIds[tickets.indexOf(t)],
+          importTicketId: ticketIds[tickets.indexOf(t)],
           name: t.eventName,
           status: t.status
         }));
@@ -1064,13 +1314,23 @@ export class EnhancedPaymentSyncService {
     } catch (error: any) {
       this.writeToLog(`    ❌ Error processing customer: ${error.message}`);
       this.errorCount++;
-      await this.logError(
+      // Note: customerData might not be defined if error occurred early in the process
+      // We'll log a simplified error in this case
+      const errorData = { registrationId: registration.id, error: error.message };
+      await this.recordPaymentError(
         'customer',
-        customerData?.id || 'unknown',
+        registration.id || 'unknown',
         'PROCESSING_ERROR',
         `Customer processing failed: ${error.message}`,
-        customerData,
-        { provider, source: 'customer_processing' }
+        errorData,
+        { 
+          source: 'customer_processing',
+          processingStage: 'customer_creation',
+          registrationSearchAttempted: false,
+          relatedDocuments: {
+            registrationId: registration.id
+          }
+        }
       );
     }
   }
@@ -1230,8 +1490,8 @@ export class EnhancedPaymentSyncService {
         
         const attendeesWithFunctionNames = await Promise.all(
           attendeesFromData.map(async (attendee: any, index: number) => ({
-          // Core identifiers - use import-specific ID
-          _id: new ObjectId(), // MongoDB document ID for import collection
+          // Core identifiers - use import-specific ID (let MongoDB auto-generate _id)
+          // NO manual _id field - let MongoDB generate it automatically
           attendeeId: `import_${registrationId}_attendee_${index}`, // Import-specific attendee ID
           originalAttendeeId: attendee.attendeeId || attendee.id || `${registrationId}_attendee_${index}`, // Preserve original ID for reference
           
@@ -1308,7 +1568,7 @@ export class EnhancedPaymentSyncService {
           
           // Registration linkage
           registrations: [{
-            _id: new ObjectId(),
+            // NO manual _id field - let MongoDB generate it automatically
             status: registration.status || 'pending',
             registrationId: registration.registration_id || registration.id || registrationId,
             functionId: registration.function_id || registration.event_id,
@@ -1399,7 +1659,10 @@ export class EnhancedPaymentSyncService {
       if (eventTicketDetails) {
         // The eventTicket document has 'name' field, not 'eventName'
         const ticketName = eventTicketDetails.eventName || eventTicketDetails.name || 'Unknown Event';
-        const ticketPrice = eventTicketDetails.price || 0;
+        // Handle MongoDB Decimal128 price format: { "$numberDecimal": "115" }
+        const ticketPrice = eventTicketDetails.price && typeof eventTicketDetails.price === 'object' && eventTicketDetails.price.$numberDecimal 
+          ? parseFloat(eventTicketDetails.price.$numberDecimal) 
+          : (eventTicketDetails.price || 0);
         this.writeToLog(`    ✅ Found eventTicket: ${ticketName} (price: ${ticketPrice})`);
         return {
           eventTicketId: eventTicketDetails.eventTicketId,
@@ -1450,6 +1713,58 @@ export class EnhancedPaymentSyncService {
     } catch (error) {
       this.writeToLog(`    ❌ Error fetching function name for ${functionId}: ${error}`);
       return 'Unknown Function';
+    }
+  }
+
+  /**
+   * Get package details by package ID
+   * @param packageId - The package ID (can be _id or packageId field)
+   * @returns Package document with includedItems or null if not found
+   */
+  private async getPackageDetails(packageId: string): Promise<PackageDetails | null> {
+    if (!packageId) {
+      this.writeToLog(`    ⚠️ Package ID is required`);
+      return null;
+    }
+
+    try {
+      if (!this.referenceDataService) {
+        this.writeToLog(`    ⚠️ Reference data service not initialized for package lookup`);
+        return null;
+      }
+
+      this.writeToLog(`    🔍 Looking up package: ${packageId}`);
+      const packageDetails = await this.referenceDataService.getPackageDetails(packageId);
+      
+      if (packageDetails) {
+        const packageName = packageDetails.name || 'Unknown Package';
+        // Handle MongoDB Decimal128 price format: { "$numberDecimal": "115" }
+        const packagePrice = packageDetails.price && typeof packageDetails.price === 'object' && packageDetails.price.$numberDecimal 
+          ? parseFloat(packageDetails.price.$numberDecimal) 
+          : (packageDetails.price || 0);
+        const includedItemsCount = packageDetails.includedItems ? packageDetails.includedItems.length : 0;
+        
+        this.writeToLog(`    ✅ Found package: ${packageName} (price: ${packagePrice}, items: ${includedItemsCount})`);
+        return packageDetails;
+      }
+      
+      this.writeToLog(`    ⚠️ Package ${packageId} not found`);
+      // Additional debugging information
+      this.writeToLog(`    Debug: Database connected: ${!!this.db}`);
+      this.writeToLog(`    Debug: Reference service initialized: ${!!this.referenceDataService}`);
+      if (this.db) {
+        // Check if packages collection exists and log count
+        try {
+          const packagesCount = await this.db.collection('packages').countDocuments();
+          this.writeToLog(`    Debug: packages collection has ${packagesCount} documents`);
+        } catch (countError) {
+          this.writeToLog(`    Debug: Error counting packages: ${countError}`);
+        }
+      }
+      return null;
+    } catch (error) {
+      this.writeToLog(`    ❌ Error fetching package ${packageId}: ${error}`);
+      return null;
     }
   }
 
@@ -1624,6 +1939,25 @@ export class EnhancedPaymentSyncService {
           // Function IDs remain unchanged (constant collections)
         }
       }
+      
+      // Map importTicketId references in eventTickets to production ticket ObjectIds
+      if (newDoc.eventTickets && Array.isArray(newDoc.eventTickets)) {
+        for (const eventTicket of newDoc.eventTickets) {
+          if (eventTicket.importTicketId) {
+            // Find the production ticket ObjectId for this import ticket
+            const productionTicket = await db.collection('tickets').findOne({
+              _productionMeta: { 
+                $exists: true,
+                'productionObjectId': { $exists: true }
+              }
+            });
+            
+            // For now, just remove the importTicketId field since we need proper mapping logic
+            // TODO: Implement proper import ticket to production ticket ObjectId mapping
+            delete eventTicket.importTicketId;
+          }
+        }
+      }
     } 
     else if (mapping.production === 'tickets') {
       // Use original external ID directly (not prefixed with "prod_")
@@ -1691,6 +2025,27 @@ export class EnhancedPaymentSyncService {
         const processedTickets = [];
         
         for (const ticket of ticketsFromData) {
+          // Check for package tickets first
+          if (ticket.isPackage === true) {
+            this.writeToLog(`    📦 Package ticket detected: ${ticket.packageId || ticket.eventTicketId}`);
+            
+            // Find the attendee index for this package ticket
+            const attendeeIndex = registration.registration_data?.attendees?.findIndex(
+              (a: any) => a.attendeeId === ticket.attendeeId || a.id === ticket.attendeeId
+            ) ?? 0;
+            
+            // Expand package into individual tickets
+            const expandedTickets = await this.expandPackageTickets(ticket, `import_${registrationId}_attendee_${attendeeIndex}`);
+            
+            // Add all expanded tickets to processed tickets
+            for (const expandedTicket of expandedTickets) {
+              processedTickets.push(expandedTicket);
+            }
+            
+            // Continue to next ticket (skip normal processing for package)
+            continue;
+          }
+          
           // Check what eventTicketId field is available and track which field was used
           let eventTicketId: string | undefined;
           let fieldUsed: string = '';
@@ -1755,9 +2110,8 @@ export class EnhancedPaymentSyncService {
           }
           
           processedTickets.push({
-            // Core identifiers - use import-specific IDs (only _id, NO duplicate Id field)
-            _id: new ObjectId(), // MongoDB document ID for import collection
-            // NO Id field - we only use _id for MongoDB documents
+            // Core identifiers - use import-specific IDs (let MongoDB auto-generate _id)
+            // NO manual _id field - we only use _id for MongoDB documents
             ticketId: `import_${registrationId}_ticket_${ticketsFromData.indexOf(ticket)}`, // Import-specific ticket ID
             originalTicketId: ticket.id || ticket.ticketId || `${ticket.attendeeId || registrationId}-${eventTicketId}`, // Preserve original ID
             eventTicketId: eventTicketId, // Reference to constant collection (allowed)
@@ -1766,7 +2120,12 @@ export class EnhancedPaymentSyncService {
             // Event details - from event ticket lookup or defaults
             eventName: eventTicketDetails?.eventName || eventTicketDetails?.name || 'Unknown Event',
             // Always use price from eventTicketDetails if available, otherwise use ticket price or 0
-            price: eventTicketDetails?.price !== undefined ? eventTicketDetails.price : (ticket.price || 0),
+            // Handle MongoDB Decimal128 price format: { "$numberDecimal": "115" }
+            price: eventTicketDetails?.price !== undefined 
+              ? (eventTicketDetails.price && typeof eventTicketDetails.price === 'object' && eventTicketDetails.price.$numberDecimal 
+                  ? parseFloat(eventTicketDetails.price.$numberDecimal) 
+                  : eventTicketDetails.price)
+              : (ticket.price || 0),
             // Quantity logic: 
             // - For individual registrations: always 1
             // - For lodge registrations: use ticket.quantity, or calculate from subtotal/115 if not specified
@@ -1812,7 +2171,11 @@ export class EnhancedPaymentSyncService {
                 {
                   field: 'price',
                   from: null,
-                  to: eventTicketDetails?.price !== undefined ? eventTicketDetails.price : (ticket.price || 0)
+                  to: eventTicketDetails?.price !== undefined 
+                    ? (eventTicketDetails.price && typeof eventTicketDetails.price === 'object' && eventTicketDetails.price.$numberDecimal 
+                        ? parseFloat(eventTicketDetails.price.$numberDecimal) 
+                        : eventTicketDetails.price)
+                    : (ticket.price || 0)
                 }
               ],
               description: 'Ticket extracted from registration during sync',
@@ -1837,6 +2200,117 @@ export class EnhancedPaymentSyncService {
     }
   }
 
+  /**
+   * Expands a package ticket into individual tickets based on the package's includedItems
+   * @param packageTicket - The package ticket object
+   * @param attendeeId - The attendee ID who owns this package
+   * @returns Array of individual ticket objects
+   */
+  private async expandPackageTickets(packageTicket: any, attendeeId: string): Promise<any[]> {
+    try {
+      const packageId = packageTicket.packageId || packageTicket.eventTicketId || packageTicket.ticketId;
+      
+      if (!packageId) {
+        this.writeToLog(`    ⚠️ Package ticket missing packageId`);
+        return [];
+      }
+      
+      this.writeToLog(`    🔍 Looking up package: ${packageId}`);
+      
+      // Query packages collection for package details
+      const db = await this.connectToMongoDB();
+      const packageDoc = await db.collection('packages').findOne({ packageId: packageId });
+      
+      if (!packageDoc) {
+        this.writeToLog(`    ⚠️ Package ${packageId} not found in packages collection`);
+        return [];
+      }
+      
+      const includedItems = packageDoc.includedItems || [];
+      this.writeToLog(`    📦 Package contains ${includedItems.length} items`);
+      
+      const expandedTickets = [];
+      
+      for (let i = 0; i < includedItems.length; i++) {
+        const item = includedItems[i];
+        
+        // Fetch event ticket details for this item
+        const eventTicketDetails = await this.fetchEventTicketDetails(item.eventTicketId);
+        
+        const expandedTicket = {
+          // Core identifiers
+          ticketId: `${packageTicket.ticketId || packageId}_item_${i}`,
+          originalTicketId: `${packageTicket.id || packageId}_expanded_${item.eventTicketId}`,
+          eventTicketId: item.eventTicketId,
+          ticketNumber: `PKG-${Date.now()}-${i}`,
+          
+          // Event details
+          eventName: eventTicketDetails?.eventName || eventTicketDetails?.name || item.name || 'Unknown Event',
+          price: eventTicketDetails?.price !== undefined 
+            ? (eventTicketDetails.price && typeof eventTicketDetails.price === 'object' && eventTicketDetails.price.$numberDecimal 
+                ? parseFloat(eventTicketDetails.price.$numberDecimal) 
+                : eventTicketDetails.price)
+            : (item.price || 0),
+          quantity: item.quantity || 1,
+          
+          // Owner info - inherit from package ticket
+          ownerType: 'individual',
+          ownerId: attendeeId,
+          
+          // Status - inherit from package
+          status: packageTicket.status || 'pending',
+          
+          // Attributes
+          attributes: eventTicketDetails?.attributes || [],
+          
+          // Details
+          details: {
+            ...packageTicket.details,
+            isPackage: false,
+            parentPackageId: packageId,
+            attendeeId: attendeeId,
+            originalAttendeeId: packageTicket.attendeeId || null
+          },
+          
+          // Timestamps
+          createdAt: packageTicket.createdAt || new Date().toISOString(),
+          modifiedAt: new Date(),
+          
+          // Modification tracking
+          modificationHistory: [{
+            type: 'package_expansion',
+            changes: [
+              {
+                field: 'expanded_from_package',
+                from: null,
+                to: packageId
+              },
+              {
+                field: 'eventTicketId',
+                from: null,
+                to: item.eventTicketId
+              }
+            ],
+            description: `Ticket expanded from package ${packageId} during sync`,
+            timestamp: new Date(),
+            userId: 'system-sync',
+            source: 'enhanced-payment-sync-package-expansion'
+          }]
+        };
+        
+        expandedTickets.push(expandedTicket);
+        this.writeToLog(`    ✓ Expanded package item: ${item.eventTicketId} -> ${expandedTicket.eventName}`);
+      }
+      
+      this.writeToLog(`    📦 Successfully expanded package ${packageId} into ${expandedTickets.length} individual tickets`);
+      return expandedTickets;
+      
+    } catch (error: any) {
+      this.writeToLog(`    ❌ Error expanding package ticket: ${error.message}`);
+      return [];
+    }
+  }
+
   private async runErrorVerification(): Promise<void> {
     try {
       this.writeToLog('\n🔍 Starting Error Verification...');
@@ -1848,7 +2322,7 @@ export class EnhancedPaymentSyncService {
       const verificationService = new ErrorVerificationService();
       
       // Get MongoDB URIs - use the same connection string but point to test DB
-      const importUri = this.mongoUri || process.env.MONGODB_URI || '';
+      const importUri = process.env.MONGODB_URI || '';
       // For test DB, we use the same cluster but different database
       const testUri = importUri ? importUri.replace('/lodgetix', '/lodgetix-test') : '';
       

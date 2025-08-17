@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node scripts/dev-with-sync.js",
     "dev:no-sync": "npx tsx server.ts",
+    "dev:server-only": "npx tsx server.ts",
     "dev:next": "next dev -p 3005",
     "dev:api": "npx tsx api-server.ts",
     "build": "next build",
@@ -21,13 +22,17 @@
     "migrate:lodgetix": "npx tsx scripts/migrate-lodgetix-to-commerce.ts",
     "migrate:clear": "npx tsx scripts/migrate-lodgetix-to-commerce.ts -- --clear",
     "migrate:sample-data": "npx tsx scripts/create-sample-lodgetix-data.ts",
-    "sync": "node scripts/sync-all-data.js"
+    "sync": "node scripts/sync-all-data.js",
+    "sync:clear": "node scripts/sync-all-data.js --clear",
+    "sync:enhanced:clear": "npx tsx scripts/run-enhanced-sync.ts --clear",
+    "clear:variables": "npx tsx scripts/clear-variable-collections.ts",
+    "clear:variables:force": "npx tsx scripts/clear-variable-collections.ts --force"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@hookform/resolvers": "^5.2.1",
     "@react-pdf/renderer": "^4.3.0",
-    "@supabase/supabase-js": "^2.50.2",
+    "@supabase/supabase-js": "^2.55.0",
     "@types/pdfkit": "^0.17.2",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",

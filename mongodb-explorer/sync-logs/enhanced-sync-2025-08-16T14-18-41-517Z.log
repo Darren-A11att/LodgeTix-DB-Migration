@@ -1,0 +1,3175 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-16T14:18:41.518Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: jtwvvCSh0dwASWgUW1TAfF2l635YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: 7nHbZYYBn7M1thYdSmgNo9n28yKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 4 (cursor: provided)
+
+📝 Processing Square payment: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 5 (cursor: provided)
+
+📝 Processing Square payment: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 6 (cursor: provided)
+
+📝 Processing Square payment: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 7 (cursor: provided)
+
+📝 Processing Square payment: TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 8 (cursor: provided)
+
+📝 Processing Square payment: ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 9 (cursor: provided)
+
+📝 Processing Square payment: h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 10 (cursor: provided)
+
+📝 Processing Square payment: NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 11 (cursor: provided)
+
+📝 Processing Square payment: 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 12 (cursor: provided)
+
+📝 Processing Square payment: jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 13 (cursor: provided)
+
+📝 Processing Square payment: VaU4RCrbBAky4Jpe4pvV1GBwRSJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 14 (cursor: provided)
+
+📝 Processing Square payment: T1AjRFv4v2jHjyoHPOvHp3jF2BJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 15 (cursor: provided)
+
+📝 Processing Square payment: DLDhRUZVwCaYfLXVguPIa7c2TBTZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 16 (cursor: provided)
+
+📝 Processing Square payment: jhU6YnfsNom1Wu5UEwTpuTUOfkbZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 17 (cursor: provided)
+
+📝 Processing Square payment: ByHBzneYeEzSiok0AlGqi7v7N6NZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 18 (cursor: provided)
+
+📝 Processing Square payment: hmHkLkSEY6gu1Nngf1LYIBaLnPJZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 19 (cursor: provided)
+
+📝 Processing Square payment: zNueSiS1Y3GP59FJH7A62k4tMrTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 20 (cursor: provided)
+
+📝 Processing Square payment: r9ACcx4DHuxDspPsS8xlhWFWKk7YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 21 (cursor: provided)
+
+📝 Processing Square payment: BYKXKLGaomF5fqksWnC2BDShYz9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 22 (cursor: provided)
+
+📝 Processing Square payment: H7MsmC9fLnNjwZCB50pm6oUhDZCZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 23 (cursor: provided)
+
+📝 Processing Square payment: Xbs2Q3X1vEvZJnSLSnrbaOF4z1EZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 24 (cursor: provided)
+
+📝 Processing Square payment: 1iYmmAImrRvMZ9FE839tL7f6ZJDZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 25 (cursor: provided)
+
+📝 Processing Square payment: LHxGj2N2xehd2SVPRgahL09Z4bOZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 26 (cursor: provided)
+
+📝 Processing Square payment: HnMhwDtTEYP9hcTF0UHH7Y8UTbBZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 27 (cursor: provided)
+
+📝 Processing Square payment: 3tJyXZgwjgLBCHoyV2uARwGBswdZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 28 (cursor: provided)
+
+📝 Processing Square payment: vlvOb3ZJBzQJ0XzoCOOCm3lVn2VZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 29 (cursor: provided)
+
+📝 Processing Square payment: F8t2nIaFgyXCsaClrIb76CGn5fKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 30 (cursor: provided)
+
+📝 Processing Square payment: DbJ0DmwrCW68Xy80jcjBhSu1TSTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 31 (cursor: provided)
+
+📝 Processing Square payment: 3ZJ3HBSr4UdPafNCaBainy55wc7YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 32 (cursor: provided)
+
+📝 Processing Square payment: XZvsmRdAo7cOcbytf8tXyQopLI6YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 33 (cursor: provided)
+
+📝 Processing Square payment: lqOt4jZnIiTTlE97PDYCV3tShsPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 34 (cursor: provided)
+
+📝 Processing Square payment: zVoh8VCpVfGVFHDPCb6tQiG9uJ8YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 35 (cursor: provided)
+
+📝 Processing Square payment: ZggJj2u2p8iwhRWOajCzg0zZ2YEZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 36 (cursor: provided)
+
+📝 Processing Square payment: jjZo8QIRaYRVHjWEF6kGT2A8SqYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 37 (cursor: provided)
+
+📝 Processing Square payment: XbYcqGOlLYy34w8GRh6oDKYqSKKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 38 (cursor: provided)
+
+📝 Processing Square payment: xECGubABWxwHhK8cYuzZJdzEfONZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 39 (cursor: provided)
+
+📝 Processing Square payment: xSlYUjRPlvBqdFASpTgzxyAq1RHZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 40 (cursor: provided)
+
+📝 Processing Square payment: 7NcA5XmQQnii5C4wyZ49VRv4O6bZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 41 (cursor: provided)
+
+📝 Processing Square payment: jXbMStnAmtjde3RrcJyeFi1fUuRZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 42 (cursor: provided)
+
+📝 Processing Square payment: NkToF5EmmRnVVpX6UAqwfq6nBLNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 43 (cursor: provided)
+
+📝 Processing Square payment: 3zOzdaBQtF8P6LmaVkIriaGTYKeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 44 (cursor: provided)
+
+📝 Processing Square payment: LZkdOfjFmPKMhwgBnK0HTv3arvJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 45 (cursor: provided)
+
+📝 Processing Square payment: 9Q1czaAuSZ3MLpRIjWwQ5qK8LlOZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 46 (cursor: provided)
+
+📝 Processing Square payment: bX925MCTlcedZE16Y5isSOiOY47YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 47 (cursor: provided)
+
+📝 Processing Square payment: TFQpQg9T6EMRNsVMCRqzqF9mg1WZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 48 (cursor: provided)
+
+📝 Processing Square payment: ZAMti0WeQC6bzau6xzcwAt5brqKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 49 (cursor: provided)
+
+📝 Processing Square payment: NgzFLVSyeKvPqooHJ4eqTIp0k0KZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 50 (cursor: provided)
+
+📝 Processing Square payment: vH42rszQNFswJ7wiC9myBYYRVSUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 51 (cursor: provided)
+
+📝 Processing Square payment: J88iNwjm7wF9AcNLYNHXedPYbo6YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 52 (cursor: provided)
+
+📝 Processing Square payment: RC5yWMBETbgS58lLWRMWrtwEzD9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 53 (cursor: provided)
+
+📝 Processing Square payment: tWs6GU9fkOLQyYgcvz6V9Le0mAdZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 54 (cursor: provided)
+
+📝 Processing Square payment: FgpZ0BTR7kELg8mqty50XffR9TPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 55 (cursor: provided)
+
+📝 Processing Square payment: zrVcZLjCpVPZwvQrkA8GIZTrVS9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 56 (cursor: provided)
+
+📝 Processing Square payment: NaIV57IiGy496z8NvR7Z5Mc17SZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 57 (cursor: provided)
+
+📝 Processing Square payment: 12Y9un9kSKeqSxMjwcNTefoysTEZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 58 (cursor: provided)
+
+📝 Processing Square payment: rJSoyuFWlC5k0S5hOxIyksf0pH9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 59 (cursor: provided)
+
+📝 Processing Square payment: Rc8t4dVR4bflbR2WdcWFR22XtNSZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 60 (cursor: provided)
+
+📝 Processing Square payment: jnZ3YaueDdy6TpeRv240eWTnIPZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 61 (cursor: provided)
+
+📝 Processing Square payment: ZGblTCt4beBAQimRQuctL5KP3jNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 62 (cursor: provided)
+
+📝 Processing Square payment: xWPsMDzpot3yUl3Fmp5QfRZVpoZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 63 (cursor: provided)
+
+📝 Processing Square payment: 33u6VwpAUxrUitZKoLmcK4PYFVcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 64 (cursor: provided)
+
+📝 Processing Square payment: 7Hbz0OpZ4JX09X4l7SdUxJPnx5cZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 65 (cursor: provided)
+
+📝 Processing Square payment: heNjYYSFTdby4tmeKEAMnwdbkDRZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 66 (cursor: provided)
+
+📝 Processing Square payment: P1x35soIc6XBESLOezIkKls90HaZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 67 (cursor: provided)
+
+📝 Processing Square payment: fRho4gi1mRNNspthVjJ4Q8NZOiAZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 68 (cursor: provided)
+
+📝 Processing Square payment: PhTXoxEY7t83xZ0W6Gm6HM44KPeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 69 (cursor: provided)
+
+📝 Processing Square payment: NS6wzujAidAaj1cx9PKzy5D37BeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 70 (cursor: provided)
+
+📝 Processing Square payment: NEBRGj6op7oISf96uhiwqfZQNdFZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 71 (cursor: provided)
+
+📝 Processing Square payment: zpKzPrFhACfx4abc3krHZTpasNfZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 72 (cursor: provided)
+
+📝 Processing Square payment: vPOXbkIHyMa1qTHchB83b7PAGiLZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 73 (cursor: provided)
+
+📝 Processing Square payment: L1c2qMTVFThxDa6g5hHiv71hF75YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 74 (cursor: provided)
+
+📝 Processing Square payment: lstUUZGLoUiRPOLIFCoKop60WmWZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 75 (cursor: provided)
+
+📝 Processing Square payment: xwSr2tqK3Ii14EMZuLhNpqgt6VPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 76 (cursor: provided)
+
+📝 Processing Square payment: 5UStBUAn3Df0PfNLZgrmROQoHGVZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 77 (cursor: provided)
+
+📝 Processing Square payment: dgFOK3VFNhwlyf0K1egTNMulrANZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 78 (cursor: provided)
+
+📝 Processing Square payment: VQd3h8r4ehs0xTXRRCidLDM820CZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 79 (cursor: provided)
+
+📝 Processing Square payment: RcQdd293kG3tgKPwmzdaMdNo7NNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 80 (cursor: provided)
+
+📝 Processing Square payment: FczBZ5YQy1PlX6djXrtgCKrEG1UZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 81 (cursor: provided)
+
+📝 Processing Square payment: pC7qSVdmwZYAhAN2w3NPs36Nb0SZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 82 (cursor: provided)
+
+📝 Processing Square payment: RosmA28Xi9BzzQwwES3tsOWRdYeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 83 (cursor: provided)
+
+📝 Processing Square payment: 79SL716LQwG0zVJZ1TxpkLK8eqUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 84 (cursor: provided)
+
+📝 Processing Square payment: RM6e7VMWyxaNuqqCxR7Opl6d2nBZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 85 (cursor: provided)
+
+📝 Processing Square payment: laubj2PtWwk8SipniPePQh3JpvZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 86 (cursor: provided)
+
+📝 Processing Square payment: bdGFf40iV4f3k5j16iphYsZha3RZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 87 (cursor: provided)
+
+📝 Processing Square payment: DlOKwvWPkkh5rIdCIPjtkoojsdVZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 88 (cursor: provided)
+
+📝 Processing Square payment: XfMnfkI85DhpMPXW6Mr6IQpWQCHZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 89 (cursor: provided)
+
+📝 Processing Square payment: 3dv5BmKw6lKTzfrI15nyA6s8m4FZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 90 (cursor: provided)
+
+📝 Processing Square payment: 370YBLziz8RRYxmsIfctWM4rF7GZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 91 (cursor: provided)
+
+📝 Processing Square payment: rdix9OZzwNFDNYRJwoFqsNiULENZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 92 (cursor: provided)
+
+📝 Processing Square payment: lekxnHOHrHY42pShBuJfpRUr7SNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 93 (cursor: provided)
+
+📝 Processing Square payment: 7vZQ8YN7BhOxVpETSzSDjLlSp6QZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 94 (cursor: provided)
+
+📝 Processing Square payment: LlYkcYQ4b1pgSPzsVqlyAUkweeeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 95 (cursor: provided)
+
+📝 Processing Square payment: HHmOYDiPe7nwkO6KYw7r4dpuTkYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 96 (cursor: provided)
+
+📝 Processing Square payment: T5AEAkfQFHF9CI1b7v2yv4egtrVZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 97 (cursor: provided)
+
+📝 Processing Square payment: 7XjLCTxeNAAAykVYTFKCtzZmWS9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 98 (cursor: provided)
+
+📝 Processing Square payment: 92sMiqgdiH2P8yAJGwej7bUAUYMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 99 (cursor: provided)
+
+📝 Processing Square payment: bnrXSrVTfV1FIzAKkapM6sp4QOTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 100 (cursor: provided)
+
+📝 Processing Square payment: dSU7hoIaUNr1x5aJVp7yZ6554D6YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 101 (cursor: provided)
+
+📝 Processing Square payment: DhAocSNR9PIbB9TgEgcYbmVmfAZZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 102 (cursor: provided)
+
+📝 Processing Square payment: tCi0nClaAQ4k88wNplm79U9yY46YY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 103 (cursor: provided)
+
+📝 Processing Square payment: RIChyhwANtNCls3rYRvsPQy5iK6YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 104 (cursor: provided)
+
+📝 Processing Square payment: hqPhgoQhMRkIbSi9O6rCUt4TiCdZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 105 (cursor: provided)
+
+📝 Processing Square payment: 3v6mbY65IAHlzKbnJifpwhXPwabZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 106 (cursor: provided)
+
+📝 Processing Square payment: 7bfkwdADLoMVIiomacrQ9v4PXQAZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 107 (cursor: provided)
+
+📝 Processing Square payment: jbXPLgJtdJsiBTbbN2ZMe3fnKLUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 108 (cursor: provided)
+
+📝 Processing Square payment: diGcHS9MJpx0oo0yhHwZONJ25DTZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 109 (cursor: provided)
+
+📝 Processing Square payment: FiUmy2VIVo8V5JBKrCr4IOyYhiIZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 110 (cursor: provided)
+
+📝 Processing Square payment: lwdpPfy7H2Rym4gNjaKnktr5ulfZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 111 (cursor: provided)
+
+📝 Processing Square payment: jvDGAbKHUVx16rkHQInX8NxfPC7YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 112 (cursor: provided)
+
+📝 Processing Square payment: dIXPV0xclhPC935OvZHOGrmEEJFZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 113 (cursor: provided)
+
+📝 Processing Square payment: hGrS1MYZ8IB3zyJtoP2s5CwqyWWZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 114 (cursor: provided)
+
+📝 Processing Square payment: fdRvlYzE8ksWM0nWPz9V1qFuXKQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 115 (cursor: provided)
+
+📝 Processing Square payment: Rk2kG9f0vIEQ0DzjFKzQOoTXkZCZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 116 (cursor: provided)
+
+📝 Processing Square payment: Dt8LAkYSviVyz4T9RAVf7TUQlF8YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 117 (cursor: provided)
+
+📝 Processing Square payment: J6RVXzl0y62n9MPP8J5v2zuimoFZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 118 (cursor: provided)
+
+📝 Processing Square payment: t87O3JiKyJimjSzIFwyERDYAhAAZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 119 (cursor: provided)
+
+📝 Processing Square payment: twzPst7mt2dGlSiQP1D7OeTxTqQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 120 (cursor: provided)
+
+📝 Processing Square payment: d6k5rbLWHh719Wj0WjpK679kXsbZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 121 (cursor: provided)
+
+📝 Processing Square payment: lC0aSGOPd2OAgoSYKx2rytcLJDaZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 122 (cursor: provided)
+
+📝 Processing Square payment: JUs4z0q20OlbqcoYrkdgmvPlVAZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 123 (cursor: provided)
+
+📝 Processing Square payment: tYrJ8JutaWSGf0bp5TuzPnbyyeQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 124 (cursor: provided)
+
+📝 Processing Square payment: tQVOLnfLzfOG2fdRhTM5WbyqZTcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 125 (cursor: provided)
+
+📝 Processing Square payment: Vsti8dagE7RHDMmaizRSX8bOSvDZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 126 (cursor: provided)
+
+📝 Processing Square payment: HzKTdCiaksx4DtgfzPeSaIVQ25eZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 127 (cursor: provided)
+
+📝 Processing Square payment: VecpaxQQFLKQoGeefKXVdCHw8hWZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 128 (cursor: provided)
+
+📝 Processing Square payment: h6jhTHa5I2QAFFtjEYzXw7IA32KZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 129 (cursor: provided)
+
+📝 Processing Square payment: hCJ6FAPKNoexfPhQKzOLdo1kS26YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 130 (cursor: provided)
+
+📝 Processing Square payment: 5Q6K9GxGHuOUUUKSQGIULT6ih4JZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 131 (cursor: provided)
+
+📝 Processing Square payment: 1qijtxakY30s5nfoItkOSWiog3TZY
+  📥 Importing non-completed payment - status: COMPLETED (will not move to production)
+  💰 Payment has refunds: 40.9 AUD
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 132 (cursor: provided)
+
+📝 Processing Square payment: vPsIuRUuf3BEcnnzeY87AlIqRfOZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 133 (cursor: provided)
+
+📝 Processing Square payment: ztAVDx4zEqBkMr6gXCRmO0lcRePZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 134 (cursor: provided)
+
+📝 Processing Square payment: PfsCd4YgbnAqx8x01wdxepBkjYQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 135 (cursor: provided)
+
+📝 Processing Square payment: BQexzQYYXhec7TrhiHKFxye9bHQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 136 (cursor: provided)
+
+📝 Processing Square payment: Lpq2h2VnS8AuHtNNYn4lTnJYqxHZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 137 (cursor: provided)
+
+📝 Processing Square payment: 7V0SJd4PbDhVxuf1bjRaxgtfnIUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 138 (cursor: provided)
+
+📝 Processing Square payment: paDW1RqVIFg3kJUVej7eEO4oz19YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 139 (cursor: provided)
+
+📝 Processing Square payment: JG1cNGMfoc3r49NM5GheuzvTqeAZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 140 (cursor: provided)
+
+📝 Processing Square payment: 7BUB84OG9Tz1JogJtn4VOzZJ7wUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 141 (cursor: provided)
+
+📝 Processing Square payment: brLW4ocXdk6KNsLOqab2yB5i55bZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 142 (cursor: provided)
+
+📝 Processing Square payment: nXI99IflJUTZJ8S52HQMCMedqHIZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 143 (cursor: provided)
+
+📝 Processing Square payment: FSESS8kJ2bThjXIMhwL42TsJXoMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 144 (cursor: provided)
+
+📝 Processing Square payment: vnESK2IO2niiM8hdfyqnV6SicTEZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 145 (cursor: provided)
+
+📝 Processing Square payment: 3t50u6EkI02I8LJERt7eGpiX8BQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 146 (cursor: provided)
+
+📝 Processing Square payment: b1ylXOxVR4tZigrl68CAucCrQCaZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 147 (cursor: provided)
+
+📝 Processing Square payment: Pdbu7w9Ia2VEdeu2lhuZEBVvhzfZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 148 (cursor: provided)
+
+📝 Processing Square payment: DjHXcnzNvuuZVVGxdUe9PXWraYJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 149 (cursor: provided)
+
+📝 Processing Square payment: bbt1J0xMeBdB1GXNakdpciUyx6FZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 150 (cursor: provided)
+
+📝 Processing Square payment: NgpcNLkiQncLFbeYGjPcIoHmYCKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 151 (cursor: provided)
+
+📝 Processing Square payment: F8fhweZDYprBtufFvjT4OHwzGVQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 152 (cursor: provided)
+
+📝 Processing Square payment: d2kKxi7eaAaWfRmM5rItziib3uXZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 153 (cursor: provided)
+
+📝 Processing Square payment: xQyzitlwWDvc94uddMstbJq5tFaZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 154 (cursor: provided)
+
+📝 Processing Square payment: v7Ed2GTMCcDPwgH2IUcrBGE3ObJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 155 (cursor: provided)
+
+📝 Processing Square payment: HXi6TI41gIR5NbndF5uOQotM2b6YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 156 (cursor: provided)
+
+📝 Processing Square payment: V2WEIhJincVIOjoFUZ4o4EWeZdIZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 157 (cursor: provided)
+
+📝 Processing Square payment: BMwf5spa7BBlGwDhKCDthTOytrNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 158 (cursor: provided)
+
+📝 Processing Square payment: DTRYoN84BeabyDsvp5bMIpyrFfNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 159 (cursor: provided)
+
+📝 Processing Square payment: luETY8JcSgCAhzw27WP84BO6pyHZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 160 (cursor: provided)
+
+📝 Processing Square payment: nfAJMT9smkvHFImp7lShnhiNmycZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 161 (cursor: provided)
+
+📝 Processing Square payment: nVNemNbGg3V5dGg2EOXOnLa58AeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 162 (cursor: provided)
+
+📝 Processing Square payment: BkojsiXbMAD3Z2jCOGa7cLkbnLBZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 163 (cursor: provided)
+
+📝 Processing Square payment: p6dHRqRBwz0bw7yklyetsLreAE9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 164 (cursor: provided)
+
+📝 Processing Square payment: bVMqBByDJp9yIcOVJRAogmJZ7EUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 165 (cursor: provided)
+
+📝 Processing Square payment: xinnBBHRFYuy3JR4wlbRUZ2CY0YZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 166 (cursor: provided)
+
+📝 Processing Square payment: zXZThpYVO8KyM4uwOQf5ad0MuyYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 167 (cursor: provided)
+
+📝 Processing Square payment: X59ZvqxyZvkaawUof4SvjLY5Fs5YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 168 (cursor: provided)
+
+📝 Processing Square payment: t2UCQaP0X3SDYxmOwmX5RZdP9QCZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 169 (cursor: provided)
+
+📝 Processing Square payment: 9Wc4yR97x4K7CwfmpDm2AElfJ65YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 170 (cursor: provided)
+
+📝 Processing Square payment: dcdFhu2M7kMHzVRf7EE1vlLjoyIZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 171 (cursor: provided)
+
+📝 Processing Square payment: RMaIE53O5PWQYBETawn8c7m7Lk9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 172 (cursor: provided)
+
+📝 Processing Square payment: 7HHtumLtnn9TQEpHztSFQ1HmWyTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 173 (cursor: provided)
+
+📝 Processing Square payment: LzJB0GgC4UKPSMEUo384kAu4fiOZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 174 (cursor: provided)
+
+📝 Processing Square payment: 58Y6v0luMXMOqE9wsrOKhIW46ZAZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 175 (cursor: provided)
+
+📝 Processing Square payment: jDTnfjE3tFnURQOy863LR0YKX8IZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 176 (cursor: provided)
+
+📝 Processing Square payment: t6moB5sDCcSL8pHTwy98X83vN4BZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 177 (cursor: provided)
+
+📝 Processing Square payment: X78G8L8jnaVA2qIKzSwglpM8rOKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 178 (cursor: provided)
+
+📝 Processing Square payment: xkYdGENRUz2s3iBqkbML9OylpvEZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 179 (cursor: provided)
+
+📝 Processing Square payment: hMErsORG9vqZd49YefTlTEn53w6YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 180 (cursor: provided)
+
+📝 Processing Square payment: NaSwSkpSHMesYM7lx2HvncIxsJHZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 181 (cursor: provided)
+
+📝 Processing Square payment: vDKKIIvsCi63tR6q5thdlKzNTuSZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 182 (cursor: provided)
+
+📝 Processing Square payment: RCnHtK6KKo5G4czuHmfXayEpDvcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 183 (cursor: provided)
+
+📝 Processing Square payment: tIjJoPaVZsrjIiZlyKRXgIuFZyRZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 184 (cursor: provided)
+
+📝 Processing Square payment: BYmThRPlQLyqt5SLRbhA6tuMPPAZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 185 (cursor: provided)
+
+📝 Processing Square payment: HR9djbytZaLwFzE5RwpC2DTBg7ZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 186 (cursor: provided)
+
+📝 Processing Square payment: PbKYW5dTefMFveaPc7t8lCa8LnYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 187 (cursor: provided)
+
+📝 Processing Square payment: xqRab8co4ELMetWbwcfLCt7Lrn5YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 188 (cursor: provided)
+
+📝 Processing Square payment: tyQp6jmUXiLTt00hQG760tyfmvUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 189 (cursor: provided)
+
+📝 Processing Square payment: 7pyuYSdeLSaxqHTANH0bpWhMxAfZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 190 (cursor: provided)
+
+📝 Processing Square payment: xUWuHnQBFql1I3HRxZchQZLQB28YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 191 (cursor: provided)
+
+📝 Processing Square payment: FMTz2ezwGBUwucHFU1xiq6q4CR8YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 192 (cursor: provided)
+
+📝 Processing Square payment: vJBWFiJ8DfI6MSq2MB50eKJDibMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 193 (cursor: provided)
+
+📝 Processing Square payment: Bcqu6v3fkpayVua3B7EFQVQTVsUZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 194 (cursor: provided)
+
+📝 Processing Square payment: lAzEFFmobfu1Bsi4GBgUhoHnogDZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 195 (cursor: provided)
+
+📝 Processing Square payment: liKnNdyy58sl1oAfIfGdBfR7Ge7YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 196 (cursor: provided)
+
+📝 Processing Square payment: tqKw6hCOQCQiHCz2pOyT7ZA46s7YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 197 (cursor: provided)
+
+📝 Processing Square payment: ZOLZmSQAJe7G4cyoYeCnLc3upsMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 198 (cursor: provided)
+
+📝 Processing Square payment: NaQ5P09PK2O5BO4oHBhHkjzBa89YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 199 (cursor: provided)
+
+📝 Processing Square payment: jN0TCt0cQdbeXYZq3KmL2pAV7BCZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 200 (cursor: provided)
+
+📝 Processing Square payment: tqwHaIAVYtXbZaTNNE5ddSssGyMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 201 (cursor: provided)
+
+📝 Processing Square payment: Zyn0H9aRzdlpr7sTuo4M1O97elTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 202 (cursor: provided)
+
+📝 Processing Square payment: NK6UGlOaLd9NNb5LMJxstb53UYeZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 203 (cursor: provided)
+
+📝 Processing Square payment: RWXQaxVs7gkStkbz50DYJgijUOcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 204 (cursor: provided)
+
+📝 Processing Square payment: 1IzG6pTueipzWdO21a2rKZsJHWVZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 205 (cursor: provided)
+
+📝 Processing Square payment: J4Q9jrZqXkDFf6HQFEuZr4f0uv7YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 206 (cursor: provided)
+
+📝 Processing Square payment: 71UGzZLU4WhNOq4NtU3dEay7RcYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 207 (cursor: provided)
+
+📝 Processing Square payment: bTp1t6NLdAcZLC4aAy1b7uM0KP8YY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 208 (cursor: provided)
+
+📝 Processing Square payment: bD5NnYXdmohsMmTpxZm4LyWgmaDZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 209 (cursor: provided)
+
+📝 Processing Square payment: B8ola9eL7qdDsS429Y0aVe2RdFEZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 210 (cursor: provided)
+
+📝 Processing Square payment: 1amt9KhphHWoVBXhbnF9gnWDlLPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 211 (cursor: provided)
+
+📝 Processing Square payment: pCNpJb7Bp93yAKZV3a34B2Vib25YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 212 (cursor: provided)
+
+📝 Processing Square payment: d4jRjdLCW6thKMMuZi0X5ymbDPcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 213 (cursor: provided)
+
+📝 Processing Square payment: 1S6rua5ucroHqCBIVMdV1n2cBKNZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 214 (cursor: provided)
+
+📝 Processing Square payment: nNV6XALOC9WNOQplK9u5up0cK6ZZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 215 (cursor: provided)
+
+📝 Processing Square payment: Pf2V8smZi99kptZZOs1IxbqbyXOZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 216 (cursor: provided)
+
+📝 Processing Square payment: NgNWDUI2b0VzwFZjgjo7Yh5dxtPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 217 (cursor: provided)
+
+📝 Processing Square payment: HrQuWdAMVeadtZVbhiwCcsuKklQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 218 (cursor: provided)
+
+📝 Processing Square payment: Dtw1wW3iAbqZvZ3KPbqlgc0Tn2DZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 219 (cursor: provided)
+
+📝 Processing Square payment: TTZqeHFGe9UeduE9UPiYtVsVdscZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 220 (cursor: provided)
+
+📝 Processing Square payment: hoKDYNvhSl2g1im9ZebEfh3nocIZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 221 (cursor: provided)
+
+📝 Processing Square payment: BA2vySToq7pA3Gv6e99AEwGtkSEZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 222 (cursor: provided)
+
+📝 Processing Square payment: ZGl4I1DWP3Szndxp5dqn8p4ryCTZY
+  📥 Importing non-completed payment - status: CANCELED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 223 (cursor: provided)
+
+📝 Processing Square payment: 3XGeLFuHz8QmRUIhslQ1RoVdNPLZY
+  📥 Importing non-completed payment - status: CANCELED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 224 (cursor: provided)
+
+📝 Processing Square payment: 7PRUEiqETLsQ2bnhNVAyl5fv4aYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 225 (cursor: provided)
+
+📝 Processing Square payment: 7fTbxcH1GzdONh6fZjVckE4KoPfZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 226 (cursor: provided)
+
+📝 Processing Square payment: nDAOlY1ey3RSx6WVYo9WnCdvp9aZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 227 (cursor: provided)
+
+📝 Processing Square payment: jJMU4B1lI87JOCclMGdKxwisHrcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 228 (cursor: provided)
+
+📝 Processing Square payment: VaqvtDCVDAyz6EO20feKGblOc3EZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 229 (cursor: provided)
+
+📝 Processing Square payment: ZsEMTNqhmD0zwVETdn8eYPCmrrcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 230 (cursor: provided)
+
+📝 Processing Square payment: rFAMGl5AZuysQmzGsZKQkfOTygPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 231 (cursor: provided)
+
+📝 Processing Square payment: DrnJc2FI9QPE3KEktWcZewKKzzJZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 232 (cursor: provided)
+
+📝 Processing Square payment: R40EXOAyB9pW9wgL982AtQwCRo9YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 233 (cursor: provided)
+
+📝 Processing Square payment: F0fRHM6SV5iy9ac26eznQ1nkDBgZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 234 (cursor: provided)
+
+📝 Processing Square payment: VUxK8Va0aTYUl4JZLTSCh0gTZMTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 235 (cursor: provided)
+
+📝 Processing Square payment: Xvuk93AinYSUM5dx0dQgIf2TksFZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 236 (cursor: provided)
+
+📝 Processing Square payment: br55qEb1O6PBBQXnOT5vMolYIgBZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 237 (cursor: provided)
+
+📝 Processing Square payment: zHddlOinPKTa2W6GFMNjqIkjW3EZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 238 (cursor: provided)
+
+📝 Processing Square payment: 9IP5AbLYi5zKoCwudiD1Mv2BP2bZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 239 (cursor: provided)
+
+📝 Processing Square payment: BCRIyZsd2LsulOVdEOSxg3HJzkcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 240 (cursor: provided)
+
+📝 Processing Square payment: PJzbTjA6IIdvZqe5EsCoXTlreVcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 241 (cursor: provided)
+
+📝 Processing Square payment: XLapOQzTXiuHbR7qaADogWelOxKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 242 (cursor: provided)
+
+📝 Processing Square payment: DDrpyeQ5JMSSZDjvfBmm6lHMVXPZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 243 (cursor: provided)
+
+📝 Processing Square payment: d0lr3r8yuzKHtg5DvX0tnhdD1tcZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 244 (cursor: provided)
+
+📝 Processing Square payment: TF0Fz77XqhMipWYhqJY4UcS1ncVZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 245 (cursor: provided)
+
+📝 Processing Square payment: jZ4SYUIHgvDl3dWNyolvW4PkMcYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 246 (cursor: provided)
+
+📝 Processing Square payment: xqHlfcvdVtsHjLqkItgXCvN2sgHZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 247 (cursor: provided)
+
+📝 Processing Square payment: LHxgeL0CTWu0cwrU0T4zWBCDK8JZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 248 (cursor: provided)
+
+📝 Processing Square payment: BKlajvQfYYkg9sfxKalZIsSMxnYZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 249 (cursor: provided)
+
+📝 Processing Square payment: 7zzq3CXMAvrkYcroTq5jpGxi56eZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 250 (cursor: provided)
+
+📝 Processing Square payment: pUok4kGgHixHGm3yz6OdU3VenjKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 251 (cursor: provided)
+
+📝 Processing Square payment: VgLm5JFhV9m5byeO8N9DXFdZKrRZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 252 (cursor: provided)
+
+📝 Processing Square payment: BAml3jkVuo8Ar1TyAqYXOfa9wAQZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 253 (cursor: provided)
+
+📝 Processing Square payment: 50ixdPR4FxnI6OW90XTHDZVV2YKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 254 (cursor: provided)
+
+📝 Processing Square payment: By5yhIED9XaQsUqOZeTYPENMVjRZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 255 (cursor: provided)
+
+📝 Processing Square payment: lwB7XvUF0aLc2thAcupnDtqC4hTZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 256 (cursor: provided)
+
+📝 Processing Square payment: 94ladxboxbR1vQc1hGC7CIfcftMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 257 (cursor: provided)
+
+📝 Processing Square payment: BIallQY9QbaCqIMysHfIkbgcy3cZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 258 (cursor: provided)
+
+📝 Processing Square payment: v9dZC6uSezIMwsrldensrqNh5FYZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  ⏭️ Already imported - skipping
+  No cursor found, completed all Square payments
+✓ Processed 258 Square payments (total fetched: 258)
+
+━━━ Processing DA-LODGETIX ━━━
+
+📝 Processing charge: ch_3RYNqYKBASow5NsW17D1d6gl
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYNH3KBASow5NsW0hd6SVQA
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYMRnKBASow5NsW1rQGpHtU
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYLpiKBASow5NsW1j6bahnX
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJM8KBASow5NsW0B6fbNrc
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJLjKBASow5NsW01xLNSEe
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJJWKBASow5NsW123lPSBC
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJIiKBASow5NsW0NnAlu3N
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJHDKBASow5NsW07wIbgeM
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJGnKBASow5NsW1X7K1Fxz
+  📥 Importing fully refunded charge - refunded: 264.56 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYJFqKBASow5NsW1nT0t2Y7
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYHBgKBASow5NsW1kqeIytL
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYHAkKBASow5NsW18ukuAQm
+  📥 Importing fully refunded charge - refunded: 285.7 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYH94KBASow5NsW1qKF9xQa
+  📥 Importing fully refunded charge - refunded: 280.47 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYGmnKBASow5NsW0B0Kv5xO
+  📥 Importing fully refunded charge - refunded: 280.47 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYGmGKBASow5NsW18L0QuAp
+  📥 Importing fully refunded charge - refunded: 280.47 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYGk6KBASow5NsW1IBsUZcE
+  📥 Importing fully refunded charge - refunded: 280.47 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYGYdKBASow5NsW1jB3SZpt
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RY4SMKBASow5NsW1hOknD3b
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RY1ReKBASow5NsW0Yru5Bab
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RY0TPKBASow5NsW1HpVl9oK
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RY0LLKBASow5NsW0Ir58poX
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXwDkKBASow5NsW15RQTqPG
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXtI3KBASow5NsW1UCc4ejd
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXp4KKBASow5NsW0yPmqVZA
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXnXlKBASow5NsW1j8bSV0s
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXekrKBASow5NsW1ee0Nx48
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXVLGKBASow5NsW1SGGfjXc
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXOkGKBASow5NsW1nwpJXXv
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXOZuKBASow5NsW1GVWK7N5
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RXN7OKBASow5NsW09qHmGCg
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RW9iNKBASow5NsW1LfiWXLX
+  📥 Importing fully refunded charge - refunded: 1.32 aud (will not move to production)
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RW8isKBASow5NsW13qldc4a
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RW69fKBASow5NsW1XL96u38
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RVhHvKBASow5NsW1eRim2Fj
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RVhHRKBASow5NsW04zKfBqm
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  🧪 Test payment detected - skipping
+
+━━━ Processing WS-LODGETIX ━━━
+
+📝 Processing charge: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RatmpHDfNBUEWUu0aKhh2Yq
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RatcXHDfNBUEWUu18ZKzlo9
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RatabHDfNBUEWUu0Iycwsai
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RatXHHDfNBUEWUu1PqYeK60
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RatCJHDfNBUEWUu1SfWaQhg
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rat9jHDfNBUEWUu0jImCggO
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rat5dHDfNBUEWUu1Kpmcccj
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RaskQHDfNBUEWUu0zx6tAst
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rask1HDfNBUEWUu06Vaa0bD
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rasg7HDfNBUEWUu0UZU3VhP
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RarntHDfNBUEWUu1aewrvzS
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rarl1HDfNBUEWUu0k252k5d
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RargqHDfNBUEWUu1skXzKZA
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RarW6HDfNBUEWUu05JVuU0i
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RarPRHDfNBUEWUu0HiCnldl
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RapyOHDfNBUEWUu1NrvNmbM
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rapg5HDfNBUEWUu1pwOPQDX
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RapOPHDfNBUEWUu05PslpuW
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RapFCHDfNBUEWUu1WVAdXHE
+  📥 Importing fully refunded charge - refunded: 2.85 aud (will not move to production)
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RapCeHDfNBUEWUu0r6lfpfu
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RalDNHDfNBUEWUu1rujgmHH
+  📥 Importing fully refunded charge - refunded: 1190.54 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Ragt2HDfNBUEWUu0xdumvrb
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3Ra8GvHDfNBUEWUu0zGhuTfx
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RZl27HDfNBUEWUu0ET1ix3T
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RZiODHDfNBUEWUu1HV16bq9
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RZNH8HDfNBUEWUu19uzLSMM
+  ✅ Importing successful charge - status: succeeded
+  🧪 Test payment detected - skipping
+
+📝 Processing charge: ch_3RZMrPHDfNBUEWUu1h5zI3eA
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RZInfHDfNBUEWUu08WSM1W1
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RZ20iHDfNBUEWUu0ehUEscL
+  📥 Importing fully refunded charge - refunded: 1190.54 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYwvYHDfNBUEWUu0BsYIyOi
+  📥 Importing fully refunded charge - refunded: 1190.54 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYwpEHDfNBUEWUu0KVtnoM4
+  📥 Importing fully refunded charge - refunded: 1190.54 aud (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RYUn7HDfNBUEWUu1RMQtHys
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  🧪 Test payment detected - skipping
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+📝 Processing charge: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbGXFCari1bgsWq1HXOJzrX
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbGAlCari1bgsWq08w1BHrF
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbFmZCari1bgsWq04o5RQDm
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbFhVCari1bgsWq0w0oJdBr
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbDvnCari1bgsWq0fDNrT2I
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbDugCari1bgsWq1VxNgsGg
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbCCyCari1bgsWq12mm8rMN
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbBkCCari1bgsWq1dAjZkAk
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbBevCari1bgsWq13khusPm
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbBaNCari1bgsWq1BtArAe8
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbBMcCari1bgsWq0eWHfX64
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbB7KCari1bgsWq1kt4Aiga
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3RbB3uCari1bgsWq093773W4
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb9qaCari1bgsWq0ohF7tDM
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb9faCari1bgsWq1dCo0exB
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb9IuCari1bgsWq1Hmk8uU9
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb9FLCari1bgsWq0mYFU5Jb
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb9AyCari1bgsWq0CqYXLhO
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb9AMCari1bgsWq0s26XqdI
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb8CsCari1bgsWq13cOcShV
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+📝 Processing charge: ch_3Rb85ECari1bgsWq14btSpB0
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+
+🔄 Starting selective production sync...
+
+=== STARTING SELECTIVE PRODUCTION SYNC ===
+
+--- Syncing import_payments -> payments ---
+Found 337 documents in import_payments
+  ⏭️ No changes needed for: 37uzagXg6306GrJSUUf574HvB0CZY
+  ⏭️ No changes needed for: jtwvvCSh0dwASWgUW1TAfF2l635YY
+  ⏭️ No changes needed for: 7nHbZYYBn7M1thYdSmgNo9n28yKZY
+  ⏭️ No changes needed for: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ⏭️ No changes needed for: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ⏭️ No changes needed for: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  ⏭️ No changes needed for: TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  ⏭️ No changes needed for: ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  ⏭️ No changes needed for: h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  ⏭️ No changes needed for: NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  ⏭️ No changes needed for: 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  ⏭️ No changes needed for: jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  ⏭️ No changes needed for: VaU4RCrbBAky4Jpe4pvV1GBwRSJZY
+  ⏭️ No changes needed for: T1AjRFv4v2jHjyoHPOvHp3jF2BJZY
+  📝 Skipping DLDhRUZVwCaYfLXVguPIa7c2TBTZY - not eligible for production sync
+  📝 Skipping jhU6YnfsNom1Wu5UEwTpuTUOfkbZY - not eligible for production sync
+  📝 Skipping ByHBzneYeEzSiok0AlGqi7v7N6NZY - not eligible for production sync
+  📝 Skipping hmHkLkSEY6gu1Nngf1LYIBaLnPJZY - not eligible for production sync
+  ⏭️ No changes needed for: zNueSiS1Y3GP59FJH7A62k4tMrTZY
+  ⏭️ No changes needed for: r9ACcx4DHuxDspPsS8xlhWFWKk7YY
+  ⏭️ No changes needed for: BYKXKLGaomF5fqksWnC2BDShYz9YY
+  ⏭️ No changes needed for: H7MsmC9fLnNjwZCB50pm6oUhDZCZY
+  ⏭️ No changes needed for: Xbs2Q3X1vEvZJnSLSnrbaOF4z1EZY
+  ⏭️ No changes needed for: 1iYmmAImrRvMZ9FE839tL7f6ZJDZY
+  ⏭️ No changes needed for: LHxGj2N2xehd2SVPRgahL09Z4bOZY
+  ⏭️ No changes needed for: HnMhwDtTEYP9hcTF0UHH7Y8UTbBZY
+  ⏭️ No changes needed for: 3tJyXZgwjgLBCHoyV2uARwGBswdZY
+  ⏭️ No changes needed for: vlvOb3ZJBzQJ0XzoCOOCm3lVn2VZY
+  ⏭️ No changes needed for: F8t2nIaFgyXCsaClrIb76CGn5fKZY
+  ⏭️ No changes needed for: DbJ0DmwrCW68Xy80jcjBhSu1TSTZY
+  ⏭️ No changes needed for: 3ZJ3HBSr4UdPafNCaBainy55wc7YY
+  ⏭️ No changes needed for: XZvsmRdAo7cOcbytf8tXyQopLI6YY
+  ⏭️ No changes needed for: lqOt4jZnIiTTlE97PDYCV3tShsPZY
+  ⏭️ No changes needed for: zVoh8VCpVfGVFHDPCb6tQiG9uJ8YY
+  ⏭️ No changes needed for: ZggJj2u2p8iwhRWOajCzg0zZ2YEZY
+  ⏭️ No changes needed for: jjZo8QIRaYRVHjWEF6kGT2A8SqYZY
+  ⏭️ No changes needed for: XbYcqGOlLYy34w8GRh6oDKYqSKKZY
+  ⏭️ No changes needed for: xECGubABWxwHhK8cYuzZJdzEfONZY
+  ⏭️ No changes needed for: xSlYUjRPlvBqdFASpTgzxyAq1RHZY
+  ⏭️ No changes needed for: 7NcA5XmQQnii5C4wyZ49VRv4O6bZY
+  ⏭️ No changes needed for: jXbMStnAmtjde3RrcJyeFi1fUuRZY
+  ⏭️ No changes needed for: NkToF5EmmRnVVpX6UAqwfq6nBLNZY
+  ⏭️ No changes needed for: 3zOzdaBQtF8P6LmaVkIriaGTYKeZY
+  ⏭️ No changes needed for: LZkdOfjFmPKMhwgBnK0HTv3arvJZY
+  ⏭️ No changes needed for: 9Q1czaAuSZ3MLpRIjWwQ5qK8LlOZY
+  ⏭️ No changes needed for: bX925MCTlcedZE16Y5isSOiOY47YY
+  ⏭️ No changes needed for: TFQpQg9T6EMRNsVMCRqzqF9mg1WZY
+  ⏭️ No changes needed for: ZAMti0WeQC6bzau6xzcwAt5brqKZY
+  ⏭️ No changes needed for: NgzFLVSyeKvPqooHJ4eqTIp0k0KZY
+  ⏭️ No changes needed for: vH42rszQNFswJ7wiC9myBYYRVSUZY
+  ⏭️ No changes needed for: J88iNwjm7wF9AcNLYNHXedPYbo6YY
+  ⏭️ No changes needed for: RC5yWMBETbgS58lLWRMWrtwEzD9YY
+  ⏭️ No changes needed for: tWs6GU9fkOLQyYgcvz6V9Le0mAdZY
+  ⏭️ No changes needed for: FgpZ0BTR7kELg8mqty50XffR9TPZY
+  ⏭️ No changes needed for: zrVcZLjCpVPZwvQrkA8GIZTrVS9YY
+  ⏭️ No changes needed for: NaIV57IiGy496z8NvR7Z5Mc17SZZY
+  ⏭️ No changes needed for: 12Y9un9kSKeqSxMjwcNTefoysTEZY
+  ⏭️ No changes needed for: rJSoyuFWlC5k0S5hOxIyksf0pH9YY
+  ⏭️ No changes needed for: Rc8t4dVR4bflbR2WdcWFR22XtNSZY
+  ⏭️ No changes needed for: jnZ3YaueDdy6TpeRv240eWTnIPZZY
+  ⏭️ No changes needed for: ZGblTCt4beBAQimRQuctL5KP3jNZY
+  ⏭️ No changes needed for: xWPsMDzpot3yUl3Fmp5QfRZVpoZZY
+  ⏭️ No changes needed for: 33u6VwpAUxrUitZKoLmcK4PYFVcZY
+  ⏭️ No changes needed for: 7Hbz0OpZ4JX09X4l7SdUxJPnx5cZY
+  ⏭️ No changes needed for: heNjYYSFTdby4tmeKEAMnwdbkDRZY
+  📝 Skipping P1x35soIc6XBESLOezIkKls90HaZY - not eligible for production sync
+  ⏭️ No changes needed for: fRho4gi1mRNNspthVjJ4Q8NZOiAZY
+  ⏭️ No changes needed for: PhTXoxEY7t83xZ0W6Gm6HM44KPeZY
+  ⏭️ No changes needed for: NS6wzujAidAaj1cx9PKzy5D37BeZY
+  ⏭️ No changes needed for: NEBRGj6op7oISf96uhiwqfZQNdFZY
+  ⏭️ No changes needed for: zpKzPrFhACfx4abc3krHZTpasNfZY
+  ⏭️ No changes needed for: vPOXbkIHyMa1qTHchB83b7PAGiLZY
+  ⏭️ No changes needed for: L1c2qMTVFThxDa6g5hHiv71hF75YY
+  ⏭️ No changes needed for: lstUUZGLoUiRPOLIFCoKop60WmWZY
+  ⏭️ No changes needed for: xwSr2tqK3Ii14EMZuLhNpqgt6VPZY
+  ⏭️ No changes needed for: 5UStBUAn3Df0PfNLZgrmROQoHGVZY
+  ⏭️ No changes needed for: dgFOK3VFNhwlyf0K1egTNMulrANZY
+  ⏭️ No changes needed for: VQd3h8r4ehs0xTXRRCidLDM820CZY
+  ⏭️ No changes needed for: RcQdd293kG3tgKPwmzdaMdNo7NNZY
+  ⏭️ No changes needed for: FczBZ5YQy1PlX6djXrtgCKrEG1UZY
+  ⏭️ No changes needed for: pC7qSVdmwZYAhAN2w3NPs36Nb0SZY
+  ⏭️ No changes needed for: RosmA28Xi9BzzQwwES3tsOWRdYeZY
+  ⏭️ No changes needed for: 79SL716LQwG0zVJZ1TxpkLK8eqUZY
+  ⏭️ No changes needed for: RM6e7VMWyxaNuqqCxR7Opl6d2nBZY
+  ⏭️ No changes needed for: laubj2PtWwk8SipniPePQh3JpvZZY
+  ⏭️ No changes needed for: bdGFf40iV4f3k5j16iphYsZha3RZY
+  ⏭️ No changes needed for: DlOKwvWPkkh5rIdCIPjtkoojsdVZY
+  ⏭️ No changes needed for: XfMnfkI85DhpMPXW6Mr6IQpWQCHZY
+  📝 Skipping 3dv5BmKw6lKTzfrI15nyA6s8m4FZY - not eligible for production sync
+  ⏭️ No changes needed for: 370YBLziz8RRYxmsIfctWM4rF7GZY
+  ⏭️ No changes needed for: rdix9OZzwNFDNYRJwoFqsNiULENZY
+  ⏭️ No changes needed for: lekxnHOHrHY42pShBuJfpRUr7SNZY
+  📝 Skipping 7vZQ8YN7BhOxVpETSzSDjLlSp6QZY - not eligible for production sync
+  ⏭️ No changes needed for: LlYkcYQ4b1pgSPzsVqlyAUkweeeZY
+  ⏭️ No changes needed for: HHmOYDiPe7nwkO6KYw7r4dpuTkYZY
+  ⏭️ No changes needed for: T5AEAkfQFHF9CI1b7v2yv4egtrVZY
+  ⏭️ No changes needed for: 7XjLCTxeNAAAykVYTFKCtzZmWS9YY
+  ⏭️ No changes needed for: 92sMiqgdiH2P8yAJGwej7bUAUYMZY
+  ⏭️ No changes needed for: bnrXSrVTfV1FIzAKkapM6sp4QOTZY
+  ⏭️ No changes needed for: dSU7hoIaUNr1x5aJVp7yZ6554D6YY
+  📝 Skipping DhAocSNR9PIbB9TgEgcYbmVmfAZZY - not eligible for production sync
+  📝 Skipping tCi0nClaAQ4k88wNplm79U9yY46YY - not eligible for production sync
+  ⏭️ No changes needed for: RIChyhwANtNCls3rYRvsPQy5iK6YY
+  ⏭️ No changes needed for: hqPhgoQhMRkIbSi9O6rCUt4TiCdZY
+  ⏭️ No changes needed for: 3v6mbY65IAHlzKbnJifpwhXPwabZY
+  ⏭️ No changes needed for: 7bfkwdADLoMVIiomacrQ9v4PXQAZY
+  ⏭️ No changes needed for: jbXPLgJtdJsiBTbbN2ZMe3fnKLUZY
+  📝 Skipping diGcHS9MJpx0oo0yhHwZONJ25DTZY - not eligible for production sync
+  ⏭️ No changes needed for: FiUmy2VIVo8V5JBKrCr4IOyYhiIZY
+  ⏭️ No changes needed for: lwdpPfy7H2Rym4gNjaKnktr5ulfZY
+  ⏭️ No changes needed for: jvDGAbKHUVx16rkHQInX8NxfPC7YY
+  ⏭️ No changes needed for: dIXPV0xclhPC935OvZHOGrmEEJFZY
+  📝 Skipping hGrS1MYZ8IB3zyJtoP2s5CwqyWWZY - not eligible for production sync
+  ⏭️ No changes needed for: fdRvlYzE8ksWM0nWPz9V1qFuXKQZY
+  ⏭️ No changes needed for: Rk2kG9f0vIEQ0DzjFKzQOoTXkZCZY
+  ⏭️ No changes needed for: Dt8LAkYSviVyz4T9RAVf7TUQlF8YY
+  ⏭️ No changes needed for: J6RVXzl0y62n9MPP8J5v2zuimoFZY
+  ⏭️ No changes needed for: t87O3JiKyJimjSzIFwyERDYAhAAZY
+  ⏭️ No changes needed for: twzPst7mt2dGlSiQP1D7OeTxTqQZY
+  ⏭️ No changes needed for: d6k5rbLWHh719Wj0WjpK679kXsbZY
+  ⏭️ No changes needed for: lC0aSGOPd2OAgoSYKx2rytcLJDaZY
+  ⏭️ No changes needed for: JUs4z0q20OlbqcoYrkdgmvPlVAZZY
+  ⏭️ No changes needed for: tYrJ8JutaWSGf0bp5TuzPnbyyeQZY
+  ⏭️ No changes needed for: tQVOLnfLzfOG2fdRhTM5WbyqZTcZY
+  ⏭️ No changes needed for: Vsti8dagE7RHDMmaizRSX8bOSvDZY
+  ⏭️ No changes needed for: HzKTdCiaksx4DtgfzPeSaIVQ25eZY
+  ⏭️ No changes needed for: VecpaxQQFLKQoGeefKXVdCHw8hWZY
+  ⏭️ No changes needed for: h6jhTHa5I2QAFFtjEYzXw7IA32KZY
+  ⏭️ No changes needed for: hCJ6FAPKNoexfPhQKzOLdo1kS26YY
+  ⏭️ No changes needed for: 5Q6K9GxGHuOUUUKSQGIULT6ih4JZY
+  📝 Skipping 1qijtxakY30s5nfoItkOSWiog3TZY - not eligible for production sync
+  ⏭️ No changes needed for: vPsIuRUuf3BEcnnzeY87AlIqRfOZY
+  ⏭️ No changes needed for: ztAVDx4zEqBkMr6gXCRmO0lcRePZY
+  ⏭️ No changes needed for: PfsCd4YgbnAqx8x01wdxepBkjYQZY
+  ⏭️ No changes needed for: BQexzQYYXhec7TrhiHKFxye9bHQZY
+  ⏭️ No changes needed for: Lpq2h2VnS8AuHtNNYn4lTnJYqxHZY
+  ⏭️ No changes needed for: 7V0SJd4PbDhVxuf1bjRaxgtfnIUZY
+  ⏭️ No changes needed for: paDW1RqVIFg3kJUVej7eEO4oz19YY
+  ⏭️ No changes needed for: JG1cNGMfoc3r49NM5GheuzvTqeAZY
+  ⏭️ No changes needed for: 7BUB84OG9Tz1JogJtn4VOzZJ7wUZY
+  ⏭️ No changes needed for: brLW4ocXdk6KNsLOqab2yB5i55bZY
+  ⏭️ No changes needed for: nXI99IflJUTZJ8S52HQMCMedqHIZY
+  ⏭️ No changes needed for: FSESS8kJ2bThjXIMhwL42TsJXoMZY
+  ⏭️ No changes needed for: vnESK2IO2niiM8hdfyqnV6SicTEZY
+  ⏭️ No changes needed for: 3t50u6EkI02I8LJERt7eGpiX8BQZY
+  ⏭️ No changes needed for: b1ylXOxVR4tZigrl68CAucCrQCaZY
+  ⏭️ No changes needed for: Pdbu7w9Ia2VEdeu2lhuZEBVvhzfZY
+  ⏭️ No changes needed for: DjHXcnzNvuuZVVGxdUe9PXWraYJZY
+  ⏭️ No changes needed for: bbt1J0xMeBdB1GXNakdpciUyx6FZY
+  ⏭️ No changes needed for: NgpcNLkiQncLFbeYGjPcIoHmYCKZY
+  ⏭️ No changes needed for: F8fhweZDYprBtufFvjT4OHwzGVQZY
+  ⏭️ No changes needed for: d2kKxi7eaAaWfRmM5rItziib3uXZY
+  ⏭️ No changes needed for: xQyzitlwWDvc94uddMstbJq5tFaZY
+  ⏭️ No changes needed for: v7Ed2GTMCcDPwgH2IUcrBGE3ObJZY
+  ⏭️ No changes needed for: HXi6TI41gIR5NbndF5uOQotM2b6YY
+  ⏭️ No changes needed for: V2WEIhJincVIOjoFUZ4o4EWeZdIZY
+  ⏭️ No changes needed for: BMwf5spa7BBlGwDhKCDthTOytrNZY
+  ⏭️ No changes needed for: DTRYoN84BeabyDsvp5bMIpyrFfNZY
+  ⏭️ No changes needed for: luETY8JcSgCAhzw27WP84BO6pyHZY
+  ⏭️ No changes needed for: nfAJMT9smkvHFImp7lShnhiNmycZY
+  ⏭️ No changes needed for: nVNemNbGg3V5dGg2EOXOnLa58AeZY
+  ⏭️ No changes needed for: BkojsiXbMAD3Z2jCOGa7cLkbnLBZY
+  ⏭️ No changes needed for: p6dHRqRBwz0bw7yklyetsLreAE9YY
+  ⏭️ No changes needed for: bVMqBByDJp9yIcOVJRAogmJZ7EUZY
+  ⏭️ No changes needed for: xinnBBHRFYuy3JR4wlbRUZ2CY0YZY
+  ⏭️ No changes needed for: zXZThpYVO8KyM4uwOQf5ad0MuyYZY
+  ⏭️ No changes needed for: X59ZvqxyZvkaawUof4SvjLY5Fs5YY
+  ⏭️ No changes needed for: t2UCQaP0X3SDYxmOwmX5RZdP9QCZY
+  ⏭️ No changes needed for: 9Wc4yR97x4K7CwfmpDm2AElfJ65YY
+  ⏭️ No changes needed for: dcdFhu2M7kMHzVRf7EE1vlLjoyIZY
+  ⏭️ No changes needed for: RMaIE53O5PWQYBETawn8c7m7Lk9YY
+  ⏭️ No changes needed for: 7HHtumLtnn9TQEpHztSFQ1HmWyTZY
+  ⏭️ No changes needed for: LzJB0GgC4UKPSMEUo384kAu4fiOZY
+  ⏭️ No changes needed for: 58Y6v0luMXMOqE9wsrOKhIW46ZAZY
+  ⏭️ No changes needed for: jDTnfjE3tFnURQOy863LR0YKX8IZY
+  ⏭️ No changes needed for: t6moB5sDCcSL8pHTwy98X83vN4BZY
+  ⏭️ No changes needed for: X78G8L8jnaVA2qIKzSwglpM8rOKZY
+  ⏭️ No changes needed for: xkYdGENRUz2s3iBqkbML9OylpvEZY
+  ⏭️ No changes needed for: hMErsORG9vqZd49YefTlTEn53w6YY
+  ⏭️ No changes needed for: NaSwSkpSHMesYM7lx2HvncIxsJHZY
+  ⏭️ No changes needed for: vDKKIIvsCi63tR6q5thdlKzNTuSZY
+  ⏭️ No changes needed for: RCnHtK6KKo5G4czuHmfXayEpDvcZY
+  ⏭️ No changes needed for: tIjJoPaVZsrjIiZlyKRXgIuFZyRZY
+  ⏭️ No changes needed for: BYmThRPlQLyqt5SLRbhA6tuMPPAZY
+  ⏭️ No changes needed for: HR9djbytZaLwFzE5RwpC2DTBg7ZZY
+  ⏭️ No changes needed for: PbKYW5dTefMFveaPc7t8lCa8LnYZY
+  ⏭️ No changes needed for: xqRab8co4ELMetWbwcfLCt7Lrn5YY
+  ⏭️ No changes needed for: tyQp6jmUXiLTt00hQG760tyfmvUZY
+  ⏭️ No changes needed for: 7pyuYSdeLSaxqHTANH0bpWhMxAfZY
+  ⏭️ No changes needed for: xUWuHnQBFql1I3HRxZchQZLQB28YY
+  ⏭️ No changes needed for: FMTz2ezwGBUwucHFU1xiq6q4CR8YY
+  ⏭️ No changes needed for: vJBWFiJ8DfI6MSq2MB50eKJDibMZY
+  ⏭️ No changes needed for: Bcqu6v3fkpayVua3B7EFQVQTVsUZY
+  ⏭️ No changes needed for: lAzEFFmobfu1Bsi4GBgUhoHnogDZY
+  ⏭️ No changes needed for: liKnNdyy58sl1oAfIfGdBfR7Ge7YY
+  ⏭️ No changes needed for: tqKw6hCOQCQiHCz2pOyT7ZA46s7YY
+  ⏭️ No changes needed for: ZOLZmSQAJe7G4cyoYeCnLc3upsMZY
+  ⏭️ No changes needed for: NaQ5P09PK2O5BO4oHBhHkjzBa89YY
+  ⏭️ No changes needed for: jN0TCt0cQdbeXYZq3KmL2pAV7BCZY
+  ⏭️ No changes needed for: tqwHaIAVYtXbZaTNNE5ddSssGyMZY
+  ⏭️ No changes needed for: Zyn0H9aRzdlpr7sTuo4M1O97elTZY
+  ⏭️ No changes needed for: NK6UGlOaLd9NNb5LMJxstb53UYeZY
+  ⏭️ No changes needed for: RWXQaxVs7gkStkbz50DYJgijUOcZY
+  ⏭️ No changes needed for: 1IzG6pTueipzWdO21a2rKZsJHWVZY
+  ⏭️ No changes needed for: J4Q9jrZqXkDFf6HQFEuZr4f0uv7YY
+  ⏭️ No changes needed for: 71UGzZLU4WhNOq4NtU3dEay7RcYZY
+  📝 Skipping bTp1t6NLdAcZLC4aAy1b7uM0KP8YY - not eligible for production sync
+  📝 Skipping bD5NnYXdmohsMmTpxZm4LyWgmaDZY - not eligible for production sync
+  📝 Skipping B8ola9eL7qdDsS429Y0aVe2RdFEZY - not eligible for production sync
+  ⏭️ No changes needed for: 1amt9KhphHWoVBXhbnF9gnWDlLPZY
+  ⏭️ No changes needed for: pCNpJb7Bp93yAKZV3a34B2Vib25YY
+  ⏭️ No changes needed for: d4jRjdLCW6thKMMuZi0X5ymbDPcZY
+  ⏭️ No changes needed for: 1S6rua5ucroHqCBIVMdV1n2cBKNZY
+  ⏭️ No changes needed for: nNV6XALOC9WNOQplK9u5up0cK6ZZY
+  ⏭️ No changes needed for: Pf2V8smZi99kptZZOs1IxbqbyXOZY
+  ⏭️ No changes needed for: NgNWDUI2b0VzwFZjgjo7Yh5dxtPZY
+  ⏭️ No changes needed for: HrQuWdAMVeadtZVbhiwCcsuKklQZY
+  ⏭️ No changes needed for: Dtw1wW3iAbqZvZ3KPbqlgc0Tn2DZY
+  ⏭️ No changes needed for: TTZqeHFGe9UeduE9UPiYtVsVdscZY
+  ⏭️ No changes needed for: hoKDYNvhSl2g1im9ZebEfh3nocIZY
+  ⏭️ No changes needed for: BA2vySToq7pA3Gv6e99AEwGtkSEZY
+  📝 Skipping ZGl4I1DWP3Szndxp5dqn8p4ryCTZY - not eligible for production sync
+  📝 Skipping 3XGeLFuHz8QmRUIhslQ1RoVdNPLZY - not eligible for production sync
+  ⏭️ No changes needed for: 7PRUEiqETLsQ2bnhNVAyl5fv4aYZY
+  ⏭️ No changes needed for: 7fTbxcH1GzdONh6fZjVckE4KoPfZY
+  ⏭️ No changes needed for: nDAOlY1ey3RSx6WVYo9WnCdvp9aZY
+  ⏭️ No changes needed for: jJMU4B1lI87JOCclMGdKxwisHrcZY
+  ⏭️ No changes needed for: VaqvtDCVDAyz6EO20feKGblOc3EZY
+  ⏭️ No changes needed for: ZsEMTNqhmD0zwVETdn8eYPCmrrcZY
+  ⏭️ No changes needed for: rFAMGl5AZuysQmzGsZKQkfOTygPZY
+  ⏭️ No changes needed for: DrnJc2FI9QPE3KEktWcZewKKzzJZY
+  ⏭️ No changes needed for: R40EXOAyB9pW9wgL982AtQwCRo9YY
+  ⏭️ No changes needed for: F0fRHM6SV5iy9ac26eznQ1nkDBgZY
+  ⏭️ No changes needed for: VUxK8Va0aTYUl4JZLTSCh0gTZMTZY
+  ⏭️ No changes needed for: Xvuk93AinYSUM5dx0dQgIf2TksFZY
+  ⏭️ No changes needed for: br55qEb1O6PBBQXnOT5vMolYIgBZY
+  ⏭️ No changes needed for: zHddlOinPKTa2W6GFMNjqIkjW3EZY
+  ⏭️ No changes needed for: 9IP5AbLYi5zKoCwudiD1Mv2BP2bZY
+  ⏭️ No changes needed for: BCRIyZsd2LsulOVdEOSxg3HJzkcZY
+  ⏭️ No changes needed for: PJzbTjA6IIdvZqe5EsCoXTlreVcZY
+  ⏭️ No changes needed for: XLapOQzTXiuHbR7qaADogWelOxKZY
+  ⏭️ No changes needed for: DDrpyeQ5JMSSZDjvfBmm6lHMVXPZY
+  ⏭️ No changes needed for: d0lr3r8yuzKHtg5DvX0tnhdD1tcZY
+  📝 Skipping TF0Fz77XqhMipWYhqJY4UcS1ncVZY - not eligible for production sync
+  ⏭️ No changes needed for: jZ4SYUIHgvDl3dWNyolvW4PkMcYZY
+  ⏭️ No changes needed for: xqHlfcvdVtsHjLqkItgXCvN2sgHZY
+  ⏭️ No changes needed for: LHxgeL0CTWu0cwrU0T4zWBCDK8JZY
+  ⏭️ No changes needed for: BKlajvQfYYkg9sfxKalZIsSMxnYZY
+  ⏭️ No changes needed for: 7zzq3CXMAvrkYcroTq5jpGxi56eZY
+  ⏭️ No changes needed for: pUok4kGgHixHGm3yz6OdU3VenjKZY
+  ⏭️ No changes needed for: VgLm5JFhV9m5byeO8N9DXFdZKrRZY
+  ⏭️ No changes needed for: BAml3jkVuo8Ar1TyAqYXOfa9wAQZY
+  ⏭️ No changes needed for: 50ixdPR4FxnI6OW90XTHDZVV2YKZY
+  ⏭️ No changes needed for: By5yhIED9XaQsUqOZeTYPENMVjRZY
+  ⏭️ No changes needed for: lwB7XvUF0aLc2thAcupnDtqC4hTZY
+  ⏭️ No changes needed for: 94ladxboxbR1vQc1hGC7CIfcftMZY
+  ⏭️ No changes needed for: BIallQY9QbaCqIMysHfIkbgcy3cZY
+  📝 Skipping v9dZC6uSezIMwsrldensrqNh5FYZY - not eligible for production sync
+  ⏭️ No changes needed for: ch_3RYNqYKBASow5NsW17D1d6gl
+  📝 Skipping ch_3RYNH3KBASow5NsW0hd6SVQA - not eligible for production sync
+  📝 Skipping ch_3RYMRnKBASow5NsW1rQGpHtU - not eligible for production sync
+  📝 Skipping ch_3RYLpiKBASow5NsW1j6bahnX - not eligible for production sync
+  📝 Skipping ch_3RYJM8KBASow5NsW0B6fbNrc - not eligible for production sync
+  📝 Skipping ch_3RYJLjKBASow5NsW01xLNSEe - not eligible for production sync
+  📝 Skipping ch_3RYJJWKBASow5NsW123lPSBC - not eligible for production sync
+  📝 Skipping ch_3RYJIiKBASow5NsW0NnAlu3N - not eligible for production sync
+  📝 Skipping ch_3RYJHDKBASow5NsW07wIbgeM - not eligible for production sync
+  📝 Skipping ch_3RYJGnKBASow5NsW1X7K1Fxz - not eligible for production sync
+  ⏭️ No changes needed for: ch_3RYJFqKBASow5NsW1nT0t2Y7
+  📝 Skipping ch_3RYHBgKBASow5NsW1kqeIytL - not eligible for production sync
+  📝 Skipping ch_3RYHAkKBASow5NsW18ukuAQm - not eligible for production sync
+  📝 Skipping ch_3RYH94KBASow5NsW1qKF9xQa - not eligible for production sync
+  📝 Skipping ch_3RYGmnKBASow5NsW0B0Kv5xO - not eligible for production sync
+  📝 Skipping ch_3RYGmGKBASow5NsW18L0QuAp - not eligible for production sync
+  📝 Skipping ch_3RYGk6KBASow5NsW1IBsUZcE - not eligible for production sync
+  ⏭️ No changes needed for: ch_3RYGYdKBASow5NsW1jB3SZpt
+  ⏭️ No changes needed for: ch_3RY4SMKBASow5NsW1hOknD3b
+  ⏭️ No changes needed for: ch_3RY1ReKBASow5NsW0Yru5Bab
+  ⏭️ No changes needed for: ch_3RY0TPKBASow5NsW1HpVl9oK
+  ⏭️ No changes needed for: ch_3RY0LLKBASow5NsW0Ir58poX
+  ⏭️ No changes needed for: ch_3RXwDkKBASow5NsW15RQTqPG
+  ⏭️ No changes needed for: ch_3RXtI3KBASow5NsW1UCc4ejd
+  ⏭️ No changes needed for: ch_3RXp4KKBASow5NsW0yPmqVZA
+  ⏭️ No changes needed for: ch_3RXnXlKBASow5NsW1j8bSV0s
+  ⏭️ No changes needed for: ch_3RXekrKBASow5NsW1ee0Nx48
+  ⏭️ No changes needed for: ch_3RXVLGKBASow5NsW1SGGfjXc
+  ⏭️ No changes needed for: ch_3RXOkGKBASow5NsW1nwpJXXv
+  ⏭️ No changes needed for: ch_3RXOZuKBASow5NsW1GVWK7N5
+  ⏭️ No changes needed for: ch_3RXN7OKBASow5NsW09qHmGCg
+  ⏭️ No changes needed for: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ⏭️ No changes needed for: ch_3RatmpHDfNBUEWUu0aKhh2Yq
+  ⏭️ No changes needed for: ch_3RatcXHDfNBUEWUu18ZKzlo9
+  ⏭️ No changes needed for: ch_3RatabHDfNBUEWUu0Iycwsai
+  ⏭️ No changes needed for: ch_3RatXHHDfNBUEWUu1PqYeK60
+  ⏭️ No changes needed for: ch_3RatCJHDfNBUEWUu1SfWaQhg
+  ⏭️ No changes needed for: ch_3Rat9jHDfNBUEWUu0jImCggO
+  ⏭️ No changes needed for: ch_3Rat5dHDfNBUEWUu1Kpmcccj
+  ⏭️ No changes needed for: ch_3RaskQHDfNBUEWUu0zx6tAst
+  ⏭️ No changes needed for: ch_3Rask1HDfNBUEWUu06Vaa0bD
+  ⏭️ No changes needed for: ch_3Rasg7HDfNBUEWUu0UZU3VhP
+  ⏭️ No changes needed for: ch_3RarntHDfNBUEWUu1aewrvzS
+  ⏭️ No changes needed for: ch_3Rarl1HDfNBUEWUu0k252k5d
+  ⏭️ No changes needed for: ch_3RargqHDfNBUEWUu1skXzKZA
+  ⏭️ No changes needed for: ch_3RarW6HDfNBUEWUu05JVuU0i
+  ⏭️ No changes needed for: ch_3RarPRHDfNBUEWUu0HiCnldl
+  ⏭️ No changes needed for: ch_3RapyOHDfNBUEWUu1NrvNmbM
+  📝 Skipping ch_3RalDNHDfNBUEWUu1rujgmHH - not eligible for production sync
+  ⏭️ No changes needed for: ch_3Ra8GvHDfNBUEWUu0zGhuTfx
+  ⏭️ No changes needed for: ch_3RZl27HDfNBUEWUu0ET1ix3T
+  ⏭️ No changes needed for: ch_3RZiODHDfNBUEWUu1HV16bq9
+  ⏭️ No changes needed for: ch_3RZMrPHDfNBUEWUu1h5zI3eA
+  ⏭️ No changes needed for: ch_3RZInfHDfNBUEWUu08WSM1W1
+  📝 Skipping ch_3RZ20iHDfNBUEWUu0ehUEscL - not eligible for production sync
+  📝 Skipping ch_3RYwvYHDfNBUEWUu0BsYIyOi - not eligible for production sync
+  📝 Skipping ch_3RYwpEHDfNBUEWUu0KVtnoM4 - not eligible for production sync
+  ⏭️ No changes needed for: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ⏭️ No changes needed for: ch_3RbGXFCari1bgsWq1HXOJzrX
+  ⏭️ No changes needed for: ch_3RbGAlCari1bgsWq08w1BHrF
+  ⏭️ No changes needed for: ch_3RbFmZCari1bgsWq04o5RQDm
+  ⏭️ No changes needed for: ch_3RbFhVCari1bgsWq0w0oJdBr
+  ⏭️ No changes needed for: ch_3RbDvnCari1bgsWq0fDNrT2I
+  📝 Skipping ch_3RbDugCari1bgsWq1VxNgsGg - not eligible for production sync
+  ⏭️ No changes needed for: ch_3RbCCyCari1bgsWq12mm8rMN
+  ⏭️ No changes needed for: ch_3RbBkCCari1bgsWq1dAjZkAk
+  ⏭️ No changes needed for: ch_3RbBevCari1bgsWq13khusPm
+  ⏭️ No changes needed for: ch_3RbBaNCari1bgsWq1BtArAe8
+  ⏭️ No changes needed for: ch_3RbBMcCari1bgsWq0eWHfX64
+  ⏭️ No changes needed for: ch_3RbB7KCari1bgsWq1kt4Aiga
+  ⏭️ No changes needed for: ch_3RbB3uCari1bgsWq093773W4
+  ⏭️ No changes needed for: ch_3Rb9qaCari1bgsWq0ohF7tDM
+  ⏭️ No changes needed for: ch_3Rb9faCari1bgsWq1dCo0exB
+  ⏭️ No changes needed for: ch_3Rb9IuCari1bgsWq1Hmk8uU9
+  ⏭️ No changes needed for: ch_3Rb9FLCari1bgsWq0mYFU5Jb
+  ⏭️ No changes needed for: ch_3Rb9AyCari1bgsWq0CqYXLhO
+  ⏭️ No changes needed for: ch_3Rb9AMCari1bgsWq0s26XqdI
+  ⏭️ No changes needed for: ch_3Rb8CsCari1bgsWq13cOcShV
+  ⏭️ No changes needed for: ch_3Rb85ECari1bgsWq14btSpB0
+✅ import_payments sync complete: 298 processed, 0 created, 0 updated, 39 skipped (not production eligible)
+
+--- Syncing import_registrations -> registrations ---
+Found 289 documents in import_registrations
+  ⏭️ No changes needed for: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ⏭️ No changes needed for: 1dfc42bb-7fae-4cff-a763-f57934a880e0
+  ⏭️ No changes needed for: e976c5a7-e506-4acf-a718-d893ded67f10
+  ⏭️ No changes needed for: 385f58c7-9a3b-4b45-9e3c-d461fdc6b19d
+  ⏭️ No changes needed for: cdc7fc39-8828-4f75-9314-66e54534da7a
+  ⏭️ No changes needed for: ad076c4f-95a4-4fb0-9e50-521916386d64
+  ⏭️ No changes needed for: a27ae77c-5e64-463f-a20e-c39febc3b537
+  ⏭️ No changes needed for: 796c4447-b3f8-404b-8610-322b61f92985
+  ⏭️ No changes needed for: fa2a849a-1276-444e-bd93-a2303871e5f5
+  ⏭️ No changes needed for: f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b
+  ⏭️ No changes needed for: d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3
+  ⏭️ No changes needed for: 19cea4d0-6f5a-489a-abc8-56c4980b37d0
+  ⏭️ No changes needed for: aaef562e-92c4-4f6e-860c-e9874dec341e
+  ⏭️ No changes needed for: d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63
+  ⏭️ No changes needed for: 2d56701e-263f-4d25-b037-6a77e4e56b7b
+  ⏭️ No changes needed for: fc71d5ec-a70d-4874-86d1-ef1e2c05d162
+  ⏭️ No changes needed for: 4637d778-f452-4f79-b7a8-0391b1845a90
+  ⏭️ No changes needed for: 58603dca-656b-406a-afa4-3f4770fb13f0
+  ⏭️ No changes needed for: ac888821-9ecb-4783-ad3f-08a035cfef88
+  ⏭️ No changes needed for: 41139e7f-dc81-4b0e-a937-04be23115719
+  ⏭️ No changes needed for: 6b9d5cfe-7d0e-4524-b3b0-998d4b1d4307
+  ⏭️ No changes needed for: 4cbfbf96-09a7-48b7-9f5d-defc560f4437
+  ⏭️ No changes needed for: 7c2c244d-e49d-42f8-91e9-b17eaf4c524e
+  ⏭️ No changes needed for: 0ffcc96c-c707-4734-b9ee-01e88f7f6287
+  ⏭️ No changes needed for: 4a7a7ca5-ed7d-4251-b04a-b9169fde77a8
+  ⏭️ No changes needed for: b95234d7-8980-4d48-8854-af9d1fc06b49
+  ⏭️ No changes needed for: de41c05d-883d-4d81-8076-61ec5d4118f7
+  ⏭️ No changes needed for: 81a0efea-6c33-44e5-a774-15f7503103ef
+  ⏭️ No changes needed for: 87f05b8d-b855-4257-8ff6-4e1e3054f284
+  ⏭️ No changes needed for: c78c299a-6d27-466d-83e0-52bbdea0ce6d
+  ⏭️ No changes needed for: 5f5e6262-ee70-442b-b60d-13a1e9d05b59
+  ⏭️ No changes needed for: 7cd73df6-1f8f-4ef9-ac58-4add682a22fb
+  ⏭️ No changes needed for: 7e45338c-6b8f-402b-bc64-c6060b1dbf3a
+  ⏭️ No changes needed for: 5e960fef-18b2-4cb9-879b-3b6d421094f3
+  ⏭️ No changes needed for: aaefe8b5-8fe0-4d42-ab55-d6041b5f368b
+  ⏭️ No changes needed for: 32d21494-e4f5-4b47-bde3-a0b2ee3e5168
+  ⏭️ No changes needed for: 280d8507-8f26-4dff-929f-bee4fb08df3c
+  ⏭️ No changes needed for: a628400f-70d0-4dd4-a911-085d832f7ef0
+  ⏭️ No changes needed for: 7eeaa0c0-940e-419e-acfb-74cc749ae9f7
+  ⏭️ No changes needed for: b5319e51-5e80-4d52-92ec-ea04d04d4b17
+  ⏭️ No changes needed for: dceb2353-edbb-40b5-8e0b-3397b52f5251
+  ⏭️ No changes needed for: 7e849067-7a9f-47e9-a7ef-afbf41287526
+  ⏭️ No changes needed for: e59a4310-1b71-4d40-b54f-9b257119ce0c
+  ⏭️ No changes needed for: ba6e1cd9-e6dc-44f3-bd6e-147e97757322
+  ⏭️ No changes needed for: ae264762-37a8-4855-96f1-731de78101c3
+  ⏭️ No changes needed for: c07e9082-74d6-40c5-9706-4a182bbae469
+  ⏭️ No changes needed for: 6de84192-3fc4-483c-8f88-cfd041da7d4d
+  ⏭️ No changes needed for: b6323eba-bc87-4af2-b1e7-ef2596a309a3
+  ⏭️ No changes needed for: 06af9237-4b36-4b3a-a0be-f2b6621163e2
+  ⏭️ No changes needed for: fb64e002-786a-477a-bf28-a1d70b8956d5
+  ⏭️ No changes needed for: 4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0
+  ⏭️ No changes needed for: f8ef3cf1-c1f2-4436-955b-ba03783db8c4
+  ⏭️ No changes needed for: 1bb667a3-772c-4128-ad01-195f1a390b26
+  ⏭️ No changes needed for: 8822a242-33f0-465f-a36f-e9fe3e0bfa42
+  ⏭️ No changes needed for: 76dfe363-bd34-4cf7-aea3-e9aa8aba6a92
+  ⏭️ No changes needed for: bebf3902-d258-4f59-b196-b325a0a13067
+  ⏭️ No changes needed for: 9824649f-23fd-4b35-8c98-6689d165e0e5
+  ⏭️ No changes needed for: d86cacab-f4a3-42b8-b036-c9d87879362a
+  ⏭️ No changes needed for: 05b60b38-d9a4-441c-8719-e159dca33801
+  ⏭️ No changes needed for: 5f8c5038-506d-4415-8e99-b31d9aafd97c
+  ⏭️ No changes needed for: a6c1b7d4-2652-48af-b463-dcc1c0672e1c
+  ⏭️ No changes needed for: 55f5efa0-7fa6-49b0-8af5-e8d99b8e63c7
+  ⏭️ No changes needed for: 5ae82936-f475-4bed-8949-909240cca6b0
+  ⏭️ No changes needed for: 5a6c07f5-a7c6-428a-b644-1b483b123cd1
+  ⏭️ No changes needed for: b099cb88-4b59-4bfa-8614-00168efe4506
+  ⏭️ No changes needed for: dc7124e2-ac91-4db6-ab78-e234c01e2b6f
+  ⏭️ No changes needed for: 00b28deb-15cb-4574-aebf-62b283014e5f
+  ⏭️ No changes needed for: a5ed4449-72fa-4a36-a8cd-fa3ad7f39216
+  ⏭️ No changes needed for: 09eedf17-8027-486a-ac39-8f12ce11d946
+  ⏭️ No changes needed for: 83a0301d-1cf4-4619-b60f-f31db417543f
+  ⏭️ No changes needed for: d0cd255d-8df7-4c51-a059-77b09d3fb77b
+  ⏭️ No changes needed for: 51bb86f4-9377-47c6-ace8-437f2adf9152
+  ⏭️ No changes needed for: 39909307-3d17-4c5b-8079-0a1af43bb9cb
+  ⏭️ No changes needed for: 9e54b96f-1d01-4405-b64a-4cabf53195d9
+  ⏭️ No changes needed for: aaf37b5b-9dbd-4013-b554-32617bf87d51
+  ⏭️ No changes needed for: eaf0a53d-323f-4414-88af-2f99e7d811c2
+  ⏭️ No changes needed for: 51e2ba36-4e5e-4ad9-899f-6d96aecc570e
+  ⏭️ No changes needed for: 6c513d98-b99d-44c9-8866-fb52a8b4e73a
+  ⏭️ No changes needed for: 368f6bf4-7548-4e40-acdb-b3e18960dcba
+  ⏭️ No changes needed for: 309dbd62-cd14-4508-ae5d-0fec9460480c
+  ⏭️ No changes needed for: f9455f8b-f5cf-473c-a4af-eda75d079b4c
+  ⏭️ No changes needed for: 739b318b-e420-4f3f-84bd-85363b7dc646
+  ⏭️ No changes needed for: 588503a7-9ddc-4194-9ebe-2f0cee5d333c
+  ⏭️ No changes needed for: 0e3cf4ae-30db-4b57-93d5-e921ffbb3b68
+  ⏭️ No changes needed for: 219863ff-00b5-484a-b4ac-c5044dc9da56
+  ⏭️ No changes needed for: 31c69b73-c29a-49c2-875f-0edc956887f6
+  ⏭️ No changes needed for: 795ee269-5557-40eb-a630-a632d1b8b12c
+  ⏭️ No changes needed for: 515643e7-96c9-4992-a06c-b6921333884f
+  ⏭️ No changes needed for: d887bfbc-9cb2-436e-a88b-9b09f0036e3d
+  ⏭️ No changes needed for: 8edbb829-03bd-43f1-942f-6b794ae016fb
+  ⏭️ No changes needed for: c895052b-b2b8-4425-a7dd-14af04b7b305
+  ⏭️ No changes needed for: e7178d67-e8f8-4779-8ffe-a385fa2a4c8f
+  ⏭️ No changes needed for: d5ba2d93-37b0-4345-bde5-d8452d00d2a1
+  ⏭️ No changes needed for: 5c090c4f-1200-44c6-a1b8-5ae407d80773
+  ⏭️ No changes needed for: 4d7cd41b-a927-4e54-9507-6918345dc77a
+  ⏭️ No changes needed for: dd28f520-702c-4b4c-8221-1e9b82cdbd13
+  ⏭️ No changes needed for: 7e7be040-bea3-4dad-a315-f5801d481c9b
+  ⏭️ No changes needed for: 7dcedd29-aa28-4311-9189-72c2dd0df3c6
+  ⏭️ No changes needed for: 139812d3-07bb-469e-ac68-d5bac4f4ff7f
+  ⏭️ No changes needed for: e1e42741-88e3-448d-9e00-ac51d1241561
+  ⏭️ No changes needed for: 8cdc833c-dccc-443c-b94a-7acede322b12
+  ⏭️ No changes needed for: 49c7d9b4-a320-4a4e-9527-899bf9ac2926
+  ⏭️ No changes needed for: cce7636f-91e4-4d62-8b09-732a2fdc08a3
+  ⏭️ No changes needed for: 9e876811-1f10-43f9-be9d-232678703c25
+  ⏭️ No changes needed for: 21533af7-519e-4240-9bbe-f5bc093c55ea
+  ⏭️ No changes needed for: 79f02689-658e-46f3-b710-b9abfb594a2f
+  📝 Skipping 0423c488-3733-491a-8f47-e8e8b207f292 - not eligible for production sync
+  ⏭️ No changes needed for: cb808fcc-9dbc-4dae-9bf4-59621c2ad197
+  ⏭️ No changes needed for: d77540b8-e45c-4e4b-bd86-560599a4c7a5
+  ⏭️ No changes needed for: 9e5261c3-f48b-4ef3-a50f-4ef4b310308b
+  ⏭️ No changes needed for: 44ea15b1-3249-4a62-9073-d58d42a0de2f
+  ⏭️ No changes needed for: 68c9c37f-d92c-468d-8b9c-f80f8cf12df8
+  ⏭️ No changes needed for: 2f1d05ab-f7aa-4d83-8bc0-8ec705e1b34e
+  ⏭️ No changes needed for: 85fe486f-8fde-40a4-8462-0b5249c462df
+  ⏭️ No changes needed for: f6e6b6f2-3857-4041-8d58-6a31476fcfd5
+  ⏭️ No changes needed for: 75da2228-08db-4570-8208-3ee9972cf36c
+  ⏭️ No changes needed for: 2d950769-dd26-462f-a79b-99e4d776cd2f
+  ⏭️ No changes needed for: 9b78d16f-5de8-4a8c-aed4-d26ddf1868d0
+  ⏭️ No changes needed for: 2e8f9f51-ec8d-48fc-bc6c-a9ad6bb3a0d5
+  ⏭️ No changes needed for: 450615ce-0686-45e9-951e-a45e2b131b77
+  ⏭️ No changes needed for: dec89eb5-8a11-4f8b-b0ab-f814ee6958f8
+  ⏭️ No changes needed for: 70128447-9794-4d90-a0f8-07db6714923b
+  ⏭️ No changes needed for: 409c2fb7-3879-4268-9e76-6b1ae35e261c
+  ⏭️ No changes needed for: 6cedcf70-4b1b-4986-9853-a1b4a82e1932
+  ⏭️ No changes needed for: 75005e54-cb64-40da-9ab0-d6e689cea9db
+  ⏭️ No changes needed for: 375ee76c-95ed-4508-87ad-da2cedc2dde2
+  ⏭️ No changes needed for: 97614ee1-ccbe-4f7e-b3dc-4d52869eb7e3
+  ⏭️ No changes needed for: fe60b238-b863-476c-8009-44c8a5ba8a36
+  ⏭️ No changes needed for: f52478d1-10da-4de7-9aa9-a297ae136f6c
+  ⏭️ No changes needed for: 6f6d034e-b826-4bfd-8f4d-0bdfa6b5762f
+  ⏭️ No changes needed for: 647b4256-1b94-4398-8826-8fe6c252db7d
+  ⏭️ No changes needed for: b468b78e-4f44-41c4-9eae-f642fe941206
+  ⏭️ No changes needed for: 039c8b9c-c654-4119-9f5c-29f03c4e6b95
+  ⏭️ No changes needed for: 0b3fcddb-d431-4691-97e9-64d33e8b3c8c
+  ⏭️ No changes needed for: 7114a544-ec4c-40b5-9485-3012da742cb3
+  ⏭️ No changes needed for: a0ab86de-bcfd-4b22-97ce-9038827dcd0f
+  ⏭️ No changes needed for: 62e67a59-29a2-4b2f-bab7-2db01ea30888
+  ⏭️ No changes needed for: bba6ee92-5deb-4ce5-867a-75bbf29fb877
+  ⏭️ No changes needed for: 4ba9b2e0-8ffb-4251-adb4-4f2234ca9507
+  ⏭️ No changes needed for: 173639de-a405-4e1c-ac8b-7f9572ff7711
+  ⏭️ No changes needed for: 9eb79626-70a0-4d70-96ce-d4d0a0aa2553
+  ⏭️ No changes needed for: 6172b26b-702d-4a1c-93f0-974840f0ee99
+  ⏭️ No changes needed for: 6bd9c94f-c6a5-443f-86ad-b29f90300429
+  ⏭️ No changes needed for: c4bfb854-0a27-4fba-af61-087d6b14194a
+  ⏭️ No changes needed for: f0e447b3-880c-4ec5-af4d-25742e4a2a2f
+  ⏭️ No changes needed for: 83914200-f9f2-44ae-8684-394742bbe76d
+  ⏭️ No changes needed for: f4eb291d-52e1-4acc-936f-cfc535b45719
+  ⏭️ No changes needed for: 8a9e62c9-fa00-415d-8c49-d51692b9920d
+  ⏭️ No changes needed for: 604664e3-1eaa-4de8-a1b0-f09b0e46bce0
+  ⏭️ No changes needed for: 91c2a46f-dcec-4bfd-8561-c31524030f4b
+  ⏭️ No changes needed for: 900c20e9-59b5-4578-9a6d-7764f03a9515
+  ⏭️ No changes needed for: 00abfa8f-0514-4ec3-8f8f-8514183aac86
+  ⏭️ No changes needed for: f1f1a28d-53c4-4be9-ab29-55fd70274920
+  ⏭️ No changes needed for: bef7f1ce-8808-4683-8e9c-587a2f7ed29e
+  ⏭️ No changes needed for: 9e6c1cbe-21c4-42c2-a988-b0d145829a45
+  ⏭️ No changes needed for: baebf858-40a8-4cf6-8035-d225ef296b1e
+  ⏭️ No changes needed for: c022003e-1729-4560-a40f-7a8f56652b4b
+  ⏭️ No changes needed for: f7d4731c-91dc-4f21-b471-e42a0041874a
+  ⏭️ No changes needed for: b8a8e51a-312b-4d72-9c79-ede5cb0cd1ab
+  ⏭️ No changes needed for: 8cd577e4-1039-4d72-bce7-2eb58f64c489
+  ⏭️ No changes needed for: b8706b26-1b2c-468e-9538-e98bf8000a42
+  ⏭️ No changes needed for: a938a263-53d0-4bba-8502-331a867a7d44
+  ⏭️ No changes needed for: 47861308-3fb8-4a0e-987e-6365273012b4
+  ⏭️ No changes needed for: 4b22c09d-aefa-4220-94e0-d7edad115578
+  ⏭️ No changes needed for: 93b24ee1-d710-4f2f-8840-9ffbec20ce94
+  ⏭️ No changes needed for: 49427263-bcd4-4f62-9dd5-d4608a56c2ef
+  ⏭️ No changes needed for: f5c2fc05-693b-4b9b-ba26-dc73dafa8a20
+  ⏭️ No changes needed for: 1b18bed4-a118-46cf-943f-abca00b3a939
+  ⏭️ No changes needed for: cfb66d25-659e-4b24-91ee-37e4507cd12a
+  ⏭️ No changes needed for: a9de69ea-fc72-439b-ba2e-19adcc1e6d97
+  ⏭️ No changes needed for: f1196dbd-1c63-41c9-922f-686ec61f12f2
+  ⏭️ No changes needed for: b55fea0f-3a17-4637-92ef-0a67a6341586
+  ⏭️ No changes needed for: de00e37c-89ed-4eab-a19c-224d7bdba504
+  ⏭️ No changes needed for: aa598020-d3cf-46d4-bd76-04aad430eaeb
+  ⏭️ No changes needed for: 5b1fc3d4-713e-48bc-9c61-e3d147d412f6
+  ⏭️ No changes needed for: c4d36b32-32b5-4c62-9377-4e933c1d1142
+  ⏭️ No changes needed for: 87024f59-994e-4add-8023-cc7172c715c6
+  ⏭️ No changes needed for: 7c6f0155-4b2a-4f36-89eb-2395536ebe03
+  ⏭️ No changes needed for: e94b9efd-0100-418a-8b7b-6e0ae715897c
+  ⏭️ No changes needed for: 813022df-ce60-40ca-86af-728570ad728c
+  ⏭️ No changes needed for: aa1ea21e-c941-4d1c-9694-9868cb092f09
+  ⏭️ No changes needed for: 1408e014-4560-4206-96d5-6fd708eb0ddd
+  ⏭️ No changes needed for: 7231267e-f4a2-4b95-85ba-b7925b1054ee
+  ⏭️ No changes needed for: 38dc92b9-63f8-4d17-8ba6-ac7137f7d463
+  ⏭️ No changes needed for: 4fbfa5c8-3e17-453b-9423-917bf83d4506
+  ⏭️ No changes needed for: 85fcc818-014a-4b5f-b448-ff46f70b57fe
+  ⏭️ No changes needed for: 5a5d3a4f-fa29-4848-aa25-65634e6822ab
+  ⏭️ No changes needed for: ba9a94ac-c4e1-43ab-9b06-a1f0f092fc7e
+  ⏭️ No changes needed for: 4939a09c-9b14-4dc8-8505-37638b436b56
+  ⏭️ No changes needed for: 4d93aa3c-51ae-4901-a655-de7e51cea43e
+  ⏭️ No changes needed for: f132e11b-8809-4dbe-ad82-592ca29000de
+  ⏭️ No changes needed for: c99cdb9e-3d4e-4624-86c2-e9f41a6255ad
+  ⏭️ No changes needed for: a2f31052-3039-4e0d-b820-526e0e7ca4f2
+  ⏭️ No changes needed for: f5885035-cf1c-4f9d-bf95-7e7a16e15309
+  ⏭️ No changes needed for: 600237d1-9976-47a8-bebb-e78592dd3f6e
+  ⏭️ No changes needed for: 68e99183-46fe-48e1-9e90-4e580f53ce0d
+  ⏭️ No changes needed for: 842c625b-7cfd-4e7f-a661-5d92955f792f
+  ⏭️ No changes needed for: 14defdb3-36f6-4c1b-a3a9-f7716ada7866
+  ⏭️ No changes needed for: c1f63a73-7f17-4d3f-a4a2-f25f50663746
+  ⏭️ No changes needed for: 3fa1b373-cba2-4080-ab20-ecdcf008b382
+  ⏭️ No changes needed for: 39f33bb9-9f38-40af-a868-30813e6ca15b
+  ⏭️ No changes needed for: 1b538a7d-4370-49a3-a1af-b3110a4015a0
+  ⏭️ No changes needed for: 64754632-f529-49bd-a217-d33cc5e28c32
+  ⏭️ No changes needed for: fe6e329c-3571-4935-b2c9-90fb9ee969cb
+  ⏭️ No changes needed for: e8d27b17-9e6d-4682-86b4-ebdc5b44c7f7
+  ⏭️ No changes needed for: 8024de93-41f3-4e37-9b9f-41b0e80a8f2f
+  ⏭️ No changes needed for: 35a617fd-3db4-462f-902f-1aceb76057dc
+  ⏭️ No changes needed for: 651b5606-d177-4fca-9684-057946026fc1
+  ⏭️ No changes needed for: 4f7c9da6-1d8b-466c-917e-05ace5f350bf
+  ⏭️ No changes needed for: bad177c1-bbc8-4f65-a0de-25ee7f85f356
+  ⏭️ No changes needed for: 934a1c3b-4e15-488b-8e4f-019efab05178
+  ⏭️ No changes needed for: ced31218-2c1c-4404-9527-e8dc3d9b229e
+  ⏭️ No changes needed for: 41c139f9-25a7-4ef5-8709-9dc1ee6af142
+  ⏭️ No changes needed for: b64ddc39-a321-4fc3-ac03-1e2264836527
+  ⏭️ No changes needed for: 0b69a89b-4e7f-46bf-92bf-08d29fecb79c
+  ⏭️ No changes needed for: ad56dbb0-fe51-400f-9657-340031c3dea7
+  ⏭️ No changes needed for: f5f41b6b-f498-4962-aa87-888b1def3d38
+  ⏭️ No changes needed for: 21116c31-aefa-471d-9327-c97c196c9c70
+  ⏭️ No changes needed for: ddda3654-b0c0-40ee-93a2-ab06dfc0c17f
+  ⏭️ No changes needed for: 14f0bba5-bf94-4d8d-8ebb-554098672765
+  ⏭️ No changes needed for: 29530f4b-a910-46e7-b4e8-219e164e152c
+  ⏭️ No changes needed for: 3c73cd82-e78e-4f28-9178-c174c5a7a53a
+  ⏭️ No changes needed for: ba78e9c7-abf7-492f-94cf-2723fe67fc3a
+  ⏭️ No changes needed for: c7ba302d-e05c-4abc-83cb-33790aded9f6
+  ⏭️ No changes needed for: af32f841-28ae-416f-95c5-e4ab987acc60
+  ⏭️ No changes needed for: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  📝 Skipping a33c5107-9221-49ee-8bff-b289b452e784 - not eligible for production sync
+  📝 Skipping 99b62c5b-2d48-406a-ae48-168f193d4be4 - not eligible for production sync
+  ⏭️ No changes needed for: 691bbbe7-cb53-4350-99a6-e9554bf59fd9
+  📝 Skipping ed200d3e-6355-468c-9535-9b1f4ae2c002 - not eligible for production sync
+  📝 Skipping 3440c561-1a8f-4489-b3a8-380132cbc4c4 - not eligible for production sync
+  📝 Skipping 37c0eb25-0691-45ef-9c01-12bb75b845e0 - not eligible for production sync
+  📝 Skipping 13ce226e-c9c8-4fa3-a18f-ef33ebb03f4c - not eligible for production sync
+  ⏭️ No changes needed for: d6602998-8d2a-465a-9f13-66f2e6e011e0
+  ⏭️ No changes needed for: bdeecfc7-94ef-4eb8-a246-6d2883f31db8
+  ⏭️ No changes needed for: b509f98e-6270-4666-89fe-d9776f73c331
+  ⏭️ No changes needed for: 016c35f4-69d8-4a03-8eaf-98f568f53aef
+  ⏭️ No changes needed for: 5d344e43-7f6f-42b3-b468-cc2aaf1aca34
+  ⏭️ No changes needed for: ee93dfa6-912b-4554-9521-e57eb0326b96
+  ⏭️ No changes needed for: 523998a8-9660-44af-a241-0178a7295e6f
+  ⏭️ No changes needed for: 43f3fa8b-e605-44cf-af81-d4250eaa276f
+  ⏭️ No changes needed for: 2cb923f1-c674-4a52-8bab-05aa94c5148f
+  ⏭️ No changes needed for: 471a1d79-3b3e-4f51-820e-ce7c8d8c82d7
+  ⏭️ No changes needed for: b49542ec-cbf2-43fe-95bb-b93edcd466f2
+  ⏭️ No changes needed for: 90fa5fed-7798-4e2f-9b13-521ddcfea8c6
+  ⏭️ No changes needed for: 136dac1d-9eb1-4c62-af3b-2b8c0375a277
+  ⏭️ No changes needed for: 9096129e-dba5-4073-856b-937df2c6d3f1
+  ⏭️ No changes needed for: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ⏭️ No changes needed for: a502eec2-4f0b-44aa-b605-a6ec622a546a
+  ⏭️ No changes needed for: 529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776
+  ⏭️ No changes needed for: eca933dc-b896-4ffd-8569-94e1e6646798
+  ⏭️ No changes needed for: 2a0eef32-78e2-4ad8-be6a-db2e356db9ef
+  ⏭️ No changes needed for: 8fbccf2e-8e80-4e82-b77a-13925df583e1
+  ⏭️ No changes needed for: f04785c9-1eb8-4bba-b6be-634ba4d8d8f8
+  ⏭️ No changes needed for: 16d5b9c2-46fe-4959-989a-b761c6c3c4d5
+  ⏭️ No changes needed for: e851a2e9-d08f-4e52-9dc2-eaa446f60cad
+  ⏭️ No changes needed for: aca83ae3-33e9-4ff3-a4cd-6af04554479b
+  ⏭️ No changes needed for: 91eb13fe-0714-4c79-8839-9c36389ac20a
+  ⏭️ No changes needed for: ac2f75bc-d628-4953-82ff-10e3491e6c6c
+  ⏭️ No changes needed for: 3b47e5d9-cb7e-4d0c-ac82-cb0d2074b85b
+  ⏭️ No changes needed for: a767f6a8-1761-4a64-81d4-c60f1491ba88
+  ⏭️ No changes needed for: 327c8fb9-f6b8-406f-b69a-fa7f505cc7ac
+  ⏭️ No changes needed for: 825be57a-a1d2-4baa-86a6-a8d7c049e0ee
+  ⏭️ No changes needed for: 654fff3d-b939-4984-89bd-17e9dc8d9a75
+  ⏭️ No changes needed for: 7614f44f-66e7-4e2e-a542-7e7f75ddfc8f
+  ⏭️ No changes needed for: 0a5f85cd-0f5d-4853-ae2c-25279217d6d1
+  ⏭️ No changes needed for: 4be7c072-c65d-4e67-9420-59d42053010a
+  ⏭️ No changes needed for: f9aa866b-337b-4168-9104-5ad514c88d92
+  ⏭️ No changes needed for: 533f4153-ab85-4552-a372-2d71fc42e546
+  ⏭️ No changes needed for: 371a8bae-7c4f-4650-a0d6-085912e5f57c
+  ⏭️ No changes needed for: b59e8fde-a714-448a-976c-78d7d086a864
+  ⏭️ No changes needed for: ac880769-a251-4914-b16d-f75b4d839a2d
+  ⏭️ No changes needed for: 92d8d83d-cc7a-4b7d-87de-8f745474b55b
+  ⏭️ No changes needed for: c2f9862b-e01b-4a40-b111-6b8bd836e0fc
+  ⏭️ No changes needed for: 9b95f80d-ca82-41bc-ac21-2534ce013fb9
+  ⏭️ No changes needed for: 2057dc45-b02c-45fa-a937-4bdc13dd0834
+  ⏭️ No changes needed for: e479c417-5657-4d1f-9b40-5248ba8f030e
+  ⏭️ No changes needed for: e5196356-f67d-49c2-bc91-b3025353dea8
+  ⏭️ No changes needed for: 76349cc5-309e-48c2-87a2-7edfb10fc4e9
+  ⏭️ No changes needed for: c20df7a8-da41-4d6c-bc77-d5b9e1324a47
+  ⏭️ No changes needed for: d015825f-5874-459d-965d-40d6d2bdd0a8
+  ⏭️ No changes needed for: 4dc40f4f-0968-4620-bd1c-33d4cbe01b7f
+  ⏭️ No changes needed for: 11e5d2aa-9054-485b-8dcd-bd248bb93464
+  ⏭️ No changes needed for: b097e5ef-b7cb-4953-87c6-fd85296a0b53
+  ⏭️ No changes needed for: eb468500-8643-4af6-9389-1329ff3d9e73
+  ⏭️ No changes needed for: cfce6d0f-1c50-4943-80f9-cc37a24090b7
+  ⏭️ No changes needed for: 96281c47-0525-44a7-9ff0-07f6d0ef5fdd
+  ⏭️ No changes needed for: 01941777-c4bd-4dfc-8927-337006fefd56
+  ⏭️ No changes needed for: 52b87f93-4b4c-4ed2-84ce-d62016a485a0
+✅ import_registrations sync complete: 282 processed, 0 created, 0 updated, 7 skipped (not production eligible)
+
+--- Syncing import_attendees -> attendees ---
+Found 415 documents in import_attendees
+  🔄 Updated attendees document: 0198ace1-da28-73fd-a44f-b9aaca638f59
+  🔄 Updated attendees document: 0198abb1-11ce-74b8-9cc5-169aba7d0d73
+  🔄 Updated attendees document: 0198abb5-aa18-76a5-a438-12883f18c7a0
+  🔄 Updated attendees document: 0198aad3-83db-7378-81f3-127a1dd930df
+  🔄 Updated attendees document: 0198a557-0d61-7018-ae2b-89e6d830bd56
+  🔄 Updated attendees document: 0198a2b9-06d6-745f-bd49-fefe3aecfb75
+  🔄 Updated attendees document: 0198a2ba-c237-72ca-a2f1-06d64ab83308
+  🔄 Updated attendees document: 0198a2bb-89aa-7347-bea0-7d3ab54c5877
+  🔄 Updated attendees document: 0198a2bd-0d01-7788-948b-2844f21d0a4a
+  🔄 Updated attendees document: 0198a1cf-e212-75ee-a984-e7f0655df9fa
+  🔄 Updated attendees document: 0198a156-2668-7277-9564-6a2d8521a471
+  🔄 Updated attendees document: 0198a157-6253-7286-b979-2519137bbfd7
+  🔄 Updated attendees document: 019888b4-da33-7092-9fa5-b5d1fec4a94e
+  🔄 Updated attendees document: 0198a015-ee0e-7481-bc17-3273bc9641a1
+  🔄 Updated attendees document: 01989b76-9007-72aa-85c7-4c4229bdbdca
+  🔄 Updated attendees document: 01989b77-d629-74ad-a24e-fbf5937bbac4
+  🔄 Updated attendees document: 01989871-1984-7377-b76f-38d6c6c88275
+  🔄 Updated attendees document: 01982fe4-f353-7459-be88-45f4020f3407
+  🔄 Updated attendees document: 019897cf-3931-7269-93be-e3400729ad30
+  🔄 Updated attendees document: 019896cd-bec5-74f2-bfa5-2a89143f0e9c
+  🔄 Updated attendees document: 019896d3-5e80-761e-b9b9-425decd62b14
+  🔄 Updated attendees document: 019896c5-b697-726b-b7b6-935ee4162fd1
+  🔄 Updated attendees document: 01977c91-3b5a-75ac-8f36-f004bb083757
+  🔄 Updated attendees document: 019893ed-8548-7734-9d73-7d9388e4bc05
+  🔄 Updated attendees document: 019893ee-e730-77a0-a5d3-6aa06ef66226
+  🔄 Updated attendees document: 019893e8-0c81-7222-b1a5-4896b45fa1eb
+  🔄 Updated attendees document: 01989334-66b1-73ac-94c7-42fabf7c632e
+  🔄 Updated attendees document: 0198925f-23eb-73c4-aa92-75cb8e558d54
+  🔄 Updated attendees document: 01989267-9dc7-7216-8acd-3d9c25a7b3c8
+  🔄 Updated attendees document: 01977c78-03e7-777d-ad6e-17324b5478e8
+  🔄 Updated attendees document: 0198917a-cc8e-7441-a684-950c480dc981
+  🔄 Updated attendees document: 01985bf3-8486-7402-9b56-ffa2a21e68f0
+  🔄 Updated attendees document: 01988e84-3b7f-757e-8ea6-93ab48a4ae13
+  🔄 Updated attendees document: 01988e8b-ec64-744c-a7e6-a98aab65c25f
+  🔄 Updated attendees document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c
+  🔄 Updated attendees document: 01988df7-063d-7582-95ea-fda56424d9a7
+  🔄 Updated attendees document: 01988da8-e915-76cb-b458-a93eaaa03f48
+  🔄 Updated attendees document: 01985072-9787-75db-9307-4fe506bdec98
+  🔄 Updated attendees document: 01988ba4-0957-74ba-86bc-2bc9a8a003c2
+  🔄 Updated attendees document: 019889e4-1908-7524-925f-57492a5b8eb7
+  🔄 Updated attendees document: 01988697-4088-75af-999d-21cc38172cac
+  🔄 Updated attendees document: 0198833c-64ba-745f-a24b-dc0827d6a7d8
+  🔄 Updated attendees document: 0198833e-ab4a-7078-96ea-757c1f88e715
+  🔄 Updated attendees document: 0197e791-bb5b-72ee-bc8a-42464a081a7e
+  🔄 Updated attendees document: 0198821a-49d1-706d-8854-c9de3cdab41a
+  🔄 Updated attendees document: 019881d0-708f-748f-aa06-cfb639b73982
+  🔄 Updated attendees document: 01987961-74ab-70d9-9ead-20524413650f
+  🔄 Updated attendees document: 01987d8f-285b-77ba-87ff-466ab29084b1
+  🔄 Updated attendees document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a
+  🔄 Updated attendees document: 0198799b-0a50-707b-8a7e-754676e3b7b8
+  🔄 Updated attendees document: 01987806-0cc6-727f-8d9b-a7ec30966c25
+  🔄 Updated attendees document: 01987809-e6a5-711f-8c50-5d8d271c4e65
+  🔄 Updated attendees document: 0198780a-ed4a-738e-8b7d-7a2063aa50bb
+  🔄 Updated attendees document: 0198780b-9773-77dc-a37e-5beabc5f6dd9
+  🔄 Updated attendees document: 0198780c-9e0a-7011-851b-0a2c6430ebec
+  🔄 Updated attendees document: 0198780d-fc1e-76c6-929a-7cbf17ffc40c
+  🔄 Updated attendees document: 01987810-385b-71af-aee3-097e21232797
+  🔄 Updated attendees document: 019877cc-b22b-7253-ad5b-fccd9a38b84f
+  🔄 Updated attendees document: 019877cd-d082-708a-b72f-8a614bbc8bc1
+  🔄 Updated attendees document: 0197e1d0-5c14-71c7-abc1-df5293989d0e
+  🔄 Updated attendees document: 0198733c-9552-70ff-acb9-a6b6fbfaedfc
+  🔄 Updated attendees document: 0198733e-58bd-72bd-97f8-e9b2461d5d66
+  🔄 Updated attendees document: 0198733e-8a6f-7678-a1ba-9b6e2a15c21f
+  🔄 Updated attendees document: 019872aa-ab6a-707a-ac24-f8adb2f41e75
+  🔄 Updated attendees document: 0198724a-7bdf-723d-9dfa-51307ee646bf
+  🔄 Updated attendees document: 0197b630-de30-7380-8358-211643aa584f
+  🔄 Updated attendees document: 01986f6c-d293-7145-9573-0b4a7f222b91
+  🔄 Updated attendees document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9
+  🔄 Updated attendees document: 01986f69-6080-703e-ac9a-1c520a5509ce
+  🔄 Updated attendees document: 01986f67-eda2-753d-a286-fba28102f863
+  🔄 Updated attendees document: 01986f66-8ea7-7329-8f57-87d80962b9a1
+  🔄 Updated attendees document: 01986ef0-ca32-72ae-adf7-b00cfd5291bb
+  🔄 Updated attendees document: 01986ef2-9873-755c-b8d6-c99137a1aaef
+  🔄 Updated attendees document: 01986e78-5852-717a-9570-310c3083fff7
+  🔄 Updated attendees document: 01986e7b-d64d-75d3-8189-b4269b2af9b9
+  🔄 Updated attendees document: 01986dc2-86c8-77cf-b843-53e5d8c5724f
+  🔄 Updated attendees document: 01986dc7-6862-733a-8fb7-f8b0b02946fa
+  🔄 Updated attendees document: 01986dbe-46a1-753e-b6d3-3c6cf22315ea
+  🔄 Updated attendees document: 01986db0-d37d-72fb-86c8-2d2c301c9171
+  🔄 Updated attendees document: 01986d9c-b90c-70ef-ad46-3cb28db56e39
+  🔄 Updated attendees document: 01986da0-036b-775a-aaea-cfd513bd3d30
+  🔄 Updated attendees document: 01986d92-c8bb-751d-bbd8-b5f62cfd0035
+  🔄 Updated attendees document: 01986d95-87ef-7219-a358-09d437bb3a62
+  🔄 Updated attendees document: 01986d97-0e52-71f8-b04a-cc85077ec9ff
+  🔄 Updated attendees document: 01986d66-60be-755b-958d-2fe42e5f3eb5
+  🔄 Updated attendees document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c
+  🔄 Updated attendees document: 01984f9e-c03f-76f4-8033-6f2d959dcdde
+  🔄 Updated attendees document: 01986d50-17d7-732d-995d-ee6e08587c04
+  🔄 Updated attendees document: 01986c9b-61ed-762a-8ced-e25cd3654140
+  🔄 Updated attendees document: 01986b19-601c-755b-b40f-55f163cfd3f7
+  🔄 Updated attendees document: 019826e4-f07b-703d-b5b7-6bea6149c64d
+  🔄 Updated attendees document: 019865da-9d47-756c-86d9-e09d0592ec62
+  🔄 Updated attendees document: 01986492-6f41-72af-89db-64c5fc72c536
+  🔄 Updated attendees document: 01986493-cee0-7116-900a-ec602b5bcaed
+  🔄 Updated attendees document: 0198600e-ea8e-776d-aa00-399ccffa004b
+  🔄 Updated attendees document: 019862f8-3166-743d-99ad-73c51b463c0b
+  🔄 Updated attendees document: 019860b4-bf8c-74af-a73a-1c87380027c7
+  🔄 Updated attendees document: 0198537b-c8e6-715f-9b2a-241ffdfb9835
+  🔄 Updated attendees document: 01985e40-c1c4-7687-ab70-1a66491dabea
+  🔄 Updated attendees document: 01985e41-6394-73cd-b07b-c494331be7fa
+  🔄 Updated attendees document: 01985e41-f23c-705a-ac7c-b79d74aae3f4
+  🔄 Updated attendees document: 01985e42-92a3-738b-b8fb-6e683941f9ed
+  🔄 Updated attendees document: 01985032-71c3-70c1-9fc8-6ee8b88f5e81
+  🔄 Updated attendees document: 01985d81-2bd3-7388-ad09-ab31ac4f2b0c
+  🔄 Updated attendees document: 019859f1-f9cd-7799-a026-12827c4930e4
+  🔄 Updated attendees document: 019859f3-0139-773b-a959-a7fca7edef1c
+  🔄 Updated attendees document: 01985ae7-8dfd-715f-900b-87399e53aebd
+  🔄 Updated attendees document: 01985a8c-baa8-75a4-a8ef-86b7ef567ff8
+  🔄 Updated attendees document: 01985a8e-a328-7699-a850-84076534e1af
+  🔄 Updated attendees document: 019859d5-656e-73fb-beac-d4ab7967baa4
+  🔄 Updated attendees document: 019859e7-f40b-74aa-8c0d-071525e8b6f2
+  🔄 Updated attendees document: 01985995-9842-753c-96c8-a5070ac5855a
+  🔄 Updated attendees document: 01985996-c7c1-75a8-abea-3adffb4f0a78
+  🔄 Updated attendees document: 019857f0-9717-762c-9cc2-aa1b9848a801
+  🔄 Updated attendees document: 019857a9-5205-76fd-a143-e44d03fe3991
+  🔄 Updated attendees document: 01985566-c5b7-776b-a8f0-a810f4d0b072
+  🔄 Updated attendees document: 01985555-7387-7225-8056-f8e368dd7d7c
+  🔄 Updated attendees document: 019846ee-5997-77ab-a85e-5db28bbb3f99
+  🔄 Updated attendees document: 019846ef-2e4b-74aa-a911-cd27cd1c79e5
+  🔄 Updated attendees document: 019854d2-d5b4-7757-b709-6e588c7f75f6
+  🔄 Updated attendees document: 01985489-15ae-7638-8a8f-4084f1455dec
+  🔄 Updated attendees document: 01985489-e628-7368-88b0-45363fff1e26
+  🔄 Updated attendees document: 01985413-a115-70f4-b476-5c0a5cf79463
+  🔄 Updated attendees document: 019853be-ab8d-76fa-a9fa-f71c38303fed
+  🔄 Updated attendees document: 019853b6-6885-743b-8d9b-cda8a2707cb8
+  🔄 Updated attendees document: 01985367-f353-702f-8953-d44f59996004
+  🔄 Updated attendees document: 01985359-e1d7-725c-b365-0c60b5b91338
+  🔄 Updated attendees document: 01985303-5c46-77d3-87a5-429f0cff05f7
+  🔄 Updated attendees document: 01977d90-09bb-70a8-a7f3-c31440b62062
+  🔄 Updated attendees document: 01985079-5ab8-706d-a805-feefbac4ffdd
+  🔄 Updated attendees document: 0198507a-54c3-7538-8c92-a35590fb04ce
+  🔄 Updated attendees document: 01985073-db63-77ae-8d6c-b3032bed195c
+  🔄 Updated attendees document: 01984f9c-9005-74cd-9627-821266f424dd
+  🔄 Updated attendees document: 01984f9e-8d68-73fc-9153-e0412ec01b60
+  🔄 Updated attendees document: 0197dce4-d60f-728f-8ac9-d6a34c7be40a
+  🔄 Updated attendees document: 01985044-7c1d-7497-b85f-7bbafbbab191
+  🔄 Updated attendees document: 01985045-c870-7468-8215-e30c13f0f9e0
+  🔄 Updated attendees document: 01985027-99e0-7395-a8a1-a3f0ccdefb81
+  🔄 Updated attendees document: 01984edb-b2df-7004-bae2-f4cf8ff6346f
+  🔄 Updated attendees document: 01984ede-7590-713f-b9ad-79338b3d8512
+  🔄 Updated attendees document: 01984ff6-0dd7-746c-aefe-2647cab7d03e
+  🔄 Updated attendees document: 01984fd0-57be-76f8-b878-330984ae9d92
+  🔄 Updated attendees document: 01984fc0-e8da-7742-9846-2c274c4d2067
+  🔄 Updated attendees document: 01984fc2-adf7-754f-9816-a6f660b63ba4
+  🔄 Updated attendees document: 0197ac5a-485d-7338-a737-da5db3b8a9dd
+  🔄 Updated attendees document: 01977c99-1f1d-70fd-a8fc-6ab25761b7ef
+  🔄 Updated attendees document: 01984fa0-a2ab-750d-b3f7-3d8ca7c22f08
+  🔄 Updated attendees document: 01984f96-9911-75aa-91f8-5945aec2547a
+  🔄 Updated attendees document: 01984f75-bb46-7124-8245-9e26bd100f4c
+  🔄 Updated attendees document: 01984f76-b698-708e-bee5-b88b821e79fc
+  🔄 Updated attendees document: 01984f5a-abe5-768d-98dd-a9cf7f0b6634
+  🔄 Updated attendees document: 01984f64-6df8-7548-82c1-d449f7de127c
+  🔄 Updated attendees document: 01984f32-935d-739b-9606-1930cae32ca8
+  🔄 Updated attendees document: 01984f08-1f81-76cd-bdf3-32df64b97e7a
+  🔄 Updated attendees document: 01984f09-8229-705f-8691-15ca2257b40d
+  🔄 Updated attendees document: 01984ec3-90dd-7719-9695-0a04361dd420
+  🔄 Updated attendees document: 01984ec4-d473-750b-b4a6-be3f41695385
+  🔄 Updated attendees document: 01984e75-a5d4-7018-84c4-915a11619cf2
+  🔄 Updated attendees document: 01984d7a-d022-7735-84d7-e6af181c2bf7
+  🔄 Updated attendees document: 01984414-a884-73f5-a94a-d54de0a22cf8
+  🔄 Updated attendees document: 01984352-a634-75a1-984d-1f118d40eaf4
+  🔄 Updated attendees document: 01984029-7391-70dc-ad4e-02e8c3ae008a
+  🔄 Updated attendees document: 01983fbb-54f3-733a-87b4-50f642cdad31
+  🔄 Updated attendees document: 01983fbc-a313-75e6-928e-e68c6a0d538d
+  🔄 Updated attendees document: 01983fbe-9236-7728-a5ad-45b6e0f5e0c5
+  🔄 Updated attendees document: 01983fbf-b771-7309-b423-7be008822f3e
+  🔄 Updated attendees document: 01983ee1-0ee4-723b-9162-633e4cfbf888
+  🔄 Updated attendees document: 01983f4d-7865-71fd-b87a-2f47f2dd94b2
+  🔄 Updated attendees document: 01977c94-2751-768c-b46d-debb1fadf2fd
+  🔄 Updated attendees document: 01983e3e-4fd1-73ff-97dd-a230e38a2e21
+  🔄 Updated attendees document: 01983c68-7456-77f6-a18e-439b0f16b667
+  🔄 Updated attendees document: 0197bb25-74ef-777a-bcba-9f1b60ca69f8
+  🔄 Updated attendees document: 01980cb5-8732-777b-8bda-cd39d2cf91bc
+  🔄 Updated attendees document: 01980cb8-150f-7216-8cd6-8bdf116e81d6
+  🔄 Updated attendees document: 01983510-f58d-7331-952d-ec19eb6e416d
+  🔄 Updated attendees document: 01983512-1d4c-755d-b09c-8a96286496ec
+  🔄 Updated attendees document: 01982f35-0dfe-73be-961a-02441d65840d
+  🔄 Updated attendees document: 01982f25-2275-71cf-8cd2-bcb42bec5fcf
+  🔄 Updated attendees document: 01982f06-ac67-77d2-af1b-7b8416323dd0
+  🔄 Updated attendees document: 01982ce2-1c9b-71fb-ac80-79270e6a8594
+  🔄 Updated attendees document: 01982ce2-c74a-71aa-90a7-67257c4a5a58
+  🔄 Updated attendees document: 0198277f-24ee-74dc-a980-e76d13357c7f
+  🔄 Updated attendees document: 0197af3e-c9fa-731d-aff4-fa0efb02282d
+  🔄 Updated attendees document: 01981f92-1559-77fb-8973-9e8f199d8c25
+  🔄 Updated attendees document: 01982ca6-241e-708b-a3ef-6c796805927f
+  🔄 Updated attendees document: 01982ca8-f78e-70dd-b729-58746413f863
+  🔄 Updated attendees document: 01982c82-dc01-761b-ab42-3f7d60b67081
+  🔄 Updated attendees document: 01982c83-cd60-7270-a3d9-3dd4e51e9d4c
+  🔄 Updated attendees document: 01977c68-272c-7264-8ab0-813807c7ede0
+  🔄 Updated attendees document: 0198275e-bc1a-70a0-9c32-08777a0303b3
+  🔄 Updated attendees document: 01982761-dcdd-7096-9c42-24fd8f8eaf63
+  🔄 Updated attendees document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad
+  🔄 Updated attendees document: 01982581-9ada-72b6-b7f3-ee5eeddc00ea
+  🔄 Updated attendees document: 01982081-ee98-71bf-8442-65c5511a38ae
+  🔄 Updated attendees document: 01981b19-3094-76a9-bcf3-1b18242a5858
+  🔄 Updated attendees document: 01981b17-f1d2-713e-a5a5-bb513cecd248
+  🔄 Updated attendees document: 01981af2-fb82-7299-9f37-22cf6cf3906a
+  🔄 Updated attendees document: 01981b0e-2097-76ba-bb77-e1c5a1cc102d
+  🔄 Updated attendees document: 01981b03-82d0-7634-b0d0-a99912bc8ec2
+  🔄 Updated attendees document: 01981afd-5d24-7683-afa4-2348a8073296
+  🔄 Updated attendees document: 01981ace-d195-7452-bb54-4424bca4e3a0
+  🔄 Updated attendees document: 01981aca-b515-7489-80ab-1b63461b57a1
+  🔄 Updated attendees document: 01981abf-ec06-7638-bf8b-53a5b4e6140e
+  🔄 Updated attendees document: 01981aba-6dfc-745e-9ad8-8f11dcab5119
+  🔄 Updated attendees document: 01981a9c-42d5-7234-8053-641b505f2d72
+  🔄 Updated attendees document: 019816ff-f970-74ab-9b2b-b3bfa0bd7dd1
+  🔄 Updated attendees document: 01981743-84d7-72c8-bc28-53e521439b58
+  🔄 Updated attendees document: 01981323-b413-7480-add2-e3c5afc97601
+  🔄 Updated attendees document: 01981324-aba6-7658-8c2e-c626bcfe8f0d
+  🔄 Updated attendees document: 01981324-fa9b-72d6-b190-1692ec47a13f
+  🔄 Updated attendees document: 01981325-2d04-7009-b950-ba4065b4c4a0
+  🔄 Updated attendees document: 01981318-fba4-70de-bb7c-9ecc80132b17
+  🔄 Updated attendees document: 0198131b-00e2-7365-bb82-dd88e08563e4
+  🔄 Updated attendees document: 0198131b-8fac-72d6-bf68-318bf7536f99
+  🔄 Updated attendees document: 0198131e-cac5-76c0-a01e-b2ebb19df97f
+  🔄 Updated attendees document: 019812a3-3417-772b-bfaf-8c54c18b5858
+  🔄 Updated attendees document: 019812ec-4e4e-72bf-a6ed-1405cf77b9b7
+  🔄 Updated attendees document: 019812ed-60e7-7517-9b39-ae5a59eb0b51
+  🔄 Updated attendees document: 019812ef-7ef2-7079-895f-41a3ae7cb34c
+  🔄 Updated attendees document: 01977c39-8fbe-7002-ac6a-32900de67f9c
+  🔄 Updated attendees document: 01977c3a-53c5-730d-9608-3806e3c45c7d
+  🔄 Updated attendees document: 01980e40-9351-7425-a071-cbcdd6779fbc
+  🔄 Updated attendees document: 01980e41-702b-7591-b9ef-eaa471d4f691
+  🔄 Updated attendees document: 01980d2a-b4ba-7009-92b1-c2b118e74075
+  🔄 Updated attendees document: 01980d31-04ce-743e-8d9e-2abe9896d45f
+  🔄 Updated attendees document: 01980c39-3c17-746d-b9a2-6ea663824e57
+  🔄 Updated attendees document: 01980c3c-da0f-74c9-b2a3-d81670615fbf
+  🔄 Updated attendees document: 019806fa-a567-7711-b400-edf50b2fd20a
+  🔄 Updated attendees document: 0197ff08-5d1b-71ed-9b19-f002c1c63b1e
+  🔄 Updated attendees document: 0197fb99-9903-76af-bdf2-3bba7a9f1183
+  🔄 Updated attendees document: 0197f7fe-8f48-701f-bfc2-8696b8b538ea
+  🔄 Updated attendees document: 0197f801-5f96-740d-8a57-54e1e26490a1
+  🔄 Updated attendees document: 0197d52c-f5a1-732f-b3e0-ce6fc100bf55
+  🔄 Updated attendees document: 0197f38e-386e-76c6-9644-9699a05ba4a7
+  🔄 Updated attendees document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae
+  🔄 Updated attendees document: 0197f208-3a76-72fe-aa1d-a4bb2476cbf4
+  🔄 Updated attendees document: 0197f209-46e5-710e-afcb-a5d1f18fb663
+  🔄 Updated attendees document: 01978796-ff97-71ff-bd70-63e72c774842
+  🔄 Updated attendees document: 0197e991-ec5e-732f-9ceb-5f35cf51ec03
+  🔄 Updated attendees document: 0197e9a4-cba8-7266-9d54-84833ce0b0b7
+  🔄 Updated attendees document: 0197ca4d-2c80-7457-89b9-d2d222ab5a96
+  🔄 Updated attendees document: 0197e7bc-c3b1-75eb-b32c-57621420e0ec
+  🔄 Updated attendees document: 0197e798-0955-711f-8cae-45f48d843cf5
+  🔄 Updated attendees document: 0197e799-d811-7417-9aff-4916a543b549
+  🔄 Updated attendees document: 0197e702-a5a3-75fa-8cc8-eb7074ba6346
+  🔄 Updated attendees document: 0197e70a-8b86-74d0-898a-1df6f85a0397
+  🔄 Updated attendees document: 0197e70c-9ace-7139-889f-c8dec4a82676
+  🔄 Updated attendees document: 01979691-c54e-720c-9182-9b3e925d4ebd
+  🔄 Updated attendees document: 0197daab-21d3-745a-b6c7-3473a4fb3502
+  🔄 Updated attendees document: 0197d904-c941-710f-bb20-f92626c3eb99
+  🔄 Updated attendees document: 0197d360-6579-73ec-91db-da3fa97191a2
+  🔄 Updated attendees document: 0197d364-14b5-7609-b23e-c4d159ca3233
+  🔄 Updated attendees document: 0197d364-ffa5-709b-b660-bd48135e8a3e
+  🔄 Updated attendees document: 0197d365-aa7d-72a1-8446-80d5d708001f
+  🔄 Updated attendees document: 0197c68a-c9ce-719a-8a02-45bc516394a3
+  🔄 Updated attendees document: 0197c68b-37b6-729e-b300-fc10b22e977a
+  🔄 Updated attendees document: 0197c30c-6fb1-7388-8a94-b5f30e533779
+  🔄 Updated attendees document: 0197c30d-72b7-73aa-a7b0-e47f385daa9c
+  🔄 Updated attendees document: 019781c4-b2be-7570-8dda-b678f2651944
+  🔄 Updated attendees document: 019781c5-8dcd-702b-a716-94fac88ec472
+  🔄 Updated attendees document: 0197c0f6-46ac-71fd-a317-4f8d508f0885
+  🔄 Updated attendees document: 0197c100-3c48-737c-9dec-c12829ef7403
+  🔄 Updated attendees document: 0197b404-bc2d-75ef-bc48-6879eb80e3db
+  🔄 Updated attendees document: 0197bfdc-4990-737e-aded-ead40009ef38
+  🔄 Updated attendees document: 0197bfde-24d9-74de-ac4a-85248a25a8d2
+  🔄 Updated attendees document: 0197bfde-aad5-724f-b77c-9a4cd142891a
+  🔄 Updated attendees document: 0197bfdf-5d4d-74fd-98f3-888ecf0faaee
+  🔄 Updated attendees document: 0197bfa1-c546-70f9-838f-711da559413e
+  🔄 Updated attendees document: 0197bfa4-9872-729f-9de1-2257d622e73d
+  🔄 Updated attendees document: 01977c37-90e5-7291-ad5c-764431b08329
+  🔄 Updated attendees document: 0197aa37-69bf-7651-8687-d6722c495647
+  🔄 Updated attendees document: 01977dc1-97d7-724c-9b6f-0fe96385b08d
+  🔄 Updated attendees document: 0197b147-5a4d-76d5-91b6-cc10c4b84909
+  🔄 Updated attendees document: 0197ae6a-26cd-776e-928a-8b6996f10f2e
+  🔄 Updated attendees document: 0197ae6b-7f0d-739e-95ae-819865e1db01
+  🔄 Updated attendees document: 0197803a-6782-756a-9b90-ec2c93506951
+  🔄 Updated attendees document: 0197aa52-56a4-743c-a343-1dbc7d2505ff
+  🔄 Updated attendees document: 0197aa55-181b-77e8-a252-a30aa2b06cc2
+  🔄 Updated attendees document: 0197a891-cdb6-710f-90cd-9ddc81007692
+  🔄 Updated attendees document: 0197a895-0d72-725a-896a-7ae19fabc2c2
+  🔄 Updated attendees document: 01977da7-3537-72bf-90b0-7aac6b0d66d2
+  🔄 Updated attendees document: 0197a0bd-6e2e-728f-9884-eb047223e942
+  🔄 Updated attendees document: 0197a50e-8c07-756a-a54e-38ead0a6479b
+  🔄 Updated attendees document: 01979a24-7061-709c-90f2-cc42c419b2df
+  🔄 Updated attendees document: 01979bd3-dda0-718d-a100-a98759a1a67c
+  🔄 Updated attendees document: 01979bd4-c29b-76d5-80df-e63768d9015f
+  🔄 Updated attendees document: 01979bd5-10ac-775d-a500-2925ba175a75
+  🔄 Updated attendees document: 01979bd5-c639-778c-a943-63fe14353bed
+  🔄 Updated attendees document: 01979bd6-269a-7647-9c26-358b9dafbfb0
+  🔄 Updated attendees document: 01979bd6-b42a-70c7-a061-50495652c652
+  🔄 Updated attendees document: 01979bd7-0be4-768f-ba52-5e4fce16bfd3
+  🔄 Updated attendees document: 01979bd7-fa25-70bd-b40d-27450d8137ff
+  🔄 Updated attendees document: 01979bd8-5d7c-7298-a22c-059dbd491b0e
+  🔄 Updated attendees document: 01979bd8-e3d1-7659-ade6-30adbd7b678e
+  🔄 Updated attendees document: 01979ba7-cc43-774c-93c1-f68f76eb6886
+  🔄 Updated attendees document: 01979baa-beeb-741d-9957-23be9e41bac6
+  🔄 Updated attendees document: 01979bab-3248-7288-aa29-7f81aea01151
+  🔄 Updated attendees document: 01979bae-3e65-721f-bffb-2dedc4e38ea3
+  🔄 Updated attendees document: 01979bae-d45e-74ca-8f6f-0fd4a33c405c
+  🔄 Updated attendees document: 01979bb6-a3ea-746f-a222-26254be3d9e7
+  🔄 Updated attendees document: 01979bb7-876b-75a9-8846-5e86efff620f
+  🔄 Updated attendees document: 01979bb8-6cb3-73ee-8fe9-1cc2322d47c4
+  🔄 Updated attendees document: 01979bb9-2eb3-764e-b82c-e7e775ae9006
+  🔄 Updated attendees document: 01979bb9-f02c-7747-b250-e927cded49a1
+  🔄 Updated attendees document: 01979b6b-99ac-715b-b139-2b79af7d1374
+  🔄 Updated attendees document: 01978646-5c97-74dd-bbcf-7666f3572981
+  🔄 Updated attendees document: 01977c91-7aa4-7485-9f84-968e5d591223
+  🔄 Updated attendees document: 01979784-967c-733c-a66c-e9cff5154d00
+  🔄 Updated attendees document: 01979a25-c73f-71b1-bac1-83ec62968fa1
+  🔄 Updated attendees document: 019797c1-6bb7-76ba-a108-0f798b22823f
+  🔄 Updated attendees document: 01979708-df54-763c-82cb-5d379c9c4ba1
+  🔄 Updated attendees document: 01977fd8-c47c-718b-8fb1-c6af594f99d9
+  🔄 Updated attendees document: 01978b0b-bd85-758b-8c60-c8d836e5eb82
+  🔄 Updated attendees document: 019782da-012e-72fd-a97d-a718b5c3727e
+  🔄 Updated attendees document: 0197901c-85f7-7719-872b-701f38141068
+  🔄 Updated attendees document: 019790ae-f414-73ab-b0d1-7231f07aa355
+  🔄 Updated attendees document: 019790b1-ef87-7509-a362-0a4a0121991a
+  🔄 Updated attendees document: 019790b2-8a0d-70f6-b8bd-9a371aca4cde
+  🔄 Updated attendees document: 019790b4-c039-739b-aaef-3891f212921f
+  🔄 Updated attendees document: 019790b5-07fb-77ad-affc-ff2d5f8f6148
+  🔄 Updated attendees document: 01977c68-47ef-7688-b0d9-01434889bbed
+  🔄 Updated attendees document: 01978287-2f8a-75f9-899b-98a54a68e86b
+  🔄 Updated attendees document: 01979013-5521-74c1-a7ad-c8abdeeb6321
+  🔄 Updated attendees document: 01979014-1416-762c-96e2-872cac13a398
+  🔄 Updated attendees document: 01978ffc-506c-754a-a333-bf7a0aa9e25e
+  🔄 Updated attendees document: 01978fff-88d9-75ac-a6ee-2c72ee93a8b9
+  🔄 Updated attendees document: 01978520-8b39-777d-ace0-eeae22f89ea0
+  🔄 Updated attendees document: 01978521-f69f-7774-b478-995925d48f6b
+  🔄 Updated attendees document: 01977c37-377d-702d-affe-eda6500a2f43
+  🔄 Updated attendees document: 01978baa-a30c-742e-b11b-3d47e96b29e6
+  🔄 Updated attendees document: 01978542-f5d8-7319-a474-0ce1cfdece9a
+  🔄 Updated attendees document: 0197859e-41df-7318-8e64-3ea598471fc9
+  🔄 Updated attendees document: 019785a0-ba37-702b-80f2-5a6a6a1eb714
+  🔄 Updated attendees document: 01977df9-ebd4-72fe-825b-0300bc3ab12e
+  🔄 Updated attendees document: 019780db-3251-776c-8c6d-aeba5f38239f
+  🔄 Updated attendees document: 01978a49-447e-727d-9147-a9834ca5bda0
+  🔄 Updated attendees document: 01977fc8-c864-73a8-82ea-d86e90a42034
+  🔄 Updated attendees document: 0197888d-c16a-7039-a0a5-1d17fc4fe007
+  🔄 Updated attendees document: 01975903-bc26-7452-8d69-4438b9f7b70f
+  🔄 Updated attendees document: 019758e0-a347-7332-a728-235c2e8941bb
+  🔄 Updated attendees document: 0197588a-cf1e-72f8-8295-634d46da6e7a
+  🔄 Updated attendees document: 01975777-55a6-7439-8018-87a169cfe509
+  🔄 Updated attendees document: 0197577c-8601-73fa-a376-3641e0e36e86
+  ⏭️ No changes needed for: import_3440c561-1a8f-4489-b3a8-380132cbc4c4_attendee_0
+  ⏭️ No changes needed for: import_3440c561-1a8f-4489-b3a8-380132cbc4c4_attendee_1
+  ⏭️ No changes needed for: import_3440c561-1a8f-4489-b3a8-380132cbc4c4_attendee_0
+  ⏭️ No changes needed for: import_3440c561-1a8f-4489-b3a8-380132cbc4c4_attendee_1
+  ⏭️ No changes needed for: import_13ce226e-c9c8-4fa3-a18f-ef33ebb03f4c_attendee_0
+  ⏭️ No changes needed for: import_13ce226e-c9c8-4fa3-a18f-ef33ebb03f4c_attendee_1
+  ⏭️ No changes needed for: import_13ce226e-c9c8-4fa3-a18f-ef33ebb03f4c_attendee_0
+  ⏭️ No changes needed for: import_13ce226e-c9c8-4fa3-a18f-ef33ebb03f4c_attendee_1
+  🔄 Updated attendees document: 0197505a-732c-712b-b9ed-8d9a3ad7699e
+  🔄 Updated attendees document: 0197505f-55ef-7779-80ab-50258e0318e8
+  🔄 Updated attendees document: 019753d4-3f9e-75fe-94a2-d80746b6f4dd
+  🔄 Updated attendees document: 019753d6-47ba-7623-83c1-5a0713aa4fcc
+  🔄 Updated attendees document: 019753a1-03e1-7466-bf21-e688367b3a5a
+  🔄 Updated attendees document: 0197539a-77d6-726b-9241-15a32be69da3
+  🔄 Updated attendees document: 01975043-51a5-776b-bc2d-4e758b67a3f0
+  🔄 Updated attendees document: 019750ed-3bc6-75ce-bb60-f9b4f8c9a66c
+  🔄 Updated attendees document: 01975103-b4f6-7228-8652-ff46f42d61e7
+  🔄 Updated attendees document: 019750a8-42f5-7073-8646-88be2ba6da43
+  🔄 Updated attendees document: 01974ea8-a5cf-74b5-a895-7f414b01b405
+  🔄 Updated attendees document: 01974eaa-9336-74af-82d7-9c2c83c491c9
+  🔄 Updated attendees document: 01974c6c-9dec-77c9-bb11-1cf3feb4cded
+  🔄 Updated attendees document: 01974c6e-7867-767c-a670-7232176a27b9
+  🔄 Updated attendees document: 01974c6e-8354-71fc-9f17-ec0d690b24e6
+  🔄 Updated attendees document: 01974c71-bc5f-7664-b5a3-3e7513f03dc0
+  🔄 Updated attendees document: 01974afe-77d1-741d-9b6d-46f3eddfac64
+  🔄 Updated attendees document: 01974b00-171e-7299-8b79-1e907db044e3
+  🔄 Updated attendees document: 01977cbf-62d1-709d-9b8d-847981b64f9b
+  🔄 Updated attendees document: 01977caf-f4ae-707a-8964-635796a76e08
+  🔄 Updated attendees document: 01977cb1-5df7-7333-b0d8-78a1be5ffa74
+  🔄 Updated attendees document: 01977cb2-7206-75eb-9556-cd351b7b21d1
+  🔄 Updated attendees document: 01977cb3-323c-72bb-90ce-b841af2ba107
+  🔄 Updated attendees document: 01977c88-fea6-7229-bd90-f87f8aec95a8
+  🔄 Updated attendees document: 01977c93-7f5f-7521-8d26-6bab6f675289
+  🔄 Updated attendees document: 01977c7e-baf9-71ae-a0f2-506f70bd281e
+  🔄 Updated attendees document: 01977c3e-67d5-770d-8d91-c57721e89fb7
+  🔄 Updated attendees document: 01977c3d-00b2-72b1-b956-f2b2e07430f9
+  🔄 Updated attendees document: 01977c39-e862-73b9-a346-033616b5dda8
+  🔄 Updated attendees document: 019771d7-f076-721b-98f9-2b3e58fa1f2a
+  🔄 Updated attendees document: 01976c82-d455-7673-90d0-df9c2aa0c85e
+  🔄 Updated attendees document: 01976c85-6e29-75fa-a0f5-4fcaa5d460a1
+  🔄 Updated attendees document: 01976bd1-74b1-71b0-bf81-1a9be52464e9
+  🔄 Updated attendees document: 01976bd4-19ac-742b-ae3b-a872d93fde05
+  🔄 Updated attendees document: 019766fd-6b64-746a-b945-c5016fc0eec2
+  🔄 Updated attendees document: 019781d7-a8f9-723f-8b78-b449d5467f8d
+  🔄 Updated attendees document: 019781ee-8ad9-701e-8564-b2dc08df9b52
+  🔄 Updated attendees document: 019781dd-3722-75f0-84f2-8d62211167f3
+  🔄 Updated attendees document: 019781c5-0f70-700a-95c8-cd245b2aeafd
+  🔄 Updated attendees document: 019781ba-6905-700c-9c53-d5b8c1596a8e
+  🔄 Updated attendees document: 019781bd-4980-7010-86b0-602b4358db97
+  🔄 Updated attendees document: 01978138-3400-77cb-9700-9727c68b5f8d
+  🔄 Updated attendees document: 01978139-78c4-71db-a7c8-bd56372019be
+  🔄 Updated attendees document: 0197813a-4acd-757e-b15e-43f932658bf7
+  🔄 Updated attendees document: 0197813a-ed91-7089-b086-92609bfd229d
+  🔄 Updated attendees document: 01978148-013c-711a-8615-9ab82dfce0b8
+  🔄 Updated attendees document: 019780f3-4370-7106-9c60-bc9182aa119e
+  🔄 Updated attendees document: 019780db-3061-73a4-b25d-257f3c1c6134
+  🔄 Updated attendees document: 01977c3a-941a-7501-928a-80ec70ea434d
+  🔄 Updated attendees document: 019780b9-f2b2-741f-81f5-7b3cd1ca7412
+  🔄 Updated attendees document: 01977c55-e874-7788-82f9-7536fe5cd435
+  🔄 Updated attendees document: 019780a4-7788-779f-ac3f-10dfcc20c8ca
+  🔄 Updated attendees document: 01978064-ec50-76fe-a64b-db922e218590
+  🔄 Updated attendees document: 01978066-e9c3-7747-9a04-9d7985843252
+  🔄 Updated attendees document: 01977dd3-55a9-7721-9522-0249f9149fd7
+  🔄 Updated attendees document: 01977dd6-7894-7441-9274-b67f90025cad
+  🔄 Updated attendees document: 01978049-88d8-71e1-ac39-9c56b80ec2e2
+  🔄 Updated attendees document: 01978039-5360-753f-b39b-9d83260faacd
+  🔄 Updated attendees document: 01978036-8286-72b9-bdbf-6fdd2d47b12d
+  🔄 Updated attendees document: 01978038-386c-713b-981f-008f0f6f2d32
+  🔄 Updated attendees document: 0197803d-1db8-750a-b93d-36dcad287f18
+  🔄 Updated attendees document: 01977dd5-f68d-70dd-9550-e3c452b95eec
+  🔄 Updated attendees document: 01977dc4-91d1-750d-8228-f71d3ff8bd99
+  🔄 Updated attendees document: 01977dc9-4a24-727c-9ed8-00cdf0e91bd6
+✅ import_attendees sync complete: 415 processed, 0 created, 407 updated, 0 skipped (not production eligible)
+
+--- Syncing import_tickets -> tickets ---
+Found 799 documents in import_tickets
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 0198abb1-11ce-74b8-9cc5-169aba7d0d73-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198abb1-11ce-74b8-9cc5-169aba7d0d73-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198abb5-aa18-76a5-a438-12883f18c7a0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198aad3-83db-7378-81f3-127a1dd930df-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198a557-0d61-7018-ae2b-89e6d830bd56-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198a557-0d61-7018-ae2b-89e6d830bd56-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198a557-0d61-7018-ae2b-89e6d830bd56-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a2b9-06d6-745f-bd49-fefe3aecfb75-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a2ba-c237-72ca-a2f1-06d64ab83308-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a2bb-89aa-7347-bea0-7d3ab54c5877-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a2bd-0d01-7788-948b-2844f21d0a4a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a1cf-e212-75ee-a984-e7f0655df9fa-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198a1cf-e212-75ee-a984-e7f0655df9fa-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a156-2668-7277-9564-6a2d8521a471-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198a156-2668-7277-9564-6a2d8521a471-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198a156-2668-7277-9564-6a2d8521a471-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 0198a157-6253-7286-b979-2519137bbfd7-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198a157-6253-7286-b979-2519137bbfd7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 019888b4-da33-7092-9fa5-b5d1fec4a94e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019888b4-da33-7092-9fa5-b5d1fec4a94e-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 0198a015-ee0e-7481-bc17-3273bc9641a1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198a015-ee0e-7481-bc17-3273bc9641a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01989b76-9007-72aa-85c7-4c4229bdbdca-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01989b76-9007-72aa-85c7-4c4229bdbdca-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01989b77-d629-74ad-a24e-fbf5937bbac4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01989871-1984-7377-b76f-38d6c6c88275-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01989871-1984-7377-b76f-38d6c6c88275-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01982fe4-f353-7459-be88-45f4020f3407-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01982fe4-f353-7459-be88-45f4020f3407-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019897cf-3931-7269-93be-e3400729ad30-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019896cd-bec5-74f2-bfa5-2a89143f0e9c-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 019896d3-5e80-761e-b9b9-425decd62b14-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 01977c91-3b5a-75ac-8f36-f004bb083757-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 019893ed-8548-7734-9d73-7d9388e4bc05-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019893ee-e730-77a0-a5d3-6aa06ef66226-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019893e8-0c81-7222-b1a5-4896b45fa1eb-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 019893e8-0c81-7222-b1a5-4896b45fa1eb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01989334-66b1-73ac-94c7-42fabf7c632e-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 01989334-66b1-73ac-94c7-42fabf7c632e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01989334-66b1-73ac-94c7-42fabf7c632e-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 0198925f-23eb-73c4-aa92-75cb8e558d54-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01989267-9dc7-7216-8acd-3d9c25a7b3c8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01977c78-03e7-777d-ad6e-17324b5478e8-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01977c78-03e7-777d-ad6e-17324b5478e8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01977c78-03e7-777d-ad6e-17324b5478e8-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 0198917a-cc8e-7441-a684-950c480dc981-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198917a-cc8e-7441-a684-950c480dc981-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01985bf3-8486-7402-9b56-ffa2a21e68f0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988e84-3b7f-757e-8ea6-93ab48a4ae13-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988e8b-ec64-744c-a7e6-a98aab65c25f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 01988da8-e915-76cb-b458-a93eaaa03f48-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: d8e9ff33-ea60-4905-bcda-00dab4ba7629
+  🔄 Updated tickets document: f9180684-2098-4fd9-83e8-c20183cb7b64
+  🔄 Updated tickets document: 01985072-9787-75db-9307-4fe506bdec98-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01985072-9787-75db-9307-4fe506bdec98-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988ba4-0957-74ba-86bc-2bc9a8a003c2-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01988ba4-0957-74ba-86bc-2bc9a8a003c2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019889e4-1908-7524-925f-57492a5b8eb7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019889e4-1908-7524-925f-57492a5b8eb7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01988697-4088-75af-999d-21cc38172cac-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01988697-4088-75af-999d-21cc38172cac-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198833c-64ba-745f-a24b-dc0827d6a7d8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198833e-ab4a-7078-96ea-757c1f88e715-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0197e791-bb5b-72ee-bc8a-42464a081a7e-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 0198821a-49d1-706d-8854-c9de3cdab41a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198821a-49d1-706d-8854-c9de3cdab41a-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 019881d0-708f-748f-aa06-cfb639b73982-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 019881d0-708f-748f-aa06-cfb639b73982-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987961-74ab-70d9-9ead-20524413650f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987d8f-285b-77ba-87ff-466ab29084b1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987d8f-285b-77ba-87ff-466ab29084b1-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198799b-0a50-707b-8a7e-754676e3b7b8-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198799b-0a50-707b-8a7e-754676e3b7b8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987806-0cc6-727f-8d9b-a7ec30966c25-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01987806-0cc6-727f-8d9b-a7ec30966c25-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987809-e6a5-711f-8c50-5d8d271c4e65-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01987809-e6a5-711f-8c50-5d8d271c4e65-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198780a-ed4a-738e-8b7d-7a2063aa50bb-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198780a-ed4a-738e-8b7d-7a2063aa50bb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198780b-9773-77dc-a37e-5beabc5f6dd9-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198780b-9773-77dc-a37e-5beabc5f6dd9-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198780c-9e0a-7011-851b-0a2c6430ebec-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198780d-fc1e-76c6-929a-7cbf17ffc40c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198780d-fc1e-76c6-929a-7cbf17ffc40c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987810-385b-71af-aee3-097e21232797-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01987810-385b-71af-aee3-097e21232797-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 019877cc-b22b-7253-ad5b-fccd9a38b84f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 019877cc-b22b-7253-ad5b-fccd9a38b84f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019877cd-d082-708a-b72f-8a614bbc8bc1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0197e1d0-5c14-71c7-abc1-df5293989d0e-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0197e1d0-5c14-71c7-abc1-df5293989d0e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198733c-9552-70ff-acb9-a6b6fbfaedfc-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198733c-9552-70ff-acb9-a6b6fbfaedfc-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198733e-58bd-72bd-97f8-e9b2461d5d66-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198733e-8a6f-7678-a1ba-9b6e2a15c21f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019872aa-ab6a-707a-ac24-f8adb2f41e75-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198724a-7bdf-723d-9dfa-51307ee646bf-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198724a-7bdf-723d-9dfa-51307ee646bf-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 0197b630-de30-7380-8358-211643aa584f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0197b630-de30-7380-8358-211643aa584f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0197b630-de30-7380-8358-211643aa584f-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986f6c-d293-7145-9573-0b4a7f222b91-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986f6c-d293-7145-9573-0b4a7f222b91-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986f69-6080-703e-ac9a-1c520a5509ce-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986f69-6080-703e-ac9a-1c520a5509ce-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986f67-eda2-753d-a286-fba28102f863-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986f67-eda2-753d-a286-fba28102f863-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986f66-8ea7-7329-8f57-87d80962b9a1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986f66-8ea7-7329-8f57-87d80962b9a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986ef0-ca32-72ae-adf7-b00cfd5291bb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986ef2-9873-755c-b8d6-c99137a1aaef-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986e78-5852-717a-9570-310c3083fff7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 01986e78-5852-717a-9570-310c3083fff7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986e7b-d64d-75d3-8189-b4269b2af9b9-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 01986dc2-86c8-77cf-b843-53e5d8c5724f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986dc2-86c8-77cf-b843-53e5d8c5724f-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986dc7-6862-733a-8fb7-f8b0b02946fa-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986dbe-46a1-753e-b6d3-3c6cf22315ea-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986db0-d37d-72fb-86c8-2d2c301c9171-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986db0-d37d-72fb-86c8-2d2c301c9171-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986db0-d37d-72fb-86c8-2d2c301c9171-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986d9c-b90c-70ef-ad46-3cb28db56e39-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986d9c-b90c-70ef-ad46-3cb28db56e39-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d9c-b90c-70ef-ad46-3cb28db56e39-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986da0-036b-775a-aaea-cfd513bd3d30-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d92-c8bb-751d-bbd8-b5f62cfd0035-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d95-87ef-7219-a358-09d437bb3a62-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d97-0e52-71f8-b04a-cc85077ec9ff-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d66-60be-755b-958d-2fe42e5f3eb5-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986d66-60be-755b-958d-2fe42e5f3eb5-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01984f9e-c03f-76f4-8033-6f2d959dcdde-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986d50-17d7-732d-995d-ee6e08587c04-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986c9b-61ed-762a-8ced-e25cd3654140-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01986b19-601c-755b-b40f-55f163cfd3f7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 01986b19-601c-755b-b40f-55f163cfd3f7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d

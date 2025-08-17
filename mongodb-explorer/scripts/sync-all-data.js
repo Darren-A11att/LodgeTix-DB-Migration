@@ -131,8 +131,23 @@ function validateEnvironment() {
 }
 
 // Main sync workflow - Using unified payment sync that processes everything end-to-end
-async function runSyncWorkflow() {
+async function runSyncWorkflow(shouldClear = false) {
   try {
+    // Clear variable collections if requested
+    if (shouldClear) {
+      logger.info('🗑️  Clearing variable collections before sync...');
+      logger.info('Preserving constant collections (events, venues, etc.)\n');
+      
+      try {
+        const clearScript = path.join(__dirname, 'clear-variable-collections.ts');
+        await runScript(clearScript, ['--force'], 'Clear variable collections');
+        logger.success('✅ Variable collections cleared\n');
+      } catch (error) {
+        logger.error('Failed to clear collections:', error.message);
+        throw error;
+      }
+    }
+    
     logger.info('🔄 Starting sync workflow...');
     logger.info(`Target Database: ${CONFIG.TARGET_DATABASE}`);
     
@@ -159,6 +174,11 @@ async function runSyncWorkflow() {
     
     const syncScript = 'run-enhanced-sync.ts';
     const args = [];
+    
+    // Add clear flag if needed
+    if (shouldClear) {
+      args.push('--clear');
+    }
     
     // Add limit for testing if needed
     if (process.env.SYNC_LIMIT) {
@@ -223,8 +243,31 @@ function displaySummary() {
 // Main execution
 async function main() {
   try {
+    // Parse command line arguments
+    const args = process.argv.slice(2);
+    const shouldClear = args.includes('--clear');
+    const showHelp = args.includes('--help') || args.includes('-h');
+    
+    if (showHelp) {
+      console.log('Usage: sync-all-data.js [options]');
+      console.log();
+      console.log('Options:');
+      console.log('  --clear          Clear variable collections before syncing');
+      console.log('  --help, -h       Show this help message');
+      console.log();
+      console.log('Examples:');
+      console.log('  npm run sync                   # Normal sync');
+      console.log('  npm run sync -- --clear        # Clear then sync');
+      process.exit(0);
+    }
+    
     // Display configuration
     displaySummary();
+    
+    if (shouldClear) {
+      logger.info('📝 Option: --clear flag detected');
+      logger.info('   Variable collections will be cleared before sync\n');
+    }
     
     // Validate environment
     if (!validateEnvironment()) {
@@ -232,7 +275,7 @@ async function main() {
     }
     
     // Run the sync workflow
-    await runSyncWorkflow();
+    await runSyncWorkflow(shouldClear);
     
     logger.success('🎉 Sync completed successfully!');
     

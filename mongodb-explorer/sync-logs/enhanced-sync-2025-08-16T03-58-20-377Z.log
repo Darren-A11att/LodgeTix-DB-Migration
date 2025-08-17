@@ -1,0 +1,233 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-16T03:58:20.378Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: zMfh4O5L6fT6UJxue10qrTC7C9NZY
+    ✓ Order fetched
+  👤 Fetching customer: QWW6PXCPMQK1NYTBQ8XQGGDDA0
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ✓ Updated import_payments with registrationId: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Ian Hogan
+    ✓ Created new customer: Ian Hogan
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 5 tickets from registration_data.selectedTickets
+    📝 Using event_ticket_id for eventTicketId: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: [object Object])
+    📝 Using event_ticket_id for eventTicketId: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_1 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_3 (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_dcb47cfb-fe4c-4fc4-a373-2805500e797f_ticket_4 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Ian Hogan
+  ✅ Completed processing Square payment 37uzagXg6306GrJSUUf574HvB0CZY (production eligible)
+Reached limit of 1 for Square
+
+━━━ Processing DA-LODGETIX ━━━
+
+📝 Processing charge: ch_3RYNqYKBASow5NsW17D1d6gl
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✓ Updated import_payments with registrationId: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Darren Allatt
+    ✓ Created new customer: Darren Allatt
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_222ddcc8-4f1a-4301-9e44-18a89770e1ed_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Darren Allatt
+  ✅ Completed processing charge ch_3RYNqYKBASow5NsW17D1d6gl (production eligible)
+Reached limit of 1 for DA-LODGETIX
+
+━━━ Processing WS-LODGETIX ━━━
+
+📝 Processing charge: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✓ Updated import_payments with registrationId: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Amitava Sen
+    ✓ Created new customer: Amitava Sen
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_8a63ce42-9276-4254-b3cc-406d78cdbb16_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Amitava Sen
+  ✅ Completed processing charge ch_3RatsQHDfNBUEWUu0i6JkO6W (production eligible)
+Reached limit of 1 for WS-LODGETIX
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+📝 Processing charge: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✓ Updated import_payments with registrationId: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Marcelo III Caguioa
+    ✓ Created new customer: Marcelo III Caguioa
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_533f4153-ab85-4552-a372-2d71fc42e546_ticket_0 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Marcelo III Caguioa
+  ✅ Completed processing charge ch_3RbJfOCari1bgsWq0CxPr7NI (production eligible)
+Reached limit of 1 for WS-LODGETICKETS
+
+🔄 Starting selective production sync...
+
+=== STARTING SELECTIVE PRODUCTION SYNC ===
+
+--- Syncing import_payments -> payments ---
+Found 4 documents in import_payments
+  ✅ Created new payments document: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Created new payments document: ch_3RYNqYKBASow5NsW17D1d6gl
+  ✅ Created new payments document: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Created new payments document: ch_3RbJfOCari1bgsWq0CxPr7NI
+✅ import_payments sync complete: 4 processed, 4 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_registrations -> registrations ---
+Found 4 documents in import_registrations
+  ✅ Created new registrations document: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ✅ Created new registrations document: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✅ Created new registrations document: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✅ Created new registrations document: 533f4153-ab85-4552-a372-2d71fc42e546
+✅ import_registrations sync complete: 4 processed, 4 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_attendees -> attendees ---
+Found 4 documents in import_attendees
+  ✅ Created new attendees document: 0198ace1-da28-73fd-a44f-b9aaca638f59
+  ✅ Created new attendees document: 01975903-bc26-7452-8d69-4438b9f7b70f
+  ✅ Created new attendees document: 01977cbf-62d1-709d-9b8d-847981b64f9b
+  ✅ Created new attendees document: 019781d7-a8f9-723f-8b78-b449d5467f8d
+✅ import_attendees sync complete: 4 processed, 4 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_tickets -> tickets ---
+Found 8 documents in import_tickets
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01975903-bc26-7452-8d69-4438b9f7b70f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977cbf-62d1-709d-9b8d-847981b64f9b-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781d7-a8f9-723f-8b78-b449d5467f8d-fd12d7f0-f346-49bf-b1eb-0682ad226216
+✅ import_tickets sync complete: 8 processed, 8 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_contacts -> contacts ---
+Found 4 documents in import_contacts
+  ✅ Created new contacts document: 93c0e4bfa5d73325db243603c5b4dfed
+  ✅ Created new contacts document: d82357b1cd0b9df9801cc350dc2f8051
+  ✅ Created new contacts document: aeace217577f4b15217d0c878d53c9a9
+  ✅ Created new contacts document: 3daee65564460beb70ad61de9e5e9c61
+✅ import_contacts sync complete: 4 processed, 4 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_customers -> customers ---
+Found 4 documents in import_customers
+  ✅ Created new customers document: 3a801601350e882aef0908a5b6f3bcce7c19376ddb5a639f27771f8f6ff81688
+  ✅ Created new customers document: f2117920ff4c6d2d9577472532b1eb1f38a064a52aa22bd4a8ad0f86f394094a
+  ✅ Created new customers document: ffcfce207478fdc72fd00ddfbe3f0c6e0cb3cbf5a2547de3e77483b3b68eff22
+  ✅ Created new customers document: edb14626e769373f7d11ae12beb685215d01ae665edd8aa52bd9bdc3f2b1afa7
+✅ import_customers sync complete: 4 processed, 4 created, 0 updated, 0 skipped (not production eligible)
+=== SELECTIVE PRODUCTION SYNC COMPLETED ===
+
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+⚠️  Error verification failed: Cannot find module '/Users/darrenallatt/Development/LodgeTix - Reconcile/mongodb-explorer/src/services/sync/error-verification-service' imported from /Users/darrenallatt/Development/LodgeTix - Reconcile/mongodb-explorer/src/services/sync/enhanced-payment-sync.ts
+Continuing without verification...
+
+
+=== SYNC COMPLETE ===
+✅ Processed: 4
+⏭️ Skipped: 0
+❌ Errors: 0
+👥 Unique contacts: 4
+📊 Total: 4

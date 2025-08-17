@@ -19,7 +19,7 @@ export interface DocumentsResponse {
 
 class ApiService {
   async getCollections(databaseName?: string): Promise<Collection[]> {
-    const currentDb = databaseName || DatabaseSelector.getSelectedDatabase().name;
+    const currentDb = databaseName || DatabaseSelector.getSelectedDatabase().id;
     const response = await axios.get(`${API_BASE_URL}/collections`, {
       params: { database: currentDb }
     });
@@ -36,9 +36,10 @@ class ApiService {
   }
 
   async getDocuments(collectionName: string, skip: number = 0, limit: number = 20, search?: string, sortBy?: string, sortOrder?: string): Promise<DocumentsResponse> {
+    const currentDb = DatabaseSelector.getSelectedDatabase().id;
     const response = await axios.get<DocumentsResponse>(
       `${API_BASE_URL}/collections/${collectionName}/documents`,
-      { params: { skip, limit, search, sortBy, sortOrder } }
+      { params: { skip, limit, search, sortBy, sortOrder, database: currentDb } }
     );
     return response.data;
   }

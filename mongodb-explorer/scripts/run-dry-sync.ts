@@ -219,6 +219,7 @@ class DryRunSyncService {
           // Only log every 10th payment when processing many
           if (this.counters.square.payments % 10 === 0 || totalFetched <= 10) {
             this.logger.log('SQUARE', `Processing payment ${this.counters.square.payments + 1}/${totalFetched} - ${payment.id}`);
+          }
 
           // Check status
           if (payment.status !== 'COMPLETED') {
@@ -281,6 +282,7 @@ class DryRunSyncService {
           }
 
           this.counters.square.payments++;
+          }
         }
         
         cursor = response.cursor;
@@ -386,7 +388,7 @@ class DryRunSyncService {
       
       this.logger.log('STRIPE', `Total charges found for ${accountName}: ${totalFetched}`);
       
-      } catch (error: any) {
+    } catch (error: any) {
         this.logger.log('STRIPE', `Error simulating ${accountName}: ${error.message}`);
       }
     }

@@ -14,6 +14,7 @@ export function snakeToCamel(str: string): string {
 
 /**
  * Recursively transforms object keys from snake_case to camelCase
+ * Preserves MongoDB's _id field and other special fields starting with _
  */
 export function transformObjectKeys(obj: any): any {
   if (obj === null || obj === undefined) {
@@ -28,8 +29,12 @@ export function transformObjectKeys(obj: any): any {
     const transformed: any = {};
     
     for (const [key, value] of Object.entries(obj)) {
-      const camelKey = snakeToCamel(key);
-      transformed[camelKey] = transformObjectKeys(value);
+      // Preserve _id and other MongoDB special fields that start with _
+      // These should not be transformed to camelCase
+      const transformedKey = key === '_id' || key.startsWith('_') 
+        ? key 
+        : snakeToCamel(key);
+      transformed[transformedKey] = transformObjectKeys(value);
     }
     
     return transformed;
@@ -143,6 +148,12 @@ export function createImportDocument(
 ): any {
   // Transform snake_case to camelCase for all fields
   const transformedDoc = transformObjectKeys(sourceDoc);
+  
+  // CRITICAL: Remove any manual _id field to prevent MongoDB "immutable field altered" errors
+  // MongoDB will auto-generate _id when inserting/upserting documents
+  if (transformedDoc._id) {
+    delete transformedDoc._id;
+  }
   
   // Add production metadata
   const productionMeta: ProductionMeta = {

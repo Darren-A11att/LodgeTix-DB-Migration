@@ -1,0 +1,88 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-14T13:51:19.917Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  🛒 Fetching order: Ts560QoctAIxc4p53odwFYbARhdZY
+    ✓ Order fetched
+  👤 Fetching customer: D8VRXK9JQB32E9RDYWMJFW5YJW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 385f58c7-9a3b-4b45-9e3c-d461fdc6b19d
+  ✓ Updated import_payments with registrationId: 385f58c7-9a3b-4b45-9e3c-d461fdc6b19d
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Gregg Summerhayes
+    ✓ Created new customer: Gregg Summerhayes
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+  ✓ Found 3 ticket(s) in registration
+    ✓ Processed contact: Gregg Summerhayes
+  ✅ Completed processing Square payment p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  🛒 Fetching order: n8GnYoEqmNkQlt51ZZ3NuRcIBYKZY
+    ✓ Order fetched
+  👤 Fetching customer: XZ9GVRZQN2JXT6JXPAEQBHW2EM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: cdc7fc39-8828-4f75-9314-66e54534da7a
+  ✓ Updated import_payments with registrationId: cdc7fc39-8828-4f75-9314-66e54534da7a
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Jaime Flores
+    ✓ Created new customer: Jaime Flores
+    ✓ Updated registration with customer ObjectId
+    Extracting 4 attendees from registration_data
+  ✓ Found 4 attendee(s)
+  ✓ Found 4 ticket(s) in registration
+    ✓ Processed contact: Jaime Flores
+    ✓ Processed contact: Amelita Flores
+    ✓ Processed contact: Ali Mercado
+    ✓ Processed contact: Alyssa Jannie Flores
+  ✅ Completed processing Square payment JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  🛒 Fetching order: FPmQ5qiVt7iViWKP2SiY0FaxNFVZY
+    ✓ Order fetched
+  👤 Fetching customer: MJZGR09135ERMH9SSEKP41TB2R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation

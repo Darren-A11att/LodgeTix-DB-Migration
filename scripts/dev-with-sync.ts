@@ -56,13 +56,21 @@ function log(message, color = 'reset') {
 }
 
 // Run sync process
-async function runSync() {
+async function runSync(shouldClear: boolean = false) {
   return new Promise((resolve, reject) => {
+    if (shouldClear) {
+      log('🗑️  Clearing variable collections before sync...', 'yellow');
+    }
     log('🔄 Running data sync...', 'blue');
     
     // Use the enhanced sync script in mongodb-explorer
     const syncScript = path.join(__dirname, '..', 'mongodb-explorer', 'scripts', 'run-enhanced-sync.ts');
     const syncArgs = ['tsx', syncScript];
+    
+    // Add clear flag if requested
+    if (shouldClear) {
+      syncArgs.push('--clear');
+    }
     
     // Use quick sync settings if enabled (limit number of payments for testing)
     if (config.development.quickSync.enabled) {
@@ -102,8 +110,8 @@ async function startDevServers() {
   const devProcess = spawn('npm', ['run', 'dev:no-sync'], {
     stdio: 'inherit',
     cwd: mongodbExplorerPath,
-    env: process.env,
-    shell: true
+    env: process.env
+    // Removed shell: true to fix deprecation warning and potential command issues
   });
   
   devProcess.on('error', (err) => {
@@ -149,10 +157,19 @@ async function main() {
   log('🏗️  LodgeTix Development Environment', 'bright');
   log('=====================================\n', 'bright');
   
+  // Parse command line arguments
+  const args = process.argv.slice(2);
+  const shouldClear = args.includes('--clear');
+  
+  if (shouldClear) {
+    log('📝 Option: --clear flag detected', 'yellow');
+    log('   Variable collections will be cleared before sync\n', 'yellow');
+  }
+  
   try {
     // Step 1: Run initial sync (if enabled)
     if (SYNC_ON_STARTUP && !SKIP_INITIAL_SYNC) {
-      await runSync();
+      await runSync(shouldClear);
       log('', 'reset'); // Empty line for spacing
     } else if (SKIP_INITIAL_SYNC) {
       log('⏭️  Skipping initial sync (--no-sync flag)', 'yellow');
@@ -179,9 +196,10 @@ async function main() {
 // Show help
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log(`
-Usage: node dev-with-sync.js [options]
+Usage: npm run dev [options]
 
 Options:
+  --clear      Clear variable collections before syncing
   --no-sync    Skip initial data sync
   --help       Show this help message
 
@@ -190,6 +208,12 @@ Environment Variables:
   SYNC_INTERVAL     Minutes between auto-syncs (default: 0 = disabled)
   
   All SYNC_* variables from sync-all-data.js are also supported.
+
+Examples:
+  npm run dev                    # Normal dev with sync
+  npm run dev -- --clear         # Clear collections then sync and start
+  npm run dev -- --no-sync       # Start without syncing
+  npm run dev -- --clear --no-sync  # Just clear (no sync or server)
 
 This script starts the development environment with automatic data synchronization.
   `);

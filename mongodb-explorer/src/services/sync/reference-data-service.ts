@@ -64,6 +64,17 @@ interface OrganisationDetails {
   [key: string]: any;
 }
 
+interface PackageDetails {
+  packageId: string;
+  _id?: string;
+  name: string;
+  price?: number;
+  includedItems?: any[];
+  description?: string;
+  eventId?: string;
+  [key: string]: any;
+}
+
 export class ReferenceDataService {
   private db: Db;
   private cache: Map<string, CacheItem<any>>;
@@ -277,6 +288,49 @@ export class ReferenceDataService {
   }
 
   /**
+   * Get package details by package ID
+   */
+  async getPackageDetails(packageId: string): Promise<PackageDetails | null> {
+    const cacheKey = `package:${packageId}`;
+    
+    try {
+      // Check cache first
+      const cached = this.getFromCache<PackageDetails>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+
+      // Query database using packageId field (or _id if packageId not found)
+      const collection = this.db.collection('packages');
+      let result = await collection.findOne({ packageId: packageId });
+      
+      // If not found by packageId, try searching by _id
+      if (!result && packageId) {
+        try {
+          // Try to convert to ObjectId if it's a valid ObjectId string
+          const { ObjectId } = await import('mongodb');
+          if (ObjectId.isValid(packageId)) {
+            result = await collection.findOne({ _id: new ObjectId(packageId) });
+          }
+        } catch (objectIdError) {
+          // If ObjectId conversion fails, just continue without it
+          console.error(`Could not convert ${packageId} to ObjectId:`, objectIdError);
+        }
+      }
+
+      if (result) {
+        this.setCache(cacheKey, result);
+        return result as PackageDetails;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Error fetching package details for ${packageId}:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Clear all cached data
    */
   clearCache(): void {
@@ -367,5 +421,6 @@ export type {
   EventDetails,
   LocationDetails,
   LodgeDetails,
-  OrganisationDetails
+  OrganisationDetails,
+  PackageDetails
 };

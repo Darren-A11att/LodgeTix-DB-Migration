@@ -1,0 +1,2401 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-16T13:25:56.447Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: jtwvvCSh0dwASWgUW1TAfF2l635YY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: 7nHbZYYBn7M1thYdSmgNo9n28yKZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 4 (cursor: provided)
+
+📝 Processing Square payment: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 5 (cursor: provided)
+
+📝 Processing Square payment: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+Reached limit of 5 for Square
+
+━━━ Processing DA-LODGETIX ━━━
+
+📝 Processing charge: ch_3RYNqYKBASow5NsW17D1d6gl
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✓ Updated import_payments with registrationId: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Darren Allatt
+    ✓ Created new customer: Darren Allatt
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_222ddcc8-4f1a-4301-9e44-18a89770e1ed_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Darren Allatt
+  ✅ Completed processing charge ch_3RYNqYKBASow5NsW17D1d6gl (production eligible)
+
+📝 Processing charge: ch_3RYNH3KBASow5NsW0hd6SVQA
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  ✓ Imported charge to import_payments with field transformation
+  📝 Found registration: a33c5107-9221-49ee-8bff-b289b452e784
+  ✓ Updated import_payments with registrationId: a33c5107-9221-49ee-8bff-b289b452e784
+  📝 Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (not eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Darren Allatt
+    ✓ Updated existing customer: Darren Allatt
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_a33c5107-9221-49ee-8bff-b289b452e784_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ⏭️ Contact already processed: Darren Allatt
+  📝 Completed processing charge ch_3RYNH3KBASow5NsW0hd6SVQA (import only)
+
+📝 Processing charge: ch_3RYMRnKBASow5NsW1rQGpHtU
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  ✓ Imported charge to import_payments with field transformation
+  📝 Found registration: 99b62c5b-2d48-406a-ae48-168f193d4be4
+  ✓ Updated import_payments with registrationId: 99b62c5b-2d48-406a-ae48-168f193d4be4
+  📝 Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (not eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Darren Allatt
+    ✓ Updated existing customer: Darren Allatt
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_99b62c5b-2d48-406a-ae48-168f193d4be4_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ⏭️ Contact already processed: Darren Allatt
+  📝 Completed processing charge ch_3RYMRnKBASow5NsW1rQGpHtU (import only)
+
+📝 Processing charge: ch_3RYLpiKBASow5NsW1j6bahnX
+  📥 Importing fully refunded charge - refunded: 21.06 aud (will not move to production)
+  ✓ Imported charge to import_payments with field transformation
+  📝 No registration found for payment intent: pi_3RYLpiKBASow5NsW1zBOPXon
+  ✓ Updated import_payments with registrationId: no-match
+
+📝 Processing charge: ch_3RYJM8KBASow5NsW0B6fbNrc
+  📥 Importing unpaid charge - status: failed (will not move to production)
+  ✓ Imported charge to import_payments with field transformation
+  📝 No registration found for payment intent: pi_3RYJM8KBASow5NsW0qrxvyQ7
+  ✓ Updated import_payments with registrationId: no-match
+Reached limit of 5 for DA-LODGETIX
+
+━━━ Processing WS-LODGETIX ━━━
+
+📝 Processing charge: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✓ Updated import_payments with registrationId: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Amitava Sen
+    ✓ Created new customer: Amitava Sen
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_8a63ce42-9276-4254-b3cc-406d78cdbb16_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Amitava Sen
+  ✅ Completed processing charge ch_3RatsQHDfNBUEWUu0i6JkO6W (production eligible)
+
+📝 Processing charge: ch_3RatmpHDfNBUEWUu0aKhh2Yq
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: a502eec2-4f0b-44aa-b605-a6ec622a546a
+  ✓ Updated import_payments with registrationId: a502eec2-4f0b-44aa-b605-a6ec622a546a
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Brian  Lowder
+    ✓ Updated existing customer: Brian  Lowder
+    ✓ Updated registration with customer ObjectId
+  ✓ Found 0 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    ⚠️ Ticket missing attendeeId (eventTicketId: fd12d7f0-f346-49bf-b1eb-0682ad226216), using registrationId as fallback
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_a502eec2-4f0b-44aa-b605-a6ec622a546a_ticket_0 (Proclamation Banquet - Best Available, qty: 10)
+      ✅ Created ticket document
+  ✅ Completed processing charge ch_3RatmpHDfNBUEWUu0aKhh2Yq (production eligible)
+
+📝 Processing charge: ch_3RatcXHDfNBUEWUu18ZKzlo9
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776
+  ✓ Updated import_payments with registrationId: 529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Reg Potter
+    ✓ Created new customer: Reg Potter
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 4 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    📦 Returning 4 processed tickets from registration_data
+  ✓ Found 4 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776_ticket_1 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776_ticket_2 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776_ticket_3 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Reg Potter
+    ✓ Processed contact: Mandy Potter
+  ✅ Completed processing charge ch_3RatcXHDfNBUEWUu18ZKzlo9 (production eligible)
+
+📝 Processing charge: ch_3RatabHDfNBUEWUu0Iycwsai
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: eca933dc-b896-4ffd-8569-94e1e6646798
+  ✓ Updated import_payments with registrationId: eca933dc-b896-4ffd-8569-94e1e6646798
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Michael Hoblos
+    ✓ Created new customer: Michael Hoblos
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_eca933dc-b896-4ffd-8569-94e1e6646798_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_eca933dc-b896-4ffd-8569-94e1e6646798_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Michael Hoblos
+    ✓ Processed contact: Aya Hamdar
+  ✅ Completed processing charge ch_3RatabHDfNBUEWUu0Iycwsai (production eligible)
+
+📝 Processing charge: ch_3RatXHHDfNBUEWUu1PqYeK60
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 2a0eef32-78e2-4ad8-be6a-db2e356db9ef
+  ✓ Updated import_payments with registrationId: 2a0eef32-78e2-4ad8-be6a-db2e356db9ef
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Paul Hamer
+    ✓ Updated existing customer: Paul Hamer
+    ✓ Updated registration with customer ObjectId
+  ✓ Found 0 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    ⚠️ Ticket missing attendeeId (eventTicketId: fd12d7f0-f346-49bf-b1eb-0682ad226216), using registrationId as fallback
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_2a0eef32-78e2-4ad8-be6a-db2e356db9ef_ticket_0 (Proclamation Banquet - Best Available, qty: 20)
+      ✅ Created ticket document
+  ✅ Completed processing charge ch_3RatXHHDfNBUEWUu1PqYeK60 (production eligible)
+Reached limit of 5 for WS-LODGETIX
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+📝 Processing charge: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✓ Updated import_payments with registrationId: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Marcelo III Caguioa
+    ✓ Created new customer: Marcelo III Caguioa
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_533f4153-ab85-4552-a372-2d71fc42e546_ticket_0 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Marcelo III Caguioa
+  ✅ Completed processing charge ch_3RbJfOCari1bgsWq0CxPr7NI (production eligible)
+
+📝 Processing charge: ch_3RbGXFCari1bgsWq1HXOJzrX
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 371a8bae-7c4f-4650-a0d6-085912e5f57c
+  ✓ Updated import_payments with registrationId: 371a8bae-7c4f-4650-a0d6-085912e5f57c
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jon Bon Jovi Macaraeg
+    ✓ Created new customer: Jon Bon Jovi Macaraeg
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_371a8bae-7c4f-4650-a0d6-085912e5f57c_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jon Bon Jovi Macaraeg
+  ✅ Completed processing charge ch_3RbGXFCari1bgsWq1HXOJzrX (production eligible)
+
+📝 Processing charge: ch_3RbGAlCari1bgsWq08w1BHrF
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: b59e8fde-a714-448a-976c-78d7d086a864
+  ✓ Updated import_payments with registrationId: b59e8fde-a714-448a-976c-78d7d086a864
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Jose Vasquez Rivas
+    ✓ Created new customer: Jose Vasquez Rivas
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_b59e8fde-a714-448a-976c-78d7d086a864_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Jose Vasquez Rivas
+  ✅ Completed processing charge ch_3RbGAlCari1bgsWq08w1BHrF (production eligible)
+
+📝 Processing charge: ch_3RbFmZCari1bgsWq04o5RQDm
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: ac880769-a251-4914-b16d-f75b4d839a2d
+  ✓ Updated import_payments with registrationId: ac880769-a251-4914-b16d-f75b4d839a2d
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: Rod  Cohen 
+    ✓ Created new customer: Rod  Cohen 
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_ac880769-a251-4914-b16d-f75b4d839a2d_ticket_0 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_ac880769-a251-4914-b16d-f75b4d839a2d_ticket_1 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: Rod Cohen
+  ✅ Completed processing charge ch_3RbFmZCari1bgsWq04o5RQDm (production eligible)
+
+📝 Processing charge: ch_3RbFhVCari1bgsWq0w0oJdBr
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 92d8d83d-cc7a-4b7d-87de-8f745474b55b
+  ✓ Updated import_payments with registrationId: 92d8d83d-cc7a-4b7d-87de-8f745474b55b
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase (eligible for production sync)
+  📝 Processing booking contact as customer
+    Customer data created: John Jacobson
+    ✓ Created new customer: John Jacobson
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 9 tickets from registration_data.tickets
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    🔍 Looking up eventTicket: d586ecc1-e410-4ef3-a59c-4a53a866bc33
+    ✅ Found eventTicket: Meet & Greet Cocktail Party (price: 70)
+    🔍 Looking up eventTicket: d4e5f6a7-b8c9-4567-def0-456789012345
+    ✅ Found eventTicket: Ladies Brunch (price: 50)
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    🔍 Looking up eventTicket: bce41292-3662-44a7-85da-eeb1a1e89d8a
+    ✅ Found eventTicket: Farewell Cruise Luncheon (price: 75)
+    📦 Returning 9 processed tickets from registration_data
+  ✓ Found 9 ticket(s) in registration
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_0 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_1 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_2 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_3 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_4 (Meet & Greet Cocktail Party, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_5 (Ladies Brunch, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_6 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_7 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: import_92d8d83d-cc7a-4b7d-87de-8f745474b55b_ticket_8 (Farewell Cruise Luncheon, qty: 1)
+      ✅ Created ticket document
+    ✓ Processed contact: John Jacobson
+    ✓ Processed contact: Janelle Jacobson
+  ✅ Completed processing charge ch_3RbFhVCari1bgsWq0w0oJdBr (production eligible)
+Reached limit of 5 for WS-LODGETICKETS
+
+🔄 Starting selective production sync...
+
+=== STARTING SELECTIVE PRODUCTION SYNC ===
+
+--- Syncing import_payments -> payments ---
+Found 248 documents in import_payments
+  ✅ Created new payments document: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Created new payments document: jtwvvCSh0dwASWgUW1TAfF2l635YY
+  ✅ Created new payments document: 7nHbZYYBn7M1thYdSmgNo9n28yKZY
+  ✅ Created new payments document: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ✅ Created new payments document: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ✅ Created new payments document: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  ✅ Created new payments document: TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  ✅ Created new payments document: ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  ✅ Created new payments document: h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  ✅ Created new payments document: NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  ✅ Created new payments document: 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  ✅ Created new payments document: jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  ✅ Created new payments document: VaU4RCrbBAky4Jpe4pvV1GBwRSJZY
+  ✅ Created new payments document: T1AjRFv4v2jHjyoHPOvHp3jF2BJZY
+  ✅ Created new payments document: DLDhRUZVwCaYfLXVguPIa7c2TBTZY
+  ✅ Created new payments document: jhU6YnfsNom1Wu5UEwTpuTUOfkbZY
+  ✅ Created new payments document: ByHBzneYeEzSiok0AlGqi7v7N6NZY
+  ✅ Created new payments document: hmHkLkSEY6gu1Nngf1LYIBaLnPJZY
+  ✅ Created new payments document: zNueSiS1Y3GP59FJH7A62k4tMrTZY
+  ✅ Created new payments document: r9ACcx4DHuxDspPsS8xlhWFWKk7YY
+  ✅ Created new payments document: BYKXKLGaomF5fqksWnC2BDShYz9YY
+  ✅ Created new payments document: H7MsmC9fLnNjwZCB50pm6oUhDZCZY
+  ✅ Created new payments document: Xbs2Q3X1vEvZJnSLSnrbaOF4z1EZY
+  ✅ Created new payments document: 1iYmmAImrRvMZ9FE839tL7f6ZJDZY
+  ✅ Created new payments document: LHxGj2N2xehd2SVPRgahL09Z4bOZY
+  ✅ Created new payments document: HnMhwDtTEYP9hcTF0UHH7Y8UTbBZY
+  ✅ Created new payments document: 3tJyXZgwjgLBCHoyV2uARwGBswdZY
+  ✅ Created new payments document: vlvOb3ZJBzQJ0XzoCOOCm3lVn2VZY
+  ✅ Created new payments document: F8t2nIaFgyXCsaClrIb76CGn5fKZY
+  ✅ Created new payments document: DbJ0DmwrCW68Xy80jcjBhSu1TSTZY
+  ✅ Created new payments document: 3ZJ3HBSr4UdPafNCaBainy55wc7YY
+  ✅ Created new payments document: XZvsmRdAo7cOcbytf8tXyQopLI6YY
+  ✅ Created new payments document: lqOt4jZnIiTTlE97PDYCV3tShsPZY
+  ✅ Created new payments document: zVoh8VCpVfGVFHDPCb6tQiG9uJ8YY
+  ✅ Created new payments document: ZggJj2u2p8iwhRWOajCzg0zZ2YEZY
+  ✅ Created new payments document: jjZo8QIRaYRVHjWEF6kGT2A8SqYZY
+  ✅ Created new payments document: XbYcqGOlLYy34w8GRh6oDKYqSKKZY
+  ✅ Created new payments document: xECGubABWxwHhK8cYuzZJdzEfONZY
+  ✅ Created new payments document: xSlYUjRPlvBqdFASpTgzxyAq1RHZY
+  ✅ Created new payments document: 7NcA5XmQQnii5C4wyZ49VRv4O6bZY
+  ✅ Created new payments document: jXbMStnAmtjde3RrcJyeFi1fUuRZY
+  ✅ Created new payments document: NkToF5EmmRnVVpX6UAqwfq6nBLNZY
+  ✅ Created new payments document: 3zOzdaBQtF8P6LmaVkIriaGTYKeZY
+  ✅ Created new payments document: LZkdOfjFmPKMhwgBnK0HTv3arvJZY
+  ✅ Created new payments document: 9Q1czaAuSZ3MLpRIjWwQ5qK8LlOZY
+  ✅ Created new payments document: bX925MCTlcedZE16Y5isSOiOY47YY
+  ✅ Created new payments document: TFQpQg9T6EMRNsVMCRqzqF9mg1WZY
+  ✅ Created new payments document: ZAMti0WeQC6bzau6xzcwAt5brqKZY
+  ✅ Created new payments document: NgzFLVSyeKvPqooHJ4eqTIp0k0KZY
+  ✅ Created new payments document: vH42rszQNFswJ7wiC9myBYYRVSUZY
+  ✅ Created new payments document: J88iNwjm7wF9AcNLYNHXedPYbo6YY
+  ✅ Created new payments document: RC5yWMBETbgS58lLWRMWrtwEzD9YY
+  ✅ Created new payments document: tWs6GU9fkOLQyYgcvz6V9Le0mAdZY
+  ✅ Created new payments document: FgpZ0BTR7kELg8mqty50XffR9TPZY
+  ✅ Created new payments document: zrVcZLjCpVPZwvQrkA8GIZTrVS9YY
+  ✅ Created new payments document: NaIV57IiGy496z8NvR7Z5Mc17SZZY
+  ✅ Created new payments document: 12Y9un9kSKeqSxMjwcNTefoysTEZY
+  ✅ Created new payments document: rJSoyuFWlC5k0S5hOxIyksf0pH9YY
+  ✅ Created new payments document: Rc8t4dVR4bflbR2WdcWFR22XtNSZY
+  ✅ Created new payments document: jnZ3YaueDdy6TpeRv240eWTnIPZZY
+  ✅ Created new payments document: ZGblTCt4beBAQimRQuctL5KP3jNZY
+  ✅ Created new payments document: xWPsMDzpot3yUl3Fmp5QfRZVpoZZY
+  ✅ Created new payments document: 33u6VwpAUxrUitZKoLmcK4PYFVcZY
+  ✅ Created new payments document: 7Hbz0OpZ4JX09X4l7SdUxJPnx5cZY
+  ✅ Created new payments document: heNjYYSFTdby4tmeKEAMnwdbkDRZY
+  ✅ Created new payments document: P1x35soIc6XBESLOezIkKls90HaZY
+  ✅ Created new payments document: fRho4gi1mRNNspthVjJ4Q8NZOiAZY
+  ✅ Created new payments document: PhTXoxEY7t83xZ0W6Gm6HM44KPeZY
+  ✅ Created new payments document: NS6wzujAidAaj1cx9PKzy5D37BeZY
+  ✅ Created new payments document: NEBRGj6op7oISf96uhiwqfZQNdFZY
+  ✅ Created new payments document: zpKzPrFhACfx4abc3krHZTpasNfZY
+  ✅ Created new payments document: vPOXbkIHyMa1qTHchB83b7PAGiLZY
+  ✅ Created new payments document: L1c2qMTVFThxDa6g5hHiv71hF75YY
+  ✅ Created new payments document: lstUUZGLoUiRPOLIFCoKop60WmWZY
+  ✅ Created new payments document: xwSr2tqK3Ii14EMZuLhNpqgt6VPZY
+  ✅ Created new payments document: 5UStBUAn3Df0PfNLZgrmROQoHGVZY
+  ✅ Created new payments document: dgFOK3VFNhwlyf0K1egTNMulrANZY
+  ✅ Created new payments document: VQd3h8r4ehs0xTXRRCidLDM820CZY
+  ✅ Created new payments document: RcQdd293kG3tgKPwmzdaMdNo7NNZY
+  ✅ Created new payments document: FczBZ5YQy1PlX6djXrtgCKrEG1UZY
+  ✅ Created new payments document: pC7qSVdmwZYAhAN2w3NPs36Nb0SZY
+  ✅ Created new payments document: RosmA28Xi9BzzQwwES3tsOWRdYeZY
+  ✅ Created new payments document: 79SL716LQwG0zVJZ1TxpkLK8eqUZY
+  ✅ Created new payments document: RM6e7VMWyxaNuqqCxR7Opl6d2nBZY
+  ✅ Created new payments document: laubj2PtWwk8SipniPePQh3JpvZZY
+  ✅ Created new payments document: bdGFf40iV4f3k5j16iphYsZha3RZY
+  ✅ Created new payments document: DlOKwvWPkkh5rIdCIPjtkoojsdVZY
+  ✅ Created new payments document: XfMnfkI85DhpMPXW6Mr6IQpWQCHZY
+  ✅ Created new payments document: 3dv5BmKw6lKTzfrI15nyA6s8m4FZY
+  ✅ Created new payments document: 370YBLziz8RRYxmsIfctWM4rF7GZY
+  ✅ Created new payments document: rdix9OZzwNFDNYRJwoFqsNiULENZY
+  ✅ Created new payments document: lekxnHOHrHY42pShBuJfpRUr7SNZY
+  ✅ Created new payments document: 7vZQ8YN7BhOxVpETSzSDjLlSp6QZY
+  ✅ Created new payments document: LlYkcYQ4b1pgSPzsVqlyAUkweeeZY
+  ✅ Created new payments document: HHmOYDiPe7nwkO6KYw7r4dpuTkYZY
+  ✅ Created new payments document: T5AEAkfQFHF9CI1b7v2yv4egtrVZY
+  ✅ Created new payments document: 7XjLCTxeNAAAykVYTFKCtzZmWS9YY
+  ✅ Created new payments document: 92sMiqgdiH2P8yAJGwej7bUAUYMZY
+  ✅ Created new payments document: bnrXSrVTfV1FIzAKkapM6sp4QOTZY
+  ✅ Created new payments document: dSU7hoIaUNr1x5aJVp7yZ6554D6YY
+  ✅ Created new payments document: DhAocSNR9PIbB9TgEgcYbmVmfAZZY
+  ✅ Created new payments document: tCi0nClaAQ4k88wNplm79U9yY46YY
+  ✅ Created new payments document: RIChyhwANtNCls3rYRvsPQy5iK6YY
+  ✅ Created new payments document: hqPhgoQhMRkIbSi9O6rCUt4TiCdZY
+  ✅ Created new payments document: 3v6mbY65IAHlzKbnJifpwhXPwabZY
+  ✅ Created new payments document: 7bfkwdADLoMVIiomacrQ9v4PXQAZY
+  ✅ Created new payments document: jbXPLgJtdJsiBTbbN2ZMe3fnKLUZY
+  ✅ Created new payments document: diGcHS9MJpx0oo0yhHwZONJ25DTZY
+  ✅ Created new payments document: FiUmy2VIVo8V5JBKrCr4IOyYhiIZY
+  ✅ Created new payments document: lwdpPfy7H2Rym4gNjaKnktr5ulfZY
+  ✅ Created new payments document: jvDGAbKHUVx16rkHQInX8NxfPC7YY
+  ✅ Created new payments document: dIXPV0xclhPC935OvZHOGrmEEJFZY
+  ✅ Created new payments document: hGrS1MYZ8IB3zyJtoP2s5CwqyWWZY
+  ✅ Created new payments document: fdRvlYzE8ksWM0nWPz9V1qFuXKQZY
+  ✅ Created new payments document: Rk2kG9f0vIEQ0DzjFKzQOoTXkZCZY
+  ✅ Created new payments document: Dt8LAkYSviVyz4T9RAVf7TUQlF8YY
+  ✅ Created new payments document: J6RVXzl0y62n9MPP8J5v2zuimoFZY
+  ✅ Created new payments document: t87O3JiKyJimjSzIFwyERDYAhAAZY
+  ✅ Created new payments document: twzPst7mt2dGlSiQP1D7OeTxTqQZY
+  ✅ Created new payments document: d6k5rbLWHh719Wj0WjpK679kXsbZY
+  ✅ Created new payments document: lC0aSGOPd2OAgoSYKx2rytcLJDaZY
+  ✅ Created new payments document: JUs4z0q20OlbqcoYrkdgmvPlVAZZY
+  ✅ Created new payments document: tYrJ8JutaWSGf0bp5TuzPnbyyeQZY
+  ✅ Created new payments document: tQVOLnfLzfOG2fdRhTM5WbyqZTcZY
+  ✅ Created new payments document: Vsti8dagE7RHDMmaizRSX8bOSvDZY
+  ✅ Created new payments document: HzKTdCiaksx4DtgfzPeSaIVQ25eZY
+  ✅ Created new payments document: VecpaxQQFLKQoGeefKXVdCHw8hWZY
+  ✅ Created new payments document: h6jhTHa5I2QAFFtjEYzXw7IA32KZY
+  ✅ Created new payments document: hCJ6FAPKNoexfPhQKzOLdo1kS26YY
+  ✅ Created new payments document: 5Q6K9GxGHuOUUUKSQGIULT6ih4JZY
+  ✅ Created new payments document: 1qijtxakY30s5nfoItkOSWiog3TZY
+  ✅ Created new payments document: vPsIuRUuf3BEcnnzeY87AlIqRfOZY
+  ✅ Created new payments document: ztAVDx4zEqBkMr6gXCRmO0lcRePZY
+  ✅ Created new payments document: PfsCd4YgbnAqx8x01wdxepBkjYQZY
+  ✅ Created new payments document: BQexzQYYXhec7TrhiHKFxye9bHQZY
+  ✅ Created new payments document: Lpq2h2VnS8AuHtNNYn4lTnJYqxHZY
+  ✅ Created new payments document: 7V0SJd4PbDhVxuf1bjRaxgtfnIUZY
+  ✅ Created new payments document: paDW1RqVIFg3kJUVej7eEO4oz19YY
+  ✅ Created new payments document: JG1cNGMfoc3r49NM5GheuzvTqeAZY
+  ✅ Created new payments document: 7BUB84OG9Tz1JogJtn4VOzZJ7wUZY
+  ✅ Created new payments document: brLW4ocXdk6KNsLOqab2yB5i55bZY
+  ✅ Created new payments document: nXI99IflJUTZJ8S52HQMCMedqHIZY
+  ✅ Created new payments document: FSESS8kJ2bThjXIMhwL42TsJXoMZY
+  ✅ Created new payments document: vnESK2IO2niiM8hdfyqnV6SicTEZY
+  ✅ Created new payments document: 3t50u6EkI02I8LJERt7eGpiX8BQZY
+  ✅ Created new payments document: b1ylXOxVR4tZigrl68CAucCrQCaZY
+  ✅ Created new payments document: Pdbu7w9Ia2VEdeu2lhuZEBVvhzfZY
+  ✅ Created new payments document: DjHXcnzNvuuZVVGxdUe9PXWraYJZY
+  ✅ Created new payments document: bbt1J0xMeBdB1GXNakdpciUyx6FZY
+  ✅ Created new payments document: NgpcNLkiQncLFbeYGjPcIoHmYCKZY
+  ✅ Created new payments document: F8fhweZDYprBtufFvjT4OHwzGVQZY
+  ✅ Created new payments document: d2kKxi7eaAaWfRmM5rItziib3uXZY
+  ✅ Created new payments document: xQyzitlwWDvc94uddMstbJq5tFaZY
+  ✅ Created new payments document: v7Ed2GTMCcDPwgH2IUcrBGE3ObJZY
+  ✅ Created new payments document: HXi6TI41gIR5NbndF5uOQotM2b6YY
+  ✅ Created new payments document: V2WEIhJincVIOjoFUZ4o4EWeZdIZY
+  ✅ Created new payments document: BMwf5spa7BBlGwDhKCDthTOytrNZY
+  ✅ Created new payments document: DTRYoN84BeabyDsvp5bMIpyrFfNZY
+  ✅ Created new payments document: luETY8JcSgCAhzw27WP84BO6pyHZY
+  ✅ Created new payments document: nfAJMT9smkvHFImp7lShnhiNmycZY
+  ✅ Created new payments document: nVNemNbGg3V5dGg2EOXOnLa58AeZY
+  ✅ Created new payments document: BkojsiXbMAD3Z2jCOGa7cLkbnLBZY
+  ✅ Created new payments document: p6dHRqRBwz0bw7yklyetsLreAE9YY
+  ✅ Created new payments document: bVMqBByDJp9yIcOVJRAogmJZ7EUZY
+  ✅ Created new payments document: xinnBBHRFYuy3JR4wlbRUZ2CY0YZY
+  ✅ Created new payments document: zXZThpYVO8KyM4uwOQf5ad0MuyYZY
+  ✅ Created new payments document: X59ZvqxyZvkaawUof4SvjLY5Fs5YY
+  ✅ Created new payments document: t2UCQaP0X3SDYxmOwmX5RZdP9QCZY
+  ✅ Created new payments document: 9Wc4yR97x4K7CwfmpDm2AElfJ65YY
+  ✅ Created new payments document: dcdFhu2M7kMHzVRf7EE1vlLjoyIZY
+  ✅ Created new payments document: RMaIE53O5PWQYBETawn8c7m7Lk9YY
+  ✅ Created new payments document: 7HHtumLtnn9TQEpHztSFQ1HmWyTZY
+  ✅ Created new payments document: LzJB0GgC4UKPSMEUo384kAu4fiOZY
+  ✅ Created new payments document: 58Y6v0luMXMOqE9wsrOKhIW46ZAZY
+  ✅ Created new payments document: jDTnfjE3tFnURQOy863LR0YKX8IZY
+  ✅ Created new payments document: t6moB5sDCcSL8pHTwy98X83vN4BZY
+  ✅ Created new payments document: X78G8L8jnaVA2qIKzSwglpM8rOKZY
+  ✅ Created new payments document: xkYdGENRUz2s3iBqkbML9OylpvEZY
+  ✅ Created new payments document: hMErsORG9vqZd49YefTlTEn53w6YY
+  ✅ Created new payments document: NaSwSkpSHMesYM7lx2HvncIxsJHZY
+  ✅ Created new payments document: vDKKIIvsCi63tR6q5thdlKzNTuSZY
+  ✅ Created new payments document: RCnHtK6KKo5G4czuHmfXayEpDvcZY
+  ✅ Created new payments document: tIjJoPaVZsrjIiZlyKRXgIuFZyRZY
+  ✅ Created new payments document: BYmThRPlQLyqt5SLRbhA6tuMPPAZY
+  ✅ Created new payments document: HR9djbytZaLwFzE5RwpC2DTBg7ZZY
+  ✅ Created new payments document: PbKYW5dTefMFveaPc7t8lCa8LnYZY
+  ✅ Created new payments document: xqRab8co4ELMetWbwcfLCt7Lrn5YY
+  ✅ Created new payments document: tyQp6jmUXiLTt00hQG760tyfmvUZY
+  ✅ Created new payments document: 7pyuYSdeLSaxqHTANH0bpWhMxAfZY
+  ✅ Created new payments document: xUWuHnQBFql1I3HRxZchQZLQB28YY
+  ✅ Created new payments document: FMTz2ezwGBUwucHFU1xiq6q4CR8YY
+  ✅ Created new payments document: vJBWFiJ8DfI6MSq2MB50eKJDibMZY
+  ✅ Created new payments document: Bcqu6v3fkpayVua3B7EFQVQTVsUZY
+  ✅ Created new payments document: lAzEFFmobfu1Bsi4GBgUhoHnogDZY
+  ✅ Created new payments document: liKnNdyy58sl1oAfIfGdBfR7Ge7YY
+  ✅ Created new payments document: tqKw6hCOQCQiHCz2pOyT7ZA46s7YY
+  ✅ Created new payments document: ZOLZmSQAJe7G4cyoYeCnLc3upsMZY
+  ✅ Created new payments document: NaQ5P09PK2O5BO4oHBhHkjzBa89YY
+  ✅ Created new payments document: jN0TCt0cQdbeXYZq3KmL2pAV7BCZY
+  ✅ Created new payments document: tqwHaIAVYtXbZaTNNE5ddSssGyMZY
+  ✅ Created new payments document: Zyn0H9aRzdlpr7sTuo4M1O97elTZY
+  ✅ Created new payments document: NK6UGlOaLd9NNb5LMJxstb53UYeZY
+  ✅ Created new payments document: RWXQaxVs7gkStkbz50DYJgijUOcZY
+  ✅ Created new payments document: 1IzG6pTueipzWdO21a2rKZsJHWVZY
+  ✅ Created new payments document: J4Q9jrZqXkDFf6HQFEuZr4f0uv7YY
+  ✅ Created new payments document: 71UGzZLU4WhNOq4NtU3dEay7RcYZY
+  ✅ Created new payments document: bTp1t6NLdAcZLC4aAy1b7uM0KP8YY
+  ✅ Created new payments document: bD5NnYXdmohsMmTpxZm4LyWgmaDZY
+  ✅ Created new payments document: B8ola9eL7qdDsS429Y0aVe2RdFEZY
+  ✅ Created new payments document: 1amt9KhphHWoVBXhbnF9gnWDlLPZY
+  ✅ Created new payments document: pCNpJb7Bp93yAKZV3a34B2Vib25YY
+  ✅ Created new payments document: d4jRjdLCW6thKMMuZi0X5ymbDPcZY
+  ✅ Created new payments document: 1S6rua5ucroHqCBIVMdV1n2cBKNZY
+  ✅ Created new payments document: nNV6XALOC9WNOQplK9u5up0cK6ZZY
+  ✅ Created new payments document: Pf2V8smZi99kptZZOs1IxbqbyXOZY
+  ✅ Created new payments document: NgNWDUI2b0VzwFZjgjo7Yh5dxtPZY
+  ✅ Created new payments document: HrQuWdAMVeadtZVbhiwCcsuKklQZY
+  ✅ Created new payments document: Dtw1wW3iAbqZvZ3KPbqlgc0Tn2DZY
+  ✅ Created new payments document: TTZqeHFGe9UeduE9UPiYtVsVdscZY
+  ✅ Created new payments document: hoKDYNvhSl2g1im9ZebEfh3nocIZY
+  ✅ Created new payments document: BA2vySToq7pA3Gv6e99AEwGtkSEZY
+  ✅ Created new payments document: ZGl4I1DWP3Szndxp5dqn8p4ryCTZY
+  ✅ Created new payments document: 3XGeLFuHz8QmRUIhslQ1RoVdNPLZY
+  ✅ Created new payments document: 7PRUEiqETLsQ2bnhNVAyl5fv4aYZY
+  ✅ Created new payments document: 7fTbxcH1GzdONh6fZjVckE4KoPfZY
+  ✅ Created new payments document: nDAOlY1ey3RSx6WVYo9WnCdvp9aZY
+  ✅ Created new payments document: jJMU4B1lI87JOCclMGdKxwisHrcZY
+  ✅ Created new payments document: VaqvtDCVDAyz6EO20feKGblOc3EZY
+  ✅ Created new payments document: ZsEMTNqhmD0zwVETdn8eYPCmrrcZY
+  ✅ Created new payments document: rFAMGl5AZuysQmzGsZKQkfOTygPZY
+  ✅ Created new payments document: DrnJc2FI9QPE3KEktWcZewKKzzJZY
+  ✅ Created new payments document: R40EXOAyB9pW9wgL982AtQwCRo9YY
+  ✅ Created new payments document: F0fRHM6SV5iy9ac26eznQ1nkDBgZY
+  ✅ Created new payments document: ch_3RYNqYKBASow5NsW17D1d6gl
+  📝 Skipping ch_3RYNH3KBASow5NsW0hd6SVQA - not eligible for production sync
+  📝 Skipping ch_3RYMRnKBASow5NsW1rQGpHtU - not eligible for production sync
+  📝 Skipping ch_3RYLpiKBASow5NsW1j6bahnX - not eligible for production sync
+  📝 Skipping ch_3RYJM8KBASow5NsW0B6fbNrc - not eligible for production sync
+  ✅ Created new payments document: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Created new payments document: ch_3RatmpHDfNBUEWUu0aKhh2Yq
+  ✅ Created new payments document: ch_3RatcXHDfNBUEWUu18ZKzlo9
+  ✅ Created new payments document: ch_3RatabHDfNBUEWUu0Iycwsai
+  ✅ Created new payments document: ch_3RatXHHDfNBUEWUu1PqYeK60
+  ✅ Created new payments document: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ✅ Created new payments document: ch_3RbGXFCari1bgsWq1HXOJzrX
+  ✅ Created new payments document: ch_3RbGAlCari1bgsWq08w1BHrF
+  ✅ Created new payments document: ch_3RbFmZCari1bgsWq04o5RQDm
+  ✅ Created new payments document: ch_3RbFhVCari1bgsWq0w0oJdBr
+✅ import_payments sync complete: 244 processed, 244 created, 0 updated, 4 skipped (not production eligible)
+
+--- Syncing import_registrations -> registrations ---
+Found 215 documents in import_registrations
+  ✅ Created new registrations document: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ✅ Created new registrations document: 1dfc42bb-7fae-4cff-a763-f57934a880e0
+  ✅ Created new registrations document: e976c5a7-e506-4acf-a718-d893ded67f10
+  ✅ Created new registrations document: 385f58c7-9a3b-4b45-9e3c-d461fdc6b19d
+  ✅ Created new registrations document: cdc7fc39-8828-4f75-9314-66e54534da7a
+  ✅ Created new registrations document: ad076c4f-95a4-4fb0-9e50-521916386d64
+  ✅ Created new registrations document: a27ae77c-5e64-463f-a20e-c39febc3b537
+  ✅ Created new registrations document: 796c4447-b3f8-404b-8610-322b61f92985
+  ✅ Created new registrations document: fa2a849a-1276-444e-bd93-a2303871e5f5
+  ✅ Created new registrations document: f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b
+  ✅ Created new registrations document: d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3
+  ✅ Created new registrations document: 19cea4d0-6f5a-489a-abc8-56c4980b37d0
+  ✅ Created new registrations document: aaef562e-92c4-4f6e-860c-e9874dec341e
+  ✅ Created new registrations document: d9bc7cb7-31c1-4a13-8a92-c293f3d1cf63
+  ✅ Created new registrations document: 2d56701e-263f-4d25-b037-6a77e4e56b7b
+  ✅ Created new registrations document: fc71d5ec-a70d-4874-86d1-ef1e2c05d162
+  ✅ Created new registrations document: 4637d778-f452-4f79-b7a8-0391b1845a90
+  ✅ Created new registrations document: 58603dca-656b-406a-afa4-3f4770fb13f0
+  ✅ Created new registrations document: ac888821-9ecb-4783-ad3f-08a035cfef88
+  ✅ Created new registrations document: 41139e7f-dc81-4b0e-a937-04be23115719
+  ✅ Created new registrations document: 6b9d5cfe-7d0e-4524-b3b0-998d4b1d4307
+  ✅ Created new registrations document: 4cbfbf96-09a7-48b7-9f5d-defc560f4437
+  ✅ Created new registrations document: 7c2c244d-e49d-42f8-91e9-b17eaf4c524e
+  ✅ Created new registrations document: 0ffcc96c-c707-4734-b9ee-01e88f7f6287
+  ✅ Created new registrations document: 4a7a7ca5-ed7d-4251-b04a-b9169fde77a8
+  ✅ Created new registrations document: b95234d7-8980-4d48-8854-af9d1fc06b49
+  ✅ Created new registrations document: de41c05d-883d-4d81-8076-61ec5d4118f7
+  ✅ Created new registrations document: 81a0efea-6c33-44e5-a774-15f7503103ef
+  ✅ Created new registrations document: 87f05b8d-b855-4257-8ff6-4e1e3054f284
+  ✅ Created new registrations document: c78c299a-6d27-466d-83e0-52bbdea0ce6d
+  ✅ Created new registrations document: 5f5e6262-ee70-442b-b60d-13a1e9d05b59
+  ✅ Created new registrations document: 7cd73df6-1f8f-4ef9-ac58-4add682a22fb
+  ✅ Created new registrations document: 7e45338c-6b8f-402b-bc64-c6060b1dbf3a
+  ✅ Created new registrations document: 5e960fef-18b2-4cb9-879b-3b6d421094f3
+  ✅ Created new registrations document: aaefe8b5-8fe0-4d42-ab55-d6041b5f368b
+  ✅ Created new registrations document: 32d21494-e4f5-4b47-bde3-a0b2ee3e5168
+  ✅ Created new registrations document: 280d8507-8f26-4dff-929f-bee4fb08df3c
+  ✅ Created new registrations document: a628400f-70d0-4dd4-a911-085d832f7ef0
+  ✅ Created new registrations document: 7eeaa0c0-940e-419e-acfb-74cc749ae9f7
+  ✅ Created new registrations document: b5319e51-5e80-4d52-92ec-ea04d04d4b17
+  ✅ Created new registrations document: dceb2353-edbb-40b5-8e0b-3397b52f5251
+  ✅ Created new registrations document: 7e849067-7a9f-47e9-a7ef-afbf41287526
+  ✅ Created new registrations document: e59a4310-1b71-4d40-b54f-9b257119ce0c
+  ✅ Created new registrations document: ba6e1cd9-e6dc-44f3-bd6e-147e97757322
+  ✅ Created new registrations document: ae264762-37a8-4855-96f1-731de78101c3
+  ✅ Created new registrations document: c07e9082-74d6-40c5-9706-4a182bbae469
+  ✅ Created new registrations document: 6de84192-3fc4-483c-8f88-cfd041da7d4d
+  ✅ Created new registrations document: b6323eba-bc87-4af2-b1e7-ef2596a309a3
+  ✅ Created new registrations document: 06af9237-4b36-4b3a-a0be-f2b6621163e2
+  ✅ Created new registrations document: fb64e002-786a-477a-bf28-a1d70b8956d5
+  ✅ Created new registrations document: 4ec8df77-0ff2-4ba0-9dda-8ce7ef6897c0
+  ✅ Created new registrations document: f8ef3cf1-c1f2-4436-955b-ba03783db8c4
+  ✅ Created new registrations document: 1bb667a3-772c-4128-ad01-195f1a390b26
+  ✅ Created new registrations document: 8822a242-33f0-465f-a36f-e9fe3e0bfa42
+  ✅ Created new registrations document: 76dfe363-bd34-4cf7-aea3-e9aa8aba6a92
+  ✅ Created new registrations document: bebf3902-d258-4f59-b196-b325a0a13067
+  ✅ Created new registrations document: 9824649f-23fd-4b35-8c98-6689d165e0e5
+  ✅ Created new registrations document: d86cacab-f4a3-42b8-b036-c9d87879362a
+  ✅ Created new registrations document: 05b60b38-d9a4-441c-8719-e159dca33801
+  ✅ Created new registrations document: 5f8c5038-506d-4415-8e99-b31d9aafd97c
+  ✅ Created new registrations document: a6c1b7d4-2652-48af-b463-dcc1c0672e1c
+  ✅ Created new registrations document: 55f5efa0-7fa6-49b0-8af5-e8d99b8e63c7
+  ✅ Created new registrations document: 5ae82936-f475-4bed-8949-909240cca6b0
+  ✅ Created new registrations document: 5a6c07f5-a7c6-428a-b644-1b483b123cd1
+  ✅ Created new registrations document: b099cb88-4b59-4bfa-8614-00168efe4506
+  ✅ Created new registrations document: dc7124e2-ac91-4db6-ab78-e234c01e2b6f
+  ✅ Created new registrations document: 00b28deb-15cb-4574-aebf-62b283014e5f
+  ✅ Created new registrations document: a5ed4449-72fa-4a36-a8cd-fa3ad7f39216
+  ✅ Created new registrations document: 09eedf17-8027-486a-ac39-8f12ce11d946
+  ✅ Created new registrations document: 83a0301d-1cf4-4619-b60f-f31db417543f
+  ✅ Created new registrations document: d0cd255d-8df7-4c51-a059-77b09d3fb77b
+  ✅ Created new registrations document: 51bb86f4-9377-47c6-ace8-437f2adf9152
+  ✅ Created new registrations document: 39909307-3d17-4c5b-8079-0a1af43bb9cb
+  ✅ Created new registrations document: 9e54b96f-1d01-4405-b64a-4cabf53195d9
+  ✅ Created new registrations document: aaf37b5b-9dbd-4013-b554-32617bf87d51
+  ✅ Created new registrations document: eaf0a53d-323f-4414-88af-2f99e7d811c2
+  ✅ Created new registrations document: 51e2ba36-4e5e-4ad9-899f-6d96aecc570e
+  ✅ Created new registrations document: 6c513d98-b99d-44c9-8866-fb52a8b4e73a
+  ✅ Created new registrations document: 368f6bf4-7548-4e40-acdb-b3e18960dcba
+  ✅ Created new registrations document: 309dbd62-cd14-4508-ae5d-0fec9460480c
+  ✅ Created new registrations document: f9455f8b-f5cf-473c-a4af-eda75d079b4c
+  ✅ Created new registrations document: 739b318b-e420-4f3f-84bd-85363b7dc646
+  ✅ Created new registrations document: 588503a7-9ddc-4194-9ebe-2f0cee5d333c
+  ✅ Created new registrations document: 0e3cf4ae-30db-4b57-93d5-e921ffbb3b68
+  ✅ Created new registrations document: 219863ff-00b5-484a-b4ac-c5044dc9da56
+  ✅ Created new registrations document: 31c69b73-c29a-49c2-875f-0edc956887f6
+  ✅ Created new registrations document: 795ee269-5557-40eb-a630-a632d1b8b12c
+  ✅ Created new registrations document: 515643e7-96c9-4992-a06c-b6921333884f
+  ✅ Created new registrations document: d887bfbc-9cb2-436e-a88b-9b09f0036e3d
+  ✅ Created new registrations document: 8edbb829-03bd-43f1-942f-6b794ae016fb
+  ✅ Created new registrations document: c895052b-b2b8-4425-a7dd-14af04b7b305
+  ✅ Created new registrations document: e7178d67-e8f8-4779-8ffe-a385fa2a4c8f
+  ✅ Created new registrations document: d5ba2d93-37b0-4345-bde5-d8452d00d2a1
+  ✅ Created new registrations document: 5c090c4f-1200-44c6-a1b8-5ae407d80773
+  ✅ Created new registrations document: 4d7cd41b-a927-4e54-9507-6918345dc77a
+  ✅ Created new registrations document: dd28f520-702c-4b4c-8221-1e9b82cdbd13
+  ✅ Created new registrations document: 7e7be040-bea3-4dad-a315-f5801d481c9b
+  ✅ Created new registrations document: 7dcedd29-aa28-4311-9189-72c2dd0df3c6
+  ✅ Created new registrations document: 139812d3-07bb-469e-ac68-d5bac4f4ff7f
+  ✅ Created new registrations document: e1e42741-88e3-448d-9e00-ac51d1241561
+  ✅ Created new registrations document: 8cdc833c-dccc-443c-b94a-7acede322b12
+  ✅ Created new registrations document: 49c7d9b4-a320-4a4e-9527-899bf9ac2926
+  ✅ Created new registrations document: cce7636f-91e4-4d62-8b09-732a2fdc08a3
+  ✅ Created new registrations document: 9e876811-1f10-43f9-be9d-232678703c25
+  ✅ Created new registrations document: 21533af7-519e-4240-9bbe-f5bc093c55ea
+  ✅ Created new registrations document: 79f02689-658e-46f3-b710-b9abfb594a2f
+  ✅ Created new registrations document: 0423c488-3733-491a-8f47-e8e8b207f292
+  ✅ Created new registrations document: cb808fcc-9dbc-4dae-9bf4-59621c2ad197
+  ✅ Created new registrations document: d77540b8-e45c-4e4b-bd86-560599a4c7a5
+  ✅ Created new registrations document: 9e5261c3-f48b-4ef3-a50f-4ef4b310308b
+  ✅ Created new registrations document: 44ea15b1-3249-4a62-9073-d58d42a0de2f
+  ✅ Created new registrations document: 68c9c37f-d92c-468d-8b9c-f80f8cf12df8
+  ✅ Created new registrations document: 2f1d05ab-f7aa-4d83-8bc0-8ec705e1b34e
+  ✅ Created new registrations document: 85fe486f-8fde-40a4-8462-0b5249c462df
+  ✅ Created new registrations document: f6e6b6f2-3857-4041-8d58-6a31476fcfd5
+  ✅ Created new registrations document: 75da2228-08db-4570-8208-3ee9972cf36c
+  ✅ Created new registrations document: 2d950769-dd26-462f-a79b-99e4d776cd2f
+  ✅ Created new registrations document: 9b78d16f-5de8-4a8c-aed4-d26ddf1868d0
+  ✅ Created new registrations document: 2e8f9f51-ec8d-48fc-bc6c-a9ad6bb3a0d5
+  ✅ Created new registrations document: 450615ce-0686-45e9-951e-a45e2b131b77
+  ✅ Created new registrations document: dec89eb5-8a11-4f8b-b0ab-f814ee6958f8
+  ✅ Created new registrations document: 70128447-9794-4d90-a0f8-07db6714923b
+  ✅ Created new registrations document: 409c2fb7-3879-4268-9e76-6b1ae35e261c
+  ✅ Created new registrations document: 6cedcf70-4b1b-4986-9853-a1b4a82e1932
+  ✅ Created new registrations document: 75005e54-cb64-40da-9ab0-d6e689cea9db
+  ✅ Created new registrations document: 375ee76c-95ed-4508-87ad-da2cedc2dde2
+  ✅ Created new registrations document: 97614ee1-ccbe-4f7e-b3dc-4d52869eb7e3
+  ✅ Created new registrations document: fe60b238-b863-476c-8009-44c8a5ba8a36
+  ✅ Created new registrations document: f52478d1-10da-4de7-9aa9-a297ae136f6c
+  ✅ Created new registrations document: 6f6d034e-b826-4bfd-8f4d-0bdfa6b5762f
+  ✅ Created new registrations document: 647b4256-1b94-4398-8826-8fe6c252db7d
+  ✅ Created new registrations document: b468b78e-4f44-41c4-9eae-f642fe941206
+  ✅ Created new registrations document: 039c8b9c-c654-4119-9f5c-29f03c4e6b95
+  ✅ Created new registrations document: 0b3fcddb-d431-4691-97e9-64d33e8b3c8c
+  ✅ Created new registrations document: 7114a544-ec4c-40b5-9485-3012da742cb3
+  ✅ Created new registrations document: a0ab86de-bcfd-4b22-97ce-9038827dcd0f
+  ✅ Created new registrations document: 62e67a59-29a2-4b2f-bab7-2db01ea30888
+  ✅ Created new registrations document: bba6ee92-5deb-4ce5-867a-75bbf29fb877
+  ✅ Created new registrations document: 4ba9b2e0-8ffb-4251-adb4-4f2234ca9507
+  ✅ Created new registrations document: 173639de-a405-4e1c-ac8b-7f9572ff7711
+  ✅ Created new registrations document: 9eb79626-70a0-4d70-96ce-d4d0a0aa2553
+  ✅ Created new registrations document: 6172b26b-702d-4a1c-93f0-974840f0ee99
+  ✅ Created new registrations document: 6bd9c94f-c6a5-443f-86ad-b29f90300429
+  ✅ Created new registrations document: c4bfb854-0a27-4fba-af61-087d6b14194a
+  ✅ Created new registrations document: f0e447b3-880c-4ec5-af4d-25742e4a2a2f
+  ✅ Created new registrations document: 83914200-f9f2-44ae-8684-394742bbe76d
+  ✅ Created new registrations document: f4eb291d-52e1-4acc-936f-cfc535b45719
+  ✅ Created new registrations document: 8a9e62c9-fa00-415d-8c49-d51692b9920d
+  ✅ Created new registrations document: 604664e3-1eaa-4de8-a1b0-f09b0e46bce0
+  ✅ Created new registrations document: 91c2a46f-dcec-4bfd-8561-c31524030f4b
+  ✅ Created new registrations document: 900c20e9-59b5-4578-9a6d-7764f03a9515
+  ✅ Created new registrations document: 00abfa8f-0514-4ec3-8f8f-8514183aac86
+  ✅ Created new registrations document: f1f1a28d-53c4-4be9-ab29-55fd70274920
+  ✅ Created new registrations document: bef7f1ce-8808-4683-8e9c-587a2f7ed29e
+  ✅ Created new registrations document: 9e6c1cbe-21c4-42c2-a988-b0d145829a45
+  ✅ Created new registrations document: baebf858-40a8-4cf6-8035-d225ef296b1e
+  ✅ Created new registrations document: c022003e-1729-4560-a40f-7a8f56652b4b
+  ✅ Created new registrations document: f7d4731c-91dc-4f21-b471-e42a0041874a
+  ✅ Created new registrations document: b8a8e51a-312b-4d72-9c79-ede5cb0cd1ab
+  ✅ Created new registrations document: 8cd577e4-1039-4d72-bce7-2eb58f64c489
+  ✅ Created new registrations document: b8706b26-1b2c-468e-9538-e98bf8000a42
+  ✅ Created new registrations document: a938a263-53d0-4bba-8502-331a867a7d44
+  ✅ Created new registrations document: 47861308-3fb8-4a0e-987e-6365273012b4
+  ✅ Created new registrations document: 4b22c09d-aefa-4220-94e0-d7edad115578
+  ✅ Created new registrations document: 93b24ee1-d710-4f2f-8840-9ffbec20ce94
+  ✅ Created new registrations document: 49427263-bcd4-4f62-9dd5-d4608a56c2ef
+  ✅ Created new registrations document: f5c2fc05-693b-4b9b-ba26-dc73dafa8a20
+  ✅ Created new registrations document: 1b18bed4-a118-46cf-943f-abca00b3a939
+  ✅ Created new registrations document: cfb66d25-659e-4b24-91ee-37e4507cd12a
+  ✅ Created new registrations document: a9de69ea-fc72-439b-ba2e-19adcc1e6d97
+  ✅ Created new registrations document: f1196dbd-1c63-41c9-922f-686ec61f12f2
+  ✅ Created new registrations document: b55fea0f-3a17-4637-92ef-0a67a6341586
+  ✅ Created new registrations document: de00e37c-89ed-4eab-a19c-224d7bdba504
+  ✅ Created new registrations document: aa598020-d3cf-46d4-bd76-04aad430eaeb
+  ✅ Created new registrations document: 5b1fc3d4-713e-48bc-9c61-e3d147d412f6
+  ✅ Created new registrations document: c4d36b32-32b5-4c62-9377-4e933c1d1142
+  ✅ Created new registrations document: 87024f59-994e-4add-8023-cc7172c715c6
+  ✅ Created new registrations document: 7c6f0155-4b2a-4f36-89eb-2395536ebe03
+  ✅ Created new registrations document: e94b9efd-0100-418a-8b7b-6e0ae715897c
+  ✅ Created new registrations document: 813022df-ce60-40ca-86af-728570ad728c
+  ✅ Created new registrations document: aa1ea21e-c941-4d1c-9694-9868cb092f09
+  ✅ Created new registrations document: 1408e014-4560-4206-96d5-6fd708eb0ddd
+  ✅ Created new registrations document: 7231267e-f4a2-4b95-85ba-b7925b1054ee
+  ✅ Created new registrations document: 38dc92b9-63f8-4d17-8ba6-ac7137f7d463
+  ✅ Created new registrations document: 4fbfa5c8-3e17-453b-9423-917bf83d4506
+  ✅ Created new registrations document: 85fcc818-014a-4b5f-b448-ff46f70b57fe
+  ✅ Created new registrations document: 5a5d3a4f-fa29-4848-aa25-65634e6822ab
+  ✅ Created new registrations document: ba9a94ac-c4e1-43ab-9b06-a1f0f092fc7e
+  ✅ Created new registrations document: 4939a09c-9b14-4dc8-8505-37638b436b56
+  ✅ Created new registrations document: 4d93aa3c-51ae-4901-a655-de7e51cea43e
+  ✅ Created new registrations document: f132e11b-8809-4dbe-ad82-592ca29000de
+  ✅ Created new registrations document: c99cdb9e-3d4e-4624-86c2-e9f41a6255ad
+  ✅ Created new registrations document: a2f31052-3039-4e0d-b820-526e0e7ca4f2
+  ✅ Created new registrations document: f5885035-cf1c-4f9d-bf95-7e7a16e15309
+  ✅ Created new registrations document: 600237d1-9976-47a8-bebb-e78592dd3f6e
+  ✅ Created new registrations document: 68e99183-46fe-48e1-9e90-4e580f53ce0d
+  ✅ Created new registrations document: 842c625b-7cfd-4e7f-a661-5d92955f792f
+  ✅ Created new registrations document: 14defdb3-36f6-4c1b-a3a9-f7716ada7866
+  ✅ Created new registrations document: c1f63a73-7f17-4d3f-a4a2-f25f50663746
+  ✅ Created new registrations document: 3fa1b373-cba2-4080-ab20-ecdcf008b382
+  ✅ Created new registrations document: 39f33bb9-9f38-40af-a868-30813e6ca15b
+  ✅ Created new registrations document: 1b538a7d-4370-49a3-a1af-b3110a4015a0
+  ✅ Created new registrations document: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  📝 Skipping a33c5107-9221-49ee-8bff-b289b452e784 - not eligible for production sync
+  📝 Skipping 99b62c5b-2d48-406a-ae48-168f193d4be4 - not eligible for production sync
+  ✅ Created new registrations document: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✅ Created new registrations document: a502eec2-4f0b-44aa-b605-a6ec622a546a
+  ✅ Created new registrations document: 529f2e9c-0ae1-4fde-ac1b-f2cd5eb70776
+  ✅ Created new registrations document: eca933dc-b896-4ffd-8569-94e1e6646798
+  ✅ Created new registrations document: 2a0eef32-78e2-4ad8-be6a-db2e356db9ef
+  ✅ Created new registrations document: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✅ Created new registrations document: 371a8bae-7c4f-4650-a0d6-085912e5f57c
+  ✅ Created new registrations document: b59e8fde-a714-448a-976c-78d7d086a864
+  ✅ Created new registrations document: ac880769-a251-4914-b16d-f75b4d839a2d
+  ✅ Created new registrations document: 92d8d83d-cc7a-4b7d-87de-8f745474b55b
+✅ import_registrations sync complete: 213 processed, 213 created, 0 updated, 2 skipped (not production eligible)
+
+--- Syncing import_attendees -> attendees ---
+Found 323 documents in import_attendees
+  ✅ Created new attendees document: 0198ace1-da28-73fd-a44f-b9aaca638f59
+  ✅ Created new attendees document: 0198abb1-11ce-74b8-9cc5-169aba7d0d73
+  ✅ Created new attendees document: 0198abb5-aa18-76a5-a438-12883f18c7a0
+  ✅ Created new attendees document: 0198aad3-83db-7378-81f3-127a1dd930df
+  ✅ Created new attendees document: 0198a557-0d61-7018-ae2b-89e6d830bd56
+  ✅ Created new attendees document: 0198a2b9-06d6-745f-bd49-fefe3aecfb75
+  ✅ Created new attendees document: 0198a2ba-c237-72ca-a2f1-06d64ab83308
+  ✅ Created new attendees document: 0198a2bb-89aa-7347-bea0-7d3ab54c5877
+  ✅ Created new attendees document: 0198a2bd-0d01-7788-948b-2844f21d0a4a
+  ✅ Created new attendees document: 0198a1cf-e212-75ee-a984-e7f0655df9fa
+  ✅ Created new attendees document: 0198a156-2668-7277-9564-6a2d8521a471
+  ✅ Created new attendees document: 0198a157-6253-7286-b979-2519137bbfd7
+  ✅ Created new attendees document: 019888b4-da33-7092-9fa5-b5d1fec4a94e
+  ✅ Created new attendees document: 0198a015-ee0e-7481-bc17-3273bc9641a1
+  ✅ Created new attendees document: 01989b76-9007-72aa-85c7-4c4229bdbdca
+  ✅ Created new attendees document: 01989b77-d629-74ad-a24e-fbf5937bbac4
+  ✅ Created new attendees document: 01989871-1984-7377-b76f-38d6c6c88275
+  ✅ Created new attendees document: 01982fe4-f353-7459-be88-45f4020f3407
+  ✅ Created new attendees document: 019897cf-3931-7269-93be-e3400729ad30
+  ✅ Created new attendees document: 019896cd-bec5-74f2-bfa5-2a89143f0e9c
+  ✅ Created new attendees document: 019896d3-5e80-761e-b9b9-425decd62b14
+  ✅ Created new attendees document: 019896c5-b697-726b-b7b6-935ee4162fd1
+  ✅ Created new attendees document: 01977c91-3b5a-75ac-8f36-f004bb083757
+  ✅ Created new attendees document: 019893ed-8548-7734-9d73-7d9388e4bc05
+  ✅ Created new attendees document: 019893ee-e730-77a0-a5d3-6aa06ef66226
+  ✅ Created new attendees document: 019893e8-0c81-7222-b1a5-4896b45fa1eb
+  ✅ Created new attendees document: 01989334-66b1-73ac-94c7-42fabf7c632e
+  ✅ Created new attendees document: 0198925f-23eb-73c4-aa92-75cb8e558d54
+  ✅ Created new attendees document: 01989267-9dc7-7216-8acd-3d9c25a7b3c8
+  ✅ Created new attendees document: 01977c78-03e7-777d-ad6e-17324b5478e8
+  ✅ Created new attendees document: 0198917a-cc8e-7441-a684-950c480dc981
+  ✅ Created new attendees document: 01985bf3-8486-7402-9b56-ffa2a21e68f0
+  ✅ Created new attendees document: 01988e84-3b7f-757e-8ea6-93ab48a4ae13
+  ✅ Created new attendees document: 01988e8b-ec64-744c-a7e6-a98aab65c25f
+  ✅ Created new attendees document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c
+  ✅ Created new attendees document: 01988df7-063d-7582-95ea-fda56424d9a7
+  ✅ Created new attendees document: 01988da8-e915-76cb-b458-a93eaaa03f48
+  ✅ Created new attendees document: 01985072-9787-75db-9307-4fe506bdec98
+  ✅ Created new attendees document: 01988ba4-0957-74ba-86bc-2bc9a8a003c2
+  ✅ Created new attendees document: 019889e4-1908-7524-925f-57492a5b8eb7
+  ✅ Created new attendees document: 01988697-4088-75af-999d-21cc38172cac
+  ✅ Created new attendees document: 0198833c-64ba-745f-a24b-dc0827d6a7d8
+  ✅ Created new attendees document: 0198833e-ab4a-7078-96ea-757c1f88e715
+  ✅ Created new attendees document: 0197e791-bb5b-72ee-bc8a-42464a081a7e
+  ✅ Created new attendees document: 0198821a-49d1-706d-8854-c9de3cdab41a
+  ✅ Created new attendees document: 019881d0-708f-748f-aa06-cfb639b73982
+  ✅ Created new attendees document: 01987961-74ab-70d9-9ead-20524413650f
+  ✅ Created new attendees document: 01987d8f-285b-77ba-87ff-466ab29084b1
+  ✅ Created new attendees document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a
+  ✅ Created new attendees document: 0198799b-0a50-707b-8a7e-754676e3b7b8
+  ✅ Created new attendees document: 01987806-0cc6-727f-8d9b-a7ec30966c25
+  ✅ Created new attendees document: 01987809-e6a5-711f-8c50-5d8d271c4e65
+  ✅ Created new attendees document: 0198780a-ed4a-738e-8b7d-7a2063aa50bb
+  ✅ Created new attendees document: 0198780b-9773-77dc-a37e-5beabc5f6dd9
+  ✅ Created new attendees document: 0198780c-9e0a-7011-851b-0a2c6430ebec
+  ✅ Created new attendees document: 0198780d-fc1e-76c6-929a-7cbf17ffc40c
+  ✅ Created new attendees document: 01987810-385b-71af-aee3-097e21232797
+  ✅ Created new attendees document: 019877cc-b22b-7253-ad5b-fccd9a38b84f
+  ✅ Created new attendees document: 019877cd-d082-708a-b72f-8a614bbc8bc1
+  ✅ Created new attendees document: 0197e1d0-5c14-71c7-abc1-df5293989d0e
+  ✅ Created new attendees document: 0198733c-9552-70ff-acb9-a6b6fbfaedfc
+  ✅ Created new attendees document: 0198733e-58bd-72bd-97f8-e9b2461d5d66
+  ✅ Created new attendees document: 0198733e-8a6f-7678-a1ba-9b6e2a15c21f
+  ✅ Created new attendees document: 019872aa-ab6a-707a-ac24-f8adb2f41e75
+  ✅ Created new attendees document: 0198724a-7bdf-723d-9dfa-51307ee646bf
+  ✅ Created new attendees document: 0197b630-de30-7380-8358-211643aa584f
+  ✅ Created new attendees document: 01986f6c-d293-7145-9573-0b4a7f222b91
+  ✅ Created new attendees document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9
+  ✅ Created new attendees document: 01986f69-6080-703e-ac9a-1c520a5509ce
+  ✅ Created new attendees document: 01986f67-eda2-753d-a286-fba28102f863
+  ✅ Created new attendees document: 01986f66-8ea7-7329-8f57-87d80962b9a1
+  ✅ Created new attendees document: 01986ef0-ca32-72ae-adf7-b00cfd5291bb
+  ✅ Created new attendees document: 01986ef2-9873-755c-b8d6-c99137a1aaef
+  ✅ Created new attendees document: 01986e78-5852-717a-9570-310c3083fff7
+  ✅ Created new attendees document: 01986e7b-d64d-75d3-8189-b4269b2af9b9
+  ✅ Created new attendees document: 01986dc2-86c8-77cf-b843-53e5d8c5724f
+  ✅ Created new attendees document: 01986dc7-6862-733a-8fb7-f8b0b02946fa
+  ✅ Created new attendees document: 01986dbe-46a1-753e-b6d3-3c6cf22315ea
+  ✅ Created new attendees document: 01986db0-d37d-72fb-86c8-2d2c301c9171
+  ✅ Created new attendees document: 01986d9c-b90c-70ef-ad46-3cb28db56e39
+  ✅ Created new attendees document: 01986da0-036b-775a-aaea-cfd513bd3d30
+  ✅ Created new attendees document: 01986d92-c8bb-751d-bbd8-b5f62cfd0035
+  ✅ Created new attendees document: 01986d95-87ef-7219-a358-09d437bb3a62
+  ✅ Created new attendees document: 01986d97-0e52-71f8-b04a-cc85077ec9ff
+  ✅ Created new attendees document: 01986d66-60be-755b-958d-2fe42e5f3eb5
+  ✅ Created new attendees document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c
+  ✅ Created new attendees document: 01984f9e-c03f-76f4-8033-6f2d959dcdde
+  ✅ Created new attendees document: 01986d50-17d7-732d-995d-ee6e08587c04
+  ✅ Created new attendees document: 01986c9b-61ed-762a-8ced-e25cd3654140
+  ✅ Created new attendees document: 01986b19-601c-755b-b40f-55f163cfd3f7
+  ✅ Created new attendees document: 019826e4-f07b-703d-b5b7-6bea6149c64d
+  ✅ Created new attendees document: 019865da-9d47-756c-86d9-e09d0592ec62
+  ✅ Created new attendees document: 01986492-6f41-72af-89db-64c5fc72c536
+  ✅ Created new attendees document: 01986493-cee0-7116-900a-ec602b5bcaed
+  ✅ Created new attendees document: 0198600e-ea8e-776d-aa00-399ccffa004b
+  ✅ Created new attendees document: 019862f8-3166-743d-99ad-73c51b463c0b
+  ✅ Created new attendees document: 019860b4-bf8c-74af-a73a-1c87380027c7
+  ✅ Created new attendees document: 0198537b-c8e6-715f-9b2a-241ffdfb9835
+  ✅ Created new attendees document: 01985e40-c1c4-7687-ab70-1a66491dabea
+  ✅ Created new attendees document: 01985e41-6394-73cd-b07b-c494331be7fa
+  ✅ Created new attendees document: 01985e41-f23c-705a-ac7c-b79d74aae3f4
+  ✅ Created new attendees document: 01985e42-92a3-738b-b8fb-6e683941f9ed
+  ✅ Created new attendees document: 01985032-71c3-70c1-9fc8-6ee8b88f5e81
+  ✅ Created new attendees document: 01985d81-2bd3-7388-ad09-ab31ac4f2b0c
+  ✅ Created new attendees document: 019859f1-f9cd-7799-a026-12827c4930e4
+  ✅ Created new attendees document: 019859f3-0139-773b-a959-a7fca7edef1c
+  ✅ Created new attendees document: 01985ae7-8dfd-715f-900b-87399e53aebd
+  ✅ Created new attendees document: 01985a8c-baa8-75a4-a8ef-86b7ef567ff8
+  ✅ Created new attendees document: 01985a8e-a328-7699-a850-84076534e1af
+  ✅ Created new attendees document: 019859d5-656e-73fb-beac-d4ab7967baa4
+  ✅ Created new attendees document: 019859e7-f40b-74aa-8c0d-071525e8b6f2
+  ✅ Created new attendees document: 01985995-9842-753c-96c8-a5070ac5855a
+  ✅ Created new attendees document: 01985996-c7c1-75a8-abea-3adffb4f0a78
+  ✅ Created new attendees document: 019857f0-9717-762c-9cc2-aa1b9848a801
+  ✅ Created new attendees document: 019857a9-5205-76fd-a143-e44d03fe3991
+  ✅ Created new attendees document: 01985566-c5b7-776b-a8f0-a810f4d0b072
+  ✅ Created new attendees document: 01985555-7387-7225-8056-f8e368dd7d7c
+  ✅ Created new attendees document: 019846ee-5997-77ab-a85e-5db28bbb3f99
+  ✅ Created new attendees document: 019846ef-2e4b-74aa-a911-cd27cd1c79e5
+  ✅ Created new attendees document: 019854d2-d5b4-7757-b709-6e588c7f75f6
+  ✅ Created new attendees document: 01985489-15ae-7638-8a8f-4084f1455dec
+  ✅ Created new attendees document: 01985489-e628-7368-88b0-45363fff1e26
+  ✅ Created new attendees document: 01985413-a115-70f4-b476-5c0a5cf79463
+  ✅ Created new attendees document: 019853be-ab8d-76fa-a9fa-f71c38303fed
+  ✅ Created new attendees document: 019853b6-6885-743b-8d9b-cda8a2707cb8
+  ✅ Created new attendees document: 01985367-f353-702f-8953-d44f59996004
+  ✅ Created new attendees document: 01985359-e1d7-725c-b365-0c60b5b91338
+  ✅ Created new attendees document: 01985303-5c46-77d3-87a5-429f0cff05f7
+  ✅ Created new attendees document: 01977d90-09bb-70a8-a7f3-c31440b62062
+  ✅ Created new attendees document: 01985079-5ab8-706d-a805-feefbac4ffdd
+  ✅ Created new attendees document: 0198507a-54c3-7538-8c92-a35590fb04ce
+  ✅ Created new attendees document: 01985073-db63-77ae-8d6c-b3032bed195c
+  ✅ Created new attendees document: 01984f9c-9005-74cd-9627-821266f424dd
+  ✅ Created new attendees document: 01984f9e-8d68-73fc-9153-e0412ec01b60
+  ✅ Created new attendees document: 0197dce4-d60f-728f-8ac9-d6a34c7be40a
+  ✅ Created new attendees document: 01985044-7c1d-7497-b85f-7bbafbbab191
+  ✅ Created new attendees document: 01985045-c870-7468-8215-e30c13f0f9e0
+  ✅ Created new attendees document: 01985027-99e0-7395-a8a1-a3f0ccdefb81
+  ✅ Created new attendees document: 01984edb-b2df-7004-bae2-f4cf8ff6346f
+  ✅ Created new attendees document: 01984ede-7590-713f-b9ad-79338b3d8512
+  ✅ Created new attendees document: 01984ff6-0dd7-746c-aefe-2647cab7d03e
+  ✅ Created new attendees document: 01984fd0-57be-76f8-b878-330984ae9d92
+  ✅ Created new attendees document: 01984fc0-e8da-7742-9846-2c274c4d2067
+  ✅ Created new attendees document: 01984fc2-adf7-754f-9816-a6f660b63ba4
+  ✅ Created new attendees document: 0197ac5a-485d-7338-a737-da5db3b8a9dd
+  ✅ Created new attendees document: 01977c99-1f1d-70fd-a8fc-6ab25761b7ef
+  ✅ Created new attendees document: 01984fa0-a2ab-750d-b3f7-3d8ca7c22f08
+  ✅ Created new attendees document: 01984f96-9911-75aa-91f8-5945aec2547a
+  ✅ Created new attendees document: 01984f75-bb46-7124-8245-9e26bd100f4c
+  ✅ Created new attendees document: 01984f76-b698-708e-bee5-b88b821e79fc
+  ✅ Created new attendees document: 01984f5a-abe5-768d-98dd-a9cf7f0b6634
+  ✅ Created new attendees document: 01984f64-6df8-7548-82c1-d449f7de127c
+  ✅ Created new attendees document: 01984f32-935d-739b-9606-1930cae32ca8
+  ✅ Created new attendees document: 01984f08-1f81-76cd-bdf3-32df64b97e7a
+  ✅ Created new attendees document: 01984f09-8229-705f-8691-15ca2257b40d
+  ✅ Created new attendees document: 01984ec3-90dd-7719-9695-0a04361dd420
+  ✅ Created new attendees document: 01984ec4-d473-750b-b4a6-be3f41695385
+  ✅ Created new attendees document: 01984e75-a5d4-7018-84c4-915a11619cf2
+  ✅ Created new attendees document: 01984d7a-d022-7735-84d7-e6af181c2bf7
+  ✅ Created new attendees document: 01984414-a884-73f5-a94a-d54de0a22cf8
+  ✅ Created new attendees document: 01984352-a634-75a1-984d-1f118d40eaf4
+  ✅ Created new attendees document: 01984029-7391-70dc-ad4e-02e8c3ae008a
+  ✅ Created new attendees document: 01983fbb-54f3-733a-87b4-50f642cdad31
+  ✅ Created new attendees document: 01983fbc-a313-75e6-928e-e68c6a0d538d
+  ✅ Created new attendees document: 01983fbe-9236-7728-a5ad-45b6e0f5e0c5
+  ✅ Created new attendees document: 01983fbf-b771-7309-b423-7be008822f3e
+  ✅ Created new attendees document: 01983ee1-0ee4-723b-9162-633e4cfbf888
+  ✅ Created new attendees document: 01983f4d-7865-71fd-b87a-2f47f2dd94b2
+  ✅ Created new attendees document: 01977c94-2751-768c-b46d-debb1fadf2fd
+  ✅ Created new attendees document: 01983e3e-4fd1-73ff-97dd-a230e38a2e21
+  ✅ Created new attendees document: 01983c68-7456-77f6-a18e-439b0f16b667
+  ✅ Created new attendees document: 0197bb25-74ef-777a-bcba-9f1b60ca69f8
+  ✅ Created new attendees document: 01980cb5-8732-777b-8bda-cd39d2cf91bc
+  ✅ Created new attendees document: 01980cb8-150f-7216-8cd6-8bdf116e81d6
+  ✅ Created new attendees document: 01983510-f58d-7331-952d-ec19eb6e416d
+  ✅ Created new attendees document: 01983512-1d4c-755d-b09c-8a96286496ec
+  ✅ Created new attendees document: 01982f35-0dfe-73be-961a-02441d65840d
+  ✅ Created new attendees document: 01982f25-2275-71cf-8cd2-bcb42bec5fcf
+  ✅ Created new attendees document: 01982f06-ac67-77d2-af1b-7b8416323dd0
+  ✅ Created new attendees document: 01982ce2-1c9b-71fb-ac80-79270e6a8594
+  ✅ Created new attendees document: 01982ce2-c74a-71aa-90a7-67257c4a5a58
+  ✅ Created new attendees document: 0198277f-24ee-74dc-a980-e76d13357c7f
+  ✅ Created new attendees document: 0197af3e-c9fa-731d-aff4-fa0efb02282d
+  ✅ Created new attendees document: 01981f92-1559-77fb-8973-9e8f199d8c25
+  ✅ Created new attendees document: 01982ca6-241e-708b-a3ef-6c796805927f
+  ✅ Created new attendees document: 01982ca8-f78e-70dd-b729-58746413f863
+  ✅ Created new attendees document: 01982c82-dc01-761b-ab42-3f7d60b67081
+  ✅ Created new attendees document: 01982c83-cd60-7270-a3d9-3dd4e51e9d4c
+  ✅ Created new attendees document: 01977c68-272c-7264-8ab0-813807c7ede0
+  ✅ Created new attendees document: 0198275e-bc1a-70a0-9c32-08777a0303b3
+  ✅ Created new attendees document: 01982761-dcdd-7096-9c42-24fd8f8eaf63
+  ✅ Created new attendees document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad
+  ✅ Created new attendees document: 01982581-9ada-72b6-b7f3-ee5eeddc00ea
+  ✅ Created new attendees document: 01982081-ee98-71bf-8442-65c5511a38ae
+  ✅ Created new attendees document: 01981b19-3094-76a9-bcf3-1b18242a5858
+  ✅ Created new attendees document: 01981b17-f1d2-713e-a5a5-bb513cecd248
+  ✅ Created new attendees document: 01981af2-fb82-7299-9f37-22cf6cf3906a
+  ✅ Created new attendees document: 01981b0e-2097-76ba-bb77-e1c5a1cc102d
+  ✅ Created new attendees document: 01981b03-82d0-7634-b0d0-a99912bc8ec2
+  ✅ Created new attendees document: 01981afd-5d24-7683-afa4-2348a8073296
+  ✅ Created new attendees document: 01981ace-d195-7452-bb54-4424bca4e3a0
+  ✅ Created new attendees document: 01981aca-b515-7489-80ab-1b63461b57a1
+  ✅ Created new attendees document: 01981abf-ec06-7638-bf8b-53a5b4e6140e
+  ✅ Created new attendees document: 01981aba-6dfc-745e-9ad8-8f11dcab5119
+  ✅ Created new attendees document: 01981a9c-42d5-7234-8053-641b505f2d72
+  ✅ Created new attendees document: 019816ff-f970-74ab-9b2b-b3bfa0bd7dd1
+  ✅ Created new attendees document: 01981743-84d7-72c8-bc28-53e521439b58
+  ✅ Created new attendees document: 01981323-b413-7480-add2-e3c5afc97601
+  ✅ Created new attendees document: 01981324-aba6-7658-8c2e-c626bcfe8f0d
+  ✅ Created new attendees document: 01981324-fa9b-72d6-b190-1692ec47a13f
+  ✅ Created new attendees document: 01981325-2d04-7009-b950-ba4065b4c4a0
+  ✅ Created new attendees document: 01981318-fba4-70de-bb7c-9ecc80132b17
+  ✅ Created new attendees document: 0198131b-00e2-7365-bb82-dd88e08563e4
+  ✅ Created new attendees document: 0198131b-8fac-72d6-bf68-318bf7536f99
+  ✅ Created new attendees document: 0198131e-cac5-76c0-a01e-b2ebb19df97f
+  ✅ Created new attendees document: 019812a3-3417-772b-bfaf-8c54c18b5858
+  ✅ Created new attendees document: 019812ec-4e4e-72bf-a6ed-1405cf77b9b7
+  ✅ Created new attendees document: 019812ed-60e7-7517-9b39-ae5a59eb0b51
+  ✅ Created new attendees document: 019812ef-7ef2-7079-895f-41a3ae7cb34c
+  ✅ Created new attendees document: 01977c39-8fbe-7002-ac6a-32900de67f9c
+  ✅ Created new attendees document: 01977c3a-53c5-730d-9608-3806e3c45c7d
+  ✅ Created new attendees document: 01980e40-9351-7425-a071-cbcdd6779fbc
+  ✅ Created new attendees document: 01980e41-702b-7591-b9ef-eaa471d4f691
+  ✅ Created new attendees document: 01980d2a-b4ba-7009-92b1-c2b118e74075
+  ✅ Created new attendees document: 01980d31-04ce-743e-8d9e-2abe9896d45f
+  ✅ Created new attendees document: 01980c39-3c17-746d-b9a2-6ea663824e57
+  ✅ Created new attendees document: 01980c3c-da0f-74c9-b2a3-d81670615fbf
+  ✅ Created new attendees document: 019806fa-a567-7711-b400-edf50b2fd20a
+  ✅ Created new attendees document: 0197ff08-5d1b-71ed-9b19-f002c1c63b1e
+  ✅ Created new attendees document: 0197fb99-9903-76af-bdf2-3bba7a9f1183
+  ✅ Created new attendees document: 0197f7fe-8f48-701f-bfc2-8696b8b538ea
+  ✅ Created new attendees document: 0197f801-5f96-740d-8a57-54e1e26490a1
+  ✅ Created new attendees document: 0197d52c-f5a1-732f-b3e0-ce6fc100bf55
+  ✅ Created new attendees document: 0197f38e-386e-76c6-9644-9699a05ba4a7
+  ✅ Created new attendees document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae
+  ✅ Created new attendees document: 0197f208-3a76-72fe-aa1d-a4bb2476cbf4
+  ✅ Created new attendees document: 0197f209-46e5-710e-afcb-a5d1f18fb663
+  ✅ Created new attendees document: 01978796-ff97-71ff-bd70-63e72c774842
+  ✅ Created new attendees document: 0197e991-ec5e-732f-9ceb-5f35cf51ec03
+  ✅ Created new attendees document: 0197e9a4-cba8-7266-9d54-84833ce0b0b7
+  ✅ Created new attendees document: 0197ca4d-2c80-7457-89b9-d2d222ab5a96
+  ✅ Created new attendees document: 0197e7bc-c3b1-75eb-b32c-57621420e0ec
+  ✅ Created new attendees document: 0197e798-0955-711f-8cae-45f48d843cf5
+  ✅ Created new attendees document: 0197e799-d811-7417-9aff-4916a543b549
+  ✅ Created new attendees document: 0197e702-a5a3-75fa-8cc8-eb7074ba6346
+  ✅ Created new attendees document: 0197e70a-8b86-74d0-898a-1df6f85a0397
+  ✅ Created new attendees document: 0197e70c-9ace-7139-889f-c8dec4a82676
+  ✅ Created new attendees document: 01979691-c54e-720c-9182-9b3e925d4ebd
+  ✅ Created new attendees document: 0197daab-21d3-745a-b6c7-3473a4fb3502
+  ✅ Created new attendees document: 0197d904-c941-710f-bb20-f92626c3eb99
+  ✅ Created new attendees document: 0197d360-6579-73ec-91db-da3fa97191a2
+  ✅ Created new attendees document: 0197d364-14b5-7609-b23e-c4d159ca3233
+  ✅ Created new attendees document: 0197d364-ffa5-709b-b660-bd48135e8a3e
+  ✅ Created new attendees document: 0197d365-aa7d-72a1-8446-80d5d708001f
+  ✅ Created new attendees document: 0197c68a-c9ce-719a-8a02-45bc516394a3
+  ✅ Created new attendees document: 0197c68b-37b6-729e-b300-fc10b22e977a
+  ✅ Created new attendees document: 0197c30c-6fb1-7388-8a94-b5f30e533779
+  ✅ Created new attendees document: 0197c30d-72b7-73aa-a7b0-e47f385daa9c
+  ✅ Created new attendees document: 019781c4-b2be-7570-8dda-b678f2651944
+  ✅ Created new attendees document: 019781c5-8dcd-702b-a716-94fac88ec472
+  ✅ Created new attendees document: 0197c0f6-46ac-71fd-a317-4f8d508f0885
+  ✅ Created new attendees document: 0197c100-3c48-737c-9dec-c12829ef7403
+  ✅ Created new attendees document: 0197b404-bc2d-75ef-bc48-6879eb80e3db
+  ✅ Created new attendees document: 0197bfdc-4990-737e-aded-ead40009ef38
+  ✅ Created new attendees document: 0197bfde-24d9-74de-ac4a-85248a25a8d2
+  ✅ Created new attendees document: 0197bfde-aad5-724f-b77c-9a4cd142891a
+  ✅ Created new attendees document: 0197bfdf-5d4d-74fd-98f3-888ecf0faaee
+  ✅ Created new attendees document: 0197bfa1-c546-70f9-838f-711da559413e
+  ✅ Created new attendees document: 0197bfa4-9872-729f-9de1-2257d622e73d
+  ✅ Created new attendees document: 01977c37-90e5-7291-ad5c-764431b08329
+  ✅ Created new attendees document: 0197aa37-69bf-7651-8687-d6722c495647
+  ✅ Created new attendees document: 01977dc1-97d7-724c-9b6f-0fe96385b08d
+  ✅ Created new attendees document: 0197b147-5a4d-76d5-91b6-cc10c4b84909
+  ✅ Created new attendees document: 0197ae6a-26cd-776e-928a-8b6996f10f2e
+  ✅ Created new attendees document: 0197ae6b-7f0d-739e-95ae-819865e1db01
+  ✅ Created new attendees document: 0197803a-6782-756a-9b90-ec2c93506951
+  ✅ Created new attendees document: 0197aa52-56a4-743c-a343-1dbc7d2505ff
+  ✅ Created new attendees document: 0197aa55-181b-77e8-a252-a30aa2b06cc2
+  ✅ Created new attendees document: 0197a891-cdb6-710f-90cd-9ddc81007692
+  ✅ Created new attendees document: 0197a895-0d72-725a-896a-7ae19fabc2c2
+  ✅ Created new attendees document: 01977da7-3537-72bf-90b0-7aac6b0d66d2
+  ✅ Created new attendees document: 0197a0bd-6e2e-728f-9884-eb047223e942
+  ✅ Created new attendees document: 0197a50e-8c07-756a-a54e-38ead0a6479b
+  ✅ Created new attendees document: 01979a24-7061-709c-90f2-cc42c419b2df
+  ✅ Created new attendees document: 01979bd3-dda0-718d-a100-a98759a1a67c
+  ✅ Created new attendees document: 01979bd4-c29b-76d5-80df-e63768d9015f
+  ✅ Created new attendees document: 01979bd5-10ac-775d-a500-2925ba175a75
+  ✅ Created new attendees document: 01979bd5-c639-778c-a943-63fe14353bed
+  ✅ Created new attendees document: 01979bd6-269a-7647-9c26-358b9dafbfb0
+  ✅ Created new attendees document: 01979bd6-b42a-70c7-a061-50495652c652
+  ✅ Created new attendees document: 01979bd7-0be4-768f-ba52-5e4fce16bfd3
+  ✅ Created new attendees document: 01979bd7-fa25-70bd-b40d-27450d8137ff
+  ✅ Created new attendees document: 01979bd8-5d7c-7298-a22c-059dbd491b0e
+  ✅ Created new attendees document: 01979bd8-e3d1-7659-ade6-30adbd7b678e
+  ✅ Created new attendees document: 01979ba7-cc43-774c-93c1-f68f76eb6886
+  ✅ Created new attendees document: 01979baa-beeb-741d-9957-23be9e41bac6
+  ✅ Created new attendees document: 01979bab-3248-7288-aa29-7f81aea01151
+  ✅ Created new attendees document: 01979bae-3e65-721f-bffb-2dedc4e38ea3
+  ✅ Created new attendees document: 01979bae-d45e-74ca-8f6f-0fd4a33c405c
+  ✅ Created new attendees document: 01979bb6-a3ea-746f-a222-26254be3d9e7
+  ✅ Created new attendees document: 01979bb7-876b-75a9-8846-5e86efff620f
+  ✅ Created new attendees document: 01979bb8-6cb3-73ee-8fe9-1cc2322d47c4
+  ✅ Created new attendees document: 01979bb9-2eb3-764e-b82c-e7e775ae9006
+  ✅ Created new attendees document: 01979bb9-f02c-7747-b250-e927cded49a1
+  ✅ Created new attendees document: 01979b6b-99ac-715b-b139-2b79af7d1374
+  ✅ Created new attendees document: 01978646-5c97-74dd-bbcf-7666f3572981
+  ✅ Created new attendees document: 01977c91-7aa4-7485-9f84-968e5d591223
+  ✅ Created new attendees document: 01979784-967c-733c-a66c-e9cff5154d00
+  ✅ Created new attendees document: 01979a25-c73f-71b1-bac1-83ec62968fa1
+  ✅ Created new attendees document: 01975903-bc26-7452-8d69-4438b9f7b70f
+  ✅ Created new attendees document: 019758e0-a347-7332-a728-235c2e8941bb
+  ✅ Created new attendees document: 0197588a-cf1e-72f8-8295-634d46da6e7a
+  ✅ Created new attendees document: 01977cbf-62d1-709d-9b8d-847981b64f9b
+  ✅ Created new attendees document: 01977caf-f4ae-707a-8964-635796a76e08
+  ✅ Created new attendees document: 01977cb1-5df7-7333-b0d8-78a1be5ffa74
+  ✅ Created new attendees document: 01977cb2-7206-75eb-9556-cd351b7b21d1
+  ✅ Created new attendees document: 01977cb3-323c-72bb-90ce-b841af2ba107
+  ✅ Created new attendees document: 019781d7-a8f9-723f-8b78-b449d5467f8d
+  ✅ Created new attendees document: 019781ee-8ad9-701e-8564-b2dc08df9b52
+  ✅ Created new attendees document: 019781dd-3722-75f0-84f2-8d62211167f3
+  ✅ Created new attendees document: 019781c5-0f70-700a-95c8-cd245b2aeafd
+  ✅ Created new attendees document: 019781ba-6905-700c-9c53-d5b8c1596a8e
+  ✅ Created new attendees document: 019781bd-4980-7010-86b0-602b4358db97
+✅ import_attendees sync complete: 323 processed, 323 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_tickets -> tickets ---
+Found 629 documents in import_tickets
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0198abb1-11ce-74b8-9cc5-169aba7d0d73-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198abb1-11ce-74b8-9cc5-169aba7d0d73-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198abb5-aa18-76a5-a438-12883f18c7a0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198aad3-83db-7378-81f3-127a1dd930df-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198a557-0d61-7018-ae2b-89e6d830bd56-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198a557-0d61-7018-ae2b-89e6d830bd56-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198a557-0d61-7018-ae2b-89e6d830bd56-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a2b9-06d6-745f-bd49-fefe3aecfb75-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a2ba-c237-72ca-a2f1-06d64ab83308-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a2bb-89aa-7347-bea0-7d3ab54c5877-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a2bd-0d01-7788-948b-2844f21d0a4a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a1cf-e212-75ee-a984-e7f0655df9fa-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198a1cf-e212-75ee-a984-e7f0655df9fa-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a156-2668-7277-9564-6a2d8521a471-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198a156-2668-7277-9564-6a2d8521a471-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198a156-2668-7277-9564-6a2d8521a471-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0198a157-6253-7286-b979-2519137bbfd7-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198a157-6253-7286-b979-2519137bbfd7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 019888b4-da33-7092-9fa5-b5d1fec4a94e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019888b4-da33-7092-9fa5-b5d1fec4a94e-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198a015-ee0e-7481-bc17-3273bc9641a1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198a015-ee0e-7481-bc17-3273bc9641a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01989b76-9007-72aa-85c7-4c4229bdbdca-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01989b76-9007-72aa-85c7-4c4229bdbdca-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01989b77-d629-74ad-a24e-fbf5937bbac4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01989871-1984-7377-b76f-38d6c6c88275-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01989871-1984-7377-b76f-38d6c6c88275-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982fe4-f353-7459-be88-45f4020f3407-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01982fe4-f353-7459-be88-45f4020f3407-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019897cf-3931-7269-93be-e3400729ad30-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019896cd-bec5-74f2-bfa5-2a89143f0e9c-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019896d3-5e80-761e-b9b9-425decd62b14-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019896c5-b697-726b-b7b6-935ee4162fd1-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01977c91-3b5a-75ac-8f36-f004bb083757-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019893ed-8548-7734-9d73-7d9388e4bc05-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019893ee-e730-77a0-a5d3-6aa06ef66226-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019893e8-0c81-7222-b1a5-4896b45fa1eb-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019893e8-0c81-7222-b1a5-4896b45fa1eb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01989334-66b1-73ac-94c7-42fabf7c632e-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01989334-66b1-73ac-94c7-42fabf7c632e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01989334-66b1-73ac-94c7-42fabf7c632e-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0198925f-23eb-73c4-aa92-75cb8e558d54-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01989267-9dc7-7216-8acd-3d9c25a7b3c8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c78-03e7-777d-ad6e-17324b5478e8-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977c78-03e7-777d-ad6e-17324b5478e8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c78-03e7-777d-ad6e-17324b5478e8-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198917a-cc8e-7441-a684-950c480dc981-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198917a-cc8e-7441-a684-950c480dc981-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985bf3-8486-7402-9b56-ffa2a21e68f0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988e84-3b7f-757e-8ea6-93ab48a4ae13-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988e8b-ec64-744c-a7e6-a98aab65c25f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01988df4-fc91-7193-b58b-f2a9d2e1aa7c-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01988df7-063d-7582-95ea-fda56424d9a7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01988da8-e915-76cb-b458-a93eaaa03f48-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: d8e9ff33-ea60-4905-bcda-00dab4ba7629
+  ✅ Created new tickets document: f9180684-2098-4fd9-83e8-c20183cb7b64
+  ✅ Created new tickets document: 01985072-9787-75db-9307-4fe506bdec98-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985072-9787-75db-9307-4fe506bdec98-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988ba4-0957-74ba-86bc-2bc9a8a003c2-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01988ba4-0957-74ba-86bc-2bc9a8a003c2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019889e4-1908-7524-925f-57492a5b8eb7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019889e4-1908-7524-925f-57492a5b8eb7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01988697-4088-75af-999d-21cc38172cac-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01988697-4088-75af-999d-21cc38172cac-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198833c-64ba-745f-a24b-dc0827d6a7d8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198833e-ab4a-7078-96ea-757c1f88e715-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e791-bb5b-72ee-bc8a-42464a081a7e-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198821a-49d1-706d-8854-c9de3cdab41a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198821a-49d1-706d-8854-c9de3cdab41a-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019881d0-708f-748f-aa06-cfb639b73982-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019881d0-708f-748f-aa06-cfb639b73982-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987961-74ab-70d9-9ead-20524413650f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987d8f-285b-77ba-87ff-466ab29084b1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987d8f-285b-77ba-87ff-466ab29084b1-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019879f8-ac6d-7128-a87e-f7b9340f4b5a-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198799b-0a50-707b-8a7e-754676e3b7b8-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198799b-0a50-707b-8a7e-754676e3b7b8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987806-0cc6-727f-8d9b-a7ec30966c25-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01987806-0cc6-727f-8d9b-a7ec30966c25-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987809-e6a5-711f-8c50-5d8d271c4e65-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01987809-e6a5-711f-8c50-5d8d271c4e65-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198780a-ed4a-738e-8b7d-7a2063aa50bb-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198780a-ed4a-738e-8b7d-7a2063aa50bb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198780b-9773-77dc-a37e-5beabc5f6dd9-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198780b-9773-77dc-a37e-5beabc5f6dd9-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198780c-9e0a-7011-851b-0a2c6430ebec-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198780d-fc1e-76c6-929a-7cbf17ffc40c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198780d-fc1e-76c6-929a-7cbf17ffc40c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987810-385b-71af-aee3-097e21232797-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01987810-385b-71af-aee3-097e21232797-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019877cc-b22b-7253-ad5b-fccd9a38b84f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019877cc-b22b-7253-ad5b-fccd9a38b84f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019877cd-d082-708a-b72f-8a614bbc8bc1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e1d0-5c14-71c7-abc1-df5293989d0e-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197e1d0-5c14-71c7-abc1-df5293989d0e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198733c-9552-70ff-acb9-a6b6fbfaedfc-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198733c-9552-70ff-acb9-a6b6fbfaedfc-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198733e-58bd-72bd-97f8-e9b2461d5d66-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198733e-8a6f-7678-a1ba-9b6e2a15c21f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019872aa-ab6a-707a-ac24-f8adb2f41e75-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198724a-7bdf-723d-9dfa-51307ee646bf-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198724a-7bdf-723d-9dfa-51307ee646bf-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0197b630-de30-7380-8358-211643aa584f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197b630-de30-7380-8358-211643aa584f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197b630-de30-7380-8358-211643aa584f-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986f6c-d293-7145-9573-0b4a7f222b91-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986f6c-d293-7145-9573-0b4a7f222b91-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986f68-5ce7-71db-bbc5-7cd228a5e7a9-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986f69-6080-703e-ac9a-1c520a5509ce-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986f69-6080-703e-ac9a-1c520a5509ce-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986f67-eda2-753d-a286-fba28102f863-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986f67-eda2-753d-a286-fba28102f863-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986f66-8ea7-7329-8f57-87d80962b9a1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986f66-8ea7-7329-8f57-87d80962b9a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986ef0-ca32-72ae-adf7-b00cfd5291bb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986ef2-9873-755c-b8d6-c99137a1aaef-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986e78-5852-717a-9570-310c3083fff7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01986e78-5852-717a-9570-310c3083fff7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986e7b-d64d-75d3-8189-b4269b2af9b9-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01986dc2-86c8-77cf-b843-53e5d8c5724f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986dc2-86c8-77cf-b843-53e5d8c5724f-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986dc7-6862-733a-8fb7-f8b0b02946fa-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986dbe-46a1-753e-b6d3-3c6cf22315ea-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986db0-d37d-72fb-86c8-2d2c301c9171-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986db0-d37d-72fb-86c8-2d2c301c9171-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986db0-d37d-72fb-86c8-2d2c301c9171-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986d9c-b90c-70ef-ad46-3cb28db56e39-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986d9c-b90c-70ef-ad46-3cb28db56e39-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d9c-b90c-70ef-ad46-3cb28db56e39-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986da0-036b-775a-aaea-cfd513bd3d30-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d92-c8bb-751d-bbd8-b5f62cfd0035-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d95-87ef-7219-a358-09d437bb3a62-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d97-0e52-71f8-b04a-cc85077ec9ff-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d66-60be-755b-958d-2fe42e5f3eb5-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986d66-60be-755b-958d-2fe42e5f3eb5-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986d5d-7d0c-75ba-8d92-f78e00d4ba4c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f9e-c03f-76f4-8033-6f2d959dcdde-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986d50-17d7-732d-995d-ee6e08587c04-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986c9b-61ed-762a-8ced-e25cd3654140-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986b19-601c-755b-b40f-55f163cfd3f7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986b19-601c-755b-b40f-55f163cfd3f7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01986b19-601c-755b-b40f-55f163cfd3f7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019826e4-f07b-703d-b5b7-6bea6149c64d-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019826e4-f07b-703d-b5b7-6bea6149c64d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019865da-9d47-756c-86d9-e09d0592ec62-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019865da-9d47-756c-86d9-e09d0592ec62-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986492-6f41-72af-89db-64c5fc72c536-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01986492-6f41-72af-89db-64c5fc72c536-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986492-6f41-72af-89db-64c5fc72c536-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01986493-cee0-7116-900a-ec602b5bcaed-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01986493-cee0-7116-900a-ec602b5bcaed-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0198600e-ea8e-776d-aa00-399ccffa004b-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198600e-ea8e-776d-aa00-399ccffa004b-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019862f8-3166-743d-99ad-73c51b463c0b-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019860b4-bf8c-74af-a73a-1c87380027c7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019860b4-bf8c-74af-a73a-1c87380027c7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198537b-c8e6-715f-9b2a-241ffdfb9835-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198537b-c8e6-715f-9b2a-241ffdfb9835-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985e40-c1c4-7687-ab70-1a66491dabea-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985e41-6394-73cd-b07b-c494331be7fa-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985e41-f23c-705a-ac7c-b79d74aae3f4-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985e42-92a3-738b-b8fb-6e683941f9ed-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985032-71c3-70c1-9fc8-6ee8b88f5e81-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985d81-2bd3-7388-ad09-ab31ac4f2b0c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019859f1-f9cd-7799-a026-12827c4930e4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019859f1-f9cd-7799-a026-12827c4930e4-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019859f3-0139-773b-a959-a7fca7edef1c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985ae7-8dfd-715f-900b-87399e53aebd-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985ae7-8dfd-715f-900b-87399e53aebd-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985ae7-8dfd-715f-900b-87399e53aebd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985a8c-baa8-75a4-a8ef-86b7ef567ff8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985a8e-a328-7699-a850-84076534e1af-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019859d5-656e-73fb-beac-d4ab7967baa4-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019859d5-656e-73fb-beac-d4ab7967baa4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019859d5-656e-73fb-beac-d4ab7967baa4-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019859e7-f40b-74aa-8c0d-071525e8b6f2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019859e7-f40b-74aa-8c0d-071525e8b6f2-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985995-9842-753c-96c8-a5070ac5855a-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985995-9842-753c-96c8-a5070ac5855a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985995-9842-753c-96c8-a5070ac5855a-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985996-c7c1-75a8-abea-3adffb4f0a78-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985996-c7c1-75a8-abea-3adffb4f0a78-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019857f0-9717-762c-9cc2-aa1b9848a801-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019857a9-5205-76fd-a143-e44d03fe3991-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985566-c5b7-776b-a8f0-a810f4d0b072-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985566-c5b7-776b-a8f0-a810f4d0b072-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985555-7387-7225-8056-f8e368dd7d7c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985555-7387-7225-8056-f8e368dd7d7c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019846ee-5997-77ab-a85e-5db28bbb3f99-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019846ee-5997-77ab-a85e-5db28bbb3f99-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019846ee-5997-77ab-a85e-5db28bbb3f99-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019846ee-5997-77ab-a85e-5db28bbb3f99-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 019846ef-2e4b-74aa-a911-cd27cd1c79e5-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019846ef-2e4b-74aa-a911-cd27cd1c79e5-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 019846ef-2e4b-74aa-a911-cd27cd1c79e5-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019846ef-2e4b-74aa-a911-cd27cd1c79e5-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 019854d2-d5b4-7757-b709-6e588c7f75f6-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019854d2-d5b4-7757-b709-6e588c7f75f6-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985489-15ae-7638-8a8f-4084f1455dec-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01985489-15ae-7638-8a8f-4084f1455dec-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985489-15ae-7638-8a8f-4084f1455dec-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985489-15ae-7638-8a8f-4084f1455dec-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01985489-e628-7368-88b0-45363fff1e26-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01985489-e628-7368-88b0-45363fff1e26-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 01985489-e628-7368-88b0-45363fff1e26-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985489-e628-7368-88b0-45363fff1e26-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985489-e628-7368-88b0-45363fff1e26-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01985413-a115-70f4-b476-5c0a5cf79463-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985413-a115-70f4-b476-5c0a5cf79463-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019853be-ab8d-76fa-a9fa-f71c38303fed-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019853be-ab8d-76fa-a9fa-f71c38303fed-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019853b6-6885-743b-8d9b-cda8a2707cb8-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019853b6-6885-743b-8d9b-cda8a2707cb8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985367-f353-702f-8953-d44f59996004-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985367-f353-702f-8953-d44f59996004-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985359-e1d7-725c-b365-0c60b5b91338-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985359-e1d7-725c-b365-0c60b5b91338-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985359-e1d7-725c-b365-0c60b5b91338-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985303-5c46-77d3-87a5-429f0cff05f7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977d90-09bb-70a8-a7f3-c31440b62062-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977d90-09bb-70a8-a7f3-c31440b62062-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985079-5ab8-706d-a805-feefbac4ffdd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198507a-54c3-7538-8c92-a35590fb04ce-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985073-db63-77ae-8d6c-b3032bed195c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985073-db63-77ae-8d6c-b3032bed195c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f9c-9005-74cd-9627-821266f424dd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f9e-8d68-73fc-9153-e0412ec01b60-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197dce4-d60f-728f-8ac9-d6a34c7be40a-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197dce4-d60f-728f-8ac9-d6a34c7be40a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985044-7c1d-7497-b85f-7bbafbbab191-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985044-7c1d-7497-b85f-7bbafbbab191-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985044-7c1d-7497-b85f-7bbafbbab191-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01985045-c870-7468-8215-e30c13f0f9e0-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985045-c870-7468-8215-e30c13f0f9e0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985027-99e0-7395-a8a1-a3f0ccdefb81-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01985027-99e0-7395-a8a1-a3f0ccdefb81-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01985027-99e0-7395-a8a1-a3f0ccdefb81-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01984edb-b2df-7004-bae2-f4cf8ff6346f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984edb-b2df-7004-bae2-f4cf8ff6346f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984edb-b2df-7004-bae2-f4cf8ff6346f-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01984ede-7590-713f-b9ad-79338b3d8512-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 01984ede-7590-713f-b9ad-79338b3d8512-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984ede-7590-713f-b9ad-79338b3d8512-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01984ff6-0dd7-746c-aefe-2647cab7d03e-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984ff6-0dd7-746c-aefe-2647cab7d03e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984fd0-57be-76f8-b878-330984ae9d92-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984fd0-57be-76f8-b878-330984ae9d92-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984fd0-57be-76f8-b878-330984ae9d92-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01984fc0-e8da-7742-9846-2c274c4d2067-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01984fc0-e8da-7742-9846-2c274c4d2067-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984fc0-e8da-7742-9846-2c274c4d2067-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984fc2-adf7-754f-9816-a6f660b63ba4-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01984fc2-adf7-754f-9816-a6f660b63ba4-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 01984fc2-adf7-754f-9816-a6f660b63ba4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197ac5a-485d-7338-a737-da5db3b8a9dd-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197ac5a-485d-7338-a737-da5db3b8a9dd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c99-1f1d-70fd-a8fc-6ab25761b7ef-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984fa0-a2ab-750d-b3f7-3d8ca7c22f08-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984fa0-a2ab-750d-b3f7-3d8ca7c22f08-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984fa0-a2ab-750d-b3f7-3d8ca7c22f08-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01984f96-9911-75aa-91f8-5945aec2547a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f75-bb46-7124-8245-9e26bd100f4c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f76-b698-708e-bee5-b88b821e79fc-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f5a-abe5-768d-98dd-a9cf7f0b6634-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f64-6df8-7548-82c1-d449f7de127c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f32-935d-739b-9606-1930cae32ca8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f08-1f81-76cd-bdf3-32df64b97e7a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f08-1f81-76cd-bdf3-32df64b97e7a-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01984f09-8229-705f-8691-15ca2257b40d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984f09-8229-705f-8691-15ca2257b40d-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01984ec3-90dd-7719-9695-0a04361dd420-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984ec3-90dd-7719-9695-0a04361dd420-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984ec4-d473-750b-b4a6-be3f41695385-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984ec4-d473-750b-b4a6-be3f41695385-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984e75-a5d4-7018-84c4-915a11619cf2-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984e75-a5d4-7018-84c4-915a11619cf2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984d7a-d022-7735-84d7-e6af181c2bf7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984d7a-d022-7735-84d7-e6af181c2bf7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984414-a884-73f5-a94a-d54de0a22cf8-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984352-a634-75a1-984d-1f118d40eaf4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01984352-a634-75a1-984d-1f118d40eaf4-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01984029-7391-70dc-ad4e-02e8c3ae008a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983fbb-54f3-733a-87b4-50f642cdad31-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01983fbc-a313-75e6-928e-e68c6a0d538d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983fbe-9236-7728-a5ad-45b6e0f5e0c5-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01983fbf-b771-7309-b423-7be008822f3e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983ee1-0ee4-723b-9162-633e4cfbf888-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01983f4d-7865-71fd-b87a-2f47f2dd94b2-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01977c94-2751-768c-b46d-debb1fadf2fd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c94-2751-768c-b46d-debb1fadf2fd-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977c94-2751-768c-b46d-debb1fadf2fd-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01983e3e-4fd1-73ff-97dd-a230e38a2e21-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983e3e-4fd1-73ff-97dd-a230e38a2e21-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01983c68-7456-77f6-a18e-439b0f16b667-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01983c68-7456-77f6-a18e-439b0f16b667-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197bb25-74ef-777a-bcba-9f1b60ca69f8-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01980cb5-8732-777b-8bda-cd39d2cf91bc-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01980cb5-8732-777b-8bda-cd39d2cf91bc-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980cb8-150f-7216-8cd6-8bdf116e81d6-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 01980cb8-150f-7216-8cd6-8bdf116e81d6-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983510-f58d-7331-952d-ec19eb6e416d-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01983510-f58d-7331-952d-ec19eb6e416d-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01983510-f58d-7331-952d-ec19eb6e416d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983510-f58d-7331-952d-ec19eb6e416d-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01983512-1d4c-755d-b09c-8a96286496ec-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01983512-1d4c-755d-b09c-8a96286496ec-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01983512-1d4c-755d-b09c-8a96286496ec-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01983512-1d4c-755d-b09c-8a96286496ec-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01982f35-0dfe-73be-961a-02441d65840d-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01982f35-0dfe-73be-961a-02441d65840d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982f25-2275-71cf-8cd2-bcb42bec5fcf-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982f06-ac67-77d2-af1b-7b8416323dd0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982f06-ac67-77d2-af1b-7b8416323dd0-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01982ce2-1c9b-71fb-ac80-79270e6a8594-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01982ce2-c74a-71aa-90a7-67257c4a5a58-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198277f-24ee-74dc-a980-e76d13357c7f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198277f-24ee-74dc-a980-e76d13357c7f-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0197af3e-c9fa-731d-aff4-fa0efb02282d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981f92-1559-77fb-8973-9e8f199d8c25-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982ca6-241e-708b-a3ef-6c796805927f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982ca8-f78e-70dd-b729-58746413f863-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982c82-dc01-761b-ab42-3f7d60b67081-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01982c82-dc01-761b-ab42-3f7d60b67081-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01982c82-dc01-761b-ab42-3f7d60b67081-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01982c82-dc01-761b-ab42-3f7d60b67081-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982c83-cd60-7270-a3d9-3dd4e51e9d4c-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01982c83-cd60-7270-a3d9-3dd4e51e9d4c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01982c83-cd60-7270-a3d9-3dd4e51e9d4c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c68-272c-7264-8ab0-813807c7ede0-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01977c68-272c-7264-8ab0-813807c7ede0-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977c68-272c-7264-8ab0-813807c7ede0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c68-272c-7264-8ab0-813807c7ede0-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198275e-bc1a-70a0-9c32-08777a0303b3-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198275e-bc1a-70a0-9c32-08777a0303b3-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198275e-bc1a-70a0-9c32-08777a0303b3-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01982761-dcdd-7096-9c42-24fd8f8eaf63-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982761-dcdd-7096-9c42-24fd8f8eaf63-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0198272a-7ecd-76c8-9cb1-dc8c838a62ad-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01982581-9ada-72b6-b7f3-ee5eeddc00ea-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01982081-ee98-71bf-8442-65c5511a38ae-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981b19-3094-76a9-bcf3-1b18242a5858-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981b17-f1d2-713e-a5a5-bb513cecd248-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981b17-f1d2-713e-a5a5-bb513cecd248-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981b17-f1d2-713e-a5a5-bb513cecd248-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01981b17-f1d2-713e-a5a5-bb513cecd248-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01981af2-fb82-7299-9f37-22cf6cf3906a-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981af2-fb82-7299-9f37-22cf6cf3906a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981b0e-2097-76ba-bb77-e1c5a1cc102d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981b03-82d0-7634-b0d0-a99912bc8ec2-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981b03-82d0-7634-b0d0-a99912bc8ec2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981afd-5d24-7683-afa4-2348a8073296-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981afd-5d24-7683-afa4-2348a8073296-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981afd-5d24-7683-afa4-2348a8073296-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01981ace-d195-7452-bb54-4424bca4e3a0-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981aca-b515-7489-80ab-1b63461b57a1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981aca-b515-7489-80ab-1b63461b57a1-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01981aca-b515-7489-80ab-1b63461b57a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981abf-ec06-7638-bf8b-53a5b4e6140e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981aba-6dfc-745e-9ad8-8f11dcab5119-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981a9c-42d5-7234-8053-641b505f2d72-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981a9c-42d5-7234-8053-641b505f2d72-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981a9c-42d5-7234-8053-641b505f2d72-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 019816ff-f970-74ab-9b2b-b3bfa0bd7dd1-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019816ff-f970-74ab-9b2b-b3bfa0bd7dd1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01981743-84d7-72c8-bc28-53e521439b58-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  ✅ Created new tickets document: 01981323-b413-7480-add2-e3c5afc97601-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981324-aba6-7658-8c2e-c626bcfe8f0d-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981324-fa9b-72d6-b190-1692ec47a13f-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981325-2d04-7009-b950-ba4065b4c4a0-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01981318-fba4-70de-bb7c-9ecc80132b17-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198131b-00e2-7365-bb82-dd88e08563e4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198131b-8fac-72d6-bf68-318bf7536f99-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0198131e-cac5-76c0-a01e-b2ebb19df97f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019812a3-3417-772b-bfaf-8c54c18b5858-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019812a3-3417-772b-bfaf-8c54c18b5858-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019812ec-4e4e-72bf-a6ed-1405cf77b9b7-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019812ec-4e4e-72bf-a6ed-1405cf77b9b7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019812ed-60e7-7517-9b39-ae5a59eb0b51-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019812ed-60e7-7517-9b39-ae5a59eb0b51-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 019812ef-7ef2-7079-895f-41a3ae7cb34c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019812ef-7ef2-7079-895f-41a3ae7cb34c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977c39-8fbe-7002-ac6a-32900de67f9c-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01977c39-8fbe-7002-ac6a-32900de67f9c-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01977c3a-53c5-730d-9608-3806e3c45c7d-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01980e40-9351-7425-a071-cbcdd6779fbc-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01980e40-9351-7425-a071-cbcdd6779fbc-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980e40-9351-7425-a071-cbcdd6779fbc-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01980e40-9351-7425-a071-cbcdd6779fbc-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01980e41-702b-7591-b9ef-eaa471d4f691-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01980e41-702b-7591-b9ef-eaa471d4f691-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01980e41-702b-7591-b9ef-eaa471d4f691-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980e41-702b-7591-b9ef-eaa471d4f691-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01980d2a-b4ba-7009-92b1-c2b118e74075-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01980d2a-b4ba-7009-92b1-c2b118e74075-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980d31-04ce-743e-8d9e-2abe9896d45f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980c39-3c17-746d-b9a2-6ea663824e57-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01980c39-3c17-746d-b9a2-6ea663824e57-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 01980c39-3c17-746d-b9a2-6ea663824e57-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01980c39-3c17-746d-b9a2-6ea663824e57-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980c39-3c17-746d-b9a2-6ea663824e57-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01980c3c-da0f-74c9-b2a3-d81670615fbf-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01980c3c-da0f-74c9-b2a3-d81670615fbf-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 01980c3c-da0f-74c9-b2a3-d81670615fbf-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01980c3c-da0f-74c9-b2a3-d81670615fbf-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 019806fa-a567-7711-b400-edf50b2fd20a-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019806fa-a567-7711-b400-edf50b2fd20a-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197ff08-5d1b-71ed-9b19-f002c1c63b1e-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197ff08-5d1b-71ed-9b19-f002c1c63b1e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197ff08-5d1b-71ed-9b19-f002c1c63b1e-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197fb99-9903-76af-bdf2-3bba7a9f1183-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197fb99-9903-76af-bdf2-3bba7a9f1183-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197f7fe-8f48-701f-bfc2-8696b8b538ea-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197f801-5f96-740d-8a57-54e1e26490a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197d52c-f5a1-732f-b3e0-ce6fc100bf55-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197d52c-f5a1-732f-b3e0-ce6fc100bf55-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197d52c-f5a1-732f-b3e0-ce6fc100bf55-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197d52c-f5a1-732f-b3e0-ce6fc100bf55-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197f38e-386e-76c6-9644-9699a05ba4a7-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197f38e-386e-76c6-9644-9699a05ba4a7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197f38e-386e-76c6-9644-9699a05ba4a7-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197f38e-386e-76c6-9644-9699a05ba4a7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197f3ce-22bc-752b-acbf-b5a9240cb7ae-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 0197f208-3a76-72fe-aa1d-a4bb2476cbf4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197f208-3a76-72fe-aa1d-a4bb2476cbf4-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197f209-46e5-710e-afcb-a5d1f18fb663-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197f209-46e5-710e-afcb-a5d1f18fb663-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01978796-ff97-71ff-bd70-63e72c774842-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 01978796-ff97-71ff-bd70-63e72c774842-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e991-ec5e-732f-9ceb-5f35cf51ec03-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e9a4-cba8-7266-9d54-84833ce0b0b7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197ca4d-2c80-7457-89b9-d2d222ab5a96-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197ca4d-2c80-7457-89b9-d2d222ab5a96-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197e7bc-c3b1-75eb-b32c-57621420e0ec-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197e798-0955-711f-8cae-45f48d843cf5-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197e798-0955-711f-8cae-45f48d843cf5-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e799-d811-7417-9aff-4916a543b549-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e702-a5a3-75fa-8cc8-eb7074ba6346-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197e702-a5a3-75fa-8cc8-eb7074ba6346-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e70a-8b86-74d0-898a-1df6f85a0397-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197e70c-9ace-7139-889f-c8dec4a82676-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 9872322c-1f53-4487-88ff-397ac332b27b
+  ✅ Created new tickets document: 01979691-c54e-720c-9182-9b3e925d4ebd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197daab-21d3-745a-b6c7-3473a4fb3502-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197daab-21d3-745a-b6c7-3473a4fb3502-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 8d94acfc-0b31-4cef-b279-6ae5d41522da
+  ✅ Created new tickets document: 0197d904-c941-710f-bb20-f92626c3eb99-be94ef03-6647-48d5-97ea-f98c862e30e6
+  ✅ Created new tickets document: 0197d904-c941-710f-bb20-f92626c3eb99-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197d360-6579-73ec-91db-da3fa97191a2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197d364-14b5-7609-b23e-c4d159ca3233-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197d364-ffa5-709b-b660-bd48135e8a3e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197d365-aa7d-72a1-8446-80d5d708001f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197c68a-c9ce-719a-8a02-45bc516394a3-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197c68a-c9ce-719a-8a02-45bc516394a3-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197c68a-c9ce-719a-8a02-45bc516394a3-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197c68a-c9ce-719a-8a02-45bc516394a3-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197c68b-37b6-729e-b300-fc10b22e977a-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197c68b-37b6-729e-b300-fc10b22e977a-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 0197c68b-37b6-729e-b300-fc10b22e977a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197c68b-37b6-729e-b300-fc10b22e977a-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197c68b-37b6-729e-b300-fc10b22e977a-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 432f6658-b69c-47ad-8bee-48dac741147e
+  ✅ Created new tickets document: 0197c30c-6fb1-7388-8a94-b5f30e533779-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197c30c-6fb1-7388-8a94-b5f30e533779-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197c30d-72b7-73aa-a7b0-e47f385daa9c-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 019781c4-b2be-7570-8dda-b678f2651944-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781c4-b2be-7570-8dda-b678f2651944-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 019781c5-8dcd-702b-a716-94fac88ec472-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197c0f6-46ac-71fd-a317-4f8d508f0885-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197c100-3c48-737c-9dec-c12829ef7403-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197b404-bc2d-75ef-bc48-6879eb80e3db-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197bfdc-4990-737e-aded-ead40009ef38-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197bfdc-4990-737e-aded-ead40009ef38-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197bfde-24d9-74de-ac4a-85248a25a8d2-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197bfde-aad5-724f-b77c-9a4cd142891a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197bfde-aad5-724f-b77c-9a4cd142891a-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197bfdf-5d4d-74fd-98f3-888ecf0faaee-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 2f5b23d2-a85f-4518-b352-d04d7fe3b074
+  ✅ Created new tickets document: 0197bfa1-c546-70f9-838f-711da559413e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197bfa1-c546-70f9-838f-711da559413e-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197bfa4-9872-729f-9de1-2257d622e73d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197bfa4-9872-729f-9de1-2257d622e73d-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 4addb5b5-4202-4227-88c2-529ad70f967c
+  ✅ Created new tickets document: 01977c37-90e5-7291-ad5c-764431b08329-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197aa37-69bf-7651-8687-d6722c495647-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197aa37-69bf-7651-8687-d6722c495647-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01977dc1-97d7-724c-9b6f-0fe96385b08d-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01977dc1-97d7-724c-9b6f-0fe96385b08d-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977dc1-97d7-724c-9b6f-0fe96385b08d-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197b147-5a4d-76d5-91b6-cc10c4b84909-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197b147-5a4d-76d5-91b6-cc10c4b84909-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 0197b147-5a4d-76d5-91b6-cc10c4b84909-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197b147-5a4d-76d5-91b6-cc10c4b84909-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 0197ae6a-26cd-776e-928a-8b6996f10f2e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197ae6b-7f0d-739e-95ae-819865e1db01-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197803a-6782-756a-9b90-ec2c93506951-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 0197803a-6782-756a-9b90-ec2c93506951-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197803a-6782-756a-9b90-ec2c93506951-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197aa52-56a4-743c-a343-1dbc7d2505ff-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197aa55-181b-77e8-a252-a30aa2b06cc2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197a891-cdb6-710f-90cd-9ddc81007692-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 0197a891-cdb6-710f-90cd-9ddc81007692-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197a895-0d72-725a-896a-7ae19fabc2c2-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01977da7-3537-72bf-90b0-7aac6b0d66d2-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197a0bd-6e2e-728f-9884-eb047223e942-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197a50e-8c07-756a-a54e-38ead0a6479b-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 977123fd-7ccb-409b-8ec4-49906da9cf8b
+  ✅ Created new tickets document: 01979a24-7061-709c-90f2-cc42c419b2df-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd3-dda0-718d-a100-a98759a1a67c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd3-dda0-718d-a100-a98759a1a67c-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd4-c29b-76d5-80df-e63768d9015f-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd4-c29b-76d5-80df-e63768d9015f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd5-10ac-775d-a500-2925ba175a75-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd5-10ac-775d-a500-2925ba175a75-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd5-10ac-775d-a500-2925ba175a75-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd5-c639-778c-a943-63fe14353bed-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd5-c639-778c-a943-63fe14353bed-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd5-c639-778c-a943-63fe14353bed-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd6-269a-7647-9c26-358b9dafbfb0-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd6-269a-7647-9c26-358b9dafbfb0-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd6-269a-7647-9c26-358b9dafbfb0-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd6-b42a-70c7-a061-50495652c652-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd6-b42a-70c7-a061-50495652c652-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd6-b42a-70c7-a061-50495652c652-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd7-0be4-768f-ba52-5e4fce16bfd3-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd7-0be4-768f-ba52-5e4fce16bfd3-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd7-0be4-768f-ba52-5e4fce16bfd3-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd7-fa25-70bd-b40d-27450d8137ff-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd7-fa25-70bd-b40d-27450d8137ff-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd7-fa25-70bd-b40d-27450d8137ff-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd8-5d7c-7298-a22c-059dbd491b0e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd8-5d7c-7298-a22c-059dbd491b0e-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd8-5d7c-7298-a22c-059dbd491b0e-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bd8-e3d1-7659-ade6-30adbd7b678e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bd8-e3d1-7659-ade6-30adbd7b678e-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bd8-e3d1-7659-ade6-30adbd7b678e-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979ba7-cc43-774c-93c1-f68f76eb6886-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979ba7-cc43-774c-93c1-f68f76eb6886-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979ba7-cc43-774c-93c1-f68f76eb6886-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979baa-beeb-741d-9957-23be9e41bac6-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979baa-beeb-741d-9957-23be9e41bac6-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979baa-beeb-741d-9957-23be9e41bac6-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bab-3248-7288-aa29-7f81aea01151-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bab-3248-7288-aa29-7f81aea01151-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bab-3248-7288-aa29-7f81aea01151-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bae-3e65-721f-bffb-2dedc4e38ea3-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bae-3e65-721f-bffb-2dedc4e38ea3-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bae-d45e-74ca-8f6f-0fd4a33c405c-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bae-d45e-74ca-8f6f-0fd4a33c405c-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bb6-a3ea-746f-a222-26254be3d9e7-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bb6-a3ea-746f-a222-26254be3d9e7-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bb6-a3ea-746f-a222-26254be3d9e7-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bb7-876b-75a9-8846-5e86efff620f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bb7-876b-75a9-8846-5e86efff620f-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bb7-876b-75a9-8846-5e86efff620f-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bb8-6cb3-73ee-8fe9-1cc2322d47c4-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bb8-6cb3-73ee-8fe9-1cc2322d47c4-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bb8-6cb3-73ee-8fe9-1cc2322d47c4-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bb9-2eb3-764e-b82c-e7e775ae9006-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bb9-2eb3-764e-b82c-e7e775ae9006-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bb9-2eb3-764e-b82c-e7e775ae9006-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979bb9-f02c-7747-b250-e927cded49a1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979bb9-f02c-7747-b250-e927cded49a1-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979bb9-f02c-7747-b250-e927cded49a1-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979b6b-99ac-715b-b139-2b79af7d1374-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979b6b-99ac-715b-b139-2b79af7d1374-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01978646-5c97-74dd-bbcf-7666f3572981-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977c91-7aa4-7485-9f84-968e5d591223-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979784-967c-733c-a66c-e9cff5154d00-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 01979784-967c-733c-a66c-e9cff5154d00-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01979784-967c-733c-a66c-e9cff5154d00-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01979784-967c-733c-a66c-e9cff5154d00-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 01979a25-c73f-71b1-bac1-83ec62968fa1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 54039b1b-0d89-4d75-93e8-d7817548b66f
+  ✅ Created new tickets document: 01975903-bc26-7452-8d69-4438b9f7b70f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019758e0-a347-7332-a728-235c2e8941bb-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 0197588a-cf1e-72f8-8295-634d46da6e7a-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977cbf-62d1-709d-9b8d-847981b64f9b-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 8cd14573-e6e4-4634-8979-c306048174cb
+  ✅ Created new tickets document: 01977caf-f4ae-707a-8964-635796a76e08-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977caf-f4ae-707a-8964-635796a76e08-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01977cb1-5df7-7333-b0d8-78a1be5ffa74-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977cb1-5df7-7333-b0d8-78a1be5ffa74-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 01977cb2-7206-75eb-9556-cd351b7b21d1-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 01977cb3-323c-72bb-90ce-b841af2ba107-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: af0bbf8f-43bd-4ea6-9a62-24cabe2d8bc3
+  ✅ Created new tickets document: 019781d7-a8f9-723f-8b78-b449d5467f8d-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 019781ee-8ad9-701e-8564-b2dc08df9b52-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781dd-3722-75f0-84f2-8d62211167f3-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781c5-0f70-700a-95c8-cd245b2aeafd-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781c5-0f70-700a-95c8-cd245b2aeafd-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019781ba-6905-700c-9c53-d5b8c1596a8e-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019781ba-6905-700c-9c53-d5b8c1596a8e-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781ba-6905-700c-9c53-d5b8c1596a8e-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 019781ba-6905-700c-9c53-d5b8c1596a8e-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  ✅ Created new tickets document: 019781bd-4980-7010-86b0-602b4358db97-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  ✅ Created new tickets document: 019781bd-4980-7010-86b0-602b4358db97-d4e5f6a7-b8c9-4567-def0-456789012345
+  ✅ Created new tickets document: 019781bd-4980-7010-86b0-602b4358db97-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  ✅ Created new tickets document: 019781bd-4980-7010-86b0-602b4358db97-fd12d7f0-f346-49bf-b1eb-0682ad226216
+  ✅ Created new tickets document: 019781bd-4980-7010-86b0-602b4358db97-bce41292-3662-44a7-85da-eeb1a1e89d8a
+✅ import_tickets sync complete: 629 processed, 629 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_contacts -> contacts ---
+Found 304 documents in import_contacts
+  ✅ Created new contacts document: 93c0e4bfa5d73325db243603c5b4dfed
+  ✅ Created new contacts document: 740ef055bcbe971a381cf932eb093a9c
+  ✅ Created new contacts document: 7f45e4a23a34336aac4998d6f97409a6
+  ✅ Created new contacts document: 470d9d750e03a9176a1e097c7fbcb3b0
+  ✅ Created new contacts document: 1280ec0fca38c359dfa854e65b23216f
+  ✅ Created new contacts document: 8ae6f2b956a97b90caff9d0aa0bd1cd4
+  ✅ Created new contacts document: 311fc44cad71b382bb6d43fac89f31be
+  ✅ Created new contacts document: f60f6fc26b3ca69eca08f5748311ff72
+  ✅ Created new contacts document: 815da0d8b368f02b8ad9f80d4e83166e
+  ✅ Created new contacts document: 74c210391a4a6f9c6b0f653440ad4328
+  ✅ Created new contacts document: e8b9bf020f77907b7b63e313418c1f50
+  ✅ Created new contacts document: d09c4f74c5a1693567a5be763a7866d9
+  ✅ Created new contacts document: 881528e0edbfdf673b383cb5ae6fd291
+  ✅ Created new contacts document: 37e4681e056fd6739ddf7de7f29c03dc
+  ✅ Created new contacts document: 7bfc0551f0298f857c6cdfc574559eb8
+  ✅ Created new contacts document: e03ecf7abdb72adc14b3f0ca5825de4b
+  ✅ Created new contacts document: 06dd8d74ace418787e7eb46a3747f5ac
+  ✅ Created new contacts document: ca4638055313412a2c8cec9478284b0f
+  ✅ Created new contacts document: 12f2ffaeb8557b85920a16cfb473d838
+  ✅ Created new contacts document: 59c229c3138d5d2a80df55ffabdc6eee
+  ✅ Created new contacts document: 567d4e0725e0c7c0d35c5f8e51b413af
+  ✅ Created new contacts document: 9c61f8722894d2ba3485da32cfd8e994
+  ✅ Created new contacts document: 919647d21e88d77a9ff9c61d94613950
+  ✅ Created new contacts document: e0d2bfc402063f3121053fe81558c8fe
+  ✅ Created new contacts document: b5438411c4a3ef38ed770882da7df2f7
+  ✅ Created new contacts document: 96c140d23eb2e0774cee2932babdac59
+  ✅ Created new contacts document: aad8b09cb8333c7b86fffcd3d51c4b7c
+  ✅ Created new contacts document: 596937babd8076adf4f86c0bd0a60796
+  ✅ Created new contacts document: 508ad29a2e3481df6ffa20a64eebc049
+  ✅ Created new contacts document: 34bd3cfbff2d29c280807cd0b8151259
+  ✅ Created new contacts document: 35385336ecc645c34413255703fb3ab4
+  ✅ Created new contacts document: c5b286893a8e82c5ef9849d032522c9c
+  ✅ Created new contacts document: 0c850f0280fd0a121fb5b53894b9587d
+  ✅ Created new contacts document: 7a13b61d059e8e865799dcf2687cd250
+  ✅ Created new contacts document: c1e5f44958ac84bfc3707c21cd20fbfa
+  ✅ Created new contacts document: 900938f85210a5ccb6fb3dca40916d6b
+  ✅ Created new contacts document: dacf078242a4ccde63e76c64568f294d
+  ✅ Created new contacts document: 4b7400c61384c30bfe4a8ccf9ca2fc9a
+  ✅ Created new contacts document: 67897f9ae97f29b7204aa8787d00b89f
+  ✅ Created new contacts document: 234ef8ab9b7e525f586fc45c71939fa4
+  ✅ Created new contacts document: 11c902f3c095dd6dcc22425a4dfcb55f
+  ✅ Created new contacts document: 5d194968addd1ec5dfa21a07f04b8fdb
+  ✅ Created new contacts document: ae4f8429ff3ca86b3529021adfd0ad5d
+  ✅ Created new contacts document: b7d66d6ab6c7b227091972f66035cde7
+  ✅ Created new contacts document: 07a517b6c31717a7367ce89fa43d668c
+  ✅ Created new contacts document: e7030fce5108545994f9d73e50d04cde
+  ✅ Created new contacts document: 33e1e01185b5b1cf551ad98d4ddf58b8
+  ✅ Created new contacts document: f18db845be5f0d5c1e41263d801e296e
+  ✅ Created new contacts document: 487a642007b081b7bec155c3b572e609
+  ✅ Created new contacts document: 708a726b1ea9b5bc80b7684f47e1f8b2
+  ✅ Created new contacts document: ab550d796618ae950c8fc81f0bab2459
+  ✅ Created new contacts document: 97619f83fb7498db386afa70bb8154b8
+  ✅ Created new contacts document: cb29c814f7c22a13fe6dbb766b4d6c77
+  ✅ Created new contacts document: e3baa4b45d0a279e48ea285caf241df2
+  ✅ Created new contacts document: 68e8719155ae48781653e8dab3d5b4fa
+  ✅ Created new contacts document: f48a6ab27c1eaa0d4eb33971bf6cc43e
+  ✅ Created new contacts document: 2a361838cd2843910c253513195da194
+  ✅ Created new contacts document: 1fbd8ca1f0aedf8a85867624ff3bbe8b
+  ✅ Created new contacts document: 167f2537f78b4dcc65ca6d9df82b490d
+  ✅ Created new contacts document: 2cf2343859d28be4fcfc79defe23a05b
+  ✅ Created new contacts document: 95478ce53dfb30d418ca2dcb35ab7145
+  ✅ Created new contacts document: c7b072b421419b4c4d17b343057d1499
+  ✅ Created new contacts document: 80aed4c43ae21718376b12af1bce5ee5
+  ✅ Created new contacts document: f520988efe3b3550e38a9ca9309908da
+  ✅ Created new contacts document: 9d74d0078c66b3e113fc8fbfc0454bab
+  ✅ Created new contacts document: 5b49fcd46d715dae18650d55ef813ef3
+  ✅ Created new contacts document: c85326008ccf1bf293606d15ecdac87f
+  ✅ Created new contacts document: 1f780e8f9760663f93aa8dc500e70875
+  ✅ Created new contacts document: dd0ff1295876f321b1dc7db8af837636
+  ✅ Created new contacts document: de3f0c9aee68370b44a4da323380d7b2
+  ✅ Created new contacts document: 46e57027d4dd83cc57fb990ecc32e357
+  ✅ Created new contacts document: bd1f27a053bbe214e03ec05a4a404d23
+  ✅ Created new contacts document: ad28904a16538b86377ef9ffa7aa54a1
+  ✅ Created new contacts document: 6277707323dbbc653f8a64d233b995e8
+  ✅ Created new contacts document: 92c0f20fe03e316186b6287effc5ed3a
+  ✅ Created new contacts document: 679ebba7c06115f00b77aa080476768d
+  ✅ Created new contacts document: 71b7ae19b432d46fa6d4fb1880196ec0
+  ✅ Created new contacts document: c3a33978fed21a5840c24eebe8b0369e
+  ✅ Created new contacts document: 325576e8fb117b8abd810a06a9c81e5f
+  ✅ Created new contacts document: 4502934ab7514ac90798d1676d4a3b40
+  ✅ Created new contacts document: aaa448c48cf60c53ad3ab9b47de81471
+  ✅ Created new contacts document: 2a6a798b40c5eecbbb3846092adb78b0
+  ✅ Created new contacts document: f5c573cfb5437e022d596afc3256b399
+  ✅ Created new contacts document: bc71d1c1e1470847f067bab6af7e5be4
+  ✅ Created new contacts document: 1e5c53becb04d53dffd19385fe52eb48
+  ✅ Created new contacts document: a0206a67c7b7f46f0b03962b81279ad4
+  ✅ Created new contacts document: da0ac0a1adb98fe795cbb5d9ad4197f4
+  ✅ Created new contacts document: 2099e7530eb37ae6fb6ab2a2e74ac595
+  ✅ Created new contacts document: 2527e9fa945194915b471f14bbdeaebb
+  ✅ Created new contacts document: 783473d9edc109f65e21ef137a47031d
+  ✅ Created new contacts document: 9c1748dc9c53e1986b8feb5323cd8103
+  ✅ Created new contacts document: c5871ef87f7053b59977feb1d5291a53
+  ✅ Created new contacts document: 2e29a14d0c867ad5ea3305b891dd381e
+  ✅ Created new contacts document: 544c91c8eebd76d6824cf71fb1d51331
+  ✅ Created new contacts document: f969d18ebc124761d19307c393b73c30
+  ✅ Created new contacts document: 9b7c0e6252213a0db0cca002e06362c0
+  ✅ Created new contacts document: 15d74df0102163b2b89480a54746e53c
+  ✅ Created new contacts document: d6297718132f58f31c81bfb695829192
+  ✅ Created new contacts document: c9b5d53f03d214a8f3a40b8421f3f9d1
+  ✅ Created new contacts document: 1dd1f0e8d7a29e92faa1a9b4ecd22b6a
+  ✅ Created new contacts document: d9c9462316de0b2f6583ee7576c03741
+  ✅ Created new contacts document: 41a8ff107bd3343b603046965d744cee
+  ✅ Created new contacts document: 9b807f6ab31d972266385f225bf2b098
+  ✅ Created new contacts document: e074edb521573e3aa7f9159f9a1834cf
+  ✅ Created new contacts document: 45001fc43b838e892e70deefe3fe5e0b
+  ✅ Created new contacts document: 7467ccad84afedf1cf9e61f4e5ba86a9
+  ✅ Created new contacts document: 89a65997f9e15f2a75b371768984cbd8
+  ✅ Created new contacts document: a19522d04956b16df3e0150d908a314b
+  ✅ Created new contacts document: d8ace5c94fe92e4ce18cc69a3afdd1db
+  ✅ Created new contacts document: a239a12431e48c85192a34d7af4ceade
+  ✅ Created new contacts document: c4a3e0885dc71e57c55779539e215d72
+  ✅ Created new contacts document: 3d458caa0d4379d55c30133f1976079e
+  ✅ Created new contacts document: 5325355fbbb8bdc10b82f2803f2e54ec
+  ✅ Created new contacts document: d5d77a2a0444837cf5c3750a9fec5e53
+  ✅ Created new contacts document: 222698da49b4af4f5d65207d1cda2e84
+  ✅ Created new contacts document: bef47309763b58abe6753945fbcd623d
+  ✅ Created new contacts document: 4eb407fb0e161bee5258a8bb59d19523
+  ✅ Created new contacts document: aceba0b3a722ab915acb37493ad7b62f
+  ✅ Created new contacts document: fbf3c64994c789b4e16a65febe54f138
+  ✅ Created new contacts document: 4e68bb55ec0c26775a347ea6de72b136
+  ✅ Created new contacts document: 585877e199574557dfd71b7ac823a17f
+  ✅ Created new contacts document: 77ded9e20baccec2077f2542cd491f0d
+  ✅ Created new contacts document: 02db5b9ec5ae61c8ae7d37adb2159bd0
+  ✅ Created new contacts document: 1e2ed08e2a87c1bb6b307378fa80ba5f
+  ✅ Created new contacts document: d8870c05881b45748e09acfd387f498e
+  ✅ Created new contacts document: 1b8a6fdfa3075925bcba3b8baae13dbf
+  ✅ Created new contacts document: 626a2f2717757161fa530cc9317a5631
+  ✅ Created new contacts document: d462585475c488e6407f4a4b22c90faf
+  ✅ Created new contacts document: 1aa53e5eada84b1e78824113f71aaf31
+  ✅ Created new contacts document: 132b2bd74693a4a0f1a4ed2bd5a58f4a
+  ✅ Created new contacts document: 63b674404417e03d87dba2a9224b6877
+  ✅ Created new contacts document: 7549ad452bf5d8e93688f24854eeca24
+  ✅ Created new contacts document: ff24f22ac5ffea9d8c0e13d912042f07
+  ✅ Created new contacts document: 529b03275c616c9881dcd93a596bc4cf
+  ✅ Created new contacts document: cfc5cd411d44638392de22445dcd5393
+  ✅ Created new contacts document: 0725a140471a62f029c6e7fe2e305399
+  ✅ Created new contacts document: 99cbd8ccf56e915678c52383e55ed25e
+  ✅ Created new contacts document: 952b42dc7c2ea72c04abd212c5a02150
+  ✅ Created new contacts document: c361e8178970b533c5b82062582abefb
+  ✅ Created new contacts document: 2bc403b9fc5c395a382f1c9e1dfef741
+  ✅ Created new contacts document: d29ffbcd025e2efe20c66813c5c86239
+  ✅ Created new contacts document: 21d38d9dd7bca5a16f2534c85ded812c
+  ✅ Created new contacts document: a1884bdd13905f42b13bfc5cd33dd6db
+  ✅ Created new contacts document: 5515485e5ee012a0aebb40c5c3d0f940
+  ✅ Created new contacts document: 15c13d77dd2df906c0e33152cae72199
+  ✅ Created new contacts document: cdec3d363300c0891e2616d50950c37b
+  ✅ Created new contacts document: e3b3ee0ab88803ef60023c695b518a77
+  ✅ Created new contacts document: 9ad4942ed152a842da49f5983a7893a4
+  ✅ Created new contacts document: 683c9ff28de6d11227fd2e2b1df20c80
+  ✅ Created new contacts document: fe23f0737962905553ca98ce52ac10ff
+  ✅ Created new contacts document: c3957113ca47fc6cce37cef5fa2a14fe
+  ✅ Created new contacts document: a5f405c4864bafe4c2002f03449e0e5d
+  ✅ Created new contacts document: 28d985fba962e87d374c6eba31d80962
+  ✅ Created new contacts document: c81e2e907a4bd9a7e1d562e309984633
+  ✅ Created new contacts document: cb6cf8462469a6bc4babafa4a927320e
+  ✅ Created new contacts document: df37ef23c707c270b4f3a56dd92bd077
+  ✅ Created new contacts document: 58f609c942f02ce6dcaaf73553c647bf
+  ✅ Created new contacts document: 30cfd5e74b193fdd9ca512e32abb573b
+  ✅ Created new contacts document: cdf9e3159650b34222a66148680d2d25
+  ✅ Created new contacts document: 5a61649574264ec31c7714e02d459eb2
+  ✅ Created new contacts document: 90dda1072fd4a538f9ff92900be81fb4
+  ✅ Created new contacts document: 1fe36c55cf8dad3476cc7decc9a8bc36
+  ✅ Created new contacts document: edf0ca7f3edce23c330ed39417e47699
+  ✅ Created new contacts document: aaca2b7f1ab462c42f09c3a61086ae30
+  ✅ Created new contacts document: 51e2bdad694af3a5f076fedccf6f5e5f
+  ✅ Created new contacts document: 64e04ea79d6156346c4772edf4cbaf32
+  ✅ Created new contacts document: 642685100e0844ea4ef3a061595ee590
+  ✅ Created new contacts document: da17001cb40483e2bc8c91e3d831f055
+  ✅ Created new contacts document: 527cfbf839fa5162fe12d15b0a7940e2
+  ✅ Created new contacts document: 37b7f147b3613ee744239db0386e8387
+  ✅ Created new contacts document: 2f3773301f80b2ee497e6805b47505dc
+  ✅ Created new contacts document: fd27283f535fc5b94096da34fe013325
+  ✅ Created new contacts document: f4120166a42fbdb2596d5449d8fb5b20
+  ✅ Created new contacts document: 65ff8f7a2baf458a75c22685c62c46dc
+  ✅ Created new contacts document: 3c5a44e40173df87c205ce90c0d82634
+  ✅ Created new contacts document: 6fccc0401c03804fb429cd05445df4d9
+  ✅ Created new contacts document: da89d25c293211fbf7dc8de1c2cc14dd
+  ✅ Created new contacts document: e93bbb7b7ef660bd009af5be87b00169
+  ✅ Created new contacts document: 523d9a20f054f503daf7331ce1fcb103
+  ✅ Created new contacts document: 24cc179c37926dc1c4549bcf38388e2d
+  ✅ Created new contacts document: 88ce34f3c414a2c71c6c1c4c9dd8f50a
+  ✅ Created new contacts document: a9479ddbc108e2dd7ec1cfd49c9c1876
+  ✅ Created new contacts document: a45e5f82b34757cd0f63dd0765b3b6fb
+  ✅ Created new contacts document: a78262a8a9b71bab04c7d1035113f78f
+  ✅ Created new contacts document: d9f09689bb30768022755c88100c9348
+  ✅ Created new contacts document: 8856b5c04d4ce4829bcb3640c2e5e383
+  ✅ Created new contacts document: 57994981f4ace71ef2ed18cebc2e49b5
+  ✅ Created new contacts document: 511d5921520068bb6412b9523fdbf1b1
+  ✅ Created new contacts document: 77d94d5dd850ad32e959ad87c1b5ab2b
+  ✅ Created new contacts document: cb1a3e13f08c73205584acc3c91fee47
+  ✅ Created new contacts document: f3e89120b07d6bc37bdd1aa49e42c185
+  ✅ Created new contacts document: f486a7efe37183b045fa1ba0f6687434
+  ✅ Created new contacts document: b6ee38192ad9578e868a90466dcf31cb
+  ✅ Created new contacts document: 86183b3737477363e6b2af8561e1e426
+  ✅ Created new contacts document: abfdd0eeac9b9653bcb99814505c5114
+  ✅ Created new contacts document: 57b98c40304dc5dce5c70a03a8057af9
+  ✅ Created new contacts document: 45800e27b222c1bd8fd77f08c29237cf
+  ✅ Created new contacts document: 70223e449f9325cae661918a4b7599cd
+  ✅ Created new contacts document: 1c07962e5c7f01a0c7d96f622f6bfdd9
+  ✅ Created new contacts document: c9d9d44db86276dd68496bd2f615182b
+  ✅ Created new contacts document: df3ea737b49f0154871971ad2964dabc
+  ✅ Created new contacts document: f2b83965d1785e0ba37e18b9d532ddd9
+  ✅ Created new contacts document: 20c22ef95435f9721486d517331c95d5
+  ✅ Created new contacts document: 2fe0040647ef8db1e0702277c8fa81e4
+  ✅ Created new contacts document: 6445fc8e5fed8bc73c3f0ea23eff14fd
+  ✅ Created new contacts document: 27b96f87a460439c4ae3a7b0197f9338
+  ✅ Created new contacts document: 4e880c745f1a4fd0b72e07105eaca1c3
+  ✅ Created new contacts document: 4ddda57af3587ba8d414c172fc561494
+  ✅ Created new contacts document: fff62c2522dee2b0fc758cd4acc119a2
+  ✅ Created new contacts document: 14a15d21d4b043f760e2afbf24f908f5
+  ✅ Created new contacts document: 3db62ad93725440f7d7a513d0164664c
+  ✅ Created new contacts document: 42a13df38edef1fdd7b138402302e194
+  ✅ Created new contacts document: 0b370deaf92db4cec918661ac34da914
+  ✅ Created new contacts document: 6bcf6d40274c4cd936cf2a4ac65c39a1
+  ✅ Created new contacts document: a008ab02d7faaef8e8d748999dc21211
+  ✅ Created new contacts document: 0751170355fad5c153e0fed379427f2f
+  ✅ Created new contacts document: 6e3d36405a28b6a6bf869430c363fb5e
+  ✅ Created new contacts document: 1ddaf41e1e9981184c17d60baba3e560
+  ✅ Created new contacts document: d6f2e451bcaa5050a5ed066ccecc3b5e
+  ✅ Created new contacts document: 7c02679ed85f2c32b1acced534c2cb79
+  ✅ Created new contacts document: b55fdd7f72d1925b3972b83b7384416e
+  ✅ Created new contacts document: 105f5842a23d541abf547c93faa2f946
+  ✅ Created new contacts document: 8930695329eb990598886ec0c0ee296f
+  ✅ Created new contacts document: e06b6d6d9803a5c2a5dcaeb0f2858fef
+  ✅ Created new contacts document: 0b18537b9ac6b081bd348a5702740f44
+  ✅ Created new contacts document: 948179901886bbf609feff93bcf5d73d
+  ✅ Created new contacts document: a1395ae33d9aae0966e2d0c485474320
+  ✅ Created new contacts document: e9e0de5f221bd964a094ce8f136e738d
+  ✅ Created new contacts document: 082585ee048371f11f7553621a734564
+  ✅ Created new contacts document: 5c38f9edcbb3dd1f75331f41725dacdc
+  ✅ Created new contacts document: 826a97ec05223a8d87268b7700b455ea
+  ✅ Created new contacts document: 1e11778f133632ac2326006b84847918
+  ✅ Created new contacts document: 4e47797a391598dd853a62516598be83
+  ✅ Created new contacts document: 1c5c3da5e136384b6820b4c866074b4d
+  ✅ Created new contacts document: 1b2ff9444a38676ff6989e0812cdb50a
+  ✅ Created new contacts document: a29d289b70f2bcd6096dbcc37232982c
+  ✅ Created new contacts document: 84f12ea652785f2b9763829bf772766a
+  ✅ Created new contacts document: c843efe7df20425eab26f7cbab6b9b46
+  ✅ Created new contacts document: a01ece4c8e9fe6a10b8cb111b14995e3
+  ✅ Created new contacts document: 0f6ea632cffd69e555851cd2f1a40bd9
+  ✅ Created new contacts document: 9d7c4a8fc39328b7df18a997d6d2a919
+  ✅ Created new contacts document: b280ed124ca472c0010d2b17bcc6e4bd
+  ✅ Created new contacts document: 7434797a1e6a476404bacdf3ec5be166
+  ✅ Created new contacts document: 0ce27301936906c187d85ba2502e8441
+  ✅ Created new contacts document: 0e987fcf17a5ce0aad0bc1b3454c0ef0
+  ✅ Created new contacts document: 0615e5ae1905d236d8e815017ed56db6
+  ✅ Created new contacts document: 3c83494da0738a60dade78906a0c5acf
+  ✅ Created new contacts document: 2f0bf0c3999ee2d09296ba00b1974ccd
+  ✅ Created new contacts document: 5047e147a6ca87ab3d518d8ba6f3f60a
+  ✅ Created new contacts document: 9f68194e884feb7c57fb03d2da04c25f
+  ✅ Created new contacts document: 5d06c71be6e5ae646e6ba88e2dda84eb
+  ✅ Created new contacts document: 0b74aa49392e9c66734804a64106febc
+  ✅ Created new contacts document: 79076342023750618efe02cb0d954a4a
+  ✅ Created new contacts document: 6a70948f1d8e52269fd918ed5779c8ef
+  ✅ Created new contacts document: ba2ae576c5317df69a579b042eb2d552
+  ✅ Created new contacts document: 5c121fba70601c0ad74fb6cafb10d0c8
+  ✅ Created new contacts document: 66fcc36c9660e6235548ce552d9feaef
+  ✅ Created new contacts document: e2c381db3fe1bbbcb34a90a627b21006
+  ✅ Created new contacts document: 65f662a1acc306d5b541e3ff2b0f065e
+  ✅ Created new contacts document: 28b8c5b0972d1f54c16a5cb012e48c69
+  ✅ Created new contacts document: c6d9aeadb3e38b092a747d502b08ad37
+  ✅ Created new contacts document: ce46946d51640294a7b280912a6b32c3
+  ✅ Created new contacts document: bc506b265664efa48f93cb77d6f9acac
+  ✅ Created new contacts document: dd7a89fcc154b9a4921a0c436ad2d1d1
+  ✅ Created new contacts document: c217982126200ca4e6eeb7156161d678
+  ✅ Created new contacts document: ae2bddf3877df597db26375f09c4aa8a
+  ✅ Created new contacts document: cb53f9d1b01373bdd4dc7e948cbae312
+  ✅ Created new contacts document: 3d627bfcc9e57f6c623f53b83b9bd88c
+  ✅ Created new contacts document: be12d9662b9735d2d9c32050a549a7b2
+  ✅ Created new contacts document: 5fb147a6d611ab1c01d17f4f863d9f57
+  ✅ Created new contacts document: d0530ba8e4d4f39c039aa5bb3d02f85f
+  ✅ Created new contacts document: c33b64c3544d3fa1874e7b34acf9a320
+  ✅ Created new contacts document: e6830bf99ef93c8d118702f27d993d87
+  ✅ Created new contacts document: f5edf48f5b169a2aa34f38e947b5c1f9
+  ✅ Created new contacts document: b6aa46435bdd82861d82b49b44851fbe
+  ✅ Created new contacts document: 0824a55c44307c842b744ef7e40d4db8
+  ✅ Created new contacts document: 85621a94cf35104c732957676257f36e
+  ✅ Created new contacts document: 6482682c9a8b9f20b679447f31162aae
+  ✅ Created new contacts document: d34f0b63fbda565aab1ed3e1ebeb9ab5
+  ✅ Created new contacts document: 20a25dff294f920c2b04ccb6095152b4
+  ✅ Created new contacts document: 04a748c148b71e9945f16a5e933ebb46
+  ✅ Created new contacts document: 9d79237bdb085ad5fc0d6075a4966e07
+  ✅ Created new contacts document: 4c2d37271adb5afe929719907d2d865f
+  ✅ Created new contacts document: b7bc21611b41fd098dd1d159f3b9578e
+  ✅ Created new contacts document: 024ebb1aa297abab716549d3151a8827
+  ✅ Created new contacts document: 5e0b5411288afb08e8b4ae0aa568508d
+  ✅ Created new contacts document: d62b94f13500447b30f2a7d684988527
+  ✅ Created new contacts document: 7039bb8dee78ef12e84b86fd0dad924d
+  ✅ Created new contacts document: cc929cc991b01668f39530f00dd0c429
+  ✅ Created new contacts document: 4e010e93755d7330cc6e084bc06fb558
+  ✅ Created new contacts document: 35b661c29e65eadb113c05a0c9b877c7
+  ✅ Created new contacts document: 52df0aca7dfc02e80f7904d0090b694c
+  ✅ Created new contacts document: d82357b1cd0b9df9801cc350dc2f8051
+  ✅ Created new contacts document: aeace217577f4b15217d0c878d53c9a9
+  ✅ Created new contacts document: 36932a80f81e2c9ce082674e3c39b30d
+  ✅ Created new contacts document: 33313a290f2d3b6af8d496918259f0c6
+  ✅ Created new contacts document: 5d90ead271bcefbb71edaf5106e6fe37
+  ✅ Created new contacts document: 5c5f6e2be7e960111f978d5a6a1d4fb0
+  ✅ Created new contacts document: 3daee65564460beb70ad61de9e5e9c61
+  ✅ Created new contacts document: aee7fe6fa50dc31a553a2f000035abab
+  ✅ Created new contacts document: 115f7ffcb20e888b2b83fe64758b932c
+  ✅ Created new contacts document: 68f7f9a8b9919375c2103cd396624346
+  ✅ Created new contacts document: 7c7234a2de0c49d346ae38933dda35a4
+  ✅ Created new contacts document: 67bed2d791ec64e920d840a81e9b5ea1
+✅ import_contacts sync complete: 304 processed, 304 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_customers -> customers ---
+Found 195 documents in import_customers
+  ✅ Created new customers document: 3a801601350e882aef0908a5b6f3bcce7c19376ddb5a639f27771f8f6ff81688
+  ✅ Created new customers document: 6a61194603166409eb929f2112bf8456aa2daa2c704053cde4d0e5f9df0eba13
+  ✅ Created new customers document: b6bd1a89f1cb7bd3ed2f9ea05e7ee370aa1364f76cd350e16df5a08a8b51e218
+  ✅ Created new customers document: f7794855da3f336eb46b55078d2bc823ec78e7d7272bf37c1e56389f04b10d0e
+  ✅ Created new customers document: d9471b02aca39e29c7b0ab88de0ce1d01004a7e8ac45dd6aeff4f12727a7828f
+  ✅ Created new customers document: b510adb790ed7e42388257b6052649b8bb6f88a88fa0fdcc0e9b90a9c3899271
+  ✅ Created new customers document: 76bbb0c67de16c761ff13c19ef8fc0d07d1a0805ddacb1252d3de5eb29b10fcb
+  ✅ Created new customers document: 298675acef994e30fa8a298e37943735dc9d73bffcb3ed2535737bf3cad06430
+  ✅ Created new customers document: 7ae309bf24e8f070695f8cb348b812e01dda8fe7ba966a2b5d008759c8adeb25
+  ✅ Created new customers document: 85b6a198617186b5297580fbbfd2e972ea9418a1b279c5f2e3c9f7be57e303df
+  ✅ Created new customers document: b8c6094679a81f7ad9c54ebd059ff8d58f99c2a08ca1dcfd132d20a36928d38f
+  ✅ Created new customers document: 705634a5e7b60e66035e28c11029512982522b0fc8f0a44baff336fdc037e6b7
+  ✅ Created new customers document: dd8f1ddd9a801192821c45cf49aff2ed6f5cbe00dfaac77e8a1d06d9c6ba3956
+  ✅ Created new customers document: f9e5cb6efd751564e4eed90003d807686b0bc7b964b5653d15ae52a138d1cf7b
+  ✅ Created new customers document: 1e08b21f5d2ec3a6625e7ccae8f3eae2b9b76b77c211cd00ef9b925a39d27b7e
+  ✅ Created new customers document: b3696858e884c506b7c16f0396579ac6bf972744e3710e08ba0c8ff12b14bc58
+  ✅ Created new customers document: 11fd6f4eb064682a9fa56200f9edd1e6714b6b46f2d9b1dc24e0e47c5769e85b
+  ✅ Created new customers document: 262b5223427b671ee3967a1b8cf0c4872e959315a8a6d6ef63c2c928a0e66d18
+  ✅ Created new customers document: 1c54abff03883558eac007c6d9438b0e5fc318d6c530fa89a36f5aa1c22ad0b9
+  ✅ Created new customers document: 4e9837a19fe7cf25743f777b441cc40756e37a27656d79bbdfd42f7deae8185f
+  ✅ Created new customers document: d05e5629713378bfa049d834ad6cefdc265621136f78a7d16cab53c51753735a
+  ✅ Created new customers document: 6322f2c9f1630a9e74b8e6358b3f18ad32760631187481b12c9c44f746f95447
+  ✅ Created new customers document: 2dd6d3c5dab6e8944b3d12ed73d10ba002ddbaf03c894e4f60b2103a037ad595
+  ✅ Created new customers document: 1a27a1a0064488a10eb147f0d7a20925460a4c2c25f6c6c00a10b80e5f1dae4e
+  ✅ Created new customers document: 36a53892f00da29f3ec0814bbd1b4ff77c00b296933d6cf5a658eee2e0ce3801
+  ✅ Created new customers document: 212e7a6895ab205f9f3f4d85110dad7b6ca7606ca53ae1414c8ec23f59934c23
+  ✅ Created new customers document: 5c6ed5f6f30ab0eec1238b9649a445dad89db52379259b60b56a38ed163d67d7
+  ✅ Created new customers document: 9cf416cb6207242f2bbcaa540b96013bcaeebd2aac2d028742dff78adc1e0ace
+  ✅ Created new customers document: 6144b8f762241415273a8d800580beb3b500804fe190030b8fa0175f7a1f9394
+  ✅ Created new customers document: 1bb7b08e90995abf8feaf75c20e3cba8d002040d79489aec808dc51412ec5bee
+  ✅ Created new customers document: c2f6685a069a29afd3c1ff76d6099c65268b5c4eae10360c7b11325e167d9997
+  ✅ Created new customers document: 22e4d7f123a0112699ab9ff65804fe0a59ace5dd6506f3c9b78bb17d9e1366b3
+  ✅ Created new customers document: 2a43d7a1e627ea6bf5b5f277e00786b253ff44fc632c27e4bcb60fb9be45c57e
+  ✅ Created new customers document: ae24161978dae2bb37b796a0d18a698b271ed7adc7e11270f6222a2bfb25b072
+  ✅ Created new customers document: 47fc271fb11e9079339fa9c546893729b1e0e58227173a1dcf29b396eef975fd
+  ✅ Created new customers document: 6be08b40df8019cc7451b59b3a3f4828a9b6eccab47f8adbe54521814696022b
+  ✅ Created new customers document: 2946a5ddb6e31574c3c8a911d06eda406f794b17d012ff2ea31673fd3d4f4257
+  ✅ Created new customers document: 072822c832755e604915374e33eca11dc42524400b20a14535af41b6fd996aec
+  ✅ Created new customers document: c4ca07d7f0ebbb2aae427bb3686133cbd75a79e776127d2cdc8125e287b23f3e
+  ✅ Created new customers document: 68787316dc9b782889523e4f0f77fc4d6d84ac029adadf007b8bbd5a52037045
+  ✅ Created new customers document: 3e3fab05d64561a16439c9222b3edc55f2c6dc6fe51d370f7103d51458308b59
+  ✅ Created new customers document: 6a32c27bee846b3ebf43ccd4b1f66457e10dbdeefbdbacc14d0728afd2be3132
+  ✅ Created new customers document: 22a07386cf2aaead069a4a30f70651f599f3dad432b2ca148f30cd4ad14e4a63
+  ✅ Created new customers document: 29daca9be6f7edbc3f1bc55f336af38a7526546a0ca2b8b7e8358ae4a523c14a
+  ✅ Created new customers document: 58e518627444ff5c6aee19bf08a1cee067a1b77573deef5141d50a568612844c
+  ✅ Created new customers document: 30b1c7ab8f0e1a9109a320f55399aa1ef1827aa2248029dce1ebb25ee48941fa
+  ✅ Created new customers document: 0c2fbca4e6285c9a6727e0dcc0946d40a33447b1b17a787fd15a669e4f4d2a6a
+  ✅ Created new customers document: 98b244880dee0aab211d52b23f3b8fdc5cce041a10e2dc5c002e3b066c2761fe
+  ✅ Created new customers document: 970c6d4d64cb5d8182828cf32cbaaa93bfe8f10a8968c775c241397e6f5ca0a7
+  ✅ Created new customers document: 5460c55151afaeb45fbafb984b0b374619f9516aedbe8d3a236c04bc7f9db158
+  ✅ Created new customers document: 51b9ff0efc8ed6191d74d8ab938265d19648541161d0b14ec35c4f42d97683cb
+  ✅ Created new customers document: a31bf07336f48eb85086d3ceb41369f32bfea7243b9ba0f2e0255bdad76355f5
+  ✅ Created new customers document: 774943dedd248f8751c8177f29321f21a518b56bfc37ebca58e25f2f5fe5884a
+  ✅ Created new customers document: 9647310facc6edee24fa923040ec257c5cb11543a81007db65bb7f01a435c591
+  ✅ Created new customers document: 3345ba1ec61cda65ed253faff8324668c72f0869f12462a4d916fa659682a522
+  ✅ Created new customers document: c755748953de4a9c07433fa22fa51fc75afdd11f2e1f9cef6802a6a3dcf81a46
+  ✅ Created new customers document: c448b9929eb0d963d3b18330baa473d0a4e753598af2446ee54c64f2f6654ade
+  ✅ Created new customers document: 9212f63df9d4d6a35332f909fd02d2b8edff6adb7e7f11d5687532a3bbac3fab
+  ✅ Created new customers document: f3419ebb7686fd23fab72baafba3afd72c81db2f6a81f4ba2252ef5aef062312
+  ✅ Created new customers document: a45e228fc7da116f8f215467c54e768e87374947d5281f7f442eaadaae537522
+  ✅ Created new customers document: 117325bbef19724ee5ed264a1019c759578dfd4ec7ec0da4ea319f2fffaa0f59
+  ✅ Created new customers document: 4e060db76407b90e22420cf52cc4a8212ebc36d660ef5390ef18ed1ade5f98ff
+  ✅ Created new customers document: 83c7d8038da4c14df0982fa940d39ecb40f5b17c04d6e32e28a925f4800da005
+  ✅ Created new customers document: d927267c27e9beb5c8827dca270035c5ca571fa6486ff31b14978aef5c76d22d
+  ✅ Created new customers document: 8dc9e401d62e517be4296afc997c97980e37303091368569409f3f4f7405e1ce
+  ✅ Created new customers document: f6b650a4478d336a8730a4dec5f0c61d748dc8919ec29cfdd2f38fd661f63948
+  ✅ Created new customers document: 08c2ae35069a09f0900a848d34ca0cdaba250fa8938030935043d89dff4c4bfc
+  ✅ Created new customers document: c40ce81d031394323c7d92fd0505baa94b1240c4193eb3f1d2304adf0043b968
+  ✅ Created new customers document: 2e4c088d135bbe6b890a989fa6ea911940f4a4ebd968b75594c6214e81d5df02
+  ✅ Created new customers document: 5dda5e41e53c23011a066e7322169b91abb5c29d2307ee9349fdfce59a345005
+  ✅ Created new customers document: 5b382da3b549cb33b675a0cf0b1dc64c7d9fd769f29624a210542b7c6489acbd
+  ✅ Created new customers document: 14f59178f419f9dbf42c00dfc6982231ed741582e7cd1939d8c88c815a63b55b
+  ✅ Created new customers document: b757bd4ee6ba7e627b31409cc151ad68bccd99f6ddfa82645ecfbfd0850d98be
+  ✅ Created new customers document: 2a82ef67f43fdba38f41a5411c69a9239107cbe596f8b365199db2b136b0abda
+  ✅ Created new customers document: 64cb8a763b988fd98e4b15d481661a0efbd2161672110fe2566298a82c3fc326
+  ✅ Created new customers document: c8331347eeb35150d334d2225afb93e173b6a06cbcfc3fa376650b6b429311f8
+  ✅ Created new customers document: 826db8b8240041647ba2ff97683ff5a0d68c1bcc97da3733bb7589fb5cde8156
+  ✅ Created new customers document: 41504738fddbdad5b4d282a17c6dbdaeba1e946412f42110b8b51a341283ca85
+  ✅ Created new customers document: e7a548b71c038d7ddcd7be491ba8bd88f4ac087643923c8382c2dc00af58184e
+  ✅ Created new customers document: a2890ce44c15a646616cd242fcb04d5b2e35046139b0915927725e99af8f94d5
+  ✅ Created new customers document: 92a95d2a28de794269724f330dd687d9b6f0d41ec7f8085caae9e6dfd6f180ca
+  ✅ Created new customers document: a309a0b0a999f32cfb8cc2138d212f15f435024125a3958812b4cd33fa534aab
+  ✅ Created new customers document: 163590e46eab26dfceaee93ee5f089a8434f608fa52f3d3afe773675420e37df
+  ✅ Created new customers document: 763041be4ef71787f97a7039fa1141ad53e7ca28eca104d93e80f54a6ccca7ab
+  ✅ Created new customers document: e61f2445dbfb22ae5f8f8ac4958a1fffc65466d5df6f632874c1480d763b12f3
+  ✅ Created new customers document: 5d03c02d7e84bea02c688c0ec90d445b5aa126af4e66cd0affbf74af0dd310c1
+  ✅ Created new customers document: 047297a27f3316b5c8ab3e7894aef53c7a185d48bf3aeb10d49595ceb57ab294
+  ✅ Created new customers document: 27782099bdfd814e63f53c498ac99e92724ecb4c8002a08d022038f46dfcd33d
+  ✅ Created new customers document: 80448735807e5130ae8c6844cca2e24e75c6faabfb7f3c09f5362f69ef170c25
+  ✅ Created new customers document: 66f7ef09ed727bd559131d2faa5ed690973a9596f379f309a32f57d60b12ee27
+  ✅ Created new customers document: cc64f775fe0f2398d7c3ca6f424c11756f12cc244f8f6a147cf129d6b58d2be6
+  ✅ Created new customers document: 9a36d60dc4eb2341483cbc1570f97894600b51021621b6a2d67bbb822fbe587b
+  ✅ Created new customers document: 81dba9fc28e22c27f533dddf33b05b807d08cbfd46676e06186541409a8730c5
+  ✅ Created new customers document: 75541914147d56a53020d3dadec14eb51ec152eba6d56021ec272927bc2126de
+  ✅ Created new customers document: 51c2fe10dd67a6e4e8baea9f84556a4066d96f8d77aba198300bd22eae0e350e
+  ✅ Created new customers document: d130125f5be72eca75048468646d8f6c2003ece47251309979a3d4ad272fa6fa
+  ✅ Created new customers document: ff8ab2d748156f8aebcd4adafb689feb76c103a1f15d0209d394896a4ee13c5b
+  ✅ Created new customers document: 39e6b5b8bfbca290d6f598a5095cf866d5e2e3e35801fc5ca0c323b4a3bcc02b
+  ✅ Created new customers document: d890d4dc6f41ffeef04c0ff3a66cdc3b37b4665f19e5647d085fe784a6c568b1
+  ✅ Created new customers document: 8aa1c91d8dc35490de55c2a21daf4d940bb7839b62b57565b6c8880f2419ac1e
+  ✅ Created new customers document: 26d8ec75c1612a1017d148d699120c3648cd1af26760480de33158408c561f0d
+  ✅ Created new customers document: e5d570d75726b6f06eda0fec05da12bfdf90365630d4e4fdbeb345cd72a428b4
+  ✅ Created new customers document: 5114a67c1c20f7df35ecfce888c7a9f52ae6ce6b41b1400dd453dac8ae736c78
+  ✅ Created new customers document: b720b0059ab7300fac3846ba611b12728f389e1533493c3c1ad9dcbe581e40fa
+  ✅ Created new customers document: 414739335c01fe82c4573ce638f7e16ba129b38f47e4c8c24a0c20266954c2f1
+  ✅ Created new customers document: 2f4103d4d2bb4baa013dd35e53c2e566501de99eae33db41725a27467fe3c784
+  ✅ Created new customers document: 09797aeb72af3da1141dbafdbccfbdf82cc909f34544aef1bd039459984be5e2
+  ✅ Created new customers document: 900df94c92d02dc6a94379205cb29a25579a1a89c07d446f53d03e2f0e16952d
+  ✅ Created new customers document: 72434602b8e2c3f3836d31474013228a5d1bf5b2a4dd696e1c72f31267ded6af
+  ✅ Created new customers document: 990af1d7069319a14ec94a7464d79ea7ebecdc1b6dc3737ed020fd4c8567803b
+  ✅ Created new customers document: 6552097e191c4e06b4150dd0bb9db77181e5217bd7a36435ffe0272d4e29cb5f
+  ✅ Created new customers document: 02a5d4b9aee4bcc1db85521c071c1f267a5ec72d9608ee6d1a3accef6e7f074b
+  ✅ Created new customers document: caca2f267e0b14c9f41afbb1560662a88233acccbebdd7b66e1eb0a875ac4dde
+  ✅ Created new customers document: d53a34d8cd0c51918d6c5b721f849fc5469e55475f451f73a6ecd65f67d82d10
+  ✅ Created new customers document: 270c745ff9074b5bda22445b314d42b61aedabebbe3532a12451dab7b021046b
+  ✅ Created new customers document: 9953722f8e6e8af16ea1338ea7d1282a187948207fd8b7008df8d56fd652f537
+  ✅ Created new customers document: 653f019c51c5d3648824394be745ae3365982bde7196257a3fd8f65047a225b9
+  ✅ Created new customers document: 5e9650f84a99f8d5ee7663840a5a7643d124f7c8224f6caade4e9764cdc96a8d
+  ✅ Created new customers document: b0afb3d364d408d5fe2420f9d75498fb7cfe23a1d4974bfbb03d842b0f39503b
+  ✅ Created new customers document: 3ed2c437de23151b811a4ac4a836a4309c8bb9397de8ed678c6886390f5916da
+  ✅ Created new customers document: 4ecd3a46f7dcb81548911dd3707d4850472bb8a755cd146d8b19839e32f5612e
+  ✅ Created new customers document: e32527862c16b060ae4f3458a4d104a28bcfe697a25252742de8396e5499459d
+  ✅ Created new customers document: 630eea177541036937e316ce732fb7433238a843b5e243ab22bd65619601d1a2
+  ✅ Created new customers document: 207205a9304ffb5e1c352e2ad5445060d4a4515142c36167a7511f56b44e9d7b
+  ✅ Created new customers document: ccf2fb762149991668c6b6150bfda116626a290dee35ebc15de5208e446ebb6c
+  ✅ Created new customers document: ecc3efe303398525ad7d66c235b9e0bbffa953ad75978299f455e8cd6c211819
+  ✅ Created new customers document: f50b69880b125c55245d58a0d2279ffcaed12e485cf2f08adc71bd88ecc5cf28
+  ✅ Created new customers document: 9afbc23072fa4eeca7ed0aab3e9b35b95ca26ab72153142e1948431edc9e7e1a
+  ✅ Created new customers document: 8a4288190459a69075226766ca953614d28e14340196b706c775f75b55ed33ac
+  ✅ Created new customers document: 084068ddaad7150fb355dcb907e0cd6b6093cbf08cab5e80ad851b58ff980d03
+  ✅ Created new customers document: fe28df3cd157839e144346caa6a2463a2eb0839fc625e973a496a8c6c6c0761e
+  ✅ Created new customers document: b15f18c39afe15cd85617dd139b5539e465981f3f990c544bf543d1cac76eded
+  ✅ Created new customers document: ba87b6e37583d6765f58fff0bbee6d5327018d2415d016204202954473ca5d8f
+  ✅ Created new customers document: 984bc86580015bfe9768a832e4d3370d46186759ba86105fc74592c4d64d047c
+  ✅ Created new customers document: 8d358d09e07a707271fd3b49836a3f673d23c08900cef132b8838452d62748a1
+  ✅ Created new customers document: 7676723f3c86a3b12f9240b0040c22bf7fb769b2ad31d4a9aa0266446c7650cd
+  ✅ Created new customers document: fbeb79a494fe78ac3c6ec4081f2cc7c141d3ea1574115d88e69b755ee1325e55
+  ✅ Created new customers document: edf6a066977d63f595d0558b6c7ba95bdb8cf987433473ab4b852a1bc7d4006c
+  ✅ Created new customers document: 7612295572681585b26b0d41d231a972e4ea93d402677271ffb92f80f3c88b7a
+  ✅ Created new customers document: 2aa9de74fa85ad81472ea0aa1d56ed8e6d554dce501d2976eb436163212ad8eb
+  ✅ Created new customers document: 040c52faaead985a2a6af18c5a6726b31c78629a8a8f1cddc8683878ca92fa1f
+  ✅ Created new customers document: 9c3ff35bff2b84c70b9809fe9810239806a59bf4b07d15286193f4e132e1cc0d
+  ✅ Created new customers document: 6513a2f1156acf7fb8959f432c8df4f5a9f5bf9b0c37c9525222a1a84ca2d288
+  ✅ Created new customers document: 98befd8fef80ad54ad65f64c9dbef4399eb9fbd0476657bdcdcf1af3591b390c
+  ✅ Created new customers document: ea99a0809921cac6006e4081a90cf443affabaeb8ff00f834ad24878ae9b17dc
+  ✅ Created new customers document: 434bbd750c478c667c64bd88037c5d38d133b2a2decef248a3d3ad80073478a3
+  ✅ Created new customers document: cf409635d71e4dbecb7fe5ce3adc897997299a6458a1d0ec9097535b0bcba2c3
+  ✅ Created new customers document: 741e88363f05cf83c8848b03f20cd0884a131d1f3555f350d6ee118c2329b858
+  ✅ Created new customers document: a5517730ec496275ba00adef7d4959615ddfc399929d419f123dab08fed022bf
+  ✅ Created new customers document: d5db5d0f14bf5cc1374cd9d212ae18b7dd932fca939950e98ecbae2b97713298
+  ✅ Created new customers document: 2b1fb325f0ef185273de5268ad0f411c90bc24d65a8d091b8ba59c98e5c26fdc
+  ✅ Created new customers document: f2e75a367a3c57b3881e756a0681713538add9c8921241701c65a7cf58bc1f00
+  ✅ Created new customers document: 6a2cade403c373f57f18b450b73f1aabf3b423c9d5af02385581380f232f5126
+  ✅ Created new customers document: 7b498b32f66f214773832cf6dcca20ea8bc4a2ebe69b2f5c88fc5cc30b0acb4b
+  ✅ Created new customers document: ae3f4ed2f0a4a884b3a582cdc24faccdec62920eafa0fd7489daf4578ebff9d6
+  ✅ Created new customers document: 61b77b259f2d80336abc61dc3d0aee121203efc22af4cefee042999d407dd1a5
+  ✅ Created new customers document: 2c143c28a3642ded72a6a4da6ba9330ca67882e66620be5269aa44f5b3d86bb4
+  ✅ Created new customers document: dd53bb20fe4500f8454fc718facf78d9cf41cd6ca3b1c019fb8a293dd1d60f2b
+  ✅ Created new customers document: a4bdedd373751ad68fe83dcf244b1f3be26d1f62437615867b587b342f0b9c00
+  ✅ Created new customers document: 6c173a42686487e7efad9a8a98ea3aa1776a3c9ee35b0cc58f5301696cfc667c
+  ✅ Created new customers document: dda219dc51addcb04391c37a4d510386a4f2887ae1b04bf35e3ae99cd2c1afcb
+  ✅ Created new customers document: 7164a48bbb6969cfe7bd84c391da9820f1322e6e672368d1fbd9f43e1f37ba79
+  ✅ Created new customers document: 604dcf988b40ca13dea947c80cc9a191b9e00e9efc4dafadbad9306f16540c07
+  ✅ Created new customers document: 426d831105fd775d94bb3a1250f650aae876d14379fa07f12c876d5c0d9d4980
+  ✅ Created new customers document: 82daf07827570bc4d9fa000a782e2cd592e14b64960a3e524f38e275abfb1f54
+  ✅ Created new customers document: bc0448902f7e62e77e57af82e91b430d25ba1fb1987004d47201e01d785152f2
+  ✅ Created new customers document: 06c1e2c9e7d59f456f0e27cee86d02aac7c5685087b7950d2131168458067cb3
+  ✅ Created new customers document: dfba6cd0d99f64d6365df3f460d8f65bdb9b67299f9c4c2f40c62a705bd955cf
+  ✅ Created new customers document: ec64507c552639b5667d20b4151c6a748b011c64d949c01e756eb084eed505ae
+  ✅ Created new customers document: 7ccdc0de72fcdfc9aec2330021089ee8a5d83c645117596ad8422c2c8ec29fcb
+  ✅ Created new customers document: 4c56a8a887ea5de43590a7c289b5c575d929016df2d709fa2b768676f73ed68d
+  ✅ Created new customers document: 95e92951f134433189c3f43e961f80c1bab15b57145df49af9d768ec022ce13f
+  ✅ Created new customers document: d37078c39feebe186150909986f92a766ae82e36c4bca14af2e0c9e1f634af1e
+  ✅ Created new customers document: 171f0ec743bebe2415da5e9ec451b94fbb0f50ed3dcc4cc511b2ff17532c09a3
+  ✅ Created new customers document: 4774b1327f6de676371901fb14564369af66cf1193e07c830f2572359ee6a158
+  ✅ Created new customers document: 8215f7e51cbd70b164d3194954557d355f0884dbc509412929cbd898e97f1925
+  ✅ Created new customers document: e3cf4b2814d64017cd61be53e0fc0db5ec2bdd301deab89b839fb82794ac3103
+  ✅ Created new customers document: 146e9665ca6d3d9f2d1760301554896c4ea9751d33f243e213f82d3b989f8828
+  ✅ Created new customers document: 0b7000f37bbfe97a347db7bed0c5496f84afac4faceae1cc3e74ee64340d3b21
+  ✅ Created new customers document: 83722b1f854674bf41b779a16c4aee6cd9b6c844acdbacfc4dbc77a91a9feea8
+  ✅ Created new customers document: 2fe7c781520a713116f825ccef85adbbe1105e8025b95a8643274430b0cf4dc5
+  ✅ Created new customers document: 433fd97d5e2157d99ba1cfc841bbe4e970756440b5116c809d16c6890458f603
+  ✅ Created new customers document: e481055908e4ff3de1b03794a02960f88ca397c4fab13d1d2a869acbc4c86b46
+  ✅ Created new customers document: fcc8532972b2344c80a12744213c220003a9bd12f150ec14a3a2699927666a88
+  ✅ Created new customers document: 840cc628faf576791fd4af2b918a24354bd2fafc31e7fabaf519b3909d275f52
+  ✅ Created new customers document: 283eebcac6efedc9b2056b84826de8473571f87c95026c58e3874ed729f78ecf
+  ✅ Created new customers document: f2117920ff4c6d2d9577472532b1eb1f38a064a52aa22bd4a8ad0f86f394094a
+  ✅ Created new customers document: ffcfce207478fdc72fd00ddfbe3f0c6e0cb3cbf5a2547de3e77483b3b68eff22
+  ✅ Created new customers document: fd4b53704b573286486f4ddb8f1afaa3f48a64b5f6c115de13095807c43a5489
+  ✅ Created new customers document: 5dd989b44320e33ea5acf730a329c0e64cfca793ad0228c574a1f684aaf10686
+  ✅ Created new customers document: edb14626e769373f7d11ae12beb685215d01ae665edd8aa52bd9bdc3f2b1afa7
+  ✅ Created new customers document: c569d15805cfba699785e2da181e2ab5c6295c67ae4ba957979ec8c4b62b1448
+  ✅ Created new customers document: c0200502a9fc130beefd600503794b51a080d15a44638fb73b6a7c4cb7d75951
+  ✅ Created new customers document: b27abf5866fc054f93426fc2a5f660f0285bb5dd7d7088b48cd975613ba8ad83
+  ✅ Created new customers document: dd90aa3b479fb7910dd63a0b3888afa6e4dbc8a20447f2ac3d709dc4bbacd291
+✅ import_customers sync complete: 195 processed, 195 created, 0 updated, 0 skipped (not production eligible)
+=== SELECTIVE PRODUCTION SYNC COMPLETED ===
+
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+
+📊 VERIFICATION RESULTS:
+Error Payments - Found: 0, Not Found: 33
+Error Registrations - Found: 0, Not Found: 0
+Orphaned Registrations - Found: 0, Not Found: 0
+
+📈 Overall: 0.00% of error documents exist in test DB
+⚠️  Low found rate indicates genuine sync failures
+✅ Error verification completed
+
+
+=== SYNC COMPLETE ===
+✅ Processed: 13
+⏭️ Skipped: 9
+❌ Errors: 2
+👥 Unique contacts: 12
+📊 Total: 24

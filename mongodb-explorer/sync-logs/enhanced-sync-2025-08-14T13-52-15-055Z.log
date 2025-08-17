@@ -1,0 +1,251 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-14T13:52:15.056Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: p4g7czFGnXbMPrHYOtWSnqCieZLZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: JOBqwBmraQ1ECS1fVhtdy55ZrrMZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: bHpqGQWwCK6aDNnbhv6ChzltfedZY
+  ⏭️ Already imported - skipping
+  Got cursor for next payment
+  Fetched payment 4 (cursor: provided)
+
+📝 Processing Square payment: TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  🛒 Fetching order: PmrqVJtirgH1fdESY0p1cy8J9PJZY
+    ✓ Order fetched
+  👤 Fetching customer: A09RKAAZVBGMWKHG63NQ9MWDK4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: a27ae77c-5e64-463f-a20e-c39febc3b537
+  ✓ Updated import_payments with registrationId: a27ae77c-5e64-463f-a20e-c39febc3b537
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Sydney D Melville
+    ✓ Created new customer: Sydney D Melville
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: David Melville
+    ✓ Processed contact: Christina Melville
+  ✅ Completed processing Square payment TFOQEKkW2rQS4WHUBdIjyoSj0EJZY
+  Got cursor for next payment
+  Fetched payment 5 (cursor: provided)
+
+📝 Processing Square payment: ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  🛒 Fetching order: dNP0foHRyJX71IcgjllYOP4nal7YY
+    ✓ Order fetched
+  👤 Fetching customer: PM82SG2V8EXAX1QF1D1ARP1D4G
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 796c4447-b3f8-404b-8610-322b61f92985
+  ✓ Updated import_payments with registrationId: 796c4447-b3f8-404b-8610-322b61f92985
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: William Jarwin  Sy
+    ✓ Created new customer: William Jarwin  Sy
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: Rodney Benedicto
+  ✅ Completed processing Square payment ZGvLjl0ZA3MT9vf33jacwBNG5ycZY
+  Got cursor for next payment
+  Fetched payment 6 (cursor: provided)
+
+📝 Processing Square payment: h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  🛒 Fetching order: ltBcU3AhUBpJNKnwUr1Af6H8qcIZY
+    ✓ Order fetched
+  👤 Fetching customer: M24SZ52MDNDS8EBQQ2QF7SVR2W
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: fa2a849a-1276-444e-bd93-a2303871e5f5
+  ✓ Updated import_payments with registrationId: fa2a849a-1276-444e-bd93-a2303871e5f5
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Scott MAYER
+    ✓ Created new customer: Scott MAYER
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: Scott MAYER
+  ✅ Completed processing Square payment h8gN46mZTfnGV8xDOWY7q4nnsVPZY
+  Got cursor for next payment
+  Fetched payment 7 (cursor: provided)
+
+📝 Processing Square payment: NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  🛒 Fetching order: 9Twt8vGtP7spniLTAyiXrM3dVvQZY
+    ✓ Order fetched
+  👤 Fetching customer: CNBS19TD5QKYGR9FRVHKDG6HG4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b
+  ✓ Updated import_payments with registrationId: f6d6bc9a-465a-4ed3-85ef-4e9b312fea2b
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Bob Burbank
+    ✓ Created new customer: Bob Burbank
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: Bob Burbank
+    ✓ Processed contact: Wendy Burbank
+  ✅ Completed processing Square payment NQtKfWQJ2pMEfWLqgqbhTOSQVgeZY
+  Got cursor for next payment
+  Fetched payment 8 (cursor: provided)
+
+📝 Processing Square payment: 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  🛒 Fetching order: 9ppiz3e32Y8XhEo3HWVOfMGonuFZY
+    ✓ Order fetched
+  👤 Fetching customer: 2S5AZ8HTW2RETTYVFKW0V4103W
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3
+  ✓ Updated import_payments with registrationId: d2cfbf4d-1c03-4aa7-84cc-37f7b0ad87d3
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Greg Hind
+    ✓ Created new customer: Greg Hind
+    ✓ Updated registration with customer ObjectId
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: Greg Hind
+  ✅ Completed processing Square payment 3l9mbrzU72IPMJ1vscl47aM5EzeZY
+  Got cursor for next payment
+  Fetched payment 9 (cursor: provided)
+
+📝 Processing Square payment: jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  🛒 Fetching order: Rr94kz2q0ynGYLp1cjhpi2stM6bZY
+    ✓ Order fetched
+  👤 Fetching customer: 13D7AHDZPXR0H63P5YK28B0AZ4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 19cea4d0-6f5a-489a-abc8-56c4980b37d0
+  ✓ Updated import_payments with registrationId: 19cea4d0-6f5a-489a-abc8-56c4980b37d0
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Romy Nieto
+    ✓ Created new customer: Romy Nieto
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: Romy Nieto
+    ✓ Processed contact: Ellen Nieto
+  ✅ Completed processing Square payment jfPss6uLfMf6Sy8Z7WtPH9FLERKZY
+  Got cursor for next payment
+  Fetched payment 10 (cursor: provided)
+
+📝 Processing Square payment: VaU4RCrbBAky4Jpe4pvV1GBwRSJZY
+  🛒 Fetching order: XEUaA2VChCDdrTsMfGKOtSze5bJZY
+    ✓ Order fetched
+  👤 Fetching customer: XDWVTVPPYZEPDHVK55TA1YTS7R
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: aaef562e-92c4-4f6e-860c-e9874dec341e
+  ✓ Updated import_payments with registrationId: aaef562e-92c4-4f6e-860c-e9874dec341e
+  ✓ Imported FULL registration to import_registrations with field transformation
+  ⏸️ Production sync deferred to selective sync phase
+  📝 Processing booking contact as customer
+    Customer data created: Juan Carlos Flores
+    ✓ Created new customer: Juan Carlos Flores
+    ✓ Updated registration with customer ObjectId
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    ⚠️ No tickets in registration_data, checking Supabase tickets table
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    💾 Saving ticket to import_tickets: undefined (Unknown Event, qty: 1)
+      🔄 Updated ticket document
+    ✓ Processed contact: Juan Carlos  Flores
+    ✓ Processed contact: Elia Babi
+  ✅ Completed processing Square payment VaU4RCrbBAky4Jpe4pvV1GBwRSJZY
+  Got cursor for next payment

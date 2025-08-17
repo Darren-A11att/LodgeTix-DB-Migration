@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx tsx scripts/dev-with-sync.ts",
+    "dev:clear": "npx tsx scripts/dev-with-sync.ts --clear",
     "dev:lodgetix": "npx tsx scripts/dev-with-sync-lodgetix.ts",
     "dev:nosync": "npx tsx scripts/dev-nosync.ts",
     "api": "node medusajs/api/server.js",

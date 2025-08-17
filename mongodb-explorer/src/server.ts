@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { connectMongoDB, disconnectMongoDB } from './connections/mongodb';
+import { connectToDatabase } from './lib/mongodb';
 import { 
   connectBothDBs, 
   disconnectBothDBs,
@@ -183,7 +184,8 @@ app.get('/api/search', async (req, res) => {
 // Get documents from a specific collection with search
 app.get('/api/collections/:name/documents', async (req, res) => {
   try {
-    const { db } = await connectMongoDB();
+    const databaseParam = req.query.database as string;
+    const { db } = await connectToDatabase(databaseParam);
     const collectionName = req.params.name;
     
     const limit = parseInt(req.query.limit as string) || 20;

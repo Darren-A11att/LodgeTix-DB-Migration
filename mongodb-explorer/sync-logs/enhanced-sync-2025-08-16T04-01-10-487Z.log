@@ -1,0 +1,132 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-16T04:01:10.488Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: 37uzagXg6306GrJSUUf574HvB0CZY
+  ✅ Importing completed payment - status: COMPLETED
+  ⏭️ Already imported - skipping
+Reached limit of 1 for Square
+
+━━━ Processing DA-LODGETIX ━━━
+
+📝 Processing charge: ch_3RYNqYKBASow5NsW17D1d6gl
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+Reached limit of 1 for DA-LODGETIX
+
+━━━ Processing WS-LODGETIX ━━━
+
+📝 Processing charge: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+Reached limit of 1 for WS-LODGETIX
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+📝 Processing charge: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ✅ Importing successful charge - status: succeeded
+  ⏭️ Already imported - skipping
+Reached limit of 1 for WS-LODGETICKETS
+
+🔄 Starting selective production sync...
+
+=== STARTING SELECTIVE PRODUCTION SYNC ===
+
+--- Syncing import_payments -> payments ---
+Found 4 documents in import_payments
+  ⏭️ No changes needed for: 37uzagXg6306GrJSUUf574HvB0CZY
+  ⏭️ No changes needed for: ch_3RYNqYKBASow5NsW17D1d6gl
+  ⏭️ No changes needed for: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ⏭️ No changes needed for: ch_3RbJfOCari1bgsWq0CxPr7NI
+✅ import_payments sync complete: 4 processed, 0 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_registrations -> registrations ---
+Found 4 documents in import_registrations
+  ⏭️ No changes needed for: dcb47cfb-fe4c-4fc4-a373-2805500e797f
+  ⏭️ No changes needed for: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ⏭️ No changes needed for: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ⏭️ No changes needed for: 533f4153-ab85-4552-a372-2d71fc42e546
+✅ import_registrations sync complete: 4 processed, 0 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_attendees -> attendees ---
+Found 4 documents in import_attendees
+  🔄 Updated attendees document: 0198ace1-da28-73fd-a44f-b9aaca638f59
+  🔄 Updated attendees document: 01975903-bc26-7452-8d69-4438b9f7b70f
+  🔄 Updated attendees document: 01977cbf-62d1-709d-9b8d-847981b64f9b
+  🔄 Updated attendees document: 019781d7-a8f9-723f-8b78-b449d5467f8d
+✅ import_attendees sync complete: 4 processed, 0 created, 4 updated, 0 skipped (not production eligible)
+
+--- Syncing import_tickets -> tickets ---
+Found 8 documents in import_tickets
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-d586ecc1-e410-4ef3-a59c-4a53a866bc33
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-be94ef03-6647-48d5-97ea-f98c862e30e6
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+  🔄 Updated tickets document: 0198ace1-da28-73fd-a44f-b9aaca638f59-bce41292-3662-44a7-85da-eeb1a1e89d8a
+  🔄 Updated tickets document: 01975903-bc26-7452-8d69-4438b9f7b70f-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 01977cbf-62d1-709d-9b8d-847981b64f9b-7196514b-d4b8-4fe0-93ac-deb4c205dd09
+  🔄 Updated tickets document: 019781d7-a8f9-723f-8b78-b449d5467f8d-fd12d7f0-f346-49bf-b1eb-0682ad226216
+✅ import_tickets sync complete: 8 processed, 0 created, 8 updated, 0 skipped (not production eligible)
+
+--- Syncing import_contacts -> contacts ---
+Found 4 documents in import_contacts
+  ⏭️ No changes needed for: 93c0e4bfa5d73325db243603c5b4dfed
+  ⏭️ No changes needed for: d82357b1cd0b9df9801cc350dc2f8051
+  ⏭️ No changes needed for: aeace217577f4b15217d0c878d53c9a9
+  ⏭️ No changes needed for: 3daee65564460beb70ad61de9e5e9c61
+✅ import_contacts sync complete: 4 processed, 0 created, 0 updated, 0 skipped (not production eligible)
+
+--- Syncing import_customers -> customers ---
+Found 4 documents in import_customers
+  ⏭️ No changes needed for: 3a801601350e882aef0908a5b6f3bcce7c19376ddb5a639f27771f8f6ff81688
+  ⏭️ No changes needed for: f2117920ff4c6d2d9577472532b1eb1f38a064a52aa22bd4a8ad0f86f394094a
+  ⏭️ No changes needed for: ffcfce207478fdc72fd00ddfbe3f0c6e0cb3cbf5a2547de3e77483b3b68eff22
+  ⏭️ No changes needed for: edb14626e769373f7d11ae12beb685215d01ae665edd8aa52bd9bdc3f2b1afa7
+✅ import_customers sync complete: 4 processed, 0 created, 0 updated, 0 skipped (not production eligible)
+=== SELECTIVE PRODUCTION SYNC COMPLETED ===
+
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+⚠️  Error verification failed: Cannot read properties of undefined (reading 'replace')
+Continuing without verification...
+
+
+=== SYNC COMPLETE ===
+✅ Processed: 0
+⏭️ Skipped: 4
+❌ Errors: 0
+👥 Unique contacts: 0
+📊 Total: 4
