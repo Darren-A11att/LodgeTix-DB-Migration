@@ -75,6 +75,16 @@ interface PackageDetails {
   [key: string]: any;
 }
 
+interface GrandLodgeDetails {
+  grandLodgeId: string;
+  name: string;
+  abbreviation?: string;
+  country?: string;
+  state?: string;
+  area?: string;
+  [key: string]: any;
+}
+
 export class ReferenceDataService {
   private db: Db;
   private cache: Map<string, CacheItem<any>>;
@@ -108,7 +118,7 @@ export class ReferenceDataService {
 
       if (result) {
         this.setCache(cacheKey, result);
-        return result as FunctionDetails;
+        return result as unknown as FunctionDetails;
       }
 
       return null;
@@ -190,7 +200,7 @@ export class ReferenceDataService {
 
       if (result) {
         this.setCache(cacheKey, result);
-        return result as EventDetails;
+        return result as unknown as EventDetails;
       }
 
       return null;
@@ -219,7 +229,7 @@ export class ReferenceDataService {
 
       if (result) {
         this.setCache(cacheKey, result);
-        return result as LocationDetails;
+        return result as unknown as LocationDetails;
       }
 
       return null;
@@ -248,7 +258,7 @@ export class ReferenceDataService {
 
       if (result) {
         this.setCache(cacheKey, result);
-        return result as LodgeDetails;
+        return result as unknown as LodgeDetails;
       }
 
       return null;
@@ -277,7 +287,7 @@ export class ReferenceDataService {
 
       if (result) {
         this.setCache(cacheKey, result);
-        return result as OrganisationDetails;
+        return result as unknown as OrganisationDetails;
       }
 
       return null;
@@ -320,12 +330,50 @@ export class ReferenceDataService {
 
       if (result) {
         this.setCache(cacheKey, result);
-        return result as PackageDetails;
+        return result as unknown as PackageDetails;
       }
 
       return null;
     } catch (error) {
       console.error(`Error fetching package details for ${packageId}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get grand lodge details by grand lodge ID
+   */
+  async getGrandLodgeDetails(grandLodgeId: string): Promise<GrandLodgeDetails | null> {
+    const cacheKey = `grandLodge:${grandLodgeId}`;
+    
+    try {
+      // Check cache first
+      const cached = this.getFromCache<GrandLodgeDetails>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+
+      // Query database using grandLodgeId field
+      const collection = this.db.collection('grandLodges');
+      let result = await collection.findOne({ grandLodgeId: grandLodgeId });
+      
+      // If not found by grandLodgeId, try other possible ID fields
+      if (!result && grandLodgeId) {
+        result = await collection.findOne({ 
+          $or: [
+            { id: grandLodgeId }
+          ]
+        });
+      }
+
+      if (result) {
+        this.setCache(cacheKey, result);
+        return result as unknown as GrandLodgeDetails;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Error fetching grand lodge details for ${grandLodgeId}:`, error);
       return null;
     }
   }
@@ -422,5 +470,6 @@ export type {
   LocationDetails,
   LodgeDetails,
   OrganisationDetails,
-  PackageDetails
+  PackageDetails,
+  GrandLodgeDetails
 };

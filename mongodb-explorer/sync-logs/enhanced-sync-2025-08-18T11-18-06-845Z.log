@@ -1,0 +1,256 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-18T11:18:06.846Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+
+━━━ Processing Square ━━━
+
+Fetching ALL historical Square payments (one at a time)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: F6oCqaqnzPwfTGdhPYIZIBucz3HZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 57xju4uTh2YNvMU58pYCiuvR8U6YY
+    ✓ Order fetched
+  👤 Fetching customer: 363XXYEZGMMWF1V301DE3F76RC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 2f4c440f-542c-4608-9974-186aef3eb8a1
+  ✓ Updated import_payments with registrationId: 2f4c440f-542c-4608-9974-186aef3eb8a1
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Robert Drake
+    ✓ Created new customer: Robert Drake
+    ✓ Updated registration with customer reference: 3f7d99a3-e9fe-4b05-8523-f59c223d14c6
+  ✓ Found customer data for ticket ownership: Robert Drake
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 4 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 4
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: 0)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: 0)
+    📦 Returning 4 processed tickets from registration_data
+  ✓ Found 4 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198bbeb-1c3e-733f-adae-dbe0b87e633d-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198bbeb-1c3e-733f-adae-dbe0b87e633d-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198bbeb-1c3e-733f-adae-dbe0b87e633d-b8a1ef1f-5f53-4544-af7b-901756b9ba7d (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198bbeb-b91c-723f-9cf9-689d1786375c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (2f4c440f-542c-4608-9974-186aef3eb8a1)
+    ✨ Creating new contact with role 'attendee': Robert Drake
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (2f4c440f-542c-4608-9974-186aef3eb8a1) - Conf: IND-248159RE
+    ✓ Processed unified contact: Robert Drake (roles: attendee)
+    ⚠️ Skipping contact with no email: Penny Drake
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 4 ticket IDs (4 ObjectIds) and 2 attendee IDs (2 ObjectIds)
+  ✅ Completed processing Square payment F6oCqaqnzPwfTGdhPYIZIBucz3HZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment F6oCqaqnzPwfTGdhPYIZIBucz3HZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 3f7d99a3-e9fe-4b05-8523-f59c223d14c6 synced to production
+      ✓ Attendee 0198bbeb-1c3e-733f-adae-dbe0b87e633d synced to production
+      ✓ Attendee 0198bbeb-b91c-723f-9cf9-689d1786375c synced to production
+      ✓ Contact robert@noveix.com synced to production
+      ✓ Ticket 0198bbeb-1c3e-733f-adae-dbe0b87e633d-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198bbeb-1c3e-733f-adae-dbe0b87e633d-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198bbeb-1c3e-733f-adae-dbe0b87e633d-b8a1ef1f-5f53-4544-af7b-901756b9ba7d synced to production
+      ✓ Ticket 0198bbeb-b91c-723f-9cf9-689d1786375c-b8a1ef1f-5f53-4544-af7b-901756b9ba7d synced to production
+    ✅ Payment F6oCqaqnzPwfTGdhPYIZIBucz3HZY complete data chain synced to production
+  ✅ Payment data synced to production
+Reached limit of 1 for Square
+
+━━━ Processing DA-LODGETIX ━━━
+
+📝 Processing charge: ch_3RYNqYKBASow5NsW17D1d6gl
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✓ Updated import_payments with registrationId: 222ddcc8-4f1a-4301-9e44-18a89770e1ed
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Darren Allatt
+    ✓ Created new customer: Darren Allatt
+    ✓ Updated registration with customer reference: 8018d385-32d1-4ea8-a8aa-750bf293a22f
+  ✓ Found customer data for ticket ownership: Darren Allatt
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    Total tickets after expansion: 1
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 01975903-bc26-7452-8d69-4438b9f7b70f-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (222ddcc8-4f1a-4301-9e44-18a89770e1ed)
+    ✨ Creating new contact with role 'attendee': Darren Allatt
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (222ddcc8-4f1a-4301-9e44-18a89770e1ed) - Conf: IND-834482AH
+    ✓ Processed unified contact: Darren Allatt (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 1 ticket IDs (1 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing charge ch_3RYNqYKBASow5NsW17D1d6gl (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment ch_3RYNqYKBASow5NsW17D1d6gl data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 8018d385-32d1-4ea8-a8aa-750bf293a22f synced to production
+      ✓ Attendee 01975903-bc26-7452-8d69-4438b9f7b70f synced to production
+      ✓ Contact darren@allatt.me synced to production
+      ✓ Ticket 01975903-bc26-7452-8d69-4438b9f7b70f-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment ch_3RYNqYKBASow5NsW17D1d6gl complete data chain synced to production
+  ✅ Payment data synced to production
+Reached limit of 1 for DA-LODGETIX
+
+━━━ Processing WS-LODGETIX ━━━
+
+📝 Processing charge: ch_3RatsQHDfNBUEWUu0i6JkO6W
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✓ Updated import_payments with registrationId: 8a63ce42-9276-4254-b3cc-406d78cdbb16
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Amitava Sen
+    ✓ Created new customer: Amitava Sen
+    ✓ Updated registration with customer reference: b515a9e2-95e2-4532-91b6-d7401489a020
+  ✓ Found customer data for ticket ownership: Amitava Sen
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    Total tickets after expansion: 1
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 01977cbf-62d1-709d-9b8d-847981b64f9b-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (8a63ce42-9276-4254-b3cc-406d78cdbb16)
+    ✨ Creating new contact with role 'attendee': Amitava Sen
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (8a63ce42-9276-4254-b3cc-406d78cdbb16) - Conf: IND-700495YH
+    ✓ Processed unified contact: Amitava Sen (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 1 ticket IDs (1 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing charge ch_3RatsQHDfNBUEWUu0i6JkO6W (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment ch_3RatsQHDfNBUEWUu0i6JkO6W data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer b515a9e2-95e2-4532-91b6-d7401489a020 synced to production
+      ✓ Attendee 01977cbf-62d1-709d-9b8d-847981b64f9b synced to production
+      ✓ Contact amit@sen.id.au synced to production
+      ✓ Ticket 01977cbf-62d1-709d-9b8d-847981b64f9b-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment ch_3RatsQHDfNBUEWUu0i6JkO6W complete data chain synced to production
+  ✅ Payment data synced to production
+Reached limit of 1 for WS-LODGETIX
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+📝 Processing charge: ch_3RbJfOCari1bgsWq0CxPr7NI
+  ✅ Importing successful charge - status: succeeded
+  ✓ Imported charge to import_payments with field transformation
+  ✓ Found registration: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✓ Updated import_payments with registrationId: 533f4153-ab85-4552-a372-2d71fc42e546
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Marcelo III Caguioa
+    ✓ Created new customer: Marcelo III Caguioa
+    ✓ Updated registration with customer reference: 2bc2c1db-e498-4142-81af-4d2ff9a1f0c0
+  ✓ Found customer data for ticket ownership: Marcelo III Caguioa
+    Extracting 1 attendees from registration_data
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.tickets
+    Total tickets after expansion: 1
+    🔍 Looking up eventTicket: fd12d7f0-f346-49bf-b1eb-0682ad226216
+    ✅ Found eventTicket: Proclamation Banquet - Best Available (price: 115)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 019781d7-a8f9-723f-8b78-b449d5467f8d-fd12d7f0-f346-49bf-b1eb-0682ad226216 (Proclamation Banquet - Best Available, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (533f4153-ab85-4552-a372-2d71fc42e546)
+    ✨ Creating new contact with role 'attendee': Marcelo III Caguioa
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (533f4153-ab85-4552-a372-2d71fc42e546) - Conf: IND-777516CY
+    ✓ Processed unified contact: Marcelo III Caguioa (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 1 ticket IDs (1 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing charge ch_3RbJfOCari1bgsWq0CxPr7NI (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment ch_3RbJfOCari1bgsWq0CxPr7NI data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 2bc2c1db-e498-4142-81af-4d2ff9a1f0c0 synced to production
+      ✓ Attendee 019781d7-a8f9-723f-8b78-b449d5467f8d synced to production
+      ✓ Contact marcelocaguioa@yahoo.com synced to production
+      ✓ Ticket 019781d7-a8f9-723f-8b78-b449d5467f8d-fd12d7f0-f346-49bf-b1eb-0682ad226216 synced to production
+    ✅ Payment ch_3RbJfOCari1bgsWq0CxPr7NI complete data chain synced to production
+  ✅ Payment data synced to production
+Reached limit of 1 for WS-LODGETICKETS
+
+✅ All payments processed with immediate production sync
+   Each payment's complete data chain was synced to production before processing the next payment
+   This prevents orphaned tickets and ensures all relationships are properly maintained
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+
+📊 VERIFICATION RESULTS:
+Error Payments - Found: 0, Not Found: 0
+Error Registrations - Found: 0, Not Found: 0
+Orphaned Registrations - Found: 0, Not Found: 0
+✅ Error verification completed
+
+
+🛒 Processing Orders from Registrations...
+✅ Orders created: 0
+⏭️ Orders skipped: 4
+⚠️ Order processing errors: 4
+
+=== SYNC COMPLETE ===
+✅ Processed: 4
+⏭️ Skipped: 0
+❌ Errors: 0
+👥 Unique contacts: 4
+📊 Total: 4

@@ -1,5 +1,19 @@
-npm error Missing script: "sync:enhanced"
-npm error
-npm error To see a list of scripts, run:
-npm error   npm run
-npm error A complete log of this run can be found in: /Users/darrenallatt/.npm/_logs/2025-08-16T13_25_37_394Z-debug-0.log
+/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+scripts/test-single-registration-sync.ts(30,7): error TS2554: Expected 0 arguments, but got 5.
+scripts/test-single-registration-sync.ts(38,23): error TS2339: Property 'processRegistration' does not exist on type 'EnhancedPaymentSyncService'.
+
+    at createTSError (/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:859:12)
+    at reportTSError (/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:863:19)
+    at getOutput (/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1077:36)
+    at Object.compile (/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1433:41)
+    at Module.m._compile (/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1871:10
+    at Object.require.extensions.<computed> [as .ts] (/Users/darrenallatt/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1470:32)
+    at Module._load (node:internal/modules/cjs/loader:1290:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 2554, 2339 ]
+}

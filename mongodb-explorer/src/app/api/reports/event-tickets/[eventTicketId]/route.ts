@@ -25,123 +25,175 @@ export async function GET(
       );
     }
     
-    // Fetch all tickets for this eventTicketId
-    const tickets = await db.collection('tickets').find({
-      $or: [
-        { eventTicketId: eventTicketId },
-        { event_ticket_id: eventTicketId }
-      ]
-    }).toArray();
+    // Fetch all tickets for this eventTicketId with aggregation pipeline
+    const ticketsWithData = await db.collection('tickets').aggregate([
+      {
+        $match: {
+          $or: [
+            { eventTicketId: eventTicketId },
+            { event_ticket_id: eventTicketId }
+          ]
+        }
+      },
+      // Lookup attendee data using ticketHolder.attendeeId
+      {
+        $lookup: {
+          from: 'attendees',
+          let: { attendeeId: { $ifNull: ['$ticketHolder.attendeeId', '$ticket_holder.attendee_id'] } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    { $eq: ['$attendeeId', '$$attendeeId'] },
+                    { $eq: ['$attendee_id', '$$attendeeId'] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'attendeeData'
+        }
+      },
+      // Lookup registration data using details.registrationId
+      {
+        $lookup: {
+          from: 'registrations',
+          let: { 
+            regId: { 
+              $ifNull: [
+                '$details.registrationId', 
+                '$details.registration_id'
+              ] 
+            } 
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    { $eq: ['$registrationId', '$$regId'] },
+                    { $eq: ['$registration_id', '$$regId'] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'registrationData'
+        }
+      }
+    ]).toArray();
     
     // Process each ticket to build the report data
-    const matchingRegistrations = [];
+    const ticketRows = [];
     
-    for (const ticket of tickets) {
-      // Get owner information based on ownerType
-      let ownerInfo = '';
-      let lodgeInfo = '';
-      const ownerType = ticket.ownerType || ticket.owner_type || 'unknown';
-      const ownerId = ticket.ownerId || ticket.owner_id;
+    for (const ticket of ticketsWithData) {
+      const attendee = ticket.attendeeData?.[0] || null;
+      const registration = ticket.registrationData?.[0] || null;
       
-      if (ownerId) {
-        if (ownerType === 'attendee') {
-          // Lookup attendee using attendeeId
-          const attendee = await db.collection('attendees').findOne({
-            $or: [
-              { attendeeId: ownerId },
-              { attendee_id: ownerId }
-            ]
-          });
-          
-          if (attendee) {
-            const title = attendee.title || '';
-            const firstName = attendee.firstName || attendee.first_name || '';
-            const lastName = attendee.lastName || attendee.last_name || '';
-            const rank = attendee.rank || '';
-            const displayRank = rank === 'GL' ? 'Grand Rank' : rank;
-            ownerInfo = `${title} ${firstName} ${lastName} ${displayRank}`.trim();
-            
-            // Get lodge info from attendee
-            lodgeInfo = attendee.lodgeNameNumber || attendee.lodge_name_number || '';
-          }
-        } else if (ownerType === 'lodge') {
-          // Lookup lodge
-          const lodge = await db.collection('lodges').findOne({
-            $or: [
-              { lodgeId: ownerId },
-              { lodge_id: ownerId },
-              { _id: ObjectId.isValid(ownerId) ? new ObjectId(ownerId) : ownerId }
-            ]
-          });
-          
-          if (lodge) {
-            const lodgeNameNumber = lodge.lodgeNameNumber || lodge.lodge_name_number || '';
-            const grandLodge = lodge.grandLodge || lodge.grand_lodge || {};
-            const abbreviation = grandLodge.abbreviation || '';
-            ownerInfo = abbreviation ? `${lodgeNameNumber} | ${abbreviation}` : lodgeNameNumber;
-            lodgeInfo = lodgeNameNumber;
-          }
+      // Check if ticketHolder has an attendeeId
+      const ticketHolderAttendeeId = ticket.ticketHolder?.attendeeId || ticket.ticket_holder?.attendee_id || '';
+      
+      // Build holder name - check various conditions
+      let holderName = '';
+      let attendeeType = '';
+      let lodgeNameNumber = '';
+      let partnerInfo = '';
+      
+      if (!ticketHolderAttendeeId || ticketHolderAttendeeId === '') {
+        // If no attendeeId and registration type is lodge, use lodge name from registration
+        const registrationType = registration?.registrationType || registration?.registration_type || '';
+        if (registrationType === 'lodge' && registration) {
+          const regData = registration.registrationData || registration.registration_data || {};
+          const lodgeDetails = regData.lodgeDetails || regData.lodge_details || {};
+          holderName = lodgeDetails.lodgeName || lodgeDetails.lodge_name || '';
         }
+        
+        // If still no holder name, use customerBusinessName
+        if (!holderName) {
+          holderName = ticket.ticketOwner?.customerBusinessName || 
+                      ticket.ticket_owner?.customer_business_name || '';
+        }
+      } else if (attendee) {
+        // Otherwise use attendee information
+        const title = attendee.title || '';
+        const firstName = attendee.firstName || attendee.first_name || '';
+        const lastName = attendee.lastName || attendee.last_name || '';
+        const suffix = attendee.suffix || '';
+        holderName = `${title} ${firstName} ${lastName} ${suffix}`.trim();
       }
       
-      // Get registration information from details object
-      const details = ticket.details || {};
-      const registrationId = details.registrationId || details.registration_id;
-      let confirmationNumber = '';
-      let invoiceNumber = '';
-      let paymentStatus = '';
-      let bookingContact = { firstName: '', lastName: '', email: '' };
-      let paymentId = null;
-      
-      if (registrationId) {
-        const registration = await db.collection('registrations').findOne({
-          $or: [
-            { registrationId: registrationId },
-            { registration_id: registrationId }
-          ]
-        });
+      if (attendee) {
+        attendeeType = attendee.attendeeType || attendee.attendee_type || '';
         
-        if (registration) {
-          confirmationNumber = registration.confirmationNumber || registration.confirmation_number || '';
-          invoiceNumber = registration.invoiceNumber || registration.invoice_number || '';
-          paymentStatus = registration.paymentStatus || registration.payment_status || '';
+        // If attendeeType is guest and relationship exists, show relationship instead
+        const relationship = attendee.relationship || '';
+        if (attendeeType === 'guest' && relationship) {
+          attendeeType = relationship;
+        }
+        
+        lodgeNameNumber = attendee.lodgeNameNumber || attendee.lodge_name_number || '';
+        
+        // Handle partner logic
+        const partnerId = attendee.partner || attendee.partnerOf || (attendee.isPartner ? attendee.attendeeId || attendee.attendee_id : null);
+        if (partnerId) {
+          // Lookup partner attendee
+          const partnerAttendee = await db.collection('attendees').findOne({
+            $or: [
+              { attendeeId: partnerId },
+              { attendee_id: partnerId }
+            ]
+          });
           
-          // Get booking contact from import_customers
-          const regData = registration.registrationData || registration.registration_data || {};
-          const bookingContactId = regData.bookingContact || regData.booking_contact;
-          
-          if (bookingContactId && ObjectId.isValid(bookingContactId)) {
-            const customer = await db.collection('import_customers').findOne({
-              _id: new ObjectId(bookingContactId)
-            });
+          if (partnerAttendee) {
+            const pTitle = partnerAttendee.title || '';
+            const pFirstName = partnerAttendee.firstName || partnerAttendee.first_name || '';
+            const pLastName = partnerAttendee.lastName || partnerAttendee.last_name || '';
+            const pSuffix = partnerAttendee.suffix || '';
+            partnerInfo = `${pTitle} ${pFirstName} ${pLastName} ${pSuffix}`.trim();
             
-            if (customer) {
-              bookingContact = {
-                firstName: customer.firstName || customer.first_name || '',
-                lastName: customer.lastName || customer.last_name || '',
-                email: customer.email || ''
-              };
+            // If attendeeType is partner or guest, use partner's lodge info
+            if ((attendee.attendeeType || attendee.attendee_type || '') === 'partner' || 
+                (attendee.attendeeType || attendee.attendee_type || '') === 'guest') {
+              lodgeNameNumber = partnerAttendee.lodgeNameNumber || partnerAttendee.lodge_name_number || '';
             }
           }
-          
-          // Get payment information
-          const payment = await db.collection('payments').findOne({
-            $or: [
-              { registrationId: registrationId },
-              { registration_id: registrationId }
-            ]
-          });
-          
-          if (payment) {
-            paymentId = payment.paymentId || payment.payment_id || payment._id.toString();
-          }
         }
       }
       
-      // Get quantity from ticket
-      const quantity = ticket.quantity || 1;
+      // Get booked by from ticketOwner - use customerBusinessName for organisations
+      const ownerType = ticket.ownerType || ticket.owner_type || '';
+      const bookedBy = ownerType === 'organisation' 
+        ? (ticket.ticketOwner?.customerBusinessName || ticket.ticket_owner?.customer_business_name || '')
+        : (ticket.ticketOwner?.customerName || ticket.ticket_owner?.customer_name || '');
       
-      // Calculate revenue (using ticket price or event ticket price)
+      // Get owner field based on ticketOwner.ownerType
+      const ticketOwnerType = ticket.ticketOwner?.ownerType || ticket.ticket_owner?.owner_type || '';
+      let owner = '';
+      if (ticketOwnerType === 'organisation') {
+        owner = ticket.ticketOwner?.customerBusinessName || ticket.ticket_owner?.customer_business_name || '';
+      } else if (ticketOwnerType === 'contact') {
+        owner = ticket.ticketOwner?.customerName || ticket.ticket_owner?.customer_name || '';
+      }
+      
+      // Get registration fields including registration type
+      const confirmationNumber = registration?.confirmationNumber || 
+                                registration?.confirmation_number || '';
+      const paymentStatus = registration?.paymentStatus || 
+                           registration?.payment_status || '';
+      const registrationType = registration?.registrationType || 
+                              registration?.registration_type || '';
+      const createdDate = registration?.createdDate || 
+                         registration?.created_date || 
+                         registration?.createdAt || 
+                         registration?.created_at || 
+                         ticket.createdAt || 
+                         ticket.created_at || 
+                         new Date();
+      
+      // Get direct ticket fields
+      const ticketNumber = ticket.ticketNumber || ticket.ticket_number || '';
+      const status = ticket.status || '';
       const price = parseFloat(
         ticket.price?.$numberDecimal || 
         ticket.price || 
@@ -149,49 +201,45 @@ export async function GET(
         eventTicket.price || 
         0
       );
+      const quantity = ticket.quantity || 1;
       
-      matchingRegistrations.push({
-        registrationId: ticket.ticketId || ticket.ticket_id || ticket._id.toString(),
+      ticketRows.push({
+        ticketId: ticket.ticketId || ticket.ticket_id || ticket._id.toString(),
+        ticketNumber: ticketNumber,
+        status: status,
+        price: price,
+        quantity: quantity,
+        holderName: holderName,
+        registrationType: registrationType || '',  // Registration type from registration
+        attendeeType: attendeeType,  // Attendee type from attendee
+        partnerName: partnerInfo,
+        lodgeNameNumber: lodgeNameNumber,
+        bookedBy: bookedBy,
+        owner: owner,  // Owner based on ticketOwner.ownerType
         confirmationNumber: confirmationNumber,
-        invoiceNumber: invoiceNumber,
         paymentStatus: paymentStatus,
-        registrationType: ownerType,
-        owner: ownerInfo,
-        lodge: lodgeInfo,
-        bookingContact: bookingContact,
-        paymentId: paymentId,
-        createdAt: ticket.createdAt || ticket.created_at || new Date(),
-        ticketQuantity: quantity,
-        ticketRevenue: price * quantity
+        createdDate: createdDate,
+        revenue: price * quantity
       });
     }
     
     // Calculate summary statistics
     const summary = {
-      totalRegistrations: matchingRegistrations.length,
-      totalQuantity: matchingRegistrations.reduce((sum, reg) => sum + reg.ticketQuantity, 0),
-      totalRevenue: matchingRegistrations.reduce((sum, reg) => sum + reg.ticketRevenue, 0),
-      byType: {
-        attendee: 0,
-        lodge: 0,
-        delegation: 0,
-        other: 0
+      totalTickets: ticketRows.length,
+      totalQuantity: ticketRows.reduce((sum, row) => sum + row.quantity, 0),
+      totalRevenue: ticketRows.reduce((sum, row) => sum + row.revenue, 0),
+      byStatus: {
+        active: ticketRows.filter(t => t.status === 'active').length,
+        cancelled: ticketRows.filter(t => t.status === 'cancelled').length,
+        other: ticketRows.filter(t => !['active', 'cancelled'].includes(t.status)).length
+      },
+      byPaymentStatus: {
+        paid: ticketRows.filter(t => t.paymentStatus === 'paid').length,
+        pending: ticketRows.filter(t => t.paymentStatus === 'pending').length,
+        failed: ticketRows.filter(t => t.paymentStatus === 'failed').length,
+        other: ticketRows.filter(t => !['paid', 'pending', 'failed'].includes(t.paymentStatus)).length
       }
     };
-    
-    // Count by owner type
-    matchingRegistrations.forEach(reg => {
-      const type = reg.registrationType.toLowerCase();
-      if (type === 'attendee') {
-        summary.byType.attendee++;
-      } else if (type === 'lodge') {
-        summary.byType.lodge++;
-      } else if (type === 'delegation') {
-        summary.byType.delegation++;
-      } else {
-        summary.byType.other++;
-      }
-    });
     
     return NextResponse.json({
       eventTicket: {
@@ -200,7 +248,7 @@ export async function GET(
         description: eventTicket.description || '',
         price: parseFloat(eventTicket.price?.$numberDecimal || eventTicket.price || 0)
       },
-      registrations: matchingRegistrations,
+      tickets: ticketRows,
       summary
     });
     

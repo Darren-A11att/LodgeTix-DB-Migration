@@ -5,23 +5,23 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
-interface Registration {
-  registrationId: string;
+interface TicketRow {
+  ticketId: string;
+  ticketNumber: string;
+  status: string;
+  price: number;
+  quantity: number;
+  holderName: string;
+  registrationType: string;  // Registration type from registration
+  attendeeType: string;  // Attendee type from attendee
+  partnerName: string;
+  lodgeNameNumber: string;
+  bookedBy: string;
+  owner: string;  // Owner based on ticketOwner.ownerType
   confirmationNumber: string;
-  invoiceNumber: string;
   paymentStatus: string;
-  registrationType: string;
-  owner: string;
-  lodge: string;
-  bookingContact: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  paymentId?: string;
-  createdAt: string;
-  ticketQuantity: number;
-  ticketRevenue: number;
+  createdDate: string;
+  revenue: number;
 }
 
 interface EventTicketDetails {
@@ -31,15 +31,20 @@ interface EventTicketDetails {
     description: string;
     price: number;
   };
-  registrations: Registration[];
+  tickets: TicketRow[];
   summary: {
-    totalRegistrations: number;
+    totalTickets: number;
     totalQuantity: number;
     totalRevenue: number;
-    byType: {
-      attendee: number;
-      lodge: number;
-      delegation: number;
+    byStatus: {
+      active: number;
+      cancelled: number;
+      other: number;
+    };
+    byPaymentStatus: {
+      paid: number;
+      pending: number;
+      failed: number;
       other: number;
     };
   };
@@ -51,8 +56,8 @@ export default function EventTicketDetailsPage() {
   const [details, setDetails] = useState<EventTicketDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<'date' | 'type' | 'quantity'>('date');
-  const [filterType, setFilterType] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'status' | 'quantity'>('date');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   // Format currency
   const formatCurrency = (num: number) => {
@@ -94,20 +99,22 @@ export default function EventTicketDetailsPage() {
   const downloadCSV = () => {
     if (!details) return;
 
-    const headers = ['Confirmation', 'Invoice', 'Payment Status', 'Payment ID', 'Type', 'Owner', 'Lodge', 'Booking Contact', 'Email', 'Date', 'Quantity', 'Revenue'];
-    const rows = details.registrations.map(reg => [
-      reg.confirmationNumber || '',
-      reg.invoiceNumber || '',
-      reg.paymentStatus || '',
-      reg.paymentId || '',
-      reg.registrationType,
-      reg.owner || '',
-      reg.lodge || '',
-      `${reg.bookingContact.firstName} ${reg.bookingContact.lastName}`,
-      reg.bookingContact.email,
-      formatDate(reg.createdAt),
-      reg.ticketQuantity,
-      reg.ticketRevenue.toFixed(2)
+    const headers = ['Ticket Number', 'Status', 'Price', 'Quantity', 'Holder', 'Registration Type', 'Attendee Type', 'Partner', 'Lodge', 'Booked By', 'Owner', 'Confirm Number', 'Payment Status', 'Date'];
+    const rows = details.tickets.map(ticket => [
+      ticket.ticketNumber || '',
+      ticket.status || '',
+      ticket.price.toFixed(2),
+      ticket.quantity,
+      ticket.holderName || '',
+      ticket.registrationType || '',
+      ticket.attendeeType || '',
+      ticket.partnerName || '',
+      ticket.lodgeNameNumber || '',
+      ticket.bookedBy || '',
+      ticket.owner || '',
+      ticket.confirmationNumber || '',
+      ticket.paymentStatus || '',
+      formatDate(ticket.createdDate)
     ]);
 
     const csv = [
@@ -119,7 +126,7 @@ export default function EventTicketDetailsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `event-ticket-${eventTicketId}-registrations.csv`;
+    a.download = `event-ticket-${eventTicketId}-tickets.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -128,26 +135,26 @@ export default function EventTicketDetailsPage() {
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
   if (!details) return <div className="p-8">No data available</div>;
 
-  // Filter and sort registrations
-  let filteredRegistrations = [...details.registrations];
-  if (filterType !== 'all') {
-    filteredRegistrations = filteredRegistrations.filter(reg => 
-      filterType === 'other' 
-        ? !['attendee', 'lodge', 'delegation'].includes(reg.registrationType)
-        : reg.registrationType === filterType
+  // Filter and sort tickets
+  let filteredTickets = [...details.tickets];
+  if (filterStatus !== 'all') {
+    filteredTickets = filteredTickets.filter(ticket => 
+      filterStatus === 'other' 
+        ? !['active', 'cancelled'].includes(ticket.status)
+        : ticket.status === filterStatus
     );
   }
 
-  // Sort registrations
-  filteredRegistrations.sort((a, b) => {
+  // Sort tickets
+  filteredTickets.sort((a, b) => {
     switch (sortBy) {
-      case 'type':
-        return a.registrationType.localeCompare(b.registrationType);
+      case 'status':
+        return a.status.localeCompare(b.status);
       case 'quantity':
-        return b.ticketQuantity - a.ticketQuantity;
+        return b.quantity - a.quantity;
       case 'date':
       default:
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
     }
   });
 
@@ -176,25 +183,21 @@ export default function EventTicketDetailsPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white border rounded-lg p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Registrations</p>
-          <p className="text-3xl font-bold">{details.summary.totalRegistrations}</p>
+          <p className="text-sm text-gray-600 mb-1">Total Tickets</p>
+          <p className="text-3xl font-bold">{details.summary.totalTickets}</p>
           <div className="mt-3 space-y-1 text-xs">
             <div className="flex justify-between">
-              <span>Attendees:</span>
-              <span className="font-medium">{details.summary.byType.attendee}</span>
+              <span>Active:</span>
+              <span className="font-medium">{details.summary.byStatus.active}</span>
             </div>
             <div className="flex justify-between">
-              <span>Lodges:</span>
-              <span className="font-medium">{details.summary.byType.lodge}</span>
+              <span>Cancelled:</span>
+              <span className="font-medium">{details.summary.byStatus.cancelled}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Delegations:</span>
-              <span className="font-medium">{details.summary.byType.delegation}</span>
-            </div>
-            {details.summary.byType.other > 0 && (
+            {details.summary.byStatus.other > 0 && (
               <div className="flex justify-between">
                 <span>Other:</span>
-                <span className="font-medium">{details.summary.byType.other}</span>
+                <span className="font-medium">{details.summary.byStatus.other}</span>
               </div>
             )}
           </div>
@@ -223,16 +226,15 @@ export default function EventTicketDetailsPage() {
       <div className="bg-white border rounded-lg p-4 mb-6">
         <div className="flex flex-wrap gap-4 items-center">
           <div>
-            <label className="text-sm font-medium mr-2">Filter by Type:</label>
+            <label className="text-sm font-medium mr-2">Filter by Status:</label>
             <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
               className="border rounded px-3 py-1"
             >
-              <option value="all">All Types</option>
-              <option value="attendee">Attendees</option>
-              <option value="lodge">Lodges</option>
-              <option value="delegation">Delegations</option>
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="cancelled">Cancelled</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -245,7 +247,7 @@ export default function EventTicketDetailsPage() {
               className="border rounded px-3 py-1"
             >
               <option value="date">Date (newest first)</option>
-              <option value="type">Registration Type</option>
+              <option value="status">Status</option>
               <option value="quantity">Quantity</option>
             </select>
           </div>
@@ -261,100 +263,112 @@ export default function EventTicketDetailsPage() {
         </div>
       </div>
 
-      {/* Registrations Table */}
-      <div className="bg-white border rounded-lg overflow-hidden">
-        <table className="w-full">
+      {/* Tickets Table */}
+      <div className="bg-white border rounded-lg overflow-x-auto">
+        <table className="min-w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Confirmation
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Ticket Number
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Invoice
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Payment Status
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Price
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Payment ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Owner
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Lodge
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Booking Contact
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Quantity
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Revenue
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Holder
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Registration Type
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Attendee Type
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Partner
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Lodge
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Booked By
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Owner
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Confirm Number
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Payment Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Date
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredRegistrations.map((reg) => (
-              <tr key={reg.registrationId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-mono">
-                  {reg.confirmationNumber || '-'}
+            {filteredTickets.map((ticket) => (
+              <tr key={ticket.ticketId} className="hover:bg-gray-50">
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
+                  {ticket.ticketNumber || '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {reg.invoiceNumber || '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-4 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    reg.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                    reg.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    reg.paymentStatus === 'failed' ? 'bg-red-100 text-red-800' :
+                    ticket.status === 'active' ? 'bg-green-100 text-green-800' :
+                    ticket.status === 'cancelled' ? 'bg-red-100 text-red-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
-                    {reg.paymentStatus || 'unknown'}
+                    {ticket.status || 'unknown'}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {reg.paymentId || '-'}
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-right">
+                  {formatCurrency(ticket.price)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-right font-medium">
+                  {ticket.quantity}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.holderName || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.registrationType || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.attendeeType || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.partnerName || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.lodgeNameNumber || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.bookedBy || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.owner || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
+                  {ticket.confirmationNumber || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    reg.registrationType === 'attendee' ? 'bg-blue-100 text-blue-800' :
-                    reg.registrationType === 'lodge' ? 'bg-purple-100 text-purple-800' :
-                    reg.registrationType === 'delegation' ? 'bg-green-100 text-green-800' :
+                    ticket.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+                    ticket.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                    ticket.paymentStatus === 'failed' ? 'bg-red-100 text-red-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
-                    {reg.registrationType}
+                    {ticket.paymentStatus || 'unknown'}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {reg.owner || '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {reg.lodge || '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {reg.bookingContact.firstName} {reg.bookingContact.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">{reg.bookingContact.email}</p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(reg.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
-                  {reg.ticketQuantity}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
-                  {formatCurrency(reg.ticketRevenue)}
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {formatDate(ticket.createdDate)}
                 </td>
               </tr>
             ))}
