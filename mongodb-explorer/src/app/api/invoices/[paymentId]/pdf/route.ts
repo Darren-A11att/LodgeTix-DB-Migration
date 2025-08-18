@@ -6,9 +6,9 @@ import UnifiedInvoiceService from '@/services/unified-invoice-service';
 // Returns a server-rendered PDF for the specified payment without side effects
 export async function GET(
   _request: NextRequest,
-  context: { params: { paymentId: string } }
+  { params }: { params: Promise<{ paymentId: string }> }
 ) {
-  const paymentId = context?.params?.paymentId;
+  const { paymentId } = await params;
 
   if (!paymentId) {
     return NextResponse.json({ error: 'paymentId is required' }, { status: 400 });

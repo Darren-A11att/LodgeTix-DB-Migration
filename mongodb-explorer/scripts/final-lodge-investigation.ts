@@ -229,7 +229,7 @@ async function finalLodgeInvestigation() {
               { 'metadata.note': { $regex: target.ref, $options: 'i' } }
             ]
           },
-          { registrationId: { $exists: true, $ne: '', $ne: null } }
+          { $and: [{ registrationId: { $exists: true } }, { registrationId: { $ne: '' } }, { registrationId: { $ne: null } }] }
         ]
       });
       

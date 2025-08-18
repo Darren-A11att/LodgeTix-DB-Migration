@@ -203,8 +203,8 @@ async function finalLodgeDuplicateCheck() {
     }, {} as Record<string, any[]>);
     
     Object.entries(actionGroups).forEach(([action, logs]) => {
-      console.log(`\n--- ${action} (${logs.length} payments) ---`);
-      logs.forEach((log, index) => {
+      console.log(`\n--- ${action} (${(logs as any[]).length} payments) ---`);
+      (logs as any[]).forEach((log, index) => {
         console.log(`${index + 1}. ${log.lodge} Lodge - ${log.contact}`);
         console.log(`   Payment ID: ${log.paymentId}`);
         console.log(`   Amount: $${(log.amount / 100).toFixed(2)}`);

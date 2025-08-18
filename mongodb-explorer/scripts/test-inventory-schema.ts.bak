@@ -30,6 +30,8 @@ async function testInventorySchema() {
       total: 100,
       reserved: 5,
       sold: 20,
+      createdAt: new Date(),
+      lastModifiedAt: new Date(),
       location: [
         {
           locationId: 'warehouse-1',
@@ -56,6 +58,8 @@ async function testInventorySchema() {
       total: 1000, // Unlimited for digital, but set a high number
       reserved: 0,
       sold: 150,
+      createdAt: new Date(),
+      lastModifiedAt: new Date(),
       location: [
         {
           locationId: 'cloud-storage-1',

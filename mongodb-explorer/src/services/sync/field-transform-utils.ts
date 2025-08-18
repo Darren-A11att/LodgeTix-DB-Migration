@@ -4,6 +4,7 @@
  */
 
 import * as crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Converts snake_case strings to camelCase
@@ -205,6 +206,7 @@ export function createCustomerFromBookingContact(bookingContact: any, registrati
   const customerType = determineCustomerType(businessName);
 
   return {
+    customerId: uuidv4(), // Generate unique customerId
     hash,
     customerType,
     firstName,

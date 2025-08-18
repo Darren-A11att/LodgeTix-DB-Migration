@@ -48,7 +48,7 @@ export default function ProductCollectionsPage() {
       <DataTable 
         collection="product_collections"
         columns={columns}
-        searchableFields={['title', 'handle']}
+        searchFields={['title', 'handle']}
       />
     </div>
   );

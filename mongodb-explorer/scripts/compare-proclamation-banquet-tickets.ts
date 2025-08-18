@@ -164,7 +164,7 @@ class ProclamationBanquetTicketComparer {
     }
 
     // Check for date patterns
-    const withDates = missingTickets.filter(t => t.createdAt).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const withDates = missingTickets.filter(t => t.createdAt).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     if (withDates.length > 0) {
       console.log(`\n📅 Date range of missing tickets:`);
       console.log(`  Earliest: ${withDates[0].createdAt}`);

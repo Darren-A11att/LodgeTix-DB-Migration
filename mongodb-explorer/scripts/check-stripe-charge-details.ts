@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(process.cwd(), '../.env.local') });
 
 async function checkPaymentCharges(paymentIntentId: string) {
   const stripe = new Stripe(process.env.STRIPE_ACCOUNT_1_SECRET_KEY!, {
-    apiVersion: '2024-11-20.acacia'
+    apiVersion: '2025-07-30.basil'
   });
   
   console.log('='.repeat(80));
@@ -24,17 +24,17 @@ async function checkPaymentCharges(paymentIntentId: string) {
     console.log(`  ID: ${paymentIntent.id}`);
     console.log(`  Status: ${paymentIntent.status}`);
     console.log(`  Amount: $${(paymentIntent.amount / 100).toFixed(2)}`);
-    console.log(`  Has charges field: ${paymentIntent.charges ? 'YES' : 'NO'}`);
+    console.log(`  Has charges field: ${(paymentIntent as any).charges ? 'YES' : 'NO'}`);
     
-    if (paymentIntent.charges) {
+    if ((paymentIntent as any).charges) {
       console.log(`\n💳 CHARGES OBJECT:`);
-      console.log(`  Type: ${typeof paymentIntent.charges}`);
-      console.log(`  Is array: ${Array.isArray(paymentIntent.charges)}`);
-      console.log(`  Has 'data' field: ${'data' in paymentIntent.charges}`);
-      console.log(`  Number of charges: ${paymentIntent.charges.data.length}`);
+      console.log(`  Type: ${typeof (paymentIntent as any).charges}`);
+      console.log(`  Is array: ${Array.isArray((paymentIntent as any).charges)}`);
+      console.log(`  Has 'data' field: ${'data' in (paymentIntent as any).charges}`);
+      console.log(`  Number of charges: ${(paymentIntent as any).charges.data.length}`);
       
-      if (paymentIntent.charges.data.length > 0) {
-        paymentIntent.charges.data.forEach((charge, index) => {
+      if ((paymentIntent as any).charges.data.length > 0) {
+        (paymentIntent as any).charges.data.forEach((charge: any, index: number) => {
           console.log(`\n  CHARGE #${index + 1}:`);
           console.log(`    Charge ID: ${charge.id}`);
           console.log(`    Amount: $${(charge.amount / 100).toFixed(2)}`);
@@ -77,7 +77,7 @@ async function checkPaymentCharges(paymentIntentId: string) {
     
     console.log('\n' + '='.repeat(80));
     console.log('RAW CHARGES FIELD VALUE:');
-    console.log(JSON.stringify(paymentIntent.charges, null, 2));
+    console.log(JSON.stringify((paymentIntent as any).charges, null, 2));
     console.log('='.repeat(80));
     
     return paymentIntent;

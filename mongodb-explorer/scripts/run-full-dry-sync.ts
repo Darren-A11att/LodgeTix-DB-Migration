@@ -219,7 +219,7 @@ class FullDryRunSyncService {
     stripeAccounts.forEach(account => {
       if (account.key) {
         this.stripeClients.set(account.name, new Stripe(account.key, {
-          apiVersion: '2024-11-20.acacia'
+          apiVersion: '2025-07-30.basil'
         }));
         this.counters.stripe.byAccount.set(account.name, 0);
         this.logger.log('INIT', `✓ Stripe account initialized: ${account.name}`);

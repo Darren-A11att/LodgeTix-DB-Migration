@@ -102,7 +102,7 @@ async function verifyRegistrationAndFixTicket() {
               console.log(`\n🔄 Trying with status: ${testStatus}`);
               
               const testTicketData = { ...ticketData, status: testStatus };
-              delete testTicketData.ticket_status; // Remove if it was there
+              delete (testTicketData as any).ticket_status; // Remove if it was there
               
               const testResponse = await fetch(`${SUPABASE_URL}/rest/v1/tickets`, {
                 method: 'POST',

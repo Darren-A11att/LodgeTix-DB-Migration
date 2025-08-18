@@ -475,7 +475,7 @@ class LodgeTixRegistrationMigrator {
           product_type: 'event_ticket',
           event: 'Grand Proclamation 2025',
           ticket_type: 'event',
-          original_ticket_id: ticket._id?.toString()
+          original_ticket_id: ('_id' in ticket) ? ticket._id?.toString() : undefined
         },
         
         created_at: new Date(),

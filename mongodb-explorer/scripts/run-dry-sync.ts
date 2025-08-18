@@ -181,7 +181,7 @@ class DryRunSyncService {
     stripeAccounts.forEach(account => {
       if (account.key) {
         this.stripeClients.set(account.name, new Stripe(account.key, {
-          apiVersion: '2024-11-20.acacia'
+          apiVersion: '2025-07-30.basil'
         }));
         this.logger.log('INIT', `✓ Stripe account initialized: ${account.name}`);
       } else {
@@ -211,10 +211,10 @@ class DryRunSyncService {
           cursor: cursor 
         });
         
-        if (response.payments && response.payments.length > 0) {
-          totalFetched += response.payments.length;
+        if ((response as any).payments && (response as any).payments.length > 0) {
+          totalFetched += (response as any).payments.length;
           
-          for (const payment of response.payments) {
+          for (const payment of (response as any).payments) {
           
           // Only log every 10th payment when processing many
           if (this.counters.square.payments % 10 === 0 || totalFetched <= 10) {
@@ -285,7 +285,7 @@ class DryRunSyncService {
           }
         }
         
-        cursor = response.cursor;
+        cursor = (response as any).cursor;
       } while (cursor);
       
       this.logger.log('SQUARE', `Total Square payments found: ${totalFetched}`);

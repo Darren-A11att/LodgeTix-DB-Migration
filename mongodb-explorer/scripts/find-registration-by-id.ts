@@ -54,7 +54,7 @@ async function findRegistrationById() {
     
     // Try string search
     const regByString = await lodgetixDb.collection('registrations').findOne({
-      _id: targetId
+      _id: targetId as any
     });
     if (regByString) {
       console.log('✅ Found in registrations with string ID!');

@@ -147,10 +147,10 @@ async function deepSearchTicketsViaAttendees() {
         const sampleStructure = {
           tickets: ticketsForStorage.map(t => ({
             mongodbId: t.mongodbId,
-            ticketNumber: t.ticketNumber,
-            eventName: t.eventName,
-            ownerId: t.ownerId,
-            status: t.status,
+            ticketNumber: (t as any).ticketNumber,
+            eventName: (t as any).eventName,
+            ownerId: (t as any).ownerId,
+            status: (t as any).status,
             foundBy: t.foundBy
           })),
           attendees: attendees.map(a => ({

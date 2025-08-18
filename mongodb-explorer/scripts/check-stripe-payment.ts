@@ -38,7 +38,7 @@ async function checkPayment(paymentIntentId: string) {
     
     try {
       const stripe = new Stripe(account.key, {
-        apiVersion: '2024-11-20.acacia'
+        apiVersion: '2025-07-30.basil'
       });
       
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -51,8 +51,8 @@ async function checkPayment(paymentIntentId: string) {
       console.log(`  Created: ${new Date(paymentIntent.created * 1000).toISOString()}`);
       
       // Check if refunded
-      if (paymentIntent.charges && paymentIntent.charges.data.length > 0) {
-        const charge = paymentIntent.charges.data[0];
+      if ((paymentIntent as any).charges && (paymentIntent as any).charges.data.length > 0) {
+        const charge = (paymentIntent as any).charges.data[0];
         console.log('\n💳 CHARGE DETAILS:');
         console.log(`  Charge ID: ${charge.id}`);
         console.log(`  Refunded: ${charge.refunded ? '✅ YES' : '❌ NO'}`);
@@ -98,9 +98,9 @@ async function checkPayment(paymentIntentId: string) {
       console.log('\n' + '='.repeat(80));
       console.log('SUMMARY:');
       if (paymentIntent.status === 'succeeded' && 
-          (!paymentIntent.charges?.data[0]?.refunded)) {
+          (!(paymentIntent as any).charges?.data[0]?.refunded)) {
         console.log('✅ Payment is VALID - succeeded and not refunded');
-      } else if (paymentIntent.charges?.data[0]?.refunded) {
+      } else if ((paymentIntent as any).charges?.data[0]?.refunded) {
         console.log('❌ Payment was REFUNDED');
       } else {
         console.log(`⚠️ Payment status: ${paymentIntent.status}`);

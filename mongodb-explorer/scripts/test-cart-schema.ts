@@ -39,6 +39,7 @@ async function testCartSchema() {
       name: 'Premium T-Shirt - Black/L',
       quantity: 2,
       unitPrice: 29.99,
+      subtotal: 59.98, // 2 * 29.99
       customerObject: [
         { metadata: { giftWrap: true, giftMessage: 'Happy Birthday!' } }
       ]
@@ -51,7 +52,8 @@ async function testCartSchema() {
       variantId: 'variant-002',
       name: 'Premium T-Shirt - White/M',
       quantity: 1,
-      unitPrice: 29.99
+      unitPrice: 29.99,
+      subtotal: 29.99
     });
     console.log('✅ Second item added to cart');
     

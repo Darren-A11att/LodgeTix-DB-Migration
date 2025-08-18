@@ -1052,7 +1052,7 @@ export default function InvoiceMatchesPage() {
               const regData = await apiService.searchDocuments('registrations', registrationQuery);
               
               // Handle both 'documents' and 'results' response formats
-              const documents = regData.documents || regData.results || [];
+              const documents = regData.documents || (regData as any).results || [];
               console.log('🔍 Registration search result:', {
                 found: documents.length,
                 documents: documents

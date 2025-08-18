@@ -94,15 +94,15 @@ async function analyzeRegistrationPaymentPatterns(): Promise<void> {
     console.log('\n\n3️⃣ Analyzing payment ID patterns in registrations...');
     
     // Count registrations with various payment fields
-    const importWithPaymentId = await importRegistrationsCollection.countDocuments({ paymentId: { $exists: true, $ne: null, $ne: "" } });
-    const importWithIntentId = await importRegistrationsCollection.countDocuments({ payment_intent_id: { $exists: true, $ne: null, $ne: "" } });
-    const importWithReferenceId = await importRegistrationsCollection.countDocuments({ referenceId: { $exists: true, $ne: null, $ne: "" } });
-    const importWithOrderId = await importRegistrationsCollection.countDocuments({ orderId: { $exists: true, $ne: null, $ne: "" } });
+    const importWithPaymentId = await importRegistrationsCollection.countDocuments({ $and: [{ paymentId: { $exists: true } }, { paymentId: { $ne: null } }, { paymentId: { $ne: "" } }] });
+    const importWithIntentId = await importRegistrationsCollection.countDocuments({ $and: [{ payment_intent_id: { $exists: true } }, { payment_intent_id: { $ne: null } }, { payment_intent_id: { $ne: "" } }] });
+    const importWithReferenceId = await importRegistrationsCollection.countDocuments({ $and: [{ referenceId: { $exists: true } }, { referenceId: { $ne: null } }, { referenceId: { $ne: "" } }] });
+    const importWithOrderId = await importRegistrationsCollection.countDocuments({ $and: [{ orderId: { $exists: true } }, { orderId: { $ne: null } }, { orderId: { $ne: "" } }] });
 
-    const finalWithPaymentId = await registrationsCollection.countDocuments({ paymentId: { $exists: true, $ne: null, $ne: "" } });
-    const finalWithIntentId = await registrationsCollection.countDocuments({ payment_intent_id: { $exists: true, $ne: null, $ne: "" } });
-    const finalWithReferenceId = await registrationsCollection.countDocuments({ referenceId: { $exists: true, $ne: null, $ne: "" } });
-    const finalWithOrderId = await registrationsCollection.countDocuments({ orderId: { $exists: true, $ne: null, $ne: "" } });
+    const finalWithPaymentId = await registrationsCollection.countDocuments({ $and: [{ paymentId: { $exists: true } }, { paymentId: { $ne: null } }, { paymentId: { $ne: "" } }] });
+    const finalWithIntentId = await registrationsCollection.countDocuments({ $and: [{ payment_intent_id: { $exists: true } }, { payment_intent_id: { $ne: null } }, { payment_intent_id: { $ne: "" } }] });
+    const finalWithReferenceId = await registrationsCollection.countDocuments({ $and: [{ referenceId: { $exists: true } }, { referenceId: { $ne: null } }, { referenceId: { $ne: "" } }] });
+    const finalWithOrderId = await registrationsCollection.countDocuments({ $and: [{ orderId: { $exists: true } }, { orderId: { $ne: null } }, { orderId: { $ne: "" } }] });
 
     console.log('\nImport Registrations Payment Field Stats:');
     console.log(`  With paymentId: ${importWithPaymentId}/${importSample.length > 0 ? await importRegistrationsCollection.countDocuments() : 0}`);
@@ -122,7 +122,7 @@ async function analyzeRegistrationPaymentPatterns(): Promise<void> {
     if (importWithPaymentId > 0) {
       console.log('\nSample paymentIds from import_registrations:');
       const importPaymentIdSamples = await importRegistrationsCollection.find(
-        { paymentId: { $exists: true, $ne: null, $ne: "" } }
+        { $and: [{ paymentId: { $exists: true } }, { paymentId: { $ne: null } }, { paymentId: { $ne: "" } }] }
       ).limit(10).toArray();
       
       importPaymentIdSamples.forEach((reg, index) => {
@@ -133,7 +133,7 @@ async function analyzeRegistrationPaymentPatterns(): Promise<void> {
     if (finalWithPaymentId > 0) {
       console.log('\nSample paymentIds from final registrations:');
       const finalPaymentIdSamples = await registrationsCollection.find(
-        { paymentId: { $exists: true, $ne: null, $ne: "" } }
+        { $and: [{ paymentId: { $exists: true } }, { paymentId: { $ne: null } }, { paymentId: { $ne: "" } }] }
       ).limit(10).toArray();
       
       finalPaymentIdSamples.forEach((reg, index) => {
@@ -144,7 +144,7 @@ async function analyzeRegistrationPaymentPatterns(): Promise<void> {
     if (importWithReferenceId > 0) {
       console.log('\nSample referenceIds from import_registrations:');
       const importRefIdSamples = await importRegistrationsCollection.find(
-        { referenceId: { $exists: true, $ne: null, $ne: "" } }
+        { $and: [{ referenceId: { $exists: true } }, { referenceId: { $ne: null } }, { referenceId: { $ne: "" } }] }
       ).limit(10).toArray();
       
       importRefIdSamples.forEach((reg, index) => {

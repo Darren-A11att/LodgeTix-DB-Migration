@@ -8,7 +8,11 @@ import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 interface Registration {
   registrationId: string;
   confirmationNumber: string;
+  invoiceNumber: string;
+  paymentStatus: string;
   registrationType: string;
+  owner: string;
+  lodge: string;
   bookingContact: {
     firstName: string;
     lastName: string;
@@ -33,9 +37,9 @@ interface EventTicketDetails {
     totalQuantity: number;
     totalRevenue: number;
     byType: {
-      individuals: number;
-      lodges: number;
-      delegations: number;
+      attendee: number;
+      lodge: number;
+      delegation: number;
       other: number;
     };
   };
@@ -90,11 +94,15 @@ export default function EventTicketDetailsPage() {
   const downloadCSV = () => {
     if (!details) return;
 
-    const headers = ['Registration ID', 'Payment ID', 'Type', 'Booking Contact', 'Email', 'Date', 'Quantity', 'Revenue'];
+    const headers = ['Confirmation', 'Invoice', 'Payment Status', 'Payment ID', 'Type', 'Owner', 'Lodge', 'Booking Contact', 'Email', 'Date', 'Quantity', 'Revenue'];
     const rows = details.registrations.map(reg => [
-      reg.registrationId,
+      reg.confirmationNumber || '',
+      reg.invoiceNumber || '',
+      reg.paymentStatus || '',
       reg.paymentId || '',
       reg.registrationType,
+      reg.owner || '',
+      reg.lodge || '',
       `${reg.bookingContact.firstName} ${reg.bookingContact.lastName}`,
       reg.bookingContact.email,
       formatDate(reg.createdAt),
@@ -125,7 +133,7 @@ export default function EventTicketDetailsPage() {
   if (filterType !== 'all') {
     filteredRegistrations = filteredRegistrations.filter(reg => 
       filterType === 'other' 
-        ? !['individuals', 'lodges', 'delegations'].includes(reg.registrationType)
+        ? !['attendee', 'lodge', 'delegation'].includes(reg.registrationType)
         : reg.registrationType === filterType
     );
   }
@@ -172,16 +180,16 @@ export default function EventTicketDetailsPage() {
           <p className="text-3xl font-bold">{details.summary.totalRegistrations}</p>
           <div className="mt-3 space-y-1 text-xs">
             <div className="flex justify-between">
-              <span>Individuals:</span>
-              <span className="font-medium">{details.summary.byType.individuals}</span>
+              <span>Attendees:</span>
+              <span className="font-medium">{details.summary.byType.attendee}</span>
             </div>
             <div className="flex justify-between">
               <span>Lodges:</span>
-              <span className="font-medium">{details.summary.byType.lodges}</span>
+              <span className="font-medium">{details.summary.byType.lodge}</span>
             </div>
             <div className="flex justify-between">
               <span>Delegations:</span>
-              <span className="font-medium">{details.summary.byType.delegations}</span>
+              <span className="font-medium">{details.summary.byType.delegation}</span>
             </div>
             {details.summary.byType.other > 0 && (
               <div className="flex justify-between">
@@ -222,9 +230,9 @@ export default function EventTicketDetailsPage() {
               className="border rounded px-3 py-1"
             >
               <option value="all">All Types</option>
-              <option value="individuals">Individuals</option>
-              <option value="lodges">Lodges</option>
-              <option value="delegations">Delegations</option>
+              <option value="attendee">Attendees</option>
+              <option value="lodge">Lodges</option>
+              <option value="delegation">Delegations</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -259,13 +267,25 @@ export default function EventTicketDetailsPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registration ID
+                Confirmation
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Invoice
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Payment Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Payment ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Owner
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Lodge
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Booking Contact
@@ -285,20 +305,39 @@ export default function EventTicketDetailsPage() {
             {filteredRegistrations.map((reg) => (
               <tr key={reg.registrationId} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-mono">
-                  {reg.confirmationNumber}
+                  {reg.confirmationNumber || '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {reg.invoiceNumber || '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    reg.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+                    reg.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                    reg.paymentStatus === 'failed' ? 'bg-red-100 text-red-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {reg.paymentStatus || 'unknown'}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {reg.paymentId || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    reg.registrationType === 'individuals' ? 'bg-blue-100 text-blue-800' :
-                    reg.registrationType === 'lodges' ? 'bg-purple-100 text-purple-800' :
-                    reg.registrationType === 'delegations' ? 'bg-green-100 text-green-800' :
+                    reg.registrationType === 'attendee' ? 'bg-blue-100 text-blue-800' :
+                    reg.registrationType === 'lodge' ? 'bg-purple-100 text-purple-800' :
+                    reg.registrationType === 'delegation' ? 'bg-green-100 text-green-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
                     {reg.registrationType}
                   </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {reg.owner || '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {reg.lodge || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>

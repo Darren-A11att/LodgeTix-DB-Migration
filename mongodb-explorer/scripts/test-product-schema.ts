@@ -26,7 +26,9 @@ async function testProductSchema() {
       name: 'Basic T-Shirt',
       status: 'active',
       type: 'physical',
-      description: 'A comfortable cotton t-shirt'
+      description: 'A comfortable cotton t-shirt',
+      createdAt: new Date(),
+      lastModifiedAt: new Date()
     });
     console.log('✅ Simple product created:', simpleProduct.productId);
     
@@ -68,7 +70,9 @@ async function testProductSchema() {
       images: [
         { id: 'img-1', url: 'https://example.com/tshirt-1.jpg', alternateText: 'Front view' },
         { id: 'img-2', url: 'https://example.com/tshirt-2.jpg', alternateText: 'Back view' }
-      ]
+      ],
+      createdAt: new Date(),
+      lastModifiedAt: new Date()
     });
     
     console.log('✅ Complex product created:', complexProduct.productId);

@@ -24,7 +24,7 @@ const failedPaymentIds = [
   'pi_3RZInfHDfNBUEWUu0BQQrnLx'
 ];
 
-async function deepSearchForRegistrationId(doc: any): string | null {
+async function deepSearchForRegistrationId(doc: any): Promise<string | null> {
   // Search all possible fields for registration IDs
   const fieldsToCheck = [
     'linkedRegistrationId',

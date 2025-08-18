@@ -25,7 +25,7 @@ async function searchRegistrationsBroad() {
     console.log('\n📋 Searching in import_registrations for any reference...');
     const importRegs = await lodgetixDb.collection('import_registrations').find({
       $or: [
-        { _id: targetId },
+        { _id: targetId as any },
         { originalId: targetId },
         { sourceId: targetId },
         { "metadata.originalId": targetId }
@@ -48,7 +48,7 @@ async function searchRegistrationsBroad() {
     console.log('📋 Searching in error_registrations...');
     const errorRegs = await lodgetixDb.collection('error_registrations').find({
       $or: [
-        { _id: targetId },
+        { _id: targetId as any },
         { originalId: targetId },
         { sourceId: targetId },
         { "data.originalId": targetId }

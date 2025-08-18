@@ -37,7 +37,7 @@ const productSchema = z.object({
   bundle_items: z.array(bundleItemSchema).optional(), // Support both naming conventions
   kitContents: z.array(kitContentSchema).optional(),
   kit_contents: z.array(kitContentSchema).optional(), // Support both naming conventions
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   tags: z.array(z.string()).optional(),
   options: z.array(z.string()).optional(),
   weight: z.number().min(0).optional(),
@@ -107,7 +107,7 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
 
   const { fields: tagFields, append: appendTag, remove: removeTag } = useFieldArray({
     control,
-    name: 'tags',
+    name: 'tags' as any,
   });
 
   const watchedType = watch('type');

@@ -128,7 +128,7 @@ async function getErrorPaymentDocument(client: MongoClient): Promise<string | nu
         if (!errorPayment) {
           // Try without ObjectId conversion in case it's stored as string
           console.log(`Trying to find document with string _id: ${ERROR_PAYMENT_ID}`);
-          errorPayment = await collection.findOne({ _id: ERROR_PAYMENT_ID }) as ErrorPaymentDocument | null;
+          errorPayment = await collection.findOne({ _id: ERROR_PAYMENT_ID as any }) as ErrorPaymentDocument | null;
         }
         
         if (errorPayment) {

@@ -41,7 +41,7 @@ async function findSpecificRegistration() {
             found = await collection.findOne({ _id: new ObjectId(targetId) });
           } catch (e) {
             // Invalid ObjectId, try string
-            found = await collection.findOne({ _id: targetId });
+            found = await collection.findOne({ _id: targetId as any });
           }
           
           if (found) {

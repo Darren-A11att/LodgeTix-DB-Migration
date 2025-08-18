@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(process.cwd(), '../.env.local') });
 
 async function checkPaymentWithCharges(paymentIntentId: string) {
   const stripe = new Stripe(process.env.STRIPE_ACCOUNT_1_SECRET_KEY!, {
-    apiVersion: '2024-11-20.acacia'
+    apiVersion: '2025-07-30.basil'
   });
   
   console.log('='.repeat(80));
@@ -19,8 +19,8 @@ async function checkPaymentWithCharges(paymentIntentId: string) {
     // First, retrieve without expansion
     console.log('\n1️⃣ WITHOUT EXPANSION:');
     const paymentIntentBasic = await stripe.paymentIntents.retrieve(paymentIntentId);
-    console.log(`  Has charges field: ${paymentIntentBasic.charges ? 'YES' : 'NO'}`);
-    console.log(`  Charges value: ${JSON.stringify(paymentIntentBasic.charges)}`);
+    console.log(`  Has charges field: ${(paymentIntentBasic as any).charges ? 'YES' : 'NO'}`);
+    console.log(`  Charges value: ${JSON.stringify((paymentIntentBasic as any).charges)}`);
     
     // Now retrieve with charges expanded
     console.log('\n2️⃣ WITH CHARGES EXPANDED:');
@@ -28,16 +28,16 @@ async function checkPaymentWithCharges(paymentIntentId: string) {
       paymentIntentId,
       { expand: ['charges'] }
     );
-    console.log(`  Has charges field: ${paymentIntentExpanded.charges ? 'YES' : 'NO'}`);
+    console.log(`  Has charges field: ${(paymentIntentExpanded as any).charges ? 'YES' : 'NO'}`);
     
-    if (paymentIntentExpanded.charges) {
-      console.log(`  Charges type: ${typeof paymentIntentExpanded.charges}`);
-      console.log(`  Has data field: ${'data' in paymentIntentExpanded.charges}`);
+    if ((paymentIntentExpanded as any).charges) {
+      console.log(`  Charges type: ${typeof (paymentIntentExpanded as any).charges}`);
+      console.log(`  Has data field: ${'data' in (paymentIntentExpanded as any).charges}`);
       
-      if ('data' in paymentIntentExpanded.charges && paymentIntentExpanded.charges.data) {
-        console.log(`  Number of charges: ${paymentIntentExpanded.charges.data.length}`);
+      if ('data' in (paymentIntentExpanded as any).charges && (paymentIntentExpanded as any).charges.data) {
+        console.log(`  Number of charges: ${(paymentIntentExpanded as any).charges.data.length}`);
         
-        paymentIntentExpanded.charges.data.forEach((charge, i) => {
+        (paymentIntentExpanded as any).charges.data.forEach((charge: any, i: number) => {
           console.log(`\n  CHARGE ${i + 1}:`);
           console.log(`    ID: ${charge.id}`);
           console.log(`    Amount: $${(charge.amount / 100).toFixed(2)}`);

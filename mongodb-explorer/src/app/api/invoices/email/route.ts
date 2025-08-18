@@ -37,12 +37,12 @@ export async function POST(request: NextRequest) {
     
     // If functionName is not provided, try to get it from the database
     let finalFunctionName = functionName;
-    if (!finalFunctionName && invoice.functionId) {
-      console.log('📮 No functionName provided, attempting to fetch from database using functionId:', invoice.functionId);
+    if (!finalFunctionName && (invoice as any).functionId) {
+      console.log('📮 No functionName provided, attempting to fetch from database using functionId:', (invoice as any).functionId);
       try {
         const { db } = await connectMongoDB();
         const functionDoc = await db.collection('functions').findOne({ 
-          _id: new ObjectId(invoice.functionId) 
+          _id: new ObjectId((invoice as any).functionId) 
         });
         
         if (functionDoc && functionDoc.name) {

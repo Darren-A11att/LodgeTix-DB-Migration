@@ -294,6 +294,7 @@ export default function InvoicesListPage() {
           registration,
           invoice: invoiceData,
           matchConfidence,
+          isMatch: Boolean(registration || invoiceData),
           isProcessed: payment.invoiceCreated || false,
           isDeclined: payment.invoiceDeclined || false
         };
@@ -355,12 +356,12 @@ export default function InvoicesListPage() {
       return 'Manual Match';
     }
     
-    if (!match.matchDetails || !Array.isArray(match.matchDetails) || match.matchDetails.length === 0) {
+    if (!(match as any).matchDetails || !Array.isArray((match as any).matchDetails) || (match as any).matchDetails.length === 0) {
       return 'No Match';
     }
     
     // Find the highest weighted match type
-    const sortedDetails = [...match.matchDetails].sort((a, b) => b.weight - a.weight);
+    const sortedDetails = [...(match as any).matchDetails].sort((a, b) => b.weight - a.weight);
     const primaryMatch = sortedDetails[0];
     
     // Create display based on value type
@@ -377,7 +378,7 @@ export default function InvoicesListPage() {
     };
     
     const primaryType = typeDisplayMap[primaryMatch.valueType] || primaryMatch.valueType;
-    const matchCount = match.matchDetails.length;
+    const matchCount = (match as any).matchDetails.length;
     
     if (matchCount > 1) {
       return `${primaryType} +${matchCount - 1} more`;
@@ -422,7 +423,7 @@ export default function InvoicesListPage() {
       // Apply invoice status filter
       if (showProcessedOnly) return m.isProcessed;
       if (filterConfidence === -1) return !m.isProcessed && !m.isDeclined;
-      if (filterConfidence > 0) return m.matchConfidence >= filterConfidence;
+      if (filterConfidence > 0) return (m as any).matchConfidence >= filterConfidence;
       
       // Apply payment status filter
       if (filterPaymentStatus !== 'all') {
@@ -550,7 +551,7 @@ export default function InvoicesListPage() {
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-600">
-                {matches.filter(m => m.matchConfidence >= 80).length}
+                {matches.filter(m => (m as any).matchConfidence >= 80).length}
               </div>
               <div className="text-sm text-gray-600">Good Matches (80%+)</div>
             </div>
@@ -772,8 +773,8 @@ export default function InvoicesListPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getConfidenceColor(match.matchConfidence)}`}>
-                      {match.matchConfidence}%
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getConfidenceColor((match as any).matchConfidence)}`}>
+                      {(match as any).matchConfidence}%
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

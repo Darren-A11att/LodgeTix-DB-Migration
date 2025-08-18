@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const queueId = `QUEUE-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Generate confirmation number if not exists
-    const confirmationNumber = registrationData.confirmation_number || 
+    const confirmationNumber = (registrationData as any).confirmation_number || 
       generateConfirmationNumber(registrationData.registration_type);
     
     // Create queue item

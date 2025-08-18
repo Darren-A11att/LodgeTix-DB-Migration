@@ -18,6 +18,7 @@ import {
   createCustomerFromBookingContact
 } from './field-transform-utils';
 import { ReferenceDataService, PackageDetails } from './reference-data-service';
+import { SyncLogger, SyncConfiguration } from './sync-logger';
 
 interface PaymentProvider {
   name: string;
@@ -66,16 +67,25 @@ interface Contact {
   firstName: string;
   lastName: string;
   mobile: string;
-  email: string;
+  email: string; // Primary deduplication key
   address: string;
   state: string;
   postcode: string;
   country: string;
   relationships?: any;
   memberships?: any;
-  uniqueKey: string; // email + mobile + lastName + firstName
-  source: 'registration' | 'attendee';
+  uniqueKey: string; // Backup key: email + mobile + lastName + firstName
+  roles: Array<'customer' | 'attendee'>; // Track where this person appears
+  sources: Array<'registration' | 'attendee'>; // Legacy field for backward compatibility
   linkedPartnerId?: ObjectId;
+  // Reference tracking
+  customerRef?: ObjectId; // Link to customer record if they made bookings
+  attendeeRefs: ObjectId[]; // Links to attendee records where they attend
+  registrationRefs: ObjectId[]; // Links to all associated registrations
+  // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+  lastSeenAs: 'customer' | 'attendee'; // Most recent role seen
 }
 
 export class EnhancedPaymentSyncService {
@@ -87,9 +97,10 @@ export class EnhancedPaymentSyncService {
   private errorCount = 0;
   private skippedCount = 0;
   private logFilePath: string;
-  private processedContacts: Map<string, ObjectId> = new Map();
+  private processedContacts: Map<string, ObjectId> = new Map(); // Now keyed by email instead of uniqueKey
   private referenceDataService: ReferenceDataService | null = null;
   private syncRunId: string = `sync-${Date.now()}`;
+  private syncLogger: SyncLogger | null = null;
 
   constructor() {
     // Environment variables should already be loaded by parent scripts
@@ -258,59 +269,111 @@ export class EnhancedPaymentSyncService {
   }
 
   public async syncAllPayments(options: { limit?: number } = {}): Promise<void> {
-    this.writeToLog('\n=== STARTING ENHANCED PAYMENT SYNC ===');
-    this.writeToLog('Processing workflow:');
-    this.writeToLog('1. Import payment to import_payments (with field transformation)');
-    this.writeToLog('2. Fetch order/customer for Square payments');
-    this.writeToLog('3. Find registration in Supabase');
-    this.writeToLog('4. Update with charge ID for Stripe');
-    this.writeToLog('5. Import to import_registrations (with field transformation)');
-    this.writeToLog('6. Import attendees to import_attendees');
-    this.writeToLog('7. Import tickets to import_tickets');
-    this.writeToLog('8. Import contacts to import_contacts with deduplication');
-    this.writeToLog('9. Process booking contact as customer with registration metadata');
-    this.writeToLog('9. Selective sync to production collections based on field comparison\n');
-    
     const db = await this.connectToMongoDB();
-    await this.ensureCollections(db);
     
-    // Clear processed contacts map for fresh sync
-    this.processedContacts.clear();
+    // Initialize sync logger with configuration
+    const syncConfig: SyncConfiguration = {
+      providers: this.providers.map(p => p.name),
+      limit: options.limit,
+      dryRun: false,
+      options: options
+    };
     
-    for (const provider of this.providers) {
-      this.writeToLog(`\n━━━ Processing ${provider.name} ━━━`);
+    this.syncLogger = new SyncLogger(db, this.syncRunId, syncConfig);
+    await this.syncLogger.startSession('Enhanced Payment Sync Started');
+    
+    try {
+      // Legacy file logging (keeping for compatibility)
+      this.writeToLog('\n=== STARTING ENHANCED PAYMENT SYNC ===');
+      this.writeToLog('Processing workflow:');
+      this.writeToLog('1. Import payment to import_payments (with field transformation)');
+      this.writeToLog('2. Fetch order/customer for Square payments');
+      this.writeToLog('3. Find registration in Supabase');
+      this.writeToLog('4. Update with charge ID for Stripe');
+      this.writeToLog('5. Import to import_registrations (with field transformation)');
+      this.writeToLog('6. Import attendees to import_attendees');
+      this.writeToLog('7. Import tickets to import_tickets');
+      this.writeToLog('8. Import contacts to import_contacts with deduplication');
+      this.writeToLog('9. Process booking contact as customer with registration metadata');
+      this.writeToLog('9. Selective sync to production collections based on field comparison\n');
+      
+      await this.ensureCollections(db);
+      
+      // Clear processed contacts map for fresh sync (now email-based)
+      this.processedContacts.clear();
+      
+      // Log initialization
+      this.syncLogger.logAction('initialization', 'database', undefined, 'completed', 'Collections ensured and contacts map cleared');
+      
+      for (const provider of this.providers) {
+        this.writeToLog(`\n━━━ Processing ${provider.name} ━━━`);
+        const providerActionId = this.syncLogger.logAction('provider_processing', 'provider', provider.name, 'started', `Starting ${provider.name} processing`, provider.name);
+        
+        try {
+          if (provider.type === 'square') {
+            await this.processSquarePayments(provider, db, options);
+          } else if (provider.type === 'stripe') {
+            await this.processStripeCharges(provider, db, options);
+          }
+          
+          this.syncLogger.updateAction(providerActionId, 'completed', `${provider.name} processing completed successfully`);
+        } catch (error: any) {
+          this.writeToLog(`Error processing ${provider.name}: ${error.message}`);
+          this.errorCount++;
+          
+          this.syncLogger.logError('provider_processing', 'provider', error, provider.name, provider.name);
+          
+          await this.recordPaymentError(
+            'FAILED',
+            `Provider processing failed: ${error.message}`,
+            { id: provider.name, provider: provider.name },
+            db
+          );
+        }
+      }
+
+      // Perform selective sync from import collections to production collections
+      this.writeToLog('\n🔄 Starting selective production sync...');
+      const selectiveSyncActionId = this.syncLogger.logAction('selective_sync', 'production', undefined, 'started', 'Starting selective production sync');
       
       try {
-        if (provider.type === 'square') {
-          await this.processSquarePayments(provider, db, options);
-        } else if (provider.type === 'stripe') {
-          await this.processStripeCharges(provider, db, options);
-        }
+        await this.performSelectiveSync();
+        this.syncLogger.updateAction(selectiveSyncActionId, 'completed', 'Selective production sync completed');
       } catch (error: any) {
-        this.writeToLog(`Error processing ${provider.name}: ${error.message}`);
-        this.errorCount++;
-        await this.recordPaymentError(
-          'FAILED',
-          `Provider processing failed: ${error.message}`,
-          { id: provider.name, provider: provider.name },
-          db
-        );
+        this.syncLogger.logError('selective_sync', 'production', error);
+        throw error;
       }
+
+      // Run error verification as final step
+      const verificationActionId = this.syncLogger.logAction('error_verification', 'verification', undefined, 'started', 'Starting error verification');
+      
+      try {
+        await this.runErrorVerification();
+        this.syncLogger.updateAction(verificationActionId, 'completed', 'Error verification completed');
+      } catch (error: any) {
+        this.syncLogger.logError('error_verification', 'verification', error);
+        // Don't throw here as it's just verification
+      }
+
+      // Update statistics in sync logger
+      this.syncLogger.setTotalRecords(this.processedCount + this.skippedCount + this.errorCount);
+
+      this.writeToLog('\n=== SYNC COMPLETE ===');
+      this.writeToLog(`✅ Processed: ${this.processedCount}`);
+      this.writeToLog(`⏭️ Skipped: ${this.skippedCount}`);
+      this.writeToLog(`❌ Errors: ${this.errorCount}`);
+      this.writeToLog(`👥 Unique contacts: ${this.processedContacts.size}`);
+      this.writeToLog(`📊 Total: ${this.processedCount + this.skippedCount + this.errorCount}`);
+      
+      await this.syncLogger.endSession('completed', 'Enhanced payment sync completed successfully');
+      
+    } catch (error: any) {
+      if (this.syncLogger) {
+        this.syncLogger.logError('sync_session', 'session', error);
+        await this.syncLogger.endSession('failed', `Sync failed: ${error.message}`);
+      }
+      throw error;
     }
-
-    // Perform selective sync from import collections to production collections
-    this.writeToLog('\n🔄 Starting selective production sync...');
-    await this.performSelectiveSync();
-
-    // Run error verification as final step
-    await this.runErrorVerification();
-
-    this.writeToLog('\n=== SYNC COMPLETE ===');
-    this.writeToLog(`✅ Processed: ${this.processedCount}`);
-    this.writeToLog(`⏭️ Skipped: ${this.skippedCount}`);
-    this.writeToLog(`❌ Errors: ${this.errorCount}`);
-    this.writeToLog(`👥 Unique contacts: ${this.processedContacts.size}`);
-    this.writeToLog(`📊 Total: ${this.processedCount + this.skippedCount + this.errorCount}`);
   }
 
   /**
@@ -484,6 +547,8 @@ export class EnhancedPaymentSyncService {
   }
 
   private async processSingleSquarePayment(payment: any, provider: PaymentProvider, db: Db, square: SquareClient): Promise<void> {
+    const paymentActionId = this.syncLogger?.logAction('payment_processing', 'payment', payment.id, 'started', `Processing Square payment: ${payment.id}`, 'square');
+    
     try {
       this.writeToLog(`\n📝 Processing Square payment: ${payment.id}`);
       
@@ -585,22 +650,10 @@ export class EnhancedPaymentSyncService {
         if (duplicateTimePayments.length > 0) {
           this.writeToLog(`  ⚠️ Duplicate payment within time window detected - recording as error`);
           await this.recordPaymentError(
-            'payment',
-            payment.id,
-            'DUPLICATE',
+            'FAILED',
             `Duplicate Square payment ${payment.id} - previously processed at ${new Date(payment.updatedAt).toISOString()}`,
             payment,
-            { 
-              provider: 'square', 
-              source: 'time_window_duplicate_detection',
-              processingStage: 'duplicate_checking',
-              registrationSearchAttempted: false,
-              relatedDocuments: {
-                importPaymentId: payment.id,
-                orderId: payment.orderId,
-                customerId: payment.customerId
-              }
-            }
+            db
           );
           this.skippedCount++;
           return;
@@ -777,6 +830,13 @@ export class EnhancedPaymentSyncService {
         _shouldMoveToProduction: shouldMoveToProduction
       };
 
+      // Check if registration already exists in production collection
+      const existingProductionRegistration = await db.collection('registrations').findOne({ id: registration.id });
+      if (existingProductionRegistration) {
+        this.writeToLog(`  ✓ Registration already exists in production - skipping import`);
+        return;
+      }
+
       const registrationImport = createImportDocument(
         registrationImportData,
         'supabase',
@@ -805,9 +865,25 @@ export class EnhancedPaymentSyncService {
       const completionPrefix = shouldMoveToProduction ? '✅' : '📝';
       this.writeToLog(`  ${completionPrefix} Completed processing Square payment ${payment.id} (${shouldMoveToProduction ? 'production eligible' : 'import only'})`);
       
+      // Log success to sync logger
+      if (this.syncLogger && paymentActionId) {
+        this.syncLogger.updateAction(
+          paymentActionId, 
+          'completed', 
+          `Square payment processed successfully (${shouldMoveToProduction ? 'production eligible' : 'import only'})`,
+          { shouldMoveToProduction, amount: payment.amount, status: payment.status }
+        );
+      }
+      
     } catch (error: any) {
       this.writeToLog(`  ❌ Error processing Square payment ${payment.id}: ${error.message}`);
       this.errorCount++;
+      
+      // Log error to sync logger
+      if (this.syncLogger) {
+        this.syncLogger.logError('payment_processing', 'payment', error, payment.id, 'square', { payment });
+      }
+      
       await this.recordPaymentError(
         'FAILED',
         `Square payment processing failed: ${error.message}`,
@@ -866,6 +942,8 @@ export class EnhancedPaymentSyncService {
     db: Db,
     stripe: Stripe
   ): Promise<void> {
+    const chargeActionId = this.syncLogger?.logAction('payment_processing', 'payment', charge.id, 'started', `Processing Stripe charge: ${charge.id}`, 'stripe');
+    
     try {
       this.writeToLog(`\n📝 Processing charge: ${charge.id}`);
       
@@ -994,24 +1072,10 @@ export class EnhancedPaymentSyncService {
           this.errorCount++;
           const amount = charge.amount / 100;
           await this.recordPaymentError(
-            'payment',
-            charge.id,
             'UNMATCHED',
             `Stripe charge ${charge.id} has no payment intent ID - cannot find registration for $${amount} ${charge.currency}`,
             charge,
-            { 
-              provider: provider.name, 
-              source: 'charge_no_pi',
-              registrationSearchAttempted: false,
-              searchCriteria: {
-                paymentId: charge.id
-              },
-              processingStage: 'payment_intent_validation',
-              relatedDocuments: {
-                importPaymentId: charge.id,
-                customerId: charge.customer as string
-              }
-            }
+            db
           );
         } else if (charge.status === 'failed') {
           // Failed charges with no payment intent
@@ -1088,6 +1152,13 @@ export class EnhancedPaymentSyncService {
         _shouldMoveToProduction: shouldMoveToProduction
       };
 
+      // Check if registration already exists in production collection
+      const existingProductionRegistration = await db.collection('registrations').findOne({ id: registration.id });
+      if (existingProductionRegistration) {
+        this.writeToLog(`  ✓ Registration already exists in production - skipping import`);
+        return;
+      }
+
       const registrationImport = createImportDocument(
         registrationImportData,
         'supabase',
@@ -1116,46 +1187,83 @@ export class EnhancedPaymentSyncService {
       const completionPrefix = shouldMoveToProduction ? '✅' : '📝';
       this.writeToLog(`  ${completionPrefix} Completed processing charge ${charge.id} (${shouldMoveToProduction ? 'production eligible' : 'import only'})`);
       
+      // Log success to sync logger
+      if (this.syncLogger && chargeActionId) {
+        this.syncLogger.updateAction(
+          chargeActionId, 
+          'completed', 
+          `Stripe charge processed successfully (${shouldMoveToProduction ? 'production eligible' : 'import only'})`,
+          { shouldMoveToProduction, amount: charge.amount, status: charge.status, paid: charge.paid }
+        );
+      }
+      
     } catch (error: any) {
       this.writeToLog(`  ❌ Error processing charge ${charge.id}: ${error.message}`);
       this.errorCount++;
+      
+      // Log error to sync logger
+      if (this.syncLogger) {
+        this.syncLogger.logError('payment_processing', 'payment', error, charge.id, 'stripe', { charge });
+      }
+      
       await this.recordPaymentError(
-        'payment',
-        charge.id,
-        'PROCESSING_ERROR',
+        'FAILED',
         `Stripe charge processing failed: ${error.message}`,
         charge,
-        { 
-          provider: provider.name, 
-          source: 'charge_processing',
-          processingStage: 'charge_processing',
-          registrationSearchAttempted: false,
-          relatedDocuments: {
-            importPaymentId: charge.id,
-            customerId: charge.customer as string
-          }
-        }
+        db
       );
     }
   }
 
   private async processAttendeesTicketsAndContacts(registration: any, db: Db): Promise<void> {
     // Process booking contact first to import_contacts
+    let bookingContactId: ObjectId | null = null;
     if (registration.bookingContact) {
-      await this.processContact(registration.bookingContact, 'registration', db);
+      // Get registration ObjectId for reference linking
+      const registrationDoc = await db.collection('import_registrations').findOne({ id: registration.id });
+      const registrationRef = registrationDoc?._id;
+      
+      bookingContactId = await this.processContact(
+        registration.bookingContact, 
+        'registration', 
+        db,
+        registrationRef,
+        undefined, // no attendeeRef for booking contact
+        undefined  // customerRef will be set separately if needed
+      );
+    }
+
+    // Get the customer information from the updated registration
+    const updatedRegistration = await db.collection('import_registrations').findOne({ id: registration.id });
+    const customerUUID = updatedRegistration?.metadata?.customerUUID;
+    
+    // Get the customer data if we have the UUID
+    let customerData = null;
+    if (customerUUID) {
+      customerData = await db.collection('import_customers').findOne({ customerId: customerUUID });
+      if (customerData) {
+        this.writeToLog(`  ✓ Found customer data for ticket ownership: ${customerData.firstName} ${customerData.lastName}`);
+      }
     }
 
     // Process attendees
     const attendees = await this.fetchAttendeesByRegistration(registration.id, registration);
     this.writeToLog(`  ✓ Found ${attendees.length} attendee(s)`);
     
-    // Extract tickets from registration_data
-    const tickets = await this.fetchTicketsFromRegistration(registration.id, registration);
+    // Extract tickets from registration_data with customer info
+    const tickets = await this.fetchTicketsFromRegistration(registration.id, registration, customerData);
     this.writeToLog(`  ✓ Found ${tickets.length} ticket(s) in registration`);
     
     // Store tickets to import_tickets first with field transformation
     const ticketIds: ObjectId[] = [];
     for (const ticket of tickets) {
+      // Check if ticket already exists in production collection
+      const existingProductionTicket = await db.collection('tickets').findOne({ ticketId: ticket.ticketId });
+      if (existingProductionTicket) {
+        this.writeToLog(`    ✓ Ticket already exists in production - skipping: ${ticket.ticketId}`);
+        continue;
+      }
+
       const ticketImport = createImportDocument(
         ticket,
         'supabase',
@@ -1194,6 +1302,13 @@ export class EnhancedPaymentSyncService {
         eventTickets: attendeeTickets // Use camelCase for consistency
       };
       
+      // Check if attendee already exists in production collection
+      const existingProductionAttendee = await db.collection('attendees').findOne({ attendeeId: attendee.attendeeId });
+      if (existingProductionAttendee) {
+        this.writeToLog(`    ✓ Attendee already exists in production - skipping: ${attendee.attendeeId}`);
+        continue;
+      }
+
       const attendeeImport = createImportDocument(
         attendeeData,
         'supabase',
@@ -1207,7 +1322,19 @@ export class EnhancedPaymentSyncService {
       );
 
       // Process attendee as contact to import_contacts
-      await this.processContact(attendee, 'attendee', db);
+      const attendeeDoc = await db.collection('import_attendees').findOne({ attendeeId: attendee.attendeeId });
+      const attendeeRef = attendeeDoc?._id;
+      const registrationDoc = await db.collection('import_registrations').findOne({ id: registration.id });
+      const registrationRef = registrationDoc?._id;
+      
+      await this.processContact(
+        attendee, 
+        'attendee', 
+        db,
+        registrationRef,
+        attendeeRef,
+        undefined // customerRef not typically needed for attendees
+      );
     }
   }
 
@@ -1268,6 +1395,13 @@ export class EnhancedPaymentSyncService {
         'supabase-customer'
       );
 
+      // Check if customer already exists in production collection
+      const existingProductionCustomer = await db.collection('customers').findOne({ hash: customerData.hash });
+      if (existingProductionCustomer) {
+        this.writeToLog(`    ✓ Customer already exists in production - skipping: ${customerData.firstName} ${customerData.lastName}`);
+        return;
+      }
+
       // Remove registrations and updatedAt fields from customerImport to avoid conflicts
       const { registrations, updatedAt, ...customerImportWithoutConflicts } = customerImport;
 
@@ -1297,18 +1431,35 @@ export class EnhancedPaymentSyncService {
         this.writeToLog(`    ✓ Updated existing customer: ${customerData.firstName} ${customerData.lastName}`);
       }
 
-      // Update the registration to replace bookingContact with customer ObjectId
+      // Update the registration to replace bookingContact with customer ObjectId and store customerId
       if (customerId) {
         await db.collection('import_registrations').updateOne(
           { id: registration.id },
           {
             $set: {
               'registrationData.bookingContact': customerId,
-              'metadata.customerId': customerId
+              'metadata.customerId': customerId,
+              'metadata.customerUUID': customerData.customerId // Store the UUID customerId
             }
           }
         );
-        this.writeToLog(`    ✓ Updated registration with customer ObjectId`);
+        this.writeToLog(`    ✓ Updated registration with customer ObjectId and customerId: ${customerData.customerId}`);
+        
+        // Update the unified contact with customer reference
+        const contactEmail = (bookingContact.email || '').trim().toLowerCase();
+        if (contactEmail && this.processedContacts.has(contactEmail)) {
+          const contactId = this.processedContacts.get(contactEmail);
+          await db.collection('import_contacts').updateOne(
+            { _id: contactId },
+            {
+              $set: {
+                'data.customerRef': customerId,
+                'data.updatedAt': new Date()
+              }
+            }
+          );
+          this.writeToLog(`    ✓ Linked customer to unified contact: ${contactEmail}`);
+        }
       }
 
     } catch (error: any) {
@@ -1318,76 +1469,196 @@ export class EnhancedPaymentSyncService {
       // We'll log a simplified error in this case
       const errorData = { registrationId: registration.id, error: error.message };
       await this.recordPaymentError(
-        'customer',
-        registration.id || 'unknown',
-        'PROCESSING_ERROR',
+        'FAILED',
         `Customer processing failed: ${error.message}`,
         errorData,
-        { 
-          source: 'customer_processing',
-          processingStage: 'customer_creation',
-          registrationSearchAttempted: false,
-          relatedDocuments: {
-            registrationId: registration.id
-          }
-        }
+        db
       );
     }
   }
 
-  private async processContact(data: any, source: 'registration' | 'attendee', db: Db): Promise<void> {
+  private async processContact(data: any, source: 'registration' | 'attendee', db: Db, registrationRef?: ObjectId, attendeeRef?: ObjectId, customerRef?: ObjectId): Promise<ObjectId | null> {
+    // Validate email as primary deduplication key
+    const email = (data.email || '').trim().toLowerCase();
+    if (!email) {
+      this.writeToLog(`    ⚠️ Skipping contact with no email: ${data.firstName} ${data.lastName}`);
+      return null;
+    }
+
     // Extract contact fields
-    const contact: Contact = {
+    const contactData = {
       title: data.title || '',
       firstName: data.firstName || data.first_name || '',
       lastName: data.lastName || data.last_name || '',
       mobile: data.mobile || data.phone || '',
-      email: data.email || '',
+      email: email,
       address: data.address || '',
       state: data.state || '',
       postcode: data.postcode || '',
       country: data.country || '',
       relationships: data.relationships || {},
-      memberships: data.memberships || { grandLodge: '', lodge: '' },
-      uniqueKey: '',
-      source: source
+      memberships: data.memberships || { grandLodge: '', lodge: '' }
     };
 
-    // Generate unique key for deduplication
-    contact.uniqueKey = crypto.createHash('md5')
-      .update(`${contact.email}${contact.mobile}${contact.lastName}${contact.firstName}`)
+    // Generate unique key for backward compatibility
+    const uniqueKey = crypto.createHash('md5')
+      .update(`${contactData.email}${contactData.mobile}${contactData.lastName}${contactData.firstName}`)
       .digest('hex');
 
-    // Check if contact already processed
-    if (this.processedContacts.has(contact.uniqueKey)) {
-      this.writeToLog(`    ⏭️ Contact already processed: ${contact.firstName} ${contact.lastName}`);
-      return;
+    // Determine role based on source
+    const role: 'customer' | 'attendee' = source === 'registration' ? 'customer' : 'attendee';
+
+    // Check if contact already processed in this sync by email (primary key)
+    const processedContactId = this.processedContacts.get(email);
+    if (processedContactId) {
+      // Update existing contact with new role and references
+      await this.updateExistingContact(db, processedContactId, role, source, registrationRef, attendeeRef, customerRef);
+      this.writeToLog(`    🔄 Updated existing contact with new role '${role}': ${contactData.firstName} ${contactData.lastName}`);
+      return processedContactId;
+    }
+
+    // Check if contact exists in import collection by email
+    let existingContact = await db.collection('import_contacts').findOne({ 'data.email': email });
+    
+    // Fallback: check by uniqueKey for backward compatibility
+    if (!existingContact) {
+      existingContact = await db.collection('import_contacts').findOne({ 'data.uniqueKey': uniqueKey });
+    }
+
+    // Check if contact exists in production collection by email
+    let existingProductionContact = await db.collection('contacts').findOne({ email: email });
+    
+    // Fallback: check production by uniqueKey
+    if (!existingProductionContact) {
+      existingProductionContact = await db.collection('contacts').findOne({ uniqueKey: uniqueKey });
+    }
+
+    if (existingProductionContact) {
+      this.writeToLog(`    ✓ Contact already exists in production - skipping sync but tracking: ${contactData.firstName} ${contactData.lastName}`);
+      // Still track for this sync session
+      this.processedContacts.set(email, existingProductionContact._id);
+      return existingProductionContact._id;
+    }
+
+    const now = new Date();
+    let contactToSave: Contact;
+
+    if (existingContact) {
+      // Update existing contact with new role and references
+      const existingData = existingContact.data;
+      contactToSave = {
+        ...existingData,
+        // Update contact info with latest data (in case of changes)
+        title: contactData.title || existingData.title,
+        firstName: contactData.firstName || existingData.firstName,
+        lastName: contactData.lastName || existingData.lastName,
+        mobile: contactData.mobile || existingData.mobile,
+        address: contactData.address || existingData.address,
+        state: contactData.state || existingData.state,
+        postcode: contactData.postcode || existingData.postcode,
+        country: contactData.country || existingData.country,
+        relationships: { ...existingData.relationships, ...contactData.relationships },
+        memberships: { ...existingData.memberships, ...contactData.memberships },
+        // Merge roles
+        roles: Array.from(new Set([...(existingData.roles || []), role])),
+        sources: Array.from(new Set([...(existingData.sources || []), source])),
+        // Update references
+        customerRef: customerRef || existingData.customerRef,
+        attendeeRefs: Array.from(new Set([
+          ...(existingData.attendeeRefs || []),
+          ...(attendeeRef ? [attendeeRef] : [])
+        ])),
+        registrationRefs: Array.from(new Set([
+          ...(existingData.registrationRefs || []),
+          ...(registrationRef ? [registrationRef] : [])
+        ])),
+        updatedAt: now,
+        lastSeenAs: role
+      };
+      
+      this.writeToLog(`    🔄 Merging roles for existing contact: ${contactData.firstName} ${contactData.lastName} (${contactToSave.roles.join(', ')})`);
+    } else {
+      // Create new contact
+      contactToSave = {
+        ...contactData,
+        uniqueKey: uniqueKey,
+        roles: [role],
+        sources: [source],
+        customerRef: customerRef,
+        attendeeRefs: attendeeRef ? [attendeeRef] : [],
+        registrationRefs: registrationRef ? [registrationRef] : [],
+        createdAt: now,
+        updatedAt: now,
+        lastSeenAs: role
+      };
+
+      this.writeToLog(`    ✨ Creating new contact with role '${role}': ${contactData.firstName} ${contactData.lastName}`);
     }
 
     // Check for partner linking
     if (data.isPartner && data.partnerId) {
-      contact.linkedPartnerId = new ObjectId(data.partnerId);
+      contactToSave.linkedPartnerId = new ObjectId(data.partnerId);
     }
 
-    // Insert contact to import_contacts with field transformation
+    // Insert/update contact to import_contacts with field transformation
     const contactImport = createImportDocument(
-      contact,
+      contactToSave,
       'supabase',
       'supabase-contact'
     );
 
     const result = await db.collection('import_contacts').replaceOne(
-      { uniqueKey: contact.uniqueKey },
+      { 'data.email': email },
       contactImport,
       { upsert: true }
     );
 
-    const contactId = result.upsertedId || (await db.collection('import_contacts').findOne({ uniqueKey: contact.uniqueKey }))?._id;
+    const contactId = result.upsertedId || (await db.collection('import_contacts').findOne({ 'data.email': email }))?._id;
     
     if (contactId) {
-      this.processedContacts.set(contact.uniqueKey, contactId);
-      this.writeToLog(`    ✓ Processed contact: ${contact.firstName} ${contact.lastName}`);
+      this.processedContacts.set(email, contactId);
+      this.writeToLog(`    ✓ Processed unified contact: ${contactData.firstName} ${contactData.lastName} (roles: ${contactToSave.roles.join(', ')})`);
+      return contactId;
     }
+    
+    return null;
+  }
+
+  private async updateExistingContact(
+    db: Db, 
+    contactId: ObjectId, 
+    role: 'customer' | 'attendee', 
+    source: 'registration' | 'attendee',
+    registrationRef?: ObjectId,
+    attendeeRef?: ObjectId,
+    customerRef?: ObjectId
+  ): Promise<void> {
+    const updateFields: any = {
+      $addToSet: {
+        'data.roles': role,
+        'data.sources': source
+      },
+      $set: {
+        'data.updatedAt': new Date(),
+        'data.lastSeenAs': role
+      }
+    };
+
+    // Add references if provided
+    if (registrationRef) {
+      updateFields.$addToSet['data.registrationRefs'] = registrationRef;
+    }
+    if (attendeeRef) {
+      updateFields.$addToSet['data.attendeeRefs'] = attendeeRef;
+    }
+    if (customerRef) {
+      updateFields.$set['data.customerRef'] = customerRef;
+    }
+
+    await db.collection('import_contacts').updateOne(
+      { _id: contactId },
+      updateFields
+    );
   }
 
   private isTestPayment(charge: Stripe.Charge): boolean {
@@ -1490,9 +1761,9 @@ export class EnhancedPaymentSyncService {
         
         const attendeesWithFunctionNames = await Promise.all(
           attendeesFromData.map(async (attendee: any, index: number) => ({
-          // Core identifiers - use import-specific ID (let MongoDB auto-generate _id)
+          // Core identifiers - use clean UUIDs (let MongoDB auto-generate _id)
           // NO manual _id field - let MongoDB generate it automatically
-          attendeeId: `import_${registrationId}_attendee_${index}`, // Import-specific attendee ID
+          attendeeId: attendee.attendeeId || attendee.id || `${registrationId}_attendee_${index}`, // Use original attendeeId if available
           originalAttendeeId: attendee.attendeeId || attendee.id || `${registrationId}_attendee_${index}`, // Preserve original ID for reference
           
           // Name fields
@@ -1769,6 +2040,181 @@ export class EnhancedPaymentSyncService {
   }
 
   /**
+   * Expands package tickets in registration data
+   * @param tickets - Array of tickets that may contain packages
+   * @returns Array with package tickets expanded
+   */
+  private async expandRegistrationTickets(tickets: any[]): Promise<any[]> {
+    const expandedTickets = [];
+    
+    for (const ticket of tickets) {
+      if (ticket.isPackage === true) {
+        // Get package details and expand
+        const packageId = ticket.packageId || ticket.eventTicketId;
+        const packageDetails = await this.getPackageDetails(packageId);
+        
+        if (packageDetails?.includedItems) {
+          // Create individual tickets for each item in the package
+          for (const item of packageDetails.includedItems) {
+            const expandedTicket = {
+              id: `${ticket.id}_${item.eventTicketId}`,
+              eventTicketId: item.eventTicketId,
+              functionId: item.functionId,
+              attendeeId: ticket.attendeeId,
+              price: item.price || 0,
+              quantity: item.quantity || 1,
+              isFromPackage: true,
+              originalPackageId: packageId,
+              originalPackageTicketId: ticket.id
+            };
+            expandedTickets.push(expandedTicket);
+          }
+          this.writeToLog(`    📦 Expanded package ${packageId} into ${packageDetails.includedItems.length} tickets in registration`);
+        } else {
+          // If we can't expand, keep the original ticket but mark it
+          expandedTickets.push({
+            ...ticket,
+            couldNotExpand: true
+          });
+          this.writeToLog(`    ⚠️ Could not expand package ${packageId} - keeping original ticket`);
+        }
+      } else {
+        // Non-package ticket, keep as-is
+        expandedTickets.push(ticket);
+      }
+    }
+    
+    return expandedTickets;
+  }
+
+  /**
+   * Expands a package ticket into individual ticket items based on package contents
+   * This function ONLY expands packages - it does NOT create the final ticket structure
+   * @param packageTicket - The package ticket containing isPackage flag and packageId  
+   * @returns Array of expanded ticket items (raw data, not final ticket objects)
+   */
+  private async expandPackageIntoItems(packageTicket: any): Promise<any[]> {
+    try {
+      const packageId = packageTicket.packageId || packageTicket.eventTicketId || packageTicket.ticketId || packageTicket.id;
+      
+      if (!packageId) {
+        this.writeToLog(`    ⚠️ Package ticket missing packageId, returning original ticket`);
+        // Return the original ticket if we can't identify the package
+        return [packageTicket];
+      }
+      
+      this.writeToLog(`    🔍 Looking up package: ${packageId}`);
+      
+      // Get package details from reference data service
+      const packageDetails = await this.referenceDataService.getPackageDetails(packageId);
+      
+      if (!packageDetails || !packageDetails.includedItems || packageDetails.includedItems.length === 0) {
+        this.writeToLog(`    ⚠️ No package details or included items found for package ${packageId}`);
+        // Return the original ticket if we can't expand it
+        return [packageTicket];
+      }
+      
+      this.writeToLog(`    📦 Expanding package ${packageDetails.name} with ${packageDetails.includedItems.length} items`);
+      
+      const expandedItems: any[] = [];
+      
+      // Create a ticket item for each included item in the package
+      for (let i = 0; i < packageDetails.includedItems.length; i++) {
+        const item = packageDetails.includedItems[i];
+        
+        // Create an expanded ticket item that preserves the original ticket's data
+        // but replaces the package reference with the individual event ticket
+        const expandedItem = {
+          // Preserve all original ticket fields including attendeeId
+          ...packageTicket,
+          // Override with individual item details
+          eventTicketId: item.eventTicketId,
+          ticketId: `${packageTicket.ticketId || packageId}_item_${i}`,
+          price: item.price || 0,
+          quantity: item.quantity || 1,
+          // Mark that this came from a package
+          isPackage: false,
+          isFromPackage: true,
+          parentPackageId: packageId,
+          originalPackageTicket: packageTicket.ticketId || packageTicket.id
+        };
+        
+        expandedItems.push(expandedItem);
+      }
+      
+      this.writeToLog(`    ✓ Expanded package into ${expandedItems.length} individual items`);
+      return expandedItems;
+      
+    } catch (error) {
+      this.writeToLog(`    ❌ Error expanding package ticket: ${error}`);
+      // Return the original ticket if expansion fails
+      return [packageTicket];
+    }
+  }
+
+  /**
+   * DEPRECATED - Replaced with expandPackageIntoItems
+   * @deprecated
+   */
+  private async expandPackageTickets_OLD(packageTicket: any, ownerId: string): Promise<any[]> {
+    const expandedTickets: any[] = [];
+    
+    try {
+      // Get package details
+      const packageId = packageTicket.packageId || packageTicket.eventTicketId;
+      const packageDetails = await this.getPackageDetails(packageId);
+      
+      if (!packageDetails || !packageDetails.includedItems) {
+        this.writeToLog(`    ⚠️ No package details or included items found for package ${packageId}`);
+        // Return the original ticket if we can't expand it
+        return [{
+          ...packageTicket,
+          ownerId,
+          ownerType: 'individual'
+        }];
+      }
+      
+      this.writeToLog(`    📦 Expanding package ${packageDetails.name} with ${packageDetails.includedItems.length} items`);
+      
+      // Create a ticket for each included item
+      for (const item of packageDetails.includedItems) {
+        const expandedTicket = {
+          ticketId: `${packageTicket.ticketId || packageTicket.id}_${item.eventTicketId}`,
+          eventTicketId: item.eventTicketId,
+          functionId: item.functionId,
+          attendeeId: packageTicket.attendeeId,
+          ownerId,
+          ownerType: 'individual',
+          registrationId: packageTicket.registrationId,
+          status: packageTicket.status || 'active',
+          price: item.price || 0,
+          quantity: item.quantity || 1,
+          packageId: packageId,
+          isFromPackage: true,
+          originalPackageTicket: packageTicket.ticketId || packageTicket.id,
+          createdAt: packageTicket.createdAt || new Date(),
+          updatedAt: new Date()
+        };
+        
+        expandedTickets.push(expandedTicket);
+        this.writeToLog(`      ✅ Created ticket from package: ${expandedTicket.eventTicketId}`);
+      }
+      
+      this.writeToLog(`    📦 Expanded ${expandedTickets.length} tickets from package`);
+    } catch (error) {
+      this.writeToLog(`    ❌ Error expanding package tickets: ${error}`);
+      // Return the original ticket if expansion fails
+      return [{
+        ...packageTicket,
+        ownerId,
+        ownerType: 'individual'
+      }];
+    }
+    
+    return expandedTickets;
+  }
+
+  /**
    * Performs selective sync from import collections to production collections
    * Based on field-by-field comparison using timestamps and productionMeta
    */
@@ -1783,7 +2229,7 @@ export class EnhancedPaymentSyncService {
       { import: 'import_registrations', production: 'registrations', idField: 'id' },
       { import: 'import_attendees', production: 'attendees', idField: 'attendeeId' },
       { import: 'import_tickets', production: 'tickets', idField: 'ticketId' },
-      { import: 'import_contacts', production: 'contacts', idField: 'uniqueKey' },
+      { import: 'import_contacts', production: 'contacts', idField: 'email' }, // Changed to email for unified deduplication
       { import: 'import_customers', production: 'customers', idField: 'hash' }
     ];
 
@@ -1871,11 +2317,23 @@ export class EnhancedPaymentSyncService {
             continue;
           }
 
-          const { updateFields, hasChanges } = createSelectiveUpdate(
+          let { updateFields, hasChanges } = createSelectiveUpdate(
             importDoc,
             productionDoc,
             importMeta
           );
+
+          // Special handling for registrations - expand package tickets
+          if (mapping.production === 'registrations') {
+            if (updateFields.registrationData?.tickets) {
+              updateFields.registrationData.tickets = await this.expandRegistrationTickets(updateFields.registrationData.tickets);
+              hasChanges = true;
+            }
+            if (updateFields.registration_data?.tickets) {
+              updateFields.registration_data.tickets = await this.expandRegistrationTickets(updateFields.registration_data.tickets);
+              hasChanges = true;
+            }
+          }
 
           if (hasChanges) {
             // Update production document
@@ -1946,10 +2404,8 @@ export class EnhancedPaymentSyncService {
           if (eventTicket.importTicketId) {
             // Find the production ticket ObjectId for this import ticket
             const productionTicket = await db.collection('tickets').findOne({
-              _productionMeta: { 
-                $exists: true,
-                'productionObjectId': { $exists: true }
-              }
+              '_productionMeta': { $exists: true },
+              '_productionMeta.productionObjectId': { $exists: true }
             });
             
             // For now, just remove the importTicketId field since we need proper mapping logic
@@ -1966,15 +2422,10 @@ export class EnhancedPaymentSyncService {
         newDoc.ticketId = originalId;
       }
       
-      // Map owner/attendee references to original attendee IDs
-      if (newDoc.ownerId && newDoc.ownerId.startsWith('import_')) {
-        // Find the original attendee ID from the import_attendees collection
-        const importAttendee = await db.collection('import_attendees').findOne({ attendeeId: newDoc.ownerId });
-        if (importAttendee?.originalAttendeeId) {
-          newDoc.ownerId = importAttendee.originalAttendeeId;
-        }
-      }
+      // No mapping needed for ticketOwner.ownerId as it's already a clean customerId UUID
+      // ticketHolder.attendeeId is also already a clean UUID or empty string
       
+      // Map details.attendeeId if it exists (for backward compatibility)
       if (newDoc.details?.attendeeId && newDoc.details.attendeeId.startsWith('import_')) {
         // Find the original attendee ID from the import_attendees collection
         const importAttendee = await db.collection('import_attendees').findOne({ attendeeId: newDoc.details.attendeeId });
@@ -1988,7 +2439,15 @@ export class EnhancedPaymentSyncService {
     else if (mapping.production === 'registrations') {
       // Registrations keep their original IDs but need to update references
       // to attendees and tickets
-      // This will be handled in a separate step after all attendees/tickets are synced
+      // Also expand package tickets in registrationData
+      if (newDoc.registrationData?.tickets) {
+        newDoc.registrationData.tickets = await this.expandRegistrationTickets(newDoc.registrationData.tickets);
+      }
+      
+      // Same for registration_data (snake_case version)
+      if (newDoc.registration_data?.tickets) {
+        newDoc.registration_data.tickets = await this.expandRegistrationTickets(newDoc.registration_data.tickets);
+      }
     }
     else if (mapping.production === 'payments') {
       // Payments keep their original IDs
@@ -2006,13 +2465,13 @@ export class EnhancedPaymentSyncService {
     return newDoc;
   }
 
-  private async fetchTicketsFromRegistration(registrationId: string, registration?: any): Promise<any[]> {
+  private async fetchTicketsFromRegistration(registrationId: string, registration?: any, customerData?: any): Promise<any[]> {
     try {
       // Extract tickets from registration_data field - check both 'tickets' and 'selectedTickets'
-      const ticketsFromData = registration?.registration_data?.tickets || 
-                              registration?.registration_data?.selectedTickets || 
-                              registration?.registrationData?.tickets || 
-                              registration?.registrationData?.selectedTickets;
+      let ticketsFromData = registration?.registration_data?.tickets || 
+                           registration?.registration_data?.selectedTickets || 
+                           registration?.registrationData?.tickets || 
+                           registration?.registrationData?.selectedTickets;
       
       if (ticketsFromData && ticketsFromData.length > 0) {
         const ticketSource = registration?.registration_data?.tickets ? 'tickets' : 
@@ -2021,30 +2480,33 @@ export class EnhancedPaymentSyncService {
                             'selectedTickets (registrationData)';
         this.writeToLog(`    Extracting ${ticketsFromData.length} tickets from registration_data.${ticketSource}`);
         
-        // For each ticket, we need to fetch the event ticket details
-        const processedTickets = [];
-        
+        // STEP 1: First expand any package tickets into individual tickets
+        const expandedTicketsArray = [];
         for (const ticket of ticketsFromData) {
-          // Check for package tickets first
           if (ticket.isPackage === true) {
             this.writeToLog(`    📦 Package ticket detected: ${ticket.packageId || ticket.eventTicketId}`);
             
-            // Find the attendee index for this package ticket
-            const attendeeIndex = registration.registration_data?.attendees?.findIndex(
-              (a: any) => a.attendeeId === ticket.attendeeId || a.id === ticket.attendeeId
-            ) ?? 0;
-            
-            // Expand package into individual tickets
-            const expandedTickets = await this.expandPackageTickets(ticket, `import_${registrationId}_attendee_${attendeeIndex}`);
-            
-            // Add all expanded tickets to processed tickets
-            for (const expandedTicket of expandedTickets) {
-              processedTickets.push(expandedTicket);
-            }
-            
-            // Continue to next ticket (skip normal processing for package)
-            continue;
+            // Use the consolidated expandPackageIntoItems function
+            const expandedItems = await this.expandPackageIntoItems(ticket);
+            expandedTicketsArray.push(...expandedItems);
+          } else {
+            // Non-package ticket, keep as-is
+            expandedTicketsArray.push(ticket);
           }
+        }
+        
+        // Replace ticketsFromData with the expanded array
+        ticketsFromData = expandedTicketsArray;
+        
+        if (expandedTicketsArray.length !== ticketsFromData.length) {
+          this.writeToLog(`    ✓ Expanded tickets array now contains ${expandedTicketsArray.length} items`);
+        }
+        this.writeToLog(`    Total tickets after expansion: ${ticketsFromData.length}`);
+        
+        // STEP 2: Process all tickets (both original and expanded) through normal flow
+        const processedTickets = [];
+        
+        for (const ticket of ticketsFromData) {
           
           // Check what eventTicketId field is available and track which field was used
           let eventTicketId: string | undefined;
@@ -2084,35 +2546,31 @@ export class EnhancedPaymentSyncService {
             (a: any) => a.attendeeId === ticket.attendeeId || a.id === ticket.attendeeId
           ) ?? 0;
           
-          // Determine owner type and ID based on whether ticket has an attendee and registration type
-          const isLodgeRegistration = registration.registration_type === 'lodge' || registration.type === 'lodge';
+          // Determine ticket ownership and holder
           const hasAttendee = !!ticket.attendeeId;
           
-          let ownerType: string;
-          let ownerId: string;
+          // Create ticketOwner object - always based on the customer who purchased
+          const ticketOwner = {
+            ownerId: customerData?.customerId || '', // Use the UUID customerId
+            ownerType: customerData?.businessName ? 'organisation' : 'contact',
+            customerBusinessName: customerData?.businessName || null,
+            customerName: customerData ? `${customerData.firstName} ${customerData.lastName}`.trim() : null
+          };
           
-          if (hasAttendee) {
-            // Ticket is assigned to an attendee
-            ownerType = 'individual';
-            ownerId = `import_${registrationId}_attendee_${attendeeIndex}`;
-          } else if (isLodgeRegistration && (registration.lodge_id || registration.lodgeId)) {
-            // Lodge registration with unassigned ticket - owned by lodge
-            ownerType = 'lodge';
-            ownerId = registration.lodge_id || registration.lodgeId; // Use the lodge ID from registration
-          } else if (isLodgeRegistration && registration.organisation_id) {
-            // Fallback to organisation_id if lodge_id not available
-            ownerType = 'lodge';
-            ownerId = registration.organisation_id;
-          } else {
-            // Regular registration without attendee - owned by registration
-            ownerType = 'registration';
-            ownerId = registrationId;
-          }
+          // Create ticketHolder object - who actually holds/uses the ticket
+          const ticketHolder = {
+            attendeeId: hasAttendee ? (ticket.attendeeId || '') : '', // Use clean attendeeId or empty string
+            holderStatus: 'current' as const,
+            updatedDate: new Date()
+          };
+          
+          // Determine if this is a lodge registration for quantity calculation
+          const isLodgeRegistration = registration.registration_type === 'lodge' || registration.type === 'lodge';
           
           processedTickets.push({
-            // Core identifiers - use import-specific IDs (let MongoDB auto-generate _id)
+            // Core identifiers - use clean UUIDs without prefixes
             // NO manual _id field - we only use _id for MongoDB documents
-            ticketId: `import_${registrationId}_ticket_${ticketsFromData.indexOf(ticket)}`, // Import-specific ticket ID
+            ticketId: ticket.ticketId || ticket.id || `${registrationId}_ticket_${ticketsFromData.indexOf(ticket)}`, // Use original ticketId if available
             originalTicketId: ticket.id || ticket.ticketId || `${ticket.attendeeId || registrationId}-${eventTicketId}`, // Preserve original ID
             eventTicketId: eventTicketId, // Reference to constant collection (allowed)
             ticketNumber: ticket.ticketNumber || `TKT-${Date.now()}${ticketsFromData.indexOf(ticket)}`,
@@ -2133,9 +2591,9 @@ export class EnhancedPaymentSyncService {
               ? (ticket.quantity || Math.round((registration.subtotal || registration.total_amount_paid || 0) / 115))
               : 1,
             
-            // Owner info - properly set based on ticket assignment and registration type
-            ownerType: ownerType,
-            ownerId: ownerId,
+            // Ticket ownership and holder
+            ticketOwner: ticketOwner,
+            ticketHolder: ticketHolder,
             
             // Status - based on payment status (paid or completed = sold)
             status: (registration.payment_status === 'paid' || registration.payment_status === 'completed') ? 'sold' : 
@@ -2146,9 +2604,9 @@ export class EnhancedPaymentSyncService {
             
             // Details
             details: {
-              registrationId: registration.registration_id || registrationId, // This is OK - within same import collection
+              registrationId: registration.registration_id || registrationId, // Clean UUID
               bookingContactId: registration.booking_contact_id || null,
-              attendeeId: hasAttendee ? `import_${registrationId}_attendee_${attendeeIndex}` : null, // Link to import attendee only if has attendee
+              attendeeId: hasAttendee ? (ticket.attendeeId || null) : null, // Use clean attendeeId
               originalAttendeeId: ticket.attendeeId || null, // Preserve original
               isPackage: ticket.isPackage || false,
               // No invoice yet - will be created when invoice is actually generated
@@ -2201,12 +2659,10 @@ export class EnhancedPaymentSyncService {
   }
 
   /**
-   * Expands a package ticket into individual tickets based on the package's includedItems
-   * @param packageTicket - The package ticket object
-   * @param attendeeId - The attendee ID who owns this package
-   * @returns Array of individual ticket objects
+   * DEPRECATED - Second duplicate function
+   * @deprecated
    */
-  private async expandPackageTickets(packageTicket: any, attendeeId: string): Promise<any[]> {
+  private async expandPackageTickets_OLD2(packageTicket: any, attendeeId: string): Promise<any[]> {
     try {
       const packageId = packageTicket.packageId || packageTicket.eventTicketId || packageTicket.ticketId;
       

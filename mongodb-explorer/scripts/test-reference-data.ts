@@ -127,7 +127,7 @@ async function testReferenceData() {
     console.log('\n📊 Cache Statistics:');
     console.log('───────────────────');
     console.log(`  Entries: ${cacheStats.size}`);
-    console.log(`  Collections cached: ${cacheStats.collections.join(', ')}`);
+    console.log(`  Collections cached: ${cacheStats.keys.join(', ')}`);
     
     // Test 7: Run a quick sync test
     console.log('\n🔄 Testing in Sync Context:');

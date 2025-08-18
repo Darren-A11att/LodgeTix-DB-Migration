@@ -24,11 +24,10 @@ async function findTestRegistration() {
     console.log('\n🔍 Looking for registrations with similar _id...');
     
     // Try to find registrations that might match
-    const registrations = await testDb.collection('registrations').find({
-      _id: { $regex: "6886bd91bc34c2425617c25e" }
-    }).limit(5).toArray();
+    const registrations = await testDb.collection('registrations').find({}).limit(100).toArray();
+    const filtered = registrations.filter(r => r._id?.toString().includes("6886bd91bc34c2425617c25e"));
     
-    if (registrations.length === 0) {
+    if (filtered.length === 0) {
       console.log('❌ No registrations found with similar _id');
       
       // Let's check what registrations exist
@@ -43,8 +42,8 @@ async function findTestRegistration() {
         console.log('');
       });
     } else {
-      console.log(`✅ Found ${registrations.length} matching registrations:`);
-      registrations.forEach((reg, index) => {
+      console.log(`✅ Found ${filtered.length} matching registrations:`);
+      filtered.forEach((reg, index) => {
         console.log(`Registration ${index + 1}:`);
         console.log(`  _id: ${reg._id}`);
         console.log(`  registrationId: ${reg.registrationId || 'N/A'}`);

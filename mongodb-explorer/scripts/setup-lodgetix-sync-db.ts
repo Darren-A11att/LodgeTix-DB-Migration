@@ -1,7 +1,9 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+import { MongoClient, ServerApiVersion } from 'mongodb';
+import dotenv from 'dotenv';
+
 // Load environment variables from .env.explorer ONLY
 // STANDARDIZED: All sync scripts use .env.explorer as the single source of truth
-require('dotenv').config({ path: '.env.explorer' });
+dotenv.config({ path: '.env.explorer' });
 console.log('Loading environment from: .env.explorer');
 
 async function setupLodgetixDatabase() {

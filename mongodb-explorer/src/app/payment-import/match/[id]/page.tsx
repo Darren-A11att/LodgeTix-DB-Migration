@@ -293,7 +293,7 @@ export default function PaymentMatchingPage() {
                 <Label className="text-sm text-muted-foreground mb-2 block">Payment Gateway Response</Label>
                 <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
                   <pre className="text-xs font-mono whitespace-pre-wrap break-words">
-                    {JSON.stringify(payment.paymentGatewayData || payment.rawSquareData || {}, null, 2)}
+                    {JSON.stringify((payment as any).paymentGatewayData || (payment as any).rawSquareData || {}, null, 2)}
                   </pre>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function PaymentMatchingPage() {
               <TabsTrigger value="manual">Manual Entry</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="search" className="space-y-4">
+            <TabsContent className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Search Criteria</CardTitle>

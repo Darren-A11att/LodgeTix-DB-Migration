@@ -25,9 +25,9 @@ export async function POST(
       );
     }
     
-    if (queueItem.importStatus === 'imported') {
+    if (queueItem.importStatus === 'processed') {
       return NextResponse.json(
-        { error: 'Item already imported' },
+        { error: 'Item already processed' },
         { status: 400 }
       );
     }
@@ -42,7 +42,7 @@ export async function POST(
     // Update status to processing
     await db.collection<ImportQueueItem>('import_queue').updateOne(
       { queueId: id },
-      { $set: { importStatus: 'processing' } }
+      { $set: { importStatus: 'pending' as any } }
     );
     
     try {
@@ -137,7 +137,7 @@ export async function POST(
       if (!existingRegistration) {
         // Try to find by ID
         existingRegistration = await db.collection('registrations').findOne({
-          _id: queueItem.supabaseRegistrationId
+          _id: new ObjectId(queueItem.supabaseRegistrationId)
         });
       }
       
@@ -218,7 +218,7 @@ export async function POST(
         { queueId: id },
         { 
           $set: { 
-            importStatus: 'imported',
+            importStatus: 'processed',
             importedAt: new Date(),
             generatedPaymentId: paymentId,
             generatedRegistrationId: registrationId

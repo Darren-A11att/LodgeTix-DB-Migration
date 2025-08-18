@@ -36,30 +36,22 @@ async function fetchAllSquarePayments() {
     // Try to extract cursor from the raw response
     cursor = undefined; // Reset cursor
     
-    // Method 1: Check if SDK has built-in pagination
-    if (response._hasNextPage && typeof response._hasNextPage === 'function') {
-      const hasNext = response._hasNextPage();
-      console.log(`  SDK hasNextPage: ${hasNext}`);
+    // Method 1: Check if SDK has built-in pagination (avoiding private properties)
+    if (response.data && response.data.length > 0) {
+      console.log(`  Found ${response.data.length} payments on this page`);
       
-      if (hasNext && response.loadNextPage) {
-        // Load next page using SDK method
-        const nextResponse = await response.loadNextPage();
-        if (nextResponse.data && nextResponse.data.length > 0) {
-          pageNum++;
-          const nextPayments = nextResponse.data;
-          allPayments.push(...nextPayments);
-          console.log(`Page ${pageNum}: ${nextPayments.length} payments (via loadNextPage)`);
-          
-          // Check for more pages
-          if (nextResponse._hasNextPage && nextResponse._hasNextPage()) {
-            const thirdResponse = await nextResponse.loadNextPage();
-            if (thirdResponse.data && thirdResponse.data.length > 0) {
-              pageNum++;
-              const thirdPayments = thirdResponse.data;
-              allPayments.push(...thirdPayments);
-              console.log(`Page ${pageNum}: ${thirdPayments.length} payments (via loadNextPage)`);
-            }
+      // Try to use loadNextPage method if available
+      if ((response as any).loadNextPage && typeof (response as any).loadNextPage === 'function') {
+        try {
+          const nextResponse = await (response as any).loadNextPage();
+          if (nextResponse.data && nextResponse.data.length > 0) {
+            pageNum++;
+            const nextPayments = nextResponse.data;
+            allPayments.push(...nextPayments);
+            console.log(`Page ${pageNum}: ${nextPayments.length} payments (via loadNextPage)`);
           }
+        } catch (error) {
+          console.log(`  No more pages available via loadNextPage`);
         }
         break; // Exit loop since we used SDK pagination
       }

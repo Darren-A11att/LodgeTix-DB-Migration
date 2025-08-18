@@ -143,7 +143,7 @@ async function createTroyQuimpoRegistration() {
     console.log('✅ Registration created successfully!');
     console.log(`   ID: ${createdRegistration[0]?.id || 'Unknown'}`);
     console.log(`   Confirmation: ${registrationData.confirmation_number}`);
-    console.log(`   Amount: $${registrationData.total_amount} ${registrationData.currency}`);
+    console.log(`   Amount: $${registrationData.total_amount_paid}`);
     
     // Create ticket record
     console.log('\n🎫 Creating ticket record...');
@@ -195,8 +195,7 @@ async function createTroyQuimpoRegistration() {
       console.log('✅ Ticket created successfully!');
       console.log(`   Ticket ID: ${createdTicket[0]?.id || 'Unknown'}`);
       console.log(`   Ticket Number: ${ticketData.ticket_number}`);
-      console.log(`   Quantity: ${ticketData.quantity}`);
-      console.log(`   Total Value: $${ticketData.total_price}`);
+      console.log(`   Price: $${ticketData.price_paid}`);
     }
     
     // Update the error_payments collection to mark this as resolved

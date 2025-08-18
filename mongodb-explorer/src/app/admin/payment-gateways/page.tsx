@@ -73,7 +73,7 @@ export default function PaymentGatewaysPage() {
       <DataTable 
         collection="payment_gateways"
         columns={columns}
-        searchableFields={['name', 'code', 'provider']}
+        searchFields={['name', 'code', 'provider']}
       />
     </div>
   );

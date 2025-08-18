@@ -91,10 +91,10 @@ function getPortConfig() {
 async function startDevServers() {
   log('🚀 Starting MongoDB Explorer...', 'blue');
   
-  // Change to mongodb-explorer directory and run npm dev
+  // Change to mongodb-explorer directory and run npm dev:no-sync
   const mongodbExplorerPath = path.join(__dirname, '..', 'mongodb-explorer');
   
-  const devProcess = spawn('npm', ['run', 'dev'], {
+  const devProcess = spawn('npm', ['run', 'dev:no-sync'], {
     stdio: 'inherit',
     cwd: mongodbExplorerPath,
     env: process.env,

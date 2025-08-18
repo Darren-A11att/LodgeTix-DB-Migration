@@ -60,6 +60,53 @@ async function runSync() {
   });
 }
 
+async function killPortProcesses() {
+  console.log('🧹 Cleaning up existing processes on ports 3005 and 3006...');
+  
+  const ports = [3005, 3006];
+  
+  for (const port of ports) {
+    await new Promise((resolve) => {
+      // Use lsof to find process using the port
+      const findProcess = spawn('lsof', ['-ti', `:${port}`], {
+        shell: true
+      });
+      
+      let pid = '';
+      
+      findProcess.stdout.on('data', (data) => {
+        pid += data.toString().trim();
+      });
+      
+      findProcess.on('close', (code) => {
+        if (pid) {
+          console.log(`  Found process ${pid} on port ${port}, killing it...`);
+          try {
+            process.kill(pid, 'SIGTERM');
+            console.log(`  ✅ Killed process on port ${port}`);
+          } catch (err) {
+            // Process might have already exited
+            console.log(`  ⚠️  Process on port ${port} already gone`);
+          }
+        } else {
+          console.log(`  ✓ Port ${port} is available`);
+        }
+        resolve();
+      });
+      
+      findProcess.on('error', () => {
+        // lsof might not be available or no process found
+        console.log(`  ✓ Port ${port} appears to be available`);
+        resolve();
+      });
+    });
+  }
+  
+  // Give a moment for processes to fully terminate
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  console.log('✅ Ports cleaned up\n');
+}
+
 async function startDevServer() {
   console.log('🔧 Starting Next.js development server...');
   
@@ -90,6 +137,9 @@ async function startDevServer() {
 
 async function main() {
   try {
+    // Kill any existing processes on our ports
+    await killPortProcesses();
+    
     // Run sync first
     await runSync();
     

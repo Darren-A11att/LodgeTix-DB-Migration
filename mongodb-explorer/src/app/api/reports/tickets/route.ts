@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectMongoDB } from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export async function GET(request: NextRequest) {
   try {
-    const { db } = await connectMongoDB();
+    const databaseParam = request.nextUrl.searchParams.get('database');
+    const { db } = await connectToDatabase(databaseParam || undefined);
     
-    console.log('Fetching tickets report data...');
+    console.log('Fetching tickets report data from database:', databaseParam || 'default');
     
     // Get all tickets
     const ticketsCollection = db.collection('tickets');
@@ -13,12 +14,25 @@ export async function GET(request: NextRequest) {
     
     console.log(`Found ${tickets.length} tickets`);
     
+    // Log sample ticket structure
+    if (tickets.length > 0) {
+      console.log('Sample ticket structure:', {
+        ownerType: tickets[0].ownerType,
+        ownerId: tickets[0].ownerId,
+        registrationId: tickets[0].registrationId,
+        price: tickets[0].price,
+        eventName: tickets[0].eventName,
+        name: tickets[0].name
+      });
+    }
+    
     // Get related collections
     const attendeesCollection = db.collection('attendees');
     const lodgesCollection = db.collection('lodges');
     const customersCollection = db.collection('customers');
     const paymentsCollection = db.collection('payments');
     const registrationsCollection = db.collection('registrations');
+    const grandLodgesCollection = db.collection('grandLodges');
     
     // Process each ticket
     const processedTickets = await Promise.all(tickets.map(async (ticket) => {
@@ -27,9 +41,16 @@ export async function GET(request: NextRequest) {
       let lodgeNameNumber = '';
       let partnerOfName = '';
       
-      // Look up owner based on type
-      if (ticket.ownerType === 'attendee' && ticket.ownerId) {
+      // Look up owner based on type using correct ID field matching
+      // Handle both 'attendee' and 'individual' as attendee types
+      if ((ticket.ownerType === 'attendee' || ticket.ownerType === 'individual') && ticket.ownerId) {
+        // For attendee/individual type, match ownerId against attendeeId field
         const attendee = await attendeesCollection.findOne({ attendeeId: ticket.ownerId });
+        
+        // Debug logging
+        if (!attendee) {
+          console.log(`No attendee found for attendeeId: ${ticket.ownerId}`);
+        }
         if (attendee) {
           // Format owner name based on attendee type
           if (attendee.attendeeType === 'mason') {
@@ -51,18 +72,27 @@ export async function GET(request: NextRequest) {
           // Get attendee type from attendee document
           attendeeType = attendee.attendeeType || '';
           
-          // Get lodge name and number
+          // Get lodge name and number from attendee
           let partnerAttendee = null;
           
-          // Look up partner information first (we'll need it for lodge info too)
-          if (attendee.partner || attendee.partnerOf) {
-            const partnerAttendeeId = attendee.partner || attendee.partnerOf;
-            partnerAttendee = await attendeesCollection.findOne({ attendeeId: partnerAttendeeId });
+          // Look up partner information
+          // First check 'partner' field, then fall back to 'partnerOf' field
+          let partnerAttendeeId = null;
+          if (attendee.partner) {
+            // Use partner field if it exists
+            partnerAttendeeId = attendee.partner;
+          } else if (attendee.partnerOf) {
+            // Fall back to partnerOf field if partner is null
+            partnerAttendeeId = attendee.partnerOf;
+          }
+          
+          if (partnerAttendeeId) {
+            // The partner/partnerOf fields contain the original Supabase IDs
+            // So we need to look up by originalAttendeeId, not attendeeId
+            partnerAttendee = await attendeesCollection.findOne({ originalAttendeeId: partnerAttendeeId });
             if (partnerAttendee) {
-              const partnerName = `${partnerAttendee.title || ''} ${partnerAttendee.firstName || ''} ${partnerAttendee.lastName || ''} ${partnerAttendee.suffix || ''}`.trim();
-              // Use relationship from the partner attendee
-              const relationship = partnerAttendee.relationship || '';
-              partnerOfName = relationship ? `${partnerName} (${relationship})` : partnerName;
+              // Format partner name: title firstName lastName suffix
+              partnerOfName = `${partnerAttendee.title || ''} ${partnerAttendee.firstName || ''} ${partnerAttendee.lastName || ''} ${partnerAttendee.suffix || ''}`.trim();
             }
           }
           
@@ -84,47 +114,82 @@ export async function GET(request: NextRequest) {
               lodgeNameNumber = parts.join(' | ');
             }
           }
-        } else {
-          // Fallback: check customers collection
-          const customer = await customersCollection.findOne({ attendeeId: ticket.ownerId });
-          if (customer) {
-            ownerName = customer.name || '';
-          }
         }
       } else if (ticket.ownerType === 'lodge' && ticket.ownerId) {
+        // For lodge type, match ownerId against lodgeId field
         const lodge = await lodgesCollection.findOne({ lodgeId: ticket.ownerId });
+        
+        // Debug logging
+        if (!lodge) {
+          console.log(`No lodge found for lodgeId: ${ticket.ownerId}`);
+        }
         if (lodge) {
           ownerName = lodge.name || '';
+          // For lodge owners, set the lodge name/number
           lodgeNameNumber = `${lodge.name || ''} ${lodge.number || ''}`.trim();
+          // Lodge type doesn't have attendeeType or partnerOf
+          attendeeType = 'lodge';
+        }
+      } else if (ticket.ownerType === 'registration' && ticket.ownerId) {
+        // For registration type, the ownerId is the registrationId
+        // We'll get the owner info from the registration's booking contact
+        const registration = await registrationsCollection.findOne({ registrationId: ticket.ownerId });
+        if (registration) {
+          // Try to get the booking contact name
+          if (registration.bookingContact) {
+            ownerName = `${registration.bookingContact.firstName || ''} ${registration.bookingContact.lastName || ''}`.trim();
+          } else if (registration.contactName) {
+            ownerName = registration.contactName;
+          }
+          attendeeType = 'registration';
         }
       }
       
-      // Look up payment status
-      let paymentStatus = 'unknown';
-      if (ticket.details?.paymentId) {
-        const payment = await paymentsCollection.findOne({ paymentId: ticket.details.paymentId });
-        if (payment) {
-          paymentStatus = payment.status || 'unknown';
-        }
-      }
-      
-      // Look up registration for confirmation number using details.registrationId
+      // Look up registration using ticket.details.registrationId for all registration-related data
       let confirmationNumber = '';
-      if (ticket.details?.registrationId) {
-        const registration = await registrationsCollection.findOne({ registrationId: ticket.details.registrationId });
+      let invoiceNumber = '';
+      let paymentStatus = 'unknown';
+      let grandLodgeAbbreviation = '';
+      let registrationDate = '';
+      
+      // Use details.registrationId first, fall back to top-level registrationId
+      const registrationId = ticket.details?.registrationId || ticket.registrationId;
+      
+      if (registrationId) {
+        const registration = await registrationsCollection.findOne({ registrationId: registrationId });
         if (registration) {
           confirmationNumber = registration.confirmationNumber || '';
-        }
-      } else if (ticket.registrationId) {
-        // Fallback to top-level registrationId if details.registrationId doesn't exist
-        const registration = await registrationsCollection.findOne({ registrationId: ticket.registrationId });
-        if (registration) {
-          confirmationNumber = registration.confirmationNumber || '';
+          
+          // Get registration date from registration.createdAt
+          registrationDate = registration.createdAt || registration.registrationDate || '';
+          
+          // Get invoice number from registration
+          invoiceNumber = registration.invoiceNumber || registration.invoice?.invoiceNumber || '';
+          
+          // Get payment status from registration or related payment
+          if (registration.paymentStatus) {
+            paymentStatus = registration.paymentStatus;
+          } else if (registration.paymentId) {
+            const payment = await paymentsCollection.findOne({ paymentId: registration.paymentId });
+            if (payment) {
+              paymentStatus = payment.status || 'unknown';
+            }
+          }
+          
+          // Get grandLodgeId from registrationData.attendees and look up abbreviation
+          if (registration.registrationData?.attendees && Array.isArray(registration.registrationData.attendees)) {
+            // Look for the first attendee with a grandLodgeId
+            const attendeeWithGL = registration.registrationData.attendees.find(att => att.grandLodgeId);
+            if (attendeeWithGL && attendeeWithGL.grandLodgeId) {
+              // Look up the grand lodge to get the abbreviation
+              const grandLodge = await grandLodgesCollection.findOne({ grandLodgeId: attendeeWithGL.grandLodgeId });
+              if (grandLodge) {
+                grandLodgeAbbreviation = grandLodge.abbreviation || '';
+              }
+            }
+          }
         }
       }
-      
-      // Get invoice number from ticket details
-      const invoiceNumber = ticket.details?.invoice?.invoiceNumber || '';
       
       return {
         ticketNumber: ticket._id?.toString() || '',
@@ -134,14 +199,15 @@ export async function GET(request: NextRequest) {
         ownerType: ticket.ownerType || '',
         ownerName: ownerName,
         ownerId: ticket.ownerId || '',
-        attendeeType: attendeeType || ticket.attendeeType || '',
-        partnerOfName: partnerOfName || ticket.partnerOfName || '',
-        lodgeNameNumber: lodgeNameNumber || ticket.lodgeNameNumber || '',
+        attendeeType: attendeeType,
+        partnerOfName: partnerOfName,
+        lodgeNameNumber: lodgeNameNumber,
+        grandLodge: grandLodgeAbbreviation,
         confirmationNumber: confirmationNumber,
         invoiceNumber: invoiceNumber,
         paymentStatus: paymentStatus,
-        registrationId: ticket.registrationId || '',
-        registrationDate: ticket.createdAt || ''
+        registrationId: registrationId || '',
+        registrationDate: registrationDate
       };
     }));
     
@@ -157,7 +223,7 @@ export async function GET(request: NextRequest) {
     
     if (format === 'csv') {
       // CSV export
-      const headers = ['Ticket Number', 'Name', 'Quantity', 'Price', 'Owner Type', 'Owner Name', 'Attendee Type', 'Partner Of', 'Lodge Name/Number', 'Confirmation Number', 'Invoice Number', 'Payment Status'];
+      const headers = ['Ticket Number', 'Event Name', 'Quantity', 'Price', 'Owner Type', 'Owner Name', 'Attendee Type', 'Partner Of', 'Lodge Name/Number', 'Grand Lodge', 'Confirmation Number', 'Invoice Number', 'Payment Status', 'Registration Date'];
       const csvContent = [
         headers.join(','),
         ...processedTickets.map(t => [
@@ -170,9 +236,11 @@ export async function GET(request: NextRequest) {
           t.attendeeType || '',
           `"${(t.partnerOfName || '').replace(/"/g, '""')}"`,
           `"${(t.lodgeNameNumber || '').replace(/"/g, '""')}"`,
+          t.grandLodge || '',
           t.confirmationNumber || '',
           t.invoiceNumber || '',
-          t.paymentStatus || ''
+          t.paymentStatus || '',
+          t.registrationDate || ''
         ].join(','))
       ].join('\n');
       

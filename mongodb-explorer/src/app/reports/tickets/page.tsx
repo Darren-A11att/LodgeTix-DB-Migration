@@ -18,6 +18,7 @@ interface Ticket {
   attendeeType: string;
   partnerOfName: string;
   lodgeNameNumber: string;
+  grandLodge: string;
   confirmationNumber: string;
   invoiceNumber: string;
   paymentStatus: string;
@@ -110,7 +111,7 @@ export default function TicketsReportPage() {
   };
 
   const exportToCSV = () => {
-    const headers = ['Ticket Number', 'Name', 'Quantity', 'Price', 'Owner Type', 'Owner Name', 'Attendee Type', 'Partner Of', 'Lodge Name/Number', 'Confirmation Number', 'Invoice Number', 'Payment Status'];
+    const headers = ['Ticket Number', 'Event Name', 'Quantity', 'Price', 'Owner Type', 'Owner Name', 'Attendee Type', 'Partner Of', 'Lodge Name/Number', 'Grand Lodge', 'Confirmation Number', 'Invoice Number', 'Payment Status', 'Registration Date'];
     const csvContent = [
       headers.join(','),
       ...filteredTickets.map(t => [
@@ -123,9 +124,11 @@ export default function TicketsReportPage() {
         t.attendeeType || '',
         `"${(t.partnerOfName || '').replace(/"/g, '""')}"`,
         `"${(t.lodgeNameNumber || '').replace(/"/g, '""')}"`,
+        t.grandLodge || '',
         t.confirmationNumber || '',
         t.invoiceNumber || '',
-        t.paymentStatus || ''
+        t.paymentStatus || '',
+        t.registrationDate || ''
       ].join(','))
     ].join('\n');
     
@@ -293,7 +296,7 @@ export default function TicketsReportPage() {
                   Ticket Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  Event Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Qty
@@ -317,6 +320,9 @@ export default function TicketsReportPage() {
                   Lodge Name/Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Grand Lodge
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Confirmation
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -325,12 +331,15 @@ export default function TicketsReportPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Payment Status
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Registration Date
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredTickets.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
                     No tickets found
                   </td>
                 </tr>
@@ -397,6 +406,9 @@ export default function TicketsReportPage() {
                       {ticket.lodgeNameNumber || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {ticket.grandLodge || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {ticket.confirmationNumber ? (
                         <Link
                           href={`/collections/registrations/documents/${ticket.registrationId}`}
@@ -421,6 +433,14 @@ export default function TicketsReportPage() {
                       }`}>
                         {ticket.paymentStatus || 'unknown'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {ticket.registrationDate ? 
+                        new Date(ticket.registrationDate).toLocaleDateString('en-AU', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        }) : '-'}
                     </td>
                   </tr>
                 ))

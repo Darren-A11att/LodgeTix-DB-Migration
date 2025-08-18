@@ -109,7 +109,7 @@ async function testFixedProductionIds() {
       importedFrom: 'test_import_attendees',
       importedAt: new Date(),
       lastSyncedAt: new Date()
-    };
+    } as any;
     
     await db.collection('test_attendees').insertOne(prodAttendee);
     console.log(`   ✅ Production attendee uses original ID: ${prodAttendee.attendeeId}`);
@@ -150,7 +150,7 @@ async function testFixedProductionIds() {
       importedFrom: 'test_import_tickets',
       importedAt: new Date(),
       lastSyncedAt: new Date()
-    };
+    } as any;
     
     await db.collection('test_tickets').insertOne(prodTicket);
     console.log(`   ✅ Production ticket uses original ID: ${prodTicket.ticketId}`);

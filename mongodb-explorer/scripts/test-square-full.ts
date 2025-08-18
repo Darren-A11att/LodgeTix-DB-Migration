@@ -25,13 +25,20 @@ async function getAllSquarePayments() {
   
   // Process remaining pages using SDK's built-in pagination
   let pageNum = 2;
-  while (response._hasNextPage && response._hasNextPage()) {
-    response = await response.loadNextPage();
-    if (response.data) {
-      allPayments = allPayments.concat(response.data);
-      console.log(`Page ${pageNum}: ${response.data.length} payments`);
-      pageNum++;
+  try {
+    while ((response as any).loadNextPage && typeof (response as any).loadNextPage === 'function') {
+      const nextResponse = await (response as any).loadNextPage();
+      if (nextResponse && nextResponse.data && nextResponse.data.length > 0) {
+        allPayments = allPayments.concat(nextResponse.data);
+        console.log(`Page ${pageNum}: ${nextResponse.data.length} payments`);
+        pageNum++;
+        response = nextResponse;
+      } else {
+        break; // No more data
+      }
     }
+  } catch (error) {
+    console.log('No more pages available');
   }
   
   console.log('\n=== SUMMARY ===');

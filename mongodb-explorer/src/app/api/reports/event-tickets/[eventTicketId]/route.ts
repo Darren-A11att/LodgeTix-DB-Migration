@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectMongoDB } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export async function GET(
   request: NextRequest,
@@ -24,81 +25,145 @@ export async function GET(
       );
     }
     
-    // Fetch all registrations
-    const registrations = await db.collection('registrations').find({}).toArray();
+    // Fetch all tickets for this eventTicketId
+    const tickets = await db.collection('tickets').find({
+      $or: [
+        { eventTicketId: eventTicketId },
+        { event_ticket_id: eventTicketId }
+      ]
+    }).toArray();
     
-    // Find registrations that include this event ticket
+    // Process each ticket to build the report data
     const matchingRegistrations = [];
     
-    for (const registration of registrations) {
-      const regData = registration.registrationData || registration.registration_data;
-      if (!regData) continue;
+    for (const ticket of tickets) {
+      // Get owner information based on ownerType
+      let ownerInfo = '';
+      let lodgeInfo = '';
+      const ownerType = ticket.ownerType || ticket.owner_type || 'unknown';
+      const ownerId = ticket.ownerId || ticket.owner_id;
       
-      let hasTicket = false;
-      let ticketQuantity = 0;
-      let ticketRevenue = 0;
-      
-      // Check new 'tickets' structure
-      if (regData.tickets && Array.isArray(regData.tickets)) {
-        const relevantTickets = regData.tickets.filter((ticket: any) => {
-          const ticketId = ticket.eventTicketId || ticket.event_ticket_id;
-          return ticketId === eventTicketId;
-        });
-        
-        if (relevantTickets.length > 0) {
-          hasTicket = true;
-          relevantTickets.forEach((ticket: any) => {
-            const quantity = ticket.quantity || 1;
-            const price = parseFloat(ticket.price?.$numberDecimal || ticket.price || eventTicket.price?.$numberDecimal || eventTicket.price || 0);
-            ticketQuantity += quantity;
-            ticketRevenue += price * quantity;
+      if (ownerId) {
+        if (ownerType === 'attendee') {
+          // Lookup attendee using attendeeId
+          const attendee = await db.collection('attendees').findOne({
+            $or: [
+              { attendeeId: ownerId },
+              { attendee_id: ownerId }
+            ]
           });
+          
+          if (attendee) {
+            const title = attendee.title || '';
+            const firstName = attendee.firstName || attendee.first_name || '';
+            const lastName = attendee.lastName || attendee.last_name || '';
+            const rank = attendee.rank || '';
+            const displayRank = rank === 'GL' ? 'Grand Rank' : rank;
+            ownerInfo = `${title} ${firstName} ${lastName} ${displayRank}`.trim();
+            
+            // Get lodge info from attendee
+            lodgeInfo = attendee.lodgeNameNumber || attendee.lodge_name_number || '';
+          }
+        } else if (ownerType === 'lodge') {
+          // Lookup lodge
+          const lodge = await db.collection('lodges').findOne({
+            $or: [
+              { lodgeId: ownerId },
+              { lodge_id: ownerId },
+              { _id: ObjectId.isValid(ownerId) ? new ObjectId(ownerId) : ownerId }
+            ]
+          });
+          
+          if (lodge) {
+            const lodgeNameNumber = lodge.lodgeNameNumber || lodge.lodge_name_number || '';
+            const grandLodge = lodge.grandLodge || lodge.grand_lodge || {};
+            const abbreviation = grandLodge.abbreviation || '';
+            ownerInfo = abbreviation ? `${lodgeNameNumber} | ${abbreviation}` : lodgeNameNumber;
+            lodgeInfo = lodgeNameNumber;
+          }
         }
       }
-      // Check old 'selectedTickets' structure
-      else if (regData.selectedTickets && Array.isArray(regData.selectedTickets)) {
-        const relevantTickets = regData.selectedTickets.filter((ticket: any) => {
-          const ticketId = ticket.eventTicketId || ticket.event_ticket_id;
-          return ticketId === eventTicketId;
-        });
-        
-        if (relevantTickets.length > 0) {
-          hasTicket = true;
-          relevantTickets.forEach((ticket: any) => {
-            const quantity = ticket.quantity || 1;
-            const price = parseFloat(ticket.price?.$numberDecimal || ticket.price || eventTicket.price?.$numberDecimal || eventTicket.price || 0);
-            ticketQuantity += quantity;
-            ticketRevenue += price * quantity;
-          });
-        }
-      }
       
-      if (hasTicket) {
-        // Get payment information
-        const payments = await db.collection('payments').find({
+      // Get registration information from details object
+      const details = ticket.details || {};
+      const registrationId = details.registrationId || details.registration_id;
+      let confirmationNumber = '';
+      let invoiceNumber = '';
+      let paymentStatus = '';
+      let bookingContact = { firstName: '', lastName: '', email: '' };
+      let paymentId = null;
+      
+      if (registrationId) {
+        const registration = await db.collection('registrations').findOne({
           $or: [
-            { registrationId: registration.registrationId || registration.registration_id },
-            { registration_id: registration.registrationId || registration.registration_id }
+            { registrationId: registrationId },
+            { registration_id: registrationId }
           ]
-        }).toArray();
-        
-        const bookingContact = regData.bookingContact || regData.booking_contact || {};
-        
-        matchingRegistrations.push({
-          registrationId: registration.registrationId || registration.registration_id || registration._id.toString(),
-          confirmationNumber: registration.confirmationNumber || registration.confirmation_number || '',
-          registrationType: registration.registrationType || registration.registration_type || 'unknown',
-          bookingContact: {
-            firstName: bookingContact.firstName || bookingContact.first_name || '',
-            lastName: bookingContact.lastName || bookingContact.last_name || '',
-            email: bookingContact.email || ''
-          },
-          paymentId: payments.length > 0 ? (payments[0].paymentId || payments[0].payment_id || payments[0]._id.toString()) : null,
-          createdAt: registration.createdAt || registration.created_at || new Date(),
-          ticketQuantity,
-          ticketRevenue
         });
+        
+        if (registration) {
+          confirmationNumber = registration.confirmationNumber || registration.confirmation_number || '';
+          invoiceNumber = registration.invoiceNumber || registration.invoice_number || '';
+          paymentStatus = registration.paymentStatus || registration.payment_status || '';
+          
+          // Get booking contact from import_customers
+          const regData = registration.registrationData || registration.registration_data || {};
+          const bookingContactId = regData.bookingContact || regData.booking_contact;
+          
+          if (bookingContactId && ObjectId.isValid(bookingContactId)) {
+            const customer = await db.collection('import_customers').findOne({
+              _id: new ObjectId(bookingContactId)
+            });
+            
+            if (customer) {
+              bookingContact = {
+                firstName: customer.firstName || customer.first_name || '',
+                lastName: customer.lastName || customer.last_name || '',
+                email: customer.email || ''
+              };
+            }
+          }
+          
+          // Get payment information
+          const payment = await db.collection('payments').findOne({
+            $or: [
+              { registrationId: registrationId },
+              { registration_id: registrationId }
+            ]
+          });
+          
+          if (payment) {
+            paymentId = payment.paymentId || payment.payment_id || payment._id.toString();
+          }
+        }
       }
+      
+      // Get quantity from ticket
+      const quantity = ticket.quantity || 1;
+      
+      // Calculate revenue (using ticket price or event ticket price)
+      const price = parseFloat(
+        ticket.price?.$numberDecimal || 
+        ticket.price || 
+        eventTicket.price?.$numberDecimal || 
+        eventTicket.price || 
+        0
+      );
+      
+      matchingRegistrations.push({
+        registrationId: ticket.ticketId || ticket.ticket_id || ticket._id.toString(),
+        confirmationNumber: confirmationNumber,
+        invoiceNumber: invoiceNumber,
+        paymentStatus: paymentStatus,
+        registrationType: ownerType,
+        owner: ownerInfo,
+        lodge: lodgeInfo,
+        bookingContact: bookingContact,
+        paymentId: paymentId,
+        createdAt: ticket.createdAt || ticket.created_at || new Date(),
+        ticketQuantity: quantity,
+        ticketRevenue: price * quantity
+      });
     }
     
     // Calculate summary statistics
@@ -107,22 +172,22 @@ export async function GET(
       totalQuantity: matchingRegistrations.reduce((sum, reg) => sum + reg.ticketQuantity, 0),
       totalRevenue: matchingRegistrations.reduce((sum, reg) => sum + reg.ticketRevenue, 0),
       byType: {
-        individuals: 0,
-        lodges: 0,
-        delegations: 0,
+        attendee: 0,
+        lodge: 0,
+        delegation: 0,
         other: 0
       }
     };
     
-    // Count by registration type
+    // Count by owner type
     matchingRegistrations.forEach(reg => {
       const type = reg.registrationType.toLowerCase();
-      if (type === 'individuals' || type === 'individual') {
-        summary.byType.individuals++;
-      } else if (type === 'lodges' || type === 'lodge') {
-        summary.byType.lodges++;
-      } else if (type === 'delegations' || type === 'delegation') {
-        summary.byType.delegations++;
+      if (type === 'attendee') {
+        summary.byType.attendee++;
+      } else if (type === 'lodge') {
+        summary.byType.lodge++;
+      } else if (type === 'delegation') {
+        summary.byType.delegation++;
       } else {
         summary.byType.other++;
       }
