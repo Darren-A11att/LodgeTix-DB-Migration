@@ -1,5 +1,5 @@
-import { Invoice } from '../types/invoice';
-import { DEFAULT_INVOICE_SUPPLIER } from '../constants/invoice';
+import { Invoice } from '../src/types/invoice';
+import { DEFAULT_INVOICE_SUPPLIER } from '../src/constants/invoice';
 
 export const sampleInvoice: Invoice = {
   _id: '507f1f77bcf86cd799439011',

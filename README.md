@@ -1,235 +1,256 @@
-# LodgeTix - Reconcile
-
-A comprehensive MongoDB database explorer and data management tool for LodgeTix, featuring payment reconciliation, invoice generation, and data migration capabilities.
-
-## Overview
-
-This project provides:
-- **MongoDB Explorer**: A web-based interface for exploring and managing MongoDB collections
-- **MedusaJS E-commerce Backend**: Complete e-commerce system with products, inventory, carts, and orders
-- **Payment Import & Reconciliation**: Tools for importing and matching Square payments with registrations
-- **Invoice Generation**: Automated invoice creation and management
-- **Data Migration Tools**: Utilities for migrating and transforming data
-- **Migration Viewer**: Visual interface for tracking data migration progress
+<<<<<<< HEAD
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-### Prerequisites
+### Development with Automatic Sync (Restored from c3b7b3d)
 
-- Node.js 18+ 
-- MongoDB connection
-- Environment variables configured (see `.env.example`)
-
-### Installation
+The default development command now includes automatic data synchronization:
 
 ```bash
-# Install dependencies
-npm install
-cd mongodb-explorer && npm install
-
-# Setup MedusaJS database (one-time setup)
-node medusajs/scripts/setup-medusajs-database.js
-
-# Run services
-npm run dev                    # MongoDB Explorer
-npm run api                    # MedusaJS API Server
+npm run dev
 ```
 
-- MongoDB Explorer: [http://localhost:3005](http://localhost:3005)
-- MedusaJS API: [http://localhost:3001](http://localhost:3001)
-- API Health Check: [http://localhost:3001/health](http://localhost:3001/health)
+This will:
+1. Import completed payments from Square API
+2. Import succeeded payments from 3 Stripe accounts (DA-LODGETIX, WS-LODGETIX, WS-LODGETICKETS)
+3. Fetch registrations from Supabase using stripe_payment_intent_id
+4. Process and match payments to registrations
+5. Store all data in "lodgetix" database
+6. Start the Next.js development server
 
-### Available Scripts
+### Development without Sync
+
+If you want to skip the sync and start the server immediately:
 
 ```bash
-# Development
-npm run dev                    # Run MongoDB Explorer
-npm run api                    # Run MedusaJS API Server
-npm run migration-viewer       # Run Migration Viewer
-npm run dev:all               # Run all services concurrently
-
-# MedusaJS Operations
-node medusajs/scripts/setup-medusajs-database.js    # Setup database
-node medusajs/scripts/verify-medusajs-setup.js      # Verify setup
-node medusajs/scripts/test-medusajs-operations.js   # Run tests
-
-# Data Sync
-npm run sync                  # Sync all data
-npm run sync:quick           # Sync last 7 days
-npm run sync:payments        # Sync payments only
-npm run sync:registrations   # Sync registrations only
+npm run dev:no-sync
 ```
 
-### TypeScript, Linting, and Formatting
+### Manual Sync Only
 
-- Scripts now run via tsx and are written in TypeScript:
-  - `npm run dev`, `npm run sync:quick`, etc.
-- Typecheck:
-  - Core: `npm run typecheck`
-  - App (components/hooks/lib): `cd mongodb-explorer && npm run typecheck:app`
-- Lint & format:
-  - `npm run lint` / `npm run lint:fix`
-  - `npm run format` / `npm run format:check`
+To run just the sync process without starting the server:
 
-See `docs/typing-plan.md` for the staged strictness plan.
+```bash
+npm run sync
+```
 
-## Features
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### MedusaJS E-commerce Backend
-- **Product Management**: Complete product catalog with variants and pricing
-- **Unified Inventory System**: Single pattern for simple products, bundles, and multi-part products
-- **Shopping Cart**: Real-time cart management with availability checking
-- **Order Processing**: Complete order workflow with inventory reservations
-- **Customer Management**: Customer profiles and order history
-- **Performance Optimization**: Multi-level caching and query optimization
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### MongoDB Explorer
-- Browse all collections with document counts
-- Search across collections by ID, email, name, or confirmation number
-- View and edit individual documents
-- Enhanced payment views with registration matching
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### Payment Import & Reconciliation
-- Import Square payments
-- Automatic matching with registrations
-- Manual match review and approval
-- Match analysis tools
+## Learn More
 
-### Invoice Management
-- Generate invoices for payments
-- Support for individual and lodge invoices
-- PDF generation with multiple rendering engines
-- Email invoice functionality
+To learn more about Next.js, take a look at the following resources:
 
-### Reports & Tools
-- Proclamation Banquet Sales Report
-- Event ticket sales analysis
-- Registration type breakdown
-- Data reconciliation dashboard
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+=======
+# LodgeTix Database Migration
+
+A comprehensive database migration tool for migrating LodgeTix data from a legacy MongoDB database to a new, clean MongoDB structure with proper schemas, validation, and computed fields.
+
+## Overview
+
+This project provides tools and scripts to:
+- Define clean MongoDB schemas with validation rules
+- Migrate data from the legacy database
+- Create indexes for optimal performance
+- Set up computed fields using MongoDB views
+- Validate and transform data during migration
 
 ## Project Structure
 
 ```
-LodgeTix - Reconcile/
-├── medusajs/              # MedusaJS E-commerce Backend
-│   ├── api/              # Express API server
-│   ├── scripts/          # Database setup & utilities
-│   └── implementation/   # Schema & documentation
-├── mongodb-explorer/      # Main application
-│   ├── src/              # Source code
-│   │   ├── app/         # Next.js app directory
-│   │   ├── services/    # Business logic services
-│   │   ├── utils/       # Utility functions
-│   │   └── components/  # React components
-│   └── public/          # Static assets
-├── migration-viewer/     # Migration tracking UI
-└── scripts/             # Utility scripts
+├── docs/database-schema/     # Database schema documentation
+│   ├── collections/         # Schema for each collection
+│   └── migration-strategy.md
+├── scripts/                 # Migration and setup scripts
+│   ├── mongodb-setup/      # Database creation scripts
+│   └── copy-schemas.sh     # Schema copying utility
+├── src/                    # Source code
+│   ├── constants/          # Application constants
+│   ├── services/           # Migration services
+│   ├── types/              # TypeScript type definitions
+│   └── utils/              # Utility functions
+└── mongodb-explorer/       # Web-based data explorer
 ```
 
-## Environment Variables
+## Prerequisites
 
-Create a `.env` file in the root directory:
+- Node.js 18+ 
+- MongoDB 5.0+
+- Access to both source and destination MongoDB clusters
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Darren-A11att/LodgeTix-DB-Migration.git
+cd LodgeTix-DB-Migration
+
+# Install dependencies
+npm install
+```
+
+## Configuration
+
+Create a `.env.local` file in the root directory:
 
 ```env
-# Database
-MONGODB_URI=mongodb://localhost:27017
-MONGODB_DATABASE=lodgetix
+# Source MongoDB (legacy database)
+MONGODB_URI=mongodb+srv://username:password@source-cluster.mongodb.net/
+MONGODB_DATABASE=legacy-database-name
 
-# MedusaJS API
-PORT=3001
-NODE_ENV=production
+# Destination MongoDB (new clean database)
+NEW_MONGODB_URI=mongodb+srv://username:password@dest-cluster.mongodb.net/
+NEW_MONGODB_DATABASE=LodgeTix
 
-# Payment Providers
-SQUARE_ACCESS_TOKEN=your-token
-SQUARE_ENVIRONMENT=sandbox|production
-STRIPE_SECRET_KEY=your-stripe-key
-
-# Email Service
-RESEND_API_KEY=your-resend-key
+# Migration settings
+BATCH_SIZE=1000
+LOG_LEVEL=info
 ```
 
-## Component Descriptions
+## Database Setup
 
-### MedusaJS E-commerce API
-- **Products**: `GET /store/products` - List products with pagination and search
-- **Product Details**: `GET /store/products/:id` - Get product with availability information
-- **Cart Management**: `POST /store/carts` - Create and manage shopping carts
-- **Add to Cart**: `POST /store/carts/:id/line-items` - Add items with inventory validation
-- **Orders**: `POST /store/carts/:id/complete` - Complete cart as order with reservations
+### 1. Create the New Database Structure
 
-### MongoDB Explorer UI
-- **Collections Browser**: View all MongoDB collections with document counts
-- **Document Editor**: View and edit individual documents with JSON editor
-- **Search Interface**: Cross-collection search by ID, email, name, confirmation number
-- **Invoice Management**: Generate, approve, and email invoices with PDF rendering
-
-### Data Import & Sync
-- **Square Integration**: Import payments and match with registrations
-- **Stripe Integration**: Multi-account Stripe payment import and processing
-- **Supabase Sync**: Registration data synchronization from Supabase
-- **Payment Matching**: Automated and manual payment-to-registration matching
-
-## Testing Instructions
-
-### Unit Tests
 ```bash
-# Run MedusaJS operation tests (26 test cases)
-node medusajs/scripts/test-medusajs-operations.js
-
-# Expected output: All tests pass with performance metrics
-# Coverage: Availability checks, reservations, cart operations, concurrent access
+cd scripts/mongodb-setup
+node setup-database.js
 ```
 
-### Integration Tests
+This will:
+- Create all collections with validation rules
+- Set up indexes for performance
+- Create computed field views
+- Register scheduled aggregation functions
+
+### 2. Run Individual Setup Scripts
+
+If you prefer to run scripts individually:
+
 ```bash
-# Test API endpoints
-node medusajs/api/test-endpoints.js
-
-# Test database operations
-node medusajs/scripts/integration-tests.js
+node 01-create-collections.js        # Core collections
+node 02-create-remaining-collections.js  # Additional collections
+node 03-create-indexes.js           # Indexes
+node 04-create-computed-fields.js   # Computed views
 ```
 
-### Performance Tests
+## Collections
+
+### Core Collections
+- **attendees** - Event attendees with QR codes and check-in tracking
+- **contacts** - Centralized contact management
+- **financial-transactions** - Financial records and reconciliation
+- **functions** - Major events (parent of individual events)
+- **invoices** - Invoice generation and tracking
+- **jurisdictions** - Masonic jurisdiction hierarchy
+- **organisations** - Lodges and other organizations
+- **products** - Tickets, merchandise, and packages
+- **registrations** - Event registrations
+- **tickets** - Individual tickets with QR codes
+- **users** - User accounts and authentication
+
+### Computed Views
+- **attendees_with_computed** - Adds fullName, check-in status, etc.
+- **contacts_with_computed** - Adds display names, profile completion
+- **functions_with_dates** - Computes start/end dates from events
+- **registrations_with_totals** - Adds payment calculations
+- **tickets_with_status** - Computes validity and usage status
+- **transactions_with_calculations** - Adds reconciliation flags
+
+## Schema Documentation
+
+Each collection has comprehensive documentation in `docs/database-schema/collections/[collection-name]/`:
+
+- `schema.md` - MongoDB document structure
+- `documents.json` - Field mappings from legacy database
+- `indexes.md` - Index definitions
+- `validation.md` - Validation rules
+- `aggregations.md` - Common aggregation pipelines
+
+## Data Explorer
+
+A web-based MongoDB explorer is included for browsing the migrated data:
+
 ```bash
-# Load testing (100 concurrent requests)
-node medusajs/scripts/load-test.js
-
-# Memory and performance monitoring
-node medusajs/scripts/monitoring-dashboard.js
+cd mongodb-explorer
+npm install
+npm run dev
 ```
 
-### Manual Testing
-```bash
-# Start services
-npm run api
+Access at: http://localhost:3005
 
-# Test endpoints
-curl http://localhost:3001/health
-curl http://localhost:3001/store/products
-curl -X POST http://localhost:3001/store/carts \
-  -H "Content-Type: application/json" \
-  -d '{"region_id":"reg_default"}'
-```
+## Migration Process
+
+1. **Setup new database**: Run the setup scripts
+2. **Map legacy data**: Review documents.json files
+3. **Run migration**: Use migration scripts (coming soon)
+4. **Validate data**: Check computed views and run validation
+5. **Test thoroughly**: Use the data explorer to verify
+
+## Key Features
+
+### Validation Rules
+- Strict schema validation on all collections
+- Pattern matching for IDs, emails, phone numbers
+- Enum validation for status fields
+- Required field enforcement
+
+### Computed Fields
+- Dynamic calculation of full names, display names
+- Real-time check-in status
+- Payment calculations and balances
+- Ticket validity and expiration
+
+### Performance Optimization
+- Indexes on all foreign keys
+- Compound indexes for common queries
+- Text search indexes for name searches
+- Sparse indexes for optional unique fields
+
+### Data Integrity
+- Unique constraints on business keys
+- Referential integrity through ObjectId types
+- Atomic operations for data consistency
+- Audit trails on all modifications
+
+## Scheduled Tasks
+
+The following aggregations should be scheduled:
+
+1. **Update Function Dates** (every 6 hours)
+   - Syncs function dates with event dates
+
+2. **Update Ticket Expiry** (daily)
+   - Marks expired tickets based on validity
+
+3. **Update Invoice Status** (daily)
+   - Flags overdue invoices
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+This project is proprietary software for LodgeTix.
 
 ## Support
 
-For issues or questions, please contact the development team.
-
-### Documentation References
-- **Complete Implementation**: `/medusajs/IMPLEMENTATION-COMPLETE.md`
-- **API Documentation**: `/medusajs/API-DOCUMENTATION.md`
-- **Schema Reference**: `/medusajs/implementation/mongodb-schema.md`
-## Server-side Invoice PDF API
-
-- Endpoint: `GET /api/invoices/:paymentId/pdf`
-  - Returns an `application/pdf` response rendered on the server without side effects (no DB writes, no emails, no uploads).
-  - Uses `UnifiedInvoiceService.generatePreview` and the PDF generator service with PDFKit on Node and Puppeteer fallback.
-
-Example (from the `mongodb-explorer` app):
-
-```
-curl -L "http://localhost:3005/api/invoices/<paymentId>/pdf" \
-  -o invoice.pdf
-```
-
-If running the local dev servers via the root scripts, ensure the API and web ports are correctly configured (see `.port-config.json` and `mongodb-explorer/server.ts`).
+For questions or issues, please contact the development team.
+>>>>>>> origin/main

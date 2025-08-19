@@ -2,7 +2,6 @@
 
 # dependencies
 /node_modules
-scripts/test-migration/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -41,14 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Script outputs
-script-outputs/
-*.output.json
-
-# Data files with sensitive client information
+# data files with sensitive client information
 *.json
-!package.json
-!package-lock.json
-!tsconfig.json
-!jsconfig.json
-!*.config.json

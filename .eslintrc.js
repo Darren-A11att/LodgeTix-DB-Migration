@@ -48,7 +48,7 @@ module.exports = {
       extends: ['next/core-web-vitals'],
     },
     {
-      files: ['mongodb-explorer/**/*.{ts,tsx}'],
+      files: ['src/**/*.{ts,tsx}', 'scripts/**/*.{ts,tsx}'],
       extends: ['next/core-web-vitals'],
     },
   ],
