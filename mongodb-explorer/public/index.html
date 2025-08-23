@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MongoDB Explorer - E-Commerce Collections</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .main {
+      display: flex;
+      height: calc(100vh - 180px);
+    }
+    
+    .sidebar {
+      width: 250px;
+      background: #f7f8fa;
+      border-right: 1px solid #e1e4e8;
+      overflow-y: auto;
+    }
+    
+    .sidebar h3 {
+      padding: 20px;
+      color: #24292e;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e1e4e8;
+    }
+    
+    .collection-list {
+      list-style: none;
+    }
+    
+    .collection-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .collection-item:hover {
+      background: #fff;
+      border-left-color: #667eea;
+    }
+    
+    .collection-item.active {
+      background: #fff;
+      border-left-color: #764ba2;
+      font-weight: 600;
+    }
+    
+    .collection-item .badge {
+      background: #e1e4e8;
+      color: #586069;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: normal;
+    }
+    
+    .collection-item.active .badge {
+      background: #764ba2;
+      color: white;
+    }
+    
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 15px;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    
+    .btn:hover {
+      background: #5a67d8;
+    }
+    
+    .btn.secondary {
+      background: #6c757d;
+    }
+    
+    .btn.secondary:hover {
+      background: #5a6268;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: #f7f8fa;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .stat-card h4 {
+      color: #586069;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    
+    .stat-card .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #24292e;
+    }
+    
+    .documents-table {
+      background: white;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .table-header {
+      background: #f7f8fa;
+      padding: 15px;
+      border-bottom: 1px solid #e1e4e8;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .document-row {
+      padding: 15px;
+      border-bottom: 1px solid #e1e4e8;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .document-row:hover {
+      background: #f7f8fa;
+    }
+    
+    .document-row.expanded {
+      background: #f7f8fa;
+    }
+    
+    .document-details {
+      padding: 15px;
+      background: #fff;
+      border-left: 4px solid #667eea;
+      margin: 10px 15px;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .document-details.show {
+      display: block;
+    }
+    
+    .document-details pre {
+      background: #f6f8fa;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+    }
+    
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid #e1e4e8;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .pagination button:hover:not(:disabled) {
+      background: #f7f8fa;
+    }
+    
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .pagination .page-info {
+      padding: 8px 16px;
+      background: #f7f8fa;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #586069;
+    }
+    
+    .error {
+      background: #ffeef0;
+      color: #d73a49;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+    
+    .tag.org {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+    
+    .tag.person {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+    
+    /* Highlight new collections */
+    .collection-item.new {
+      position: relative;
+    }
+    
+    .collection-item.new::after {
+      content: 'NEW';
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #28a745;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>MongoDB Explorer</h1>
+      <p>E-Commerce Migration Collections Viewer</p>
+    </div>
+    
+    <div class="main">
+      <div class="sidebar">
+        <h3>Collections</h3>
+        <ul class="collection-list" id="collectionList">
+          <li class="loading">Loading collections...</li>
+        </ul>
+      </div>
+      
+      <div class="content">
+        <div id="contentArea">
+          <div class="loading">
+            <h2>Welcome to MongoDB Explorer</h2>
+            <p style="margin-top: 10px;">Select a collection from the sidebar to view its documents</p>
+            <br>
+            <p style="color: #667eea; font-weight: bold;">New E-Commerce Collections:</p>
+            <ul style="list-style: none; margin-top: 10px; text-align: left; display: inline-block;">
+              <li>📦 <strong>products</strong> - Bundle, event, and package products</li>
+              <li>🛒 <strong>carts</strong> - Shopping carts with customer and items</li>
+              <li>📋 <strong>orders</strong> - Completed orders from carts</li>
+              <li>📝 <strong>forms</strong> - Registration form schemas</li>
+              <li>📊 <strong>inventory</strong> - Stock management</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const API_URL = 'http://localhost:3005/api';
+    let currentCollection = null;
+    let currentPage = 1;
+    let searchField = '';
+    let searchValue = '';
+    
+    // New collections to highlight
+    const newCollections = ['products', 'carts', 'orders', 'forms', 'inventory'];
+    
+    // Load collections on startup
+    loadCollections();
+    
+    async function loadCollections() {
+      try {
+        const response = await fetch(`${API_URL}/collections`);
+        const collections = await response.json();
+        
+        const listElement = document.getElementById('collectionList');
+        listElement.innerHTML = collections.map(name => {
+          const isNew = newCollections.includes(name);
+          return `
+            <li class="collection-item ${isNew ? 'new' : ''}" onclick="selectCollection('${name}')">
+              <span>${name}</span>
+              <span class="badge" id="count-${name}">...</span>
+            </li>
+          `;
+        }).join('');
+        
+        // Load counts for each collection
+        collections.forEach(async (name) => {
+          try {
+            const stats = await fetch(`${API_URL}/collections/${name}/stats`).then(r => r.json());
+            document.getElementById(`count-${name}`).textContent = stats.count;
+          } catch (error) {
+            console.error(`Error loading stats for ${name}:`, error);
+          }
+        });
+      } catch (error) {
+        console.error('Error loading collections:', error);
+        document.getElementById('collectionList').innerHTML = '<li class="error">Error loading collections</li>';
+      }
+    }
+    
+    async function selectCollection(name) {
+      currentCollection = name;
+      currentPage = 1;
+      
+      // Update active state in sidebar
+      document.querySelectorAll('.collection-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.closest('.collection-item').classList.add('active');
+      
+      // Load collection data
+      await loadCollectionData();
+    }
+    
+    async function loadCollectionData() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = '<div class="loading">Loading...</div>';
+      
+      try {
+        // Load stats and documents
+        const [stats, data] = await Promise.all([
+          fetch(`${API_URL}/collections/${currentCollection}/stats`).then(r => r.json()),
+          fetch(`${API_URL}/collections/${currentCollection}/documents?page=${currentPage}&limit=20&field=${searchField}&value=${searchValue}`).then(r => r.json())
+        ]);
+        
+        // Special rendering for different collection types
+        let customStats = '';
+        if (currentCollection === 'carts' || currentCollection === 'orders') {
+          const orgCount = data.documents.filter(d => d.customer?.type === 'organisation').length;
+          const personCount = data.documents.filter(d => d.customer?.type === 'person').length;
+          customStats = `
+            <div class="stat-card">
+              <h4>Customer Types</h4>
+              <div class="value">
+                <span class="tag person">Person: ${personCount}</span>
+                <span class="tag org">Org: ${orgCount}</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        contentArea.innerHTML = `
+          <h2>${currentCollection}</h2>
+          
+          <div class="stats">
+            <div class="stat-card">
+              <h4>Total Documents</h4>
+              <div class="value">${stats.count.toLocaleString()}</div>
+            </div>
+            <div class="stat-card">
+              <h4>Fields</h4>
+              <div class="value">${stats.fields.length}</div>
+            </div>
+            ${customStats}
+          </div>
+          
+          <div class="controls">
+            <input type="text" class="search-box" placeholder="Search field name..." id="searchField" value="${searchField}">
+            <input type="text" class="search-box" placeholder="Search value..." id="searchValue" value="${searchValue}">
+            <button class="btn" onclick="search()">Search</button>
+            <button class="btn secondary" onclick="clearSearch()">Clear</button>
+            <button class="btn secondary" onclick="viewSchema()">View Schema</button>
+          </div>
+          
+          <div class="documents-table">
+            <div class="table-header">
+              Documents (${data.pagination.total} total)
+            </div>
+            ${data.documents.map((doc, index) => renderDocument(doc, index)).join('')}
+          </div>
+          
+          ${renderPagination(data.pagination)}
+        `;
+      } catch (error) {
+        contentArea.innerHTML = `<div class="error">Error loading collection: ${error.message}</div>`;
+      }
+    }
+    
+    function renderDocument(doc, index) {
+      // Create a summary based on collection type
+      let summary = '';
+      
+      if (currentCollection === 'carts') {
+        const customer = doc.customer || {};
+        summary = `
+          <strong>Cart ID:</strong> ${doc.cartId || 'N/A'}<br>
+          <strong>Customer:</strong> ${customer.name || 'Guest'} 
+          ${customer.type === 'organisation' ? `<span class="tag org">${customer.businessName || 'ORG'}</span>` : '<span class="tag person">PERSON</span>'}<br>
+          <strong>Items:</strong> ${doc.cartItems?.length || 0} | 
+          <strong>Total:</strong> $${doc.total || 0}
+        `;
+      } else if (currentCollection === 'orders') {
+        const customer = doc.customer || {};
+        summary = `
+          <strong>Order #:</strong> ${doc.orderNumber || 'N/A'}<br>
+          <strong>Customer:</strong> ${customer.name || 'Unknown'} 
+          ${customer.type === 'organisation' ? `<span class="tag org">${customer.businessName || 'ORG'}</span>` : '<span class="tag person">PERSON</span>'}<br>
+          <strong>Status:</strong> ${doc.status} | 
+          <strong>Total:</strong> $${doc.total || 0}
+        `;
+      } else if (currentCollection === 'products') {
+        summary = `
+          <strong>Product:</strong> ${doc.name}<br>
+          <strong>Type:</strong> ${doc.type} | 
+          <strong>SKU:</strong> ${doc.sku || 'N/A'}<br>
+          <strong>Variants:</strong> ${doc.variants?.length || 0}
+        `;
+      } else if (currentCollection === 'forms') {
+        summary = `
+          <strong>Form:</strong> ${doc.formName}<br>
+          <strong>Type:</strong> ${doc.formType} | 
+          <strong>Sections:</strong> ${doc.sections?.length || 0}<br>
+          <strong>Active:</strong> ${doc.active ? 'Yes' : 'No'}
+        `;
+      } else {
+        // Generic summary
+        const keys = Object.keys(doc).slice(0, 3);
+        summary = keys.map(key => {
+          if (key === '_id') return '';
+          const value = doc[key];
+          if (typeof value === 'object') return '';
+          return `<strong>${key}:</strong> ${value}`;
+        }).filter(Boolean).join(' | ');
+      }
+      
+      return `
+        <div class="document-row" onclick="toggleDocument(${index})">
+          ${summary || JSON.stringify(doc).substring(0, 200) + '...'}
+        </div>
+        <div class="document-details" id="doc-${index}">
+          <pre>${JSON.stringify(doc, null, 2)}</pre>
+        </div>
+      `;
+    }
+    
+    function renderPagination(pagination) {
+      return `
+        <div class="pagination">
+          <button onclick="changePage(${pagination.page - 1})" ${pagination.page === 1 ? 'disabled' : ''}>Previous</button>
+          <div class="page-info">Page ${pagination.page} of ${pagination.pages}</div>
+          <button onclick="changePage(${pagination.page + 1})" ${pagination.page === pagination.pages ? 'disabled' : ''}>Next</button>
+        </div>
+      `;
+    }
+    
+    function toggleDocument(index) {
+      const details = document.getElementById(`doc-${index}`);
+      details.classList.toggle('show');
+      event.target.classList.toggle('expanded');
+    }
+    
+    function search() {
+      searchField = document.getElementById('searchField').value;
+      searchValue = document.getElementById('searchValue').value;
+      currentPage = 1;
+      loadCollectionData();
+    }
+    
+    function clearSearch() {
+      searchField = '';
+      searchValue = '';
+      document.getElementById('searchField').value = '';
+      document.getElementById('searchValue').value = '';
+      currentPage = 1;
+      loadCollectionData();
+    }
+    
+    function changePage(page) {
+      currentPage = page;
+      loadCollectionData();
+    }
+    
+    async function viewSchema() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = '<div class="loading">Analyzing schema...</div>';
+      
+      try {
+        const schema = await fetch(`${API_URL}/collections/${currentCollection}/schema`).then(r => r.json());
+        
+        contentArea.innerHTML = `
+          <h2>${currentCollection} - Schema Analysis</h2>
+          <button class="btn" onclick="loadCollectionData()" style="margin: 20px 0;">Back to Documents</button>
+          
+          <div class="documents-table">
+            <div class="table-header">
+              Field Analysis (${schema.sampleSize} documents sampled)
+            </div>
+            ${schema.fields.map(field => `
+              <div class="document-row">
+                <strong>${field.path}</strong><br>
+                <span style="color: #586069;">
+                  Types: ${field.types.join(', ')} | 
+                  Frequency: ${field.frequency} | 
+                  Samples: ${field.samples.join(', ')}
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (error) {
+        contentArea.innerHTML = `<div class="error">Error analyzing schema: ${error.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>

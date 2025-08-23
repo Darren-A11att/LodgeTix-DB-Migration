@@ -1,0 +1,1505 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Data Analysis Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #333; margin-top: 30px; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; border-left: 4px solid #3498db; padding-left: 15px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+        .metric-card { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #3498db; }
+        .metric-value { font-size: 2em; font-weight: bold; color: #2c3e50; }
+        .metric-label { color: #7f8c8d; font-size: 0.9em; margin-top: 5px; }
+        .issue { margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .issue.critical { background-color: #ffebee; border-left: 4px solid #f44336; }
+        .issue.high { background-color: #fff3e0; border-left: 4px solid #ff9800; }
+        .issue.medium { background-color: #f3e5f5; border-left: 4px solid #9c27b0; }
+        .issue.low { background-color: #e8f5e8; border-left: 4px solid #4caf50; }
+        .action-item { background: #f8f9fa; margin: 10px 0; padding: 15px; border-radius: 5px; border-left: 4px solid #17a2b8; }
+        .priority-immediate { border-left-color: #dc3545 !important; }
+        .priority-high { border-left-color: #fd7e14 !important; }
+        .priority-medium { border-left-color: #ffc107 !important; }
+        .priority-low { border-left-color: #28a745 !important; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        .score { font-weight: bold; padding: 5px 10px; border-radius: 3px; }
+        .score.excellent { background-color: #d4edda; color: #155724; }
+        .score.good { background-color: #cce7ff; color: #004085; }
+        .score.fair { background-color: #fff3cd; color: #856404; }
+        .score.poor { background-color: #f8d7da; color: #721c24; }
+        .chart-placeholder { background: #f8f9fa; height: 300px; border: 2px dashed #dee2e6; display: flex; align-items: center; justify-content: center; color: #6c757d; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Comprehensive Data Analysis Report</h1>
+        <p><strong>Generated:</strong> 2025-08-19T12:42:18.753Z</p>
+        
+        <h2>Executive Summary</h2>
+        <div class="summary-grid">
+            <div class="metric-card">
+                <div class="metric-value">169</div>
+                <div class="metric-label">Total Collections</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">18,854</div>
+                <div class="metric-label">Total Documents</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">100.0</div>
+                <div class="metric-label">Data Quality Score</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">0</div>
+                <div class="metric-label">Critical Issues</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">100.0</div>
+                <div class="metric-label">Compliance Score</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">0.0</div>
+                <div class="metric-label">Schema Complexity</div>
+            </div>
+        </div>
+
+        <h2>Top Issues & Risks</h2>
+        
+
+        <h2>Action Plan</h2>
+        
+            <div class="action-item priority-medium">
+                <h3>Implement automated data quality monitoring</h3>
+                <p><strong>Priority:</strong> MEDIUM</p>
+                <p><strong>Effort:</strong> medium | <strong>Impact:</strong> high</p>
+                <p><strong>Timeline:</strong> 2-3 weeks</p>
+            </div>
+        
+            <div class="action-item priority-medium">
+                <h3>Standardize field naming conventions</h3>
+                <p><strong>Priority:</strong> MEDIUM</p>
+                <p><strong>Effort:</strong> high | <strong>Impact:</strong> medium</p>
+                <p><strong>Timeline:</strong> 1 month</p>
+            </div>
+        
+            <div class="action-item priority-low">
+                <h3>Optimize complex schema structures</h3>
+                <p><strong>Priority:</strong> LOW</p>
+                <p><strong>Effort:</strong> high | <strong>Impact:</strong> medium</p>
+                <p><strong>Timeline:</strong> 2 months</p>
+            </div>
+        
+
+        <h2>Schema Analysis</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Collection</th>
+                    <th>Document Count</th>
+                    <th>Avg Object Size</th>
+                    <th>Storage Size</th>
+                    <th>Index Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_metadata_billingDetails_country_level4</td>
+                        <td>13</td>
+                        <td>0.23 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_attendance_level2</td>
+                        <td>2</td>
+                        <td>0.22 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_attendeeData</td>
+                        <td>66</td>
+                        <td>0.94 KB</td>
+                        <td>0.06 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_contacts__id_level1</td>
+                        <td>442</td>
+                        <td>0.17 KB</td>
+                        <td>0.05 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_billingDetails_address_level3</td>
+                        <td>83</td>
+                        <td>0.32 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>functions</td>
+                        <td>1</td>
+                        <td>4.08 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations__id_level1</td>
+                        <td>335</td>
+                        <td>0.17 KB</td>
+                        <td>0.06 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_cardDetails_card_level2</td>
+                        <td>98</td>
+                        <td>0.46 KB</td>
+                        <td>0.06 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_supplierInvoice_billTo_level3</td>
+                        <td>1</td>
+                        <td>0.47 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_calculatedAmounts_level2</td>
+                        <td>6</td>
+                        <td>0.25 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>grandLodges</td>
+                        <td>187</td>
+                        <td>0.38 KB</td>
+                        <td>0.08 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_supplierInvoice_payment_level3</td>
+                        <td>1</td>
+                        <td>0.49 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_processingFee[1]_amountMoney_level2</td>
+                        <td>91</td>
+                        <td>0.23 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_orderDetails_level2</td>
+                        <td>2</td>
+                        <td>0.27 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_level1</td>
+                        <td>335</td>
+                        <td>2.79 KB</td>
+                        <td>0.40 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_transfer_reversals_data_level4</td>
+                        <td>13</td>
+                        <td>0.51 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_packageDetails_eligibilityCriteria_rules_level4</td>
+                        <td>10</td>
+                        <td>0.31 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_attendees[0]_ticket_level3</td>
+                        <td>5</td>
+                        <td>0.24 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_bookingContact_stateTerritory_level3</td>
+                        <td>11</td>
+                        <td>0.22 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_outcome_level2</td>
+                        <td>83</td>
+                        <td>0.36 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_supplierInvoice_items_level3</td>
+                        <td>2</td>
+                        <td>0.33 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>registrations</td>
+                        <td>335</td>
+                        <td>3.71 KB</td>
+                        <td>0.69 MB</td>
+                        <td>44.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_transferData_level2</td>
+                        <td>80</td>
+                        <td>0.24 KB</td>
+                        <td>0.04 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_customerInvoice_items_level3</td>
+                        <td>2</td>
+                        <td>0.31 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_sections_schedule[2]_items_level4</td>
+                        <td>2</td>
+                        <td>0.41 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_externalDetails_level1</td>
+                        <td>2</td>
+                        <td>0.23 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_cardDetails_level1</td>
+                        <td>98</td>
+                        <td>0.75 KB</td>
+                        <td>0.06 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>masonicProfiles</td>
+                        <td>2</td>
+                        <td>0.39 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_eventTickets_eligibilityCriteria_level1</td>
+                        <td>10</td>
+                        <td>0.21 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_metadata</td>
+                        <td>305</td>
+                        <td>0.23 KB</td>
+                        <td>0.06 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_lodgeDetails</td>
+                        <td>17</td>
+                        <td>0.20 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_processingFee_level1</td>
+                        <td>182</td>
+                        <td>0.31 KB</td>
+                        <td>0.05 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_locations__id_buffer_level2</td>
+                        <td>2</td>
+                        <td>0.18 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_bookingContacts</td>
+                        <td>334</td>
+                        <td>0.45 KB</td>
+                        <td>0.13 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_locations__id_level1</td>
+                        <td>2</td>
+                        <td>0.17 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_processingFee[0]_amountMoney_level2</td>
+                        <td>91</td>
+                        <td>0.23 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_organisations__id_buffer_level2</td>
+                        <td>481</td>
+                        <td>0.19 KB</td>
+                        <td>0.09 MB</td>
+                        <td>72.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>organisations</td>
+                        <td>481</td>
+                        <td>0.49 KB</td>
+                        <td>0.13 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_platformFeeAmount_level2</td>
+                        <td>1</td>
+                        <td>0.22 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_modificationHistory[1]_changes_level4</td>
+                        <td>1</td>
+                        <td>0.30 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_billingDetails_level2</td>
+                        <td>83</td>
+                        <td>0.41 KB</td>
+                        <td>0.06 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_tickets_level2</td>
+                        <td>860</td>
+                        <td>0.42 KB</td>
+                        <td>0.11 MB</td>
+                        <td>88.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_details_invoice_level4</td>
+                        <td>1</td>
+                        <td>0.24 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_customers__id_level1</td>
+                        <td>164</td>
+                        <td>0.17 KB</td>
+                        <td>0.02 MB</td>
+                        <td>24.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>stripePayments</td>
+                        <td>83</td>
+                        <td>5.63 KB</td>
+                        <td>0.21 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>squarePayments</td>
+                        <td>100</td>
+                        <td>1.97 KB</td>
+                        <td>0.14 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_metadata_billingDetails_country_level5</td>
+                        <td>1</td>
+                        <td>0.24 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_customerData_level1</td>
+                        <td>1</td>
+                        <td>0.60 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_attendees__id_level1</td>
+                        <td>469</td>
+                        <td>0.17 KB</td>
+                        <td>0.05 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_selectedPackageDetails_eligibilityCriteria_rules_level4</td>
+                        <td>10</td>
+                        <td>0.31 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_eventTickets_eligibilityCriteria_rules_level2</td>
+                        <td>2</td>
+                        <td>0.27 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_customerData_invoiceSettings_level2</td>
+                        <td>1</td>
+                        <td>0.26 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_capabilities_level1</td>
+                        <td>8</td>
+                        <td>0.22 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_level2</td>
+                        <td>1</td>
+                        <td>1.69 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_eventTickets__id_buffer_level2</td>
+                        <td>10</td>
+                        <td>0.18 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_bookingContact_country_level3</td>
+                        <td>11</td>
+                        <td>0.22 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_metadata_billingDetails_stateTerritory_level5</td>
+                        <td>1</td>
+                        <td>0.25 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_level3</td>
+                        <td>83</td>
+                        <td>0.84 KB</td>
+                        <td>0.06 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_transfer_level2</td>
+                        <td>80</td>
+                        <td>0.79 KB</td>
+                        <td>0.07 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_sections_level2</td>
+                        <td>2</td>
+                        <td>2.70 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_multicapture_level4</td>
+                        <td>83</td>
+                        <td>0.24 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_bookingContact_level3</td>
+                        <td>1</td>
+                        <td>0.61 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_supplierInvoice_supplier_level3</td>
+                        <td>1</td>
+                        <td>0.38 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_riskEvaluation_level1</td>
+                        <td>93</td>
+                        <td>0.24 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_sections_schedule[0]_items_level4</td>
+                        <td>2</td>
+                        <td>0.41 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_attendees</td>
+                        <td>469</td>
+                        <td>0.92 KB</td>
+                        <td>0.24 MB</td>
+                        <td>56.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_metadata_billingDetails_level3</td>
+                        <td>13</td>
+                        <td>0.55 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>eventTickets</td>
+                        <td>10</td>
+                        <td>0.52 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_cardDetails_cardPaymentTimeline_level2</td>
+                        <td>98</td>
+                        <td>0.28 KB</td>
+                        <td>0.05 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_tickets_level3</td>
+                        <td>1</td>
+                        <td>0.26 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>payments</td>
+                        <td>0</td>
+                        <td>NaN KB</td>
+                        <td>0.23 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_contacts__id_buffer_level2</td>
+                        <td>442</td>
+                        <td>0.18 KB</td>
+                        <td>0.05 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_paymentDetails_level2</td>
+                        <td>2</td>
+                        <td>0.38 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_packageDetails_registrationTypes_level3</td>
+                        <td>10</td>
+                        <td>0.24 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions__id_buffer_level2</td>
+                        <td>2</td>
+                        <td>0.18 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_lodgeOrderDetails_level2</td>
+                        <td>3</td>
+                        <td>0.37 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_events__id_buffer_level2</td>
+                        <td>6</td>
+                        <td>0.18 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>attendees</td>
+                        <td>469</td>
+                        <td>1.51 KB</td>
+                        <td>0.41 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_networkToken_level4</td>
+                        <td>83</td>
+                        <td>0.22 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_squareAmounts_level2</td>
+                        <td>6</td>
+                        <td>0.26 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_stripeFee_level2</td>
+                        <td>1</td>
+                        <td>0.21 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_totalPricePaid_level2</td>
+                        <td>1</td>
+                        <td>0.22 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_extendedAuthorization_level4</td>
+                        <td>83</td>
+                        <td>0.25 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_metadata_billingDetails_stateTerritory_level4</td>
+                        <td>13</td>
+                        <td>0.23 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_lodgeDetails_level3</td>
+                        <td>1</td>
+                        <td>0.31 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>tickets</td>
+                        <td>941</td>
+                        <td>0.64 KB</td>
+                        <td>0.25 MB</td>
+                        <td>56.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>events</td>
+                        <td>6</td>
+                        <td>1.65 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_level2</td>
+                        <td>83</td>
+                        <td>0.87 KB</td>
+                        <td>0.06 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_amountDetails_level1</td>
+                        <td>83</td>
+                        <td>0.19 KB</td>
+                        <td>0.04 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_masonicProfiles__id_level1</td>
+                        <td>2</td>
+                        <td>0.18 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_comprehensiveLodgeDetails_level2</td>
+                        <td>5</td>
+                        <td>0.40 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>locations</td>
+                        <td>2</td>
+                        <td>0.56 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_details_level3</td>
+                        <td>1</td>
+                        <td>0.36 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_cardDetails_errors_level2</td>
+                        <td>5</td>
+                        <td>0.32 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_attendees__id_buffer_level2</td>
+                        <td>469</td>
+                        <td>0.18 KB</td>
+                        <td>0.05 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_approvedMoney_level1</td>
+                        <td>98</td>
+                        <td>0.21 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_selectedPackageDetails_level2</td>
+                        <td>5</td>
+                        <td>0.67 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_attendees_attendeeData_level1</td>
+                        <td>469</td>
+                        <td>0.97 KB</td>
+                        <td>0.18 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_modificationHistory[0]_changes_level4</td>
+                        <td>2</td>
+                        <td>0.27 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_totalAmountPaid_level2</td>
+                        <td>1</td>
+                        <td>0.22 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_wallet_level4</td>
+                        <td>8</td>
+                        <td>0.25 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_tickets</td>
+                        <td>860</td>
+                        <td>0.33 KB</td>
+                        <td>0.15 MB</td>
+                        <td>84.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_tickets__id_buffer_level2</td>
+                        <td>941</td>
+                        <td>0.18 KB</td>
+                        <td>0.08 MB</td>
+                        <td>80.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_customers__id_buffer_level2</td>
+                        <td>164</td>
+                        <td>0.18 KB</td>
+                        <td>0.02 MB</td>
+                        <td>24.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_paymentMethodOptions_klarna_level2</td>
+                        <td>82</td>
+                        <td>0.21 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_incrementalAuthorization_level4</td>
+                        <td>83</td>
+                        <td>0.25 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_events__id_level1</td>
+                        <td>6</td>
+                        <td>0.17 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_sections_schedule[1]_items_level4</td>
+                        <td>8</td>
+                        <td>0.43 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_level1</td>
+                        <td>83</td>
+                        <td>3.69 KB</td>
+                        <td>0.18 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_modificationHistory_level3</td>
+                        <td>2</td>
+                        <td>0.53 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_packageDetails_eligibilityCriteria_level3</td>
+                        <td>5</td>
+                        <td>0.39 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrationData</td>
+                        <td>335</td>
+                        <td>2.72 KB</td>
+                        <td>0.52 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_billingDetails_level3</td>
+                        <td>1</td>
+                        <td>0.30 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_overcapture_level4</td>
+                        <td>83</td>
+                        <td>0.27 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_masonicProfiles__id_buffer_level2</td>
+                        <td>2</td>
+                        <td>0.19 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>contacts</td>
+                        <td>442</td>
+                        <td>0.72 KB</td>
+                        <td>0.16 MB</td>
+                        <td>44.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_customerInvoice_level2</td>
+                        <td>1</td>
+                        <td>1.58 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_eventTickets__id_level1</td>
+                        <td>10</td>
+                        <td>0.17 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_metadata_level2</td>
+                        <td>305</td>
+                        <td>0.29 KB</td>
+                        <td>0.11 MB</td>
+                        <td>52.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_sections_details_level3</td>
+                        <td>6</td>
+                        <td>0.48 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_packageDetails_level2</td>
+                        <td>9</td>
+                        <td>0.52 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_supplierInvoice_level2</td>
+                        <td>1</td>
+                        <td>1.55 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_attendees[1]_ticket_level3</td>
+                        <td>1</td>
+                        <td>0.24 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_grandLodges__id_level1</td>
+                        <td>206</td>
+                        <td>0.17 KB</td>
+                        <td>0.04 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_paymentMethodOptions_level1</td>
+                        <td>83</td>
+                        <td>0.33 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_amountMoney_level1</td>
+                        <td>100</td>
+                        <td>0.21 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_paymentMethodTypes_level1</td>
+                        <td>294</td>
+                        <td>0.21 KB</td>
+                        <td>0.06 MB</td>
+                        <td>52.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_attendees_attendeeData_ticket_level2</td>
+                        <td>6</td>
+                        <td>0.22 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>customers</td>
+                        <td>291</td>
+                        <td>0.64 KB</td>
+                        <td>0.13 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_customerInvoice_billTo_level3</td>
+                        <td>1</td>
+                        <td>0.54 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_selectedTickets_level2</td>
+                        <td>31</td>
+                        <td>0.42 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_bookingContact_level2</td>
+                        <td>334</td>
+                        <td>0.54 KB</td>
+                        <td>0.15 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_automaticPaymentMethods_level1</td>
+                        <td>82</td>
+                        <td>0.23 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_events_eventIncludes_level1</td>
+                        <td>29</td>
+                        <td>0.21 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_selectedPackageDetails_registrationTypes_level3</td>
+                        <td>5</td>
+                        <td>0.24 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_selectedPackageDetails_eligibilityCriteria_level3</td>
+                        <td>5</td>
+                        <td>0.40 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_comprehensiveBookingContact_level2</td>
+                        <td>5</td>
+                        <td>0.49 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_paymentMethodOptions_link_level2</td>
+                        <td>82</td>
+                        <td>0.21 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_level1</td>
+                        <td>2</td>
+                        <td>3.26 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>packages</td>
+                        <td>5</td>
+                        <td>0.89 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_level2</td>
+                        <td>1</td>
+                        <td>1.60 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_paymentMethodDetails_card_checks_level4</td>
+                        <td>83</td>
+                        <td>0.29 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_customerInvoice_payment_level3</td>
+                        <td>1</td>
+                        <td>0.51 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_metadata_billingDetails_level4</td>
+                        <td>1</td>
+                        <td>0.59 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>lodges</td>
+                        <td>277</td>
+                        <td>0.45 KB</td>
+                        <td>0.11 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_transfer_reversals_level3</td>
+                        <td>80</td>
+                        <td>0.36 KB</td>
+                        <td>0.04 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_billingAddress_level1</td>
+                        <td>54</td>
+                        <td>0.33 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_sections_schedule_level3</td>
+                        <td>6</td>
+                        <td>0.67 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_events_importantInformation_level1</td>
+                        <td>30</td>
+                        <td>0.23 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_customerInvoice_supplier_level3</td>
+                        <td>1</td>
+                        <td>0.36 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_paymentMethodOptions_card_level2</td>
+                        <td>83</td>
+                        <td>0.26 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_squareFee_level2</td>
+                        <td>1</td>
+                        <td>0.21 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_tickets__id_level1</td>
+                        <td>941</td>
+                        <td>0.17 KB</td>
+                        <td>0.08 MB</td>
+                        <td>80.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations__id_buffer_level2</td>
+                        <td>335</td>
+                        <td>0.19 KB</td>
+                        <td>0.06 MB</td>
+                        <td>48.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_invoicing_level2</td>
+                        <td>2</td>
+                        <td>0.28 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_lodgeDetails_level2</td>
+                        <td>17</td>
+                        <td>0.29 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_ticket_qrCode_level3</td>
+                        <td>1</td>
+                        <td>0.28 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_metadata_level1</td>
+                        <td>82</td>
+                        <td>0.91 KB</td>
+                        <td>0.09 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_registrationData_metadata_level3</td>
+                        <td>1</td>
+                        <td>0.77 KB</td>
+                        <td>0.02 MB</td>
+                        <td>20.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_chargeData_metadata_level2</td>
+                        <td>82</td>
+                        <td>0.89 KB</td>
+                        <td>0.07 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_grandLodges__id_buffer_level2</td>
+                        <td>205</td>
+                        <td>0.18 KB</td>
+                        <td>0.04 MB</td>
+                        <td>40.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_applicationDetails_level1</td>
+                        <td>100</td>
+                        <td>0.27 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions_metadata_documents_level2</td>
+                        <td>6</td>
+                        <td>0.27 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_squarePayments_totalMoney_level1</td>
+                        <td>100</td>
+                        <td>0.21 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_transferData_level1</td>
+                        <td>80</td>
+                        <td>0.23 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_organisations__id_level1</td>
+                        <td>481</td>
+                        <td>0.17 KB</td>
+                        <td>0.08 MB</td>
+                        <td>60.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_registrations_registrationData_attendees_level2</td>
+                        <td>469</td>
+                        <td>1.01 KB</td>
+                        <td>0.23 MB</td>
+                        <td>60.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_functions__id_level1</td>
+                        <td>2</td>
+                        <td>0.17 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+                    <tr>
+                        <td>decomposed_stripePayments_paymentMethodConfigurationDetails_level1</td>
+                        <td>82</td>
+                        <td>0.26 KB</td>
+                        <td>0.04 MB</td>
+                        <td>36.00 KB</td>
+                    </tr>
+                
+            </tbody>
+        </table>
+
+        <h2>Field Consistency Analysis</h2>
+        <h3>Field Inconsistencies (0)</h3>
+        
+
+        <h2>Data Quality Patterns</h2>
+        <div class="chart-placeholder">
+            Value Pattern Analysis Visualization
+            <br>
+            Anomalies: 0
+            <br>
+            Patterns: 0
+        </div>
+
+        <h2>Similarity Analysis</h2>
+        <div class="chart-placeholder">
+            Field Similarity Matrix
+            <br>
+            0 similarity comparisons
+        </div>
+
+        <h2>Data Classification Results</h2>
+        <p><strong>Sensitive Data Fields Detected:</strong> 0</p>
+        
+
+        <h2>Recommendations Summary</h2>
+        <ul>
+            
+            <li>Implement automated data quality monitoring</li>
+            <li>Establish data governance policies</li>
+            <li>Regular schema validation and cleanup</li>
+            <li>Implement data classification tagging</li>
+        </ul>
+
+        <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; text-align: center;">
+            <p>Report generated by Comprehensive Analysis System | 8/19/2025</p>
+        </footer>
+    </div>
+</body>
+</html>

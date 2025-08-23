@@ -122,6 +122,7 @@ export class EnhancedPaymentSyncService {
   private referenceDataService: ReferenceDataService | null = null;
   private syncRunId: string = `sync-${Date.now()}`;
   private syncLogger: SyncLogger | null = null;
+  private lastSyncDate: Date | null = null;
 
   constructor() {
     // Environment variables should already be loaded by parent scripts
@@ -292,16 +293,34 @@ export class EnhancedPaymentSyncService {
   public async syncAllPayments(options: { limit?: number } = {}): Promise<void> {
     const db = await this.connectToMongoDB();
     
+    // Check for last successful sync to determine incremental vs full sync
+    const lastSuccessfulSync = await SyncLogger.getLastSuccessfulSync(db);
+    const isIncrementalSync = lastSuccessfulSync !== null;
+    const syncMode = isIncrementalSync ? 'incremental' : 'full';
+    
     // Initialize sync logger with configuration
     const syncConfig: SyncConfiguration = {
       providers: this.providers.map(p => p.name),
       limit: options.limit,
       dryRun: false,
-      options: options
+      options: {
+        ...options,
+        syncMode,
+        lastSyncDate: lastSuccessfulSync?.toISOString() || null
+      }
     };
     
     this.syncLogger = new SyncLogger(db, this.syncRunId, syncConfig);
-    await this.syncLogger.startSession('Enhanced Payment Sync Started');
+    
+    // Log sync mode
+    const syncModeMessage = isIncrementalSync 
+      ? `Enhanced Payment Sync Started (INCREMENTAL - since ${lastSuccessfulSync.toISOString()})`
+      : 'Enhanced Payment Sync Started (FULL - no previous sync found)';
+    
+    await this.syncLogger.startSession(syncModeMessage);
+    
+    // Store last sync date for use in payment/registration queries
+    this.lastSyncDate = lastSuccessfulSync;
     
     try {
       // Legacy file logging (keeping for compatibility)
@@ -535,17 +554,28 @@ export class EnhancedPaymentSyncService {
     let totalFetched = 0;
     let cursor: string | undefined = undefined;
     
-    this.writeToLog('\nFetching ALL historical Square payments (one at a time)...');
+    // Log sync mode
+    if (this.lastSyncDate) {
+      this.writeToLog(`\nFetching Square payments since ${this.lastSyncDate.toISOString()} (INCREMENTAL)...`);
+    } else {
+      this.writeToLog('\nFetching ALL historical Square payments (FULL SYNC - one at a time)...');
+    }
     
-    // Process ALL payments - no date filtering for historical data
     do {
       try {
-        // Fetch ONE payment at a time
-        const response = await square.payments.list({ 
+        // Build request with optional date filtering
+        const listRequest: any = { 
           limit: 1,  // Process 1 payment at a time as required
           cursor: cursor 
-          // NO date filtering - process ALL historical data
-        });
+        };
+        
+        // Add date filter for incremental sync
+        if (this.lastSyncDate) {
+          listRequest.beginTime = this.lastSyncDate.toISOString();
+        }
+        
+        // Fetch ONE payment at a time
+        const response = await square.payments.list(listRequest);
         
         const payments = response.data || [];
         
@@ -623,7 +653,14 @@ export class EnhancedPaymentSyncService {
       // Check if already exists in production collection
       const existingProductionPayment = await db.collection('payments').findOne({ id: payment.id });
       if (existingProductionPayment) {
-        this.writeToLog(`  ✓ Payment already exists in production - skipping`);
+        this.writeToLog(`  ✓ Payment already exists in production - checking registration for updates`);
+        
+        // Even though payment exists, check if registration has been updated
+        const registration = await this.fetchRegistrationByPaymentId(payment.id);
+        if (registration) {
+          await this.checkAndUpdateRegistrationOnly(registration, payment.id, db, shouldMoveToProduction);
+        }
+        
         this.skippedCount++;
         return;
       }
@@ -655,7 +692,14 @@ export class EnhancedPaymentSyncService {
           await this.cleanupErrorRecords(payment.id, db);
           // Continue processing to update the payment
         } else {
-          this.writeToLog(`  ⏭️ Already imported - skipping`);
+          this.writeToLog(`  ⏭️ Already imported - checking registration for updates`);
+          
+          // Even though payment hasn't changed, check if registration has been updated
+          const registration = await this.fetchRegistrationByPaymentId(payment.id);
+          if (registration) {
+            await this.checkAndUpdateRegistrationOnly(registration, payment.id, db, shouldMoveToProduction);
+          }
+          
           this.skippedCount++;
           return;
         }
@@ -956,14 +1000,30 @@ export class EnhancedPaymentSyncService {
     let startingAfter: string | undefined;
     let processedInProvider = 0;
     
+    // Log sync mode
+    if (this.lastSyncDate) {
+      this.writeToLog(`\nFetching Stripe charges since ${this.lastSyncDate.toISOString()} (INCREMENTAL)...`);
+    } else {
+      this.writeToLog('\nFetching ALL historical Stripe charges (FULL SYNC)...');
+    }
+    
     while (hasMore) {
       try {
-        // Process charges one by one
-        const charges = await stripe.charges.list({
+        // Build request with optional date filtering
+        const listParams: Stripe.ChargeListParams = {
           limit: 1, // Process 1 at a time
           starting_after: startingAfter
-          // NO date filtering - process ALL historical charges
-        });
+        };
+        
+        // Add date filter for incremental sync (Stripe uses Unix timestamp in seconds)
+        if (this.lastSyncDate) {
+          listParams.created = {
+            gte: Math.floor(this.lastSyncDate.getTime() / 1000)
+          };
+        }
+        
+        // Process charges one by one
+        const charges = await stripe.charges.list(listParams);
 
         for (const charge of charges.data) {
           await this.processSingleStripeCharge(charge, provider, db, stripe);
@@ -1031,7 +1091,16 @@ export class EnhancedPaymentSyncService {
       // Check if already exists in production collection
       const existingProductionPayment = await db.collection('payments').findOne({ id: charge.id });
       if (existingProductionPayment) {
-        this.writeToLog(`  ✓ Charge already exists in production - skipping`);
+        this.writeToLog(`  ✓ Charge already exists in production - checking registration for updates`);
+        
+        // Even though charge exists, check if registration has been updated
+        if (charge.payment_intent) {
+          const registration = await this.fetchRegistrationByPaymentId(charge.payment_intent as string);
+          if (registration) {
+            await this.checkAndUpdateRegistrationOnly(registration, charge.id, db, shouldMoveToProduction);
+          }
+        }
+        
         this.skippedCount++;
         return;
       }
@@ -1050,7 +1119,16 @@ export class EnhancedPaymentSyncService {
           await this.cleanupErrorRecords(charge.id, db);
           // Continue processing to update the charge
         } else {
-          this.writeToLog(`  ⏭️ Already imported - skipping`);
+          this.writeToLog(`  ⏭️ Already imported - checking registration for updates`);
+          
+          // Even though charge hasn't changed, check if registration has been updated
+          if (charge.payment_intent) {
+            const registration = await this.fetchRegistrationByPaymentId(charge.payment_intent as string);
+            if (registration) {
+              await this.checkAndUpdateRegistrationOnly(registration, charge.id, db, shouldMoveToProduction);
+            }
+          }
+          
           this.skippedCount++;
           return;
         }
@@ -2025,6 +2103,415 @@ export class EnhancedPaymentSyncService {
     const email = charge.receipt_email || charge.billing_details?.email || '';
     
     return cardLast4 === '8251' && email.includes('@allatt.me');
+  }
+
+  /**
+   * Compare two objects and return only the fields that have changed
+   * Ignores metadata fields like _id, createdAt, updatedAt, _import
+   */
+  private getChangedFields(sourceData: any, existingData: any): any {
+    const changes: any = {};
+    const metadataFields = ['_id', 'createdAt', 'updatedAt', '_import', '_shouldMoveToProduction'];
+    
+    // Check each field in the source data
+    for (const key in sourceData) {
+      // Skip metadata fields
+      if (metadataFields.includes(key)) continue;
+      
+      const sourceValue = sourceData[key];
+      const existingValue = existingData[key];
+      
+      // Handle null/undefined comparison
+      if (sourceValue === existingValue) continue;
+      if (sourceValue == null && existingValue == null) continue;
+      
+      // Handle date comparison
+      if (sourceValue instanceof Date || existingValue instanceof Date) {
+        const sourceTime = sourceValue ? new Date(sourceValue).getTime() : null;
+        const existingTime = existingValue ? new Date(existingValue).getTime() : null;
+        if (sourceTime !== existingTime) {
+          changes[key] = sourceValue;
+        }
+        continue;
+      }
+      
+      // Handle object/array comparison (deep comparison)
+      if (typeof sourceValue === 'object' && sourceValue !== null) {
+        const sourceStr = JSON.stringify(sourceValue);
+        const existingStr = JSON.stringify(existingValue || {});
+        if (sourceStr !== existingStr) {
+          changes[key] = sourceValue;
+        }
+        continue;
+      }
+      
+      // Simple value comparison
+      if (sourceValue !== existingValue) {
+        changes[key] = sourceValue;
+      }
+    }
+    
+    return changes;
+  }
+
+  /**
+   * Check if source data is newer than existing data based on updated_at timestamp
+   */
+  private isSourceNewer(sourceData: any, existingData: any): boolean {
+    const sourceUpdatedAt = sourceData.updated_at || sourceData.updatedAt;
+    const existingUpdatedAt = existingData.updated_at || existingData.updatedAt;
+    
+    if (!sourceUpdatedAt) return false; // No source timestamp, assume not newer
+    if (!existingUpdatedAt) return true; // No existing timestamp, source is newer
+    
+    const sourceTime = new Date(sourceUpdatedAt).getTime();
+    const existingTime = new Date(existingUpdatedAt).getTime();
+    
+    return sourceTime > existingTime;
+  }
+
+  /**
+   * Check if a registration has been updated and process it if needed
+   * This is used when a payment is skipped but we still need to check for registration updates
+   */
+  private async checkAndUpdateRegistrationOnly(
+    registration: any,
+    paymentId: string,
+    db: Db,
+    shouldMoveToProduction: boolean
+  ): Promise<void> {
+    try {
+      // Check if registration exists in import collection
+      const existingRegistration = await db.collection('import_registrations').findOne({ id: registration.id });
+      
+      if (!existingRegistration) {
+        this.writeToLog(`    📝 Registration not yet imported - importing now`);
+        // Registration hasn't been imported yet, import it
+        await this.importRegistrationOnly(registration, paymentId, db, shouldMoveToProduction);
+        return;
+      }
+      
+      // Check if source registration is newer
+      if (this.isSourceNewer(registration, existingRegistration)) {
+        this.writeToLog(`    🔄 Registration has been updated in Supabase`);
+        this.writeToLog(`    📅 Supabase updated: ${registration.updated_at || 'unknown'}`);
+        this.writeToLog(`    📅 Import updated: ${existingRegistration.updatedAt || 'unknown'}`);
+        
+        // Get only the changed fields
+        const changedFields = this.getChangedFields(registration, existingRegistration);
+        const fieldCount = Object.keys(changedFields).length;
+        
+        if (fieldCount > 0) {
+          this.writeToLog(`    📝 Found ${fieldCount} changed fields: ${Object.keys(changedFields).join(', ')}`);
+          
+          // Update only the changed fields
+          await this.updateRegistrationFields(registration.id, changedFields, db);
+          
+          // Process attendees, tickets, and contacts with field-level updates
+          await this.processAttendeesTicketsAndContactsWithFieldUpdates(registration, db);
+          
+          // Sync to production if eligible
+          if (shouldMoveToProduction) {
+            this.writeToLog(`    🔄 Syncing updated fields to production...`);
+            try {
+              await this.syncRegistrationFieldsToProduction(registration.id, changedFields, db);
+              this.writeToLog(`    ✅ Registration fields synced to production`);
+            } catch (error: any) {
+              this.writeToLog(`    ⚠️ Failed to sync registration to production: ${error.message}`);
+            }
+          }
+        } else {
+          this.writeToLog(`    ✓ Registration timestamps updated but no field changes detected`);
+        }
+      } else {
+        this.writeToLog(`    ✓ Registration is up to date`);
+      }
+    } catch (error: any) {
+      this.writeToLog(`    ❌ Error checking registration: ${error.message}`);
+    }
+  }
+
+  /**
+   * Import only the registration (used when payment is skipped but registration needs updating)
+   */
+  private async importRegistrationOnly(
+    registration: any,
+    paymentId: string,
+    db: Db,
+    shouldMoveToProduction: boolean
+  ): Promise<void> {
+    const registrationImportData = {
+      ...registration,
+      paymentId: paymentId,
+      _shouldMoveToProduction: shouldMoveToProduction
+    };
+    
+    const registrationImport = createImportDocument(
+      registrationImportData,
+      'supabase',
+      'supabase-registration'
+    );
+    
+    await db.collection('import_registrations').replaceOne(
+      { id: registration.id },
+      registrationImport,
+      { upsert: true }
+    );
+    
+    this.writeToLog(`    ✓ Updated registration in import_registrations`);
+    
+    // Process customer from registration
+    await this.processCustomerFromRegistration(registrationImport, db);
+  }
+
+  /**
+   * Update only specific fields of a registration
+   */
+  private async updateRegistrationFields(registrationId: string, changedFields: any, db: Db): Promise<void> {
+    if (Object.keys(changedFields).length === 0) return;
+    
+    // Add updated timestamp
+    changedFields.updatedAt = new Date();
+    
+    await db.collection('import_registrations').updateOne(
+      { id: registrationId },
+      { $set: changedFields }
+    );
+    
+    this.writeToLog(`    ✓ Updated ${Object.keys(changedFields).length - 1} fields in import_registrations`);
+  }
+
+  /**
+   * Sync only changed registration fields to production
+   */
+  private async syncRegistrationFieldsToProduction(registrationId: string, changedFields: any, db: Db): Promise<void> {
+    if (Object.keys(changedFields).length === 0) return;
+    
+    // Check if registration exists in production
+    const existingProd = await db.collection('registrations').findOne({ id: registrationId });
+    if (!existingProd) {
+      // If not in production yet, sync the whole registration
+      const registration = await db.collection('import_registrations').findOne({ id: registrationId });
+      if (registration) {
+        await this.selectiveSyncToProduction(
+          registration,
+          'import_registrations',
+          'registrations',
+          { id: registrationId },
+          db
+        );
+      }
+    } else {
+      // Update only the changed fields in production
+      await db.collection('registrations').updateOne(
+        { id: registrationId },
+        { $set: changedFields }
+      );
+    }
+  }
+
+  /**
+   * Process attendees, tickets, and contacts with field-level updates
+   */
+  private async processAttendeesTicketsAndContactsWithFieldUpdates(registration: any, db: Db): Promise<void> {
+    const registrationId = registration.id;
+    
+    // Process attendees from registration_data
+    if (registration.registration_data?.attendees) {
+      for (const attendeeData of registration.registration_data.attendees) {
+        await this.updateAttendeeWithFieldComparison(attendeeData, registrationId, db);
+      }
+    }
+    
+    // Process tickets from registration_data
+    if (registration.registration_data?.tickets) {
+      for (const ticketData of registration.registration_data.tickets) {
+        await this.updateTicketWithFieldComparison(ticketData, registrationId, db);
+      }
+    }
+    
+    // Process contacts (booking contact)
+    if (registration.registration_data?.bookingContact) {
+      await this.updateContactWithFieldComparison(registration.registration_data.bookingContact, db);
+    }
+  }
+
+  /**
+   * Update attendee only if fields have changed
+   */
+  private async updateAttendeeWithFieldComparison(attendeeData: any, registrationId: string, db: Db): Promise<void> {
+    const attendeeId = attendeeData.id || `${registrationId}-${attendeeData.ticketId}`;
+    
+    // Check existing attendee
+    const existingAttendee = await db.collection('import_attendees').findOne({ id: attendeeId });
+    
+    if (!existingAttendee) {
+      // New attendee, import it
+      const attendeeImport = createImportDocument(
+        {
+          ...attendeeData,
+          id: attendeeId,
+          registrationId
+        },
+        'supabase',
+        'supabase-attendee'
+      );
+      await db.collection('import_attendees').insertOne(attendeeImport);
+      this.writeToLog(`      ✓ New attendee imported: ${attendeeId}`);
+    } else if (this.isSourceNewer(attendeeData, existingAttendee)) {
+      // Check for changed fields
+      const changedFields = this.getChangedFields(attendeeData, existingAttendee);
+      
+      if (Object.keys(changedFields).length > 0) {
+        changedFields.updatedAt = new Date();
+        await db.collection('import_attendees').updateOne(
+          { id: attendeeId },
+          { $set: changedFields }
+        );
+        this.writeToLog(`      ✓ Attendee ${attendeeId} updated: ${Object.keys(changedFields).length - 1} fields`);
+        
+        // Also update in production if exists
+        const prodAttendee = await db.collection('attendees').findOne({ id: attendeeId });
+        if (prodAttendee) {
+          await db.collection('attendees').updateOne(
+            { id: attendeeId },
+            { $set: changedFields }
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Update ticket only if fields have changed
+   */
+  private async updateTicketWithFieldComparison(ticketData: any, registrationId: string, db: Db): Promise<void> {
+    const ticketId = ticketData.id || `${registrationId}-ticket-${ticketData.ticketNumber}`;
+    
+    // Check existing ticket
+    const existingTicket = await db.collection('import_tickets').findOne({ id: ticketId });
+    
+    if (!existingTicket) {
+      // New ticket, import it
+      const ticketImport = createImportDocument(
+        {
+          ...ticketData,
+          id: ticketId,
+          registrationId
+        },
+        'supabase',
+        'supabase-ticket'
+      );
+      await db.collection('import_tickets').insertOne(ticketImport);
+      this.writeToLog(`      ✓ New ticket imported: ${ticketId}`);
+    } else if (this.isSourceNewer(ticketData, existingTicket)) {
+      // Check for changed fields
+      const changedFields = this.getChangedFields(ticketData, existingTicket);
+      
+      if (Object.keys(changedFields).length > 0) {
+        changedFields.updatedAt = new Date();
+        await db.collection('import_tickets').updateOne(
+          { id: ticketId },
+          { $set: changedFields }
+        );
+        this.writeToLog(`      ✓ Ticket ${ticketId} updated: ${Object.keys(changedFields).length - 1} fields`);
+        
+        // Also update in production if exists
+        const prodTicket = await db.collection('tickets').findOne({ id: ticketId });
+        if (prodTicket) {
+          await db.collection('tickets').updateOne(
+            { id: ticketId },
+            { $set: changedFields }
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Update contact only if fields have changed
+   */
+  private async updateContactWithFieldComparison(contactData: any, db: Db): Promise<void> {
+    const email = contactData.email;
+    if (!email) return;
+    
+    // Check existing contact by email (primary deduplication key)
+    const existingContact = await db.collection('import_contacts').findOne({ email });
+    
+    if (!existingContact) {
+      // New contact, import it
+      const contactImport = createImportDocument(
+        contactData,
+        'supabase',
+        'supabase-contact'
+      );
+      await db.collection('import_contacts').insertOne(contactImport);
+      this.writeToLog(`      ✓ New contact imported: ${email}`);
+    } else if (this.isSourceNewer(contactData, existingContact)) {
+      // Check for changed fields
+      const changedFields = this.getChangedFields(contactData, existingContact);
+      
+      if (Object.keys(changedFields).length > 0) {
+        changedFields.updatedAt = new Date();
+        await db.collection('import_contacts').updateOne(
+          { email },
+          { $set: changedFields }
+        );
+        this.writeToLog(`      ✓ Contact ${email} updated: ${Object.keys(changedFields).length - 1} fields`);
+        
+        // Also update in production if exists
+        const prodContact = await db.collection('contacts').findOne({ email });
+        if (prodContact) {
+          await db.collection('contacts').updateOne(
+            { email },
+            { $set: changedFields }
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Sync only registration data to production (without payment)
+   */
+  private async syncRegistrationToProduction(registrationId: string, db: Db): Promise<void> {
+    // Get registration from import
+    const registration = await db.collection('import_registrations').findOne({ id: registrationId });
+    if (!registration) {
+      throw new Error(`Registration ${registrationId} not found in import_registrations`);
+    }
+    
+    // Sync registration to production
+    await this.selectiveSyncToProduction(
+      registration,
+      'import_registrations',
+      'registrations',
+      { id: registrationId },
+      db
+    );
+    
+    // Also sync related attendees, tickets, and contacts
+    const attendees = await db.collection('import_attendees').find({ registrationId }).toArray();
+    for (const attendee of attendees) {
+      await this.selectiveSyncToProduction(
+        attendee,
+        'import_attendees',
+        'attendees',
+        { id: attendee.id },
+        db
+      );
+    }
+    
+    const tickets = await db.collection('import_tickets').find({ registrationId }).toArray();
+    for (const ticket of tickets) {
+      await this.selectiveSyncToProduction(
+        ticket,
+        'import_tickets',
+        'tickets',
+        { id: ticket.id },
+        db
+      );
+    }
   }
 
   private async fetchRegistrationByPaymentId(paymentId: string): Promise<any> {

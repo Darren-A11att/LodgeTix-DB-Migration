@@ -512,6 +512,17 @@ export class SyncLogger {
     };
   }
 
+  // Static method to get the most recent successful sync
+  static async getLastSuccessfulSync(db: Db): Promise<Date | null> {
+    const result = await db.collection('sync_log')
+      .findOne(
+        { status: 'completed' },
+        { sort: { endTimestamp: -1 } }
+      ) as SyncLogDocument | null;
+    
+    return result?.endTimestamp || null;
+  }
+
   // Static method to clean up old logs
   static async cleanupOldLogs(
     db: Db,

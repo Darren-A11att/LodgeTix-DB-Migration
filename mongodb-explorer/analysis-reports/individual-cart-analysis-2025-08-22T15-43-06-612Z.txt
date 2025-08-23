@@ -1,0 +1,116 @@
+
+INDIVIDUAL CART STRUCTURE ANALYSIS REPORT
+=========================================
+
+SUMMARY:
+- Total individual carts analyzed: 306
+- Carts with issues: 306
+- Carts without issues: 0
+- Success rate: 0.0%
+
+ISSUES FOUND:
+=============
+
+1. INCOMPLETE INDIVIDUAL STRUCTURE (0 carts)
+   - Carts with no individual registration items
+   
+2. MULTIPLE BUNDLES PER CART (0 carts)
+   - Not applicable for current cart structure
+   
+3. INCOMPLETE FORM DATA (469 items)
+   - Individual items missing required attendee information
+   
+4. IMPROPERLY LINKED CHILDREN (0 carts)
+   - Child items (event tickets) not properly linked to parent individual items
+
+DETAILED ANALYSIS:
+==================
+
+INCOMPLETE FORM DATA DETAILS:
+
+Most commonly missing fields:
+- email: missing in 469 items
+- phone: missing in 469 items
+- lodgeName: missing in 469 items
+- lodgeNumber: missing in 469 items
+- rank: missing in 469 items
+- accessibility: missing in 469 items
+- isPartner: missing in 469 items
+- partnerOf: missing in 469 items
+- relationship: missing in 469 items
+- specialNeeds: missing in 408 items
+- dietary: missing in 377 items
+
+EXAMPLES OF INCOMPLETE FORM DATA:
+
+Example 1:
+Cart ID: 90fa5fed-7798-4e2f-9b13-521ddcfea8c6
+Item ID: f112efd9-eb28-441b-8559-9efcc7ce10d2
+Customer: Paul Schultz
+Missing fields: email, phone, lodgeName, lodgeNumber, rank, dietary, accessibility, specialNeeds, isPartner, partnerOf, relationship
+Current formData keys: attendeeId, firstName, lastName, email, phone, title, lodgeName, lodgeNumber, rank, dietary, accessibility, specialNeeds, isPartner, partnerOf, relationship
+Sample formData: {
+  "attendeeId": "895ebf19-d25a-4abd-8200-f01ca6059c8e",
+  "firstName": "Eleanor ",
+  "lastName": "Schultz ",
+  "email": "",
+  "phone": "",
+  "title": "Mrs",
+  "lodgeName": "",
+  "lodgeNumber": "",
+  "rank": "",
+  "dietary": "",
+  "accessibility": "",
+  "specialNeeds": "",
+  "isPartner": false,
+  "partnerOf": "",
+  "relationship": ""
+}
+
+Example 2:
+Cart ID: 90fa5fed-7798-4e2f-9b13-521ddcfea8c6
+Item ID: 822e3f59-6b96-44ad-a45c-b4c2ae0746d5
+Customer: Paul Schultz
+Missing fields: email, phone, lodgeName, lodgeNumber, rank, dietary, accessibility, specialNeeds, isPartner, partnerOf, relationship
+Current formData keys: attendeeId, firstName, lastName, email, phone, title, lodgeName, lodgeNumber, rank, dietary, accessibility, specialNeeds, isPartner, partnerOf, relationship
+Sample formData: {
+  "attendeeId": "5c359055-46dd-44af-8b12-54f5ffa38897",
+  "firstName": "Paul",
+  "lastName": "Schultz ",
+  "email": "",
+  "phone": "",
+  "title": "RW Bro",
+  "lodgeName": "",
+  "lodgeNumber": "",
+  "rank": "",
+  "dietary": "",
+  "accessibility": "",
+  "specialNeeds": "",
+  "isPartner": false,
+  "partnerOf": "",
+  "relationship": ""
+}
+
+Example 3:
+Cart ID: b49542ec-cbf2-43fe-95bb-b93edcd466f2
+Item ID: cacad0bc-2279-47ad-8496-4886b95ec289
+Customer: David Atherton
+Missing fields: email, phone, lodgeName, lodgeNumber, rank, accessibility, specialNeeds, isPartner, partnerOf, relationship
+Current formData keys: attendeeId, firstName, lastName, email, phone, title, lodgeName, lodgeNumber, rank, dietary, accessibility, specialNeeds, isPartner, partnerOf, relationship
+Sample formData: {
+  "attendeeId": "208bdc3f-d170-43f4-bc4e-a83800a25246",
+  "firstName": "Christina",
+  "lastName": "Amexander",
+  "email": "",
+  "phone": "",
+  "title": "Ms",
+  "lodgeName": "",
+  "lodgeNumber": "",
+  "rank": "",
+  "dietary": "Gluten Free, Pescatarian",
+  "accessibility": "",
+  "specialNeeds": "",
+  "isPartner": false,
+  "partnerOf": "",
+  "relationship": ""
+}
