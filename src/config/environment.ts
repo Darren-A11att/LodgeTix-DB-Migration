@@ -81,16 +81,16 @@ export const config: Config = {
   },
   stripe: {
     account1: {
-      secretKey: getRequiredEnv('STRIPE_ACCOUNT1_SECRET_KEY'),
-      name: getOptionalEnv('STRIPE_ACCOUNT1_NAME', 'Account 1'),
+      secretKey: getRequiredEnv('STRIPE_ACCOUNT_1_SECRET_KEY'),
+      name: getOptionalEnv('STRIPE_ACCOUNT_1_NAME', 'Account 1'),
     },
     account2: {
-      secretKey: getRequiredEnv('STRIPE_ACCOUNT2_SECRET_KEY'),
-      name: getOptionalEnv('STRIPE_ACCOUNT2_NAME', 'Account 2'),
+      secretKey: getRequiredEnv('STRIPE_ACCOUNT_2_SECRET_KEY'),
+      name: getOptionalEnv('STRIPE_ACCOUNT_2_NAME', 'Account 2'),
     },
     account3: {
-      secretKey: getRequiredEnv('STRIPE_ACCOUNT3_SECRET_KEY'),
-      name: getOptionalEnv('STRIPE_ACCOUNT3_NAME', 'Account 3'),
+      secretKey: getRequiredEnv('STRIPE_ACCOUNT_3_SECRET_KEY'),
+      name: getOptionalEnv('STRIPE_ACCOUNT_3_NAME', 'Account 3'),
     },
   },
   migration: {
