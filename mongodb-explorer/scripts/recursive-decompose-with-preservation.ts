@@ -350,4 +350,5 @@ if (require.main === module) {
   main().catch(console.error);
 }
 
-export { RecursiveMongoDecomposer, DecomposedDocument, DecompositionStats };
+export { RecursiveMongoDecomposer };
+export type { DecomposedDocument, DecompositionStats };

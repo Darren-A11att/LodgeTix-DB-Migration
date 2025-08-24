@@ -14,10 +14,11 @@ import {
   generateOrderId as generateOrderIdFromSchema,
   createOrderReference as createOrderReferenceFromSchema
 } from './nested-schemas';
+import { mapSupabaseToMongo, validateRequiredFields } from './supabase-field-mapper';
 
 /**
  * Process a registration into an Order document
- * @param registration - Registration data from import_registrations
+ * @param registration - Registration data from import_registrations (with Supabase UUIDs)
  * @param customer - Customer data (with customerId)
  * @returns Complete Order document ready for insertion
  */
@@ -36,8 +37,8 @@ export function processOrder(registration: any, customer: any): Order {
       
       orderedItems.push({
         itemId: new ObjectId(),
-        productId: ticket.eventTicketId ? new ObjectId(ticket.eventTicketId) : undefined,
-        ticketId: ticket.ticketId ? new ObjectId(ticket.ticketId) : undefined,
+        productId: ticket.eventTicketId || undefined, // Keep as UUID string
+        ticketId: ticket.ticketId || undefined, // Keep as UUID string
         name: ticket.ticketName || ticket.ticketType || 'Event Ticket',
         description: `${ticket.eventName || 'Event'} - ${ticket.ticketType || 'General'}`,
         quantity: 1,
@@ -107,7 +108,7 @@ export function processOrder(registration: any, customer: any): Order {
     completedDate: registration.paymentStatus === 'paid' ? new Date() : undefined,
     
     // Function/Event Information
-    functionId: registration.functionId ? new ObjectId(registration.functionId) : undefined,
+    functionId: registration.functionId || undefined, // Keep as UUID string
     functionName: registration.functionName || registration.registrationData?.functionName,
     functionDate: registration.eventDate ? new Date(registration.eventDate) : undefined,
     
@@ -152,7 +153,8 @@ export async function processOrdersFromRegistrations(
 ): Promise<{ 
   ordersCreated: number; 
   ordersSkipped: number; 
-  errors: any[] 
+  errors: any[];
+  auditLog: any[];
 }> {
   const ordersCollection = db.collection('orders');
   const customersCollection = db.collection('customers');
@@ -161,22 +163,36 @@ export async function processOrdersFromRegistrations(
   let ordersCreated = 0;
   let ordersSkipped = 0;
   const errors: any[] = [];
+  const auditLog: any[] = [];
   
   console.log(`\n📦 Processing ${registrations.length} registrations into orders...`);
   
   for (const registration of registrations) {
     try {
-      // Skip if already processed
+      // Skip if already processed - match on UUID string
       const existingOrder = await ordersCollection.findOne({
-        'externalIds.lodgetixOrderId': registration.registrationId
+        'externalIds.lodgetixOrderId': registration.registrationId  // UUID string comparison
       });
       
       if (existingOrder) {
         ordersSkipped++;
+        auditLog.push({
+          timestamp: new Date(),
+          registrationId: registration.registrationId,
+          decision: 'SKIP',
+          businessRule: 'DUPLICATE_ORDER',
+          reason: 'Order already exists for this registration',
+          metadata: {
+            existingOrderId: existingOrder.orderId,
+            existingOrderCreated: existingOrder.createdAt,
+            registrationDate: registration.createdAt
+          }
+        });
+        console.log(`⏭️ Skipped ${registration.registrationId}: Order already exists (${existingOrder.orderId})`);
         continue;
       }
       
-      // Find or create customer
+      // Find or create customer - using exact field matching
       let customer = await customersCollection.findOne({
         email: registration.email,
         firstName: registration.firstName,
@@ -249,12 +265,59 @@ export async function processOrdersFromRegistrations(
       
       ordersCreated++;
       
-    } catch (error: any) {
-      errors.push({
+      auditLog.push({
+        timestamp: new Date(),
         registrationId: registration.registrationId,
-        error: error.message
+        decision: 'CREATE',
+        businessRule: 'NEW_ORDER',
+        reason: 'Successfully created order from registration',
+        metadata: {
+          orderId: order.orderId,
+          customerId: customer._id,
+          totalAmount: order.totalAmount,
+          paymentStatus: order.paymentStatus,
+          itemCount: order.orderedItems.length
+        }
       });
+      
+      console.log(`✅ Created order ${order.orderId} for registration ${registration.registrationId}`);
+      
+    } catch (error: any) {
+      const errorDetail = {
+        registrationId: registration.registrationId,
+        error: error.message,
+        stack: error.stack,
+        registration: {
+          id: registration.registrationId,
+          paymentStatus: registration.paymentStatus,
+          totalAmount: registration.totalAmountPaid,
+          customerEmail: registration.registrationData?.bookingContact?.email
+        }
+      };
+      errors.push(errorDetail);
       ordersSkipped++;
+      
+      auditLog.push({
+        timestamp: new Date(),
+        registrationId: registration.registrationId,
+        decision: 'ERROR',
+        businessRule: 'PROCESSING_ERROR',
+        reason: error.message,
+        metadata: {
+          errorType: error.name,
+          errorStack: error.stack,
+          paymentStatus: registration.paymentStatus,
+          isObjectIdError: error.stack?.includes('ObjectId')
+        }
+      });
+      
+      // Log detailed error immediately
+      console.error(`❌ Order processing failed for ${registration.registrationId}:`);
+      console.error(`   Error: ${error.message}`);
+      if (error.stack?.includes('ObjectId')) {
+        console.error(`   Issue: Attempting to convert UUID to ObjectId`);
+        console.error(`   Solution: Keep UUIDs as strings in the database`);
+      }
     }
   }
   
@@ -263,7 +326,29 @@ export async function processOrdersFromRegistrations(
     console.log(`⚠️  ${errors.length} errors occurred during processing`);
   }
   
-  return { ordersCreated, ordersSkipped, errors };
+  // Generate audit summary
+  console.log('\n📊 AUDIT SUMMARY:');
+  const decisionCounts = auditLog.reduce((acc, log) => {
+    acc[log.decision] = (acc[log.decision] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  Object.entries(decisionCounts).forEach(([decision, count]) => {
+    console.log(`  ${decision}: ${count} registrations`);
+  });
+  
+  // Log business rule breakdown
+  const ruleCounts = auditLog.reduce((acc, log) => {
+    acc[log.businessRule] = (acc[log.businessRule] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  console.log('\n📋 BUSINESS RULES APPLIED:');
+  Object.entries(ruleCounts).forEach(([rule, count]) => {
+    console.log(`  ${rule}: ${count} times`);
+  });
+  
+  return { ordersCreated, ordersSkipped, errors, auditLog };
 }
 
 // Helper functions

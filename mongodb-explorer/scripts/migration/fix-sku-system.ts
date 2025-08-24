@@ -24,7 +24,7 @@ async function fixSkuSystem() {
     
     // Initialize SKU counter if it doesn't exist
     await countersCollection.updateOne(
-      { _id: 'sku_counter' },
+      { _id: 'sku_counter' as any },
       { $setOnInsert: { sequence_value: 1000 } }, // Start at 1000 for professional look
       { upsert: true }
     );
@@ -32,7 +32,7 @@ async function fixSkuSystem() {
     // Function to get next SKU number
     async function getNextSkuNumber(): Promise<number> {
       const result = await countersCollection.findOneAndUpdate(
-        { _id: 'sku_counter' },
+        { _id: 'sku_counter' as any },
         { $inc: { sequence_value: 1 } },
         { returnDocument: 'after' }
       );
@@ -232,7 +232,7 @@ async function fixSkuSystem() {
     console.log('📊 SKU SYSTEM SUMMARY');
     console.log('-'.repeat(40));
     
-    const counter = await countersCollection.findOne({ _id: 'sku_counter' });
+    const counter = await countersCollection.findOne({ _id: 'sku_counter' as any });
     console.log(`\nNext SKU Number: ${counter?.sequence_value}`);
     
     console.log('\nSKU Format Examples:');

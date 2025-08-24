@@ -486,4 +486,5 @@ if (require.main === module) {
   main();
 }
 
-export { MultiLevelSchemaAnalyzer, CollectionAnalysis };
+export { MultiLevelSchemaAnalyzer };
+export type { CollectionAnalysis };

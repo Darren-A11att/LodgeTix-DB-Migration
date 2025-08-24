@@ -216,7 +216,7 @@ async function deepValueAnalysis() {
         let isEmpty = 0;
         
         for (const reg of allRegs) {
-          let value = reg;
+          let value: any = reg;
           let found = true;
           
           for (const part of parts) {

@@ -22,7 +22,7 @@ async function checkSkuStructure() {
     const countersCollection = db.collection('counters');
     
     // Check counter
-    const counter = await countersCollection.findOne({ _id: 'sku_counter' });
+    const counter = await countersCollection.findOne({ _id: 'sku_counter' as any });
     console.log('\n📊 SKU Counter:');
     console.log(`  Current sequence: ${counter?.sequence_value}`);
     

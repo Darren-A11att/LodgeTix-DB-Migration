@@ -402,7 +402,7 @@ async function createCartFromRegistration(
     discount: 0,
     total: total,
     currency: 'AUD',
-    source: 'migration',
+    source: 'migration' as any,
     createdAt: new Date(registration.createdAt || Date.now()),
     updatedAt: new Date(registration.updatedAt || Date.now()),
     convertedAt: registration.paymentCompleted ? new Date(registration.paymentDate || Date.now()) : undefined
@@ -469,7 +469,7 @@ async function createOrderFromCart(cart: Cart, registration: any, isRefunded: bo
     status: isRefunded ? 'refunded' : 'completed',
     paymentStatus: isRefunded ? 'refunded' : 'paid',
     fulfillmentStatus: isRefunded ? 'unfulfilled' : 'fulfilled',
-    source: 'migration',
+    source: 'migration' as any,
     originalRegistrationId: registration.registrationId,
     createdAt: new Date(registration.createdAt || Date.now()),
     updatedAt: new Date(registration.updatedAt || Date.now()),

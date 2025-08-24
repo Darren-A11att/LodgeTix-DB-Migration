@@ -356,7 +356,8 @@ async function runMigration() {
 }
 
 // Export for testing
-export { MigrationValidator, MigrationResult };
+export { MigrationValidator };
+export type { MigrationResult };
 
 // Run if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -365,6 +365,39 @@ class FieldCoverageAnalyzer {
     await fs.promises.writeFile(outputPath, JSON.stringify(report, null, 2));
     console.log(`💾 Report saved to: ${outputPath}`);
   }
+
+  async saveCsvSummary(report: CoverageReport, outputPath: string): Promise<void> {
+    const csvLines: string[] = [
+      'Collection,Field Path,Total Documents,Meaningful Coverage %,Presence Rate %,Null Rate %,Empty String Rate %,Empty Array Rate %,Empty Object Rate %,Undefined Rate %'
+    ];
+
+    for (const collection of report.collections) {
+      for (const field of collection.fields) {
+        const line = [
+          collection.collectionName,
+          field.fieldPath,
+          field.totalDocuments,
+          field.meaningfulCoverage.toFixed(2),
+          field.presenceRate.toFixed(2),
+          field.nullRate.toFixed(2),
+          field.emptyStringRate.toFixed(2),
+          field.emptyArrayRate.toFixed(2),
+          field.emptyObjectRate.toFixed(2),
+          field.undefinedRate.toFixed(2)
+        ].join(',');
+        
+        csvLines.push(line);
+      }
+    }
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    await fs.promises.writeFile(outputPath, csvLines.join('\n'));
+    console.log(`📊 CSV summary saved to: ${outputPath}`);
+  }
 }
 
 async function main() {
@@ -404,42 +437,10 @@ async function main() {
   }
 }
 
-// Add CSV export functionality
-FieldCoverageAnalyzer.prototype.saveCsvSummary = async function(report: CoverageReport, outputPath: string): Promise<void> {
-  const csvLines: string[] = [
-    'Collection,Field Path,Total Documents,Meaningful Coverage %,Presence Rate %,Null Rate %,Empty String Rate %,Empty Array Rate %,Empty Object Rate %,Undefined Rate %'
-  ];
-
-  for (const collection of report.collections) {
-    for (const field of collection.fields) {
-      const line = [
-        collection.collectionName,
-        field.fieldPath,
-        field.totalDocuments,
-        field.meaningfulCoverage.toFixed(2),
-        field.presenceRate.toFixed(2),
-        field.nullRate.toFixed(2),
-        field.emptyStringRate.toFixed(2),
-        field.emptyArrayRate.toFixed(2),
-        field.emptyObjectRate.toFixed(2),
-        field.undefinedRate.toFixed(2)
-      ].join(',');
-      
-      csvLines.push(line);
-    }
-  }
-
-  const dir = path.dirname(outputPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  await fs.promises.writeFile(outputPath, csvLines.join('\n'));
-  console.log(`📊 CSV summary saved to: ${outputPath}`);
-};
 
 if (require.main === module) {
   main().catch(console.error);
 }
 
-export { FieldCoverageAnalyzer, FieldCoverageStats, CollectionCoverage, CoverageReport };
+export { FieldCoverageAnalyzer };
+export type { FieldCoverageStats, CollectionCoverage, CoverageReport };

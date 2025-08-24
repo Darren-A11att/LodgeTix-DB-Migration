@@ -413,4 +413,5 @@ if (require.main === module) {
   main().catch(console.error);
 }
 
-export { ExactFieldMatchingAnalyzer, FieldInfo, CollectionFieldStats, AnalysisResults };
+export { ExactFieldMatchingAnalyzer };
+export type { FieldInfo, CollectionFieldStats, AnalysisResults };

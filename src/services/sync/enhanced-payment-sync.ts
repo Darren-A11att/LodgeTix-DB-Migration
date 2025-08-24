@@ -400,7 +400,7 @@ export class EnhancedPaymentSyncService {
         const importRegistrations = await db.collection('import_registrations').find({}).toArray();
         
         if (importRegistrations.length > 0) {
-          const { ordersCreated, ordersSkipped, errors } = await processOrdersFromRegistrations(
+          const { ordersCreated, ordersSkipped, errors, auditLog } = await processOrdersFromRegistrations(
             importRegistrations,
             db
           );
@@ -409,6 +409,25 @@ export class EnhancedPaymentSyncService {
           this.writeToLog(`⏭️ Orders skipped: ${ordersSkipped}`);
           if (errors.length > 0) {
             this.writeToLog(`⚠️ Order processing errors: ${errors.length}`);
+            // Log first 3 errors for visibility
+            errors.slice(0, 3).forEach(err => {
+              this.writeToLog(`   ❌ ${err.registrationId}: ${err.error}`);
+            });
+          }
+          
+          // Log audit summary
+          if (auditLog && auditLog.length > 0) {
+            const skipReasons = auditLog.filter(log => log.decision === 'SKIP');
+            if (skipReasons.length > 0) {
+              this.writeToLog(`\n📋 Skip Reasons:`);
+              const reasonCounts = skipReasons.reduce((acc, log) => {
+                acc[log.reason] = (acc[log.reason] || 0) + 1;
+                return acc;
+              }, {} as Record<string, number>);
+              Object.entries(reasonCounts).forEach(([reason, count]) => {
+                this.writeToLog(`   ${reason}: ${count} orders`);
+              });
+            }
           }
           
           this.syncLogger.updateAction(orderProcessingActionId, 'completed', 
@@ -2293,11 +2312,9 @@ export class EnhancedPaymentSyncService {
       // If not in production yet, sync the whole registration
       const registration = await db.collection('import_registrations').findOne({ id: registrationId });
       if (registration) {
-        await this.selectiveSyncToProduction(
+        await this.syncDocumentToProduction(
           registration,
-          'import_registrations',
-          'registrations',
-          { id: registrationId },
+          { import: 'import_registrations', production: 'registrations', idField: 'id' },
           db
         );
       }
@@ -2482,33 +2499,27 @@ export class EnhancedPaymentSyncService {
     }
     
     // Sync registration to production
-    await this.selectiveSyncToProduction(
+    await this.syncDocumentToProduction(
       registration,
-      'import_registrations',
-      'registrations',
-      { id: registrationId },
+      { import: 'import_registrations', production: 'registrations', idField: 'id' },
       db
     );
     
     // Also sync related attendees, tickets, and contacts
     const attendees = await db.collection('import_attendees').find({ registrationId }).toArray();
     for (const attendee of attendees) {
-      await this.selectiveSyncToProduction(
+      await this.syncDocumentToProduction(
         attendee,
-        'import_attendees',
-        'attendees',
-        { id: attendee.id },
+        { import: 'import_attendees', production: 'attendees', idField: 'id' },
         db
       );
     }
     
     const tickets = await db.collection('import_tickets').find({ registrationId }).toArray();
     for (const ticket of tickets) {
-      await this.selectiveSyncToProduction(
+      await this.syncDocumentToProduction(
         ticket,
-        'import_tickets',
-        'tickets',
-        { id: ticket.id },
+        { import: 'import_tickets', production: 'tickets', idField: 'id' },
         db
       );
     }

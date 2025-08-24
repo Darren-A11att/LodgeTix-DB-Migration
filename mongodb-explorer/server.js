@@ -14,27 +14,126 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-let client;
-let db;
+// Store multiple MongoDB connections
+const connections = new Map();
+let currentConnection = {
+  cluster: 'LodgeTix-migration-test-1',
+  database: 'lodgetix',
+  client: null,
+  db: null
+};
 
-// Connect to MongoDB
-async function connectDB() {
+// MongoDB cluster configurations - matching the frontend DatabaseSelector
+const clusters = {
+  'LodgeTix': {
+    uri: 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix.0u7ogxj.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix',
+    databases: ['LodgeTix', 'LodgeTix-migration-test-1', 'admin', 'local']
+  },
+  'LodgeTix-migration-test-1': {
+    uri: process.env.MONGODB_URI || 'mongodb+srv://darrenallatt:jcvnyprynSOqIc2k@lodgetix-migration-test.wydwfu6.mongodb.net/?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1',
+    databases: ['LodgeTix-migration-test-1', 'admin', 'commerce', 'local', 'lodgetix', 'projectCleanUp', 'supabase', 'test', 'UGLOps']
+  }
+};
+
+// Connect to MongoDB with cluster and database selection
+async function connectDB(clusterName = 'LodgeTix-migration-test-1', databaseName = 'lodgetix') {
   try {
-    client = new MongoClient(process.env.MONGODB_URI);
+    const connectionKey = `${clusterName}:${databaseName}`;
+    
+    // Check if we already have this connection
+    if (connections.has(connectionKey)) {
+      const conn = connections.get(connectionKey);
+      currentConnection = conn;
+      console.log(`✅ Switched to ${clusterName}/${databaseName}`);
+      return conn.db;
+    }
+    
+    // Create new connection
+    const cluster = clusters[clusterName];
+    if (!cluster) {
+      throw new Error(`Unknown cluster: ${clusterName}`);
+    }
+    
+    const client = new MongoClient(cluster.uri);
     await client.connect();
-    db = client.db('supabase');
-    console.log('✅ Connected to MongoDB');
+    const db = client.db(databaseName);
+    
+    const connection = {
+      cluster: clusterName,
+      database: databaseName,
+      client,
+      db
+    };
+    
+    connections.set(connectionKey, connection);
+    currentConnection = connection;
+    
+    console.log(`✅ Connected to MongoDB ${clusterName}/${databaseName}`);
+    return db;
   } catch (error) {
     console.error('❌ MongoDB connection error:', error);
-    process.exit(1);
+    throw error;
   }
+}
+
+// Get current database connection
+function getDB() {
+  return currentConnection.db;
 }
 
 // API Routes
 
+// Get available clusters and databases
+app.get('/api/clusters', async (req, res) => {
+  try {
+    const clusterList = Object.keys(clusters).map(name => ({
+      name,
+      databases: clusters[name].databases,
+      current: name === currentConnection.cluster
+    }));
+    res.json(clusterList);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get current connection info
+app.get('/api/connection', async (req, res) => {
+  res.json({
+    cluster: currentConnection.cluster,
+    database: currentConnection.database
+  });
+});
+
+// Switch database connection
+app.post('/api/connection', async (req, res) => {
+  try {
+    const { cluster, database } = req.body;
+    
+    if (!cluster || !database) {
+      return res.status(400).json({ error: 'Cluster and database are required' });
+    }
+    
+    await connectDB(cluster, database);
+    
+    res.json({
+      success: true,
+      cluster: currentConnection.cluster,
+      database: currentConnection.database
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get all collections
 app.get('/api/collections', async (req, res) => {
   try {
+    const db = getDB();
+    if (!db) {
+      return res.status(500).json({ error: 'No database connection' });
+    }
+    
     const collections = await db.listCollections().toArray();
     const collectionNames = collections.map(c => c.name).sort();
     res.json(collectionNames);
@@ -46,6 +145,7 @@ app.get('/api/collections', async (req, res) => {
 // Get collection stats
 app.get('/api/collections/:name/stats', async (req, res) => {
   try {
+    const db = getDB();
     const collection = db.collection(req.params.name);
     const count = await collection.countDocuments();
     const sample = await collection.findOne({});
@@ -66,6 +166,7 @@ app.get('/api/collections/:name/documents', async (req, res) => {
     const { page = 1, limit = 20, search = '', field = '', value = '' } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     
+    const db = getDB();
     const collection = db.collection(req.params.name);
     
     // Build query
@@ -109,6 +210,7 @@ app.get('/api/collections/:name/documents', async (req, res) => {
 // Get single document by ID
 app.get('/api/collections/:name/documents/:id', async (req, res) => {
   try {
+    const db = getDB();
     const collection = db.collection(req.params.name);
     const document = await collection.findOne({ 
       $or: [
@@ -131,9 +233,128 @@ app.get('/api/collections/:name/documents/:id', async (req, res) => {
   }
 });
 
+// Get comparison data for registration vs cart
+app.get('/api/compare/:registrationId', async (req, res) => {
+  try {
+    const { ComparisonViewer } = require('./services/comparison-viewer');
+    const viewer = new ComparisonViewer(getDB());
+    
+    const comparison = await viewer.compareRegistrationToCart(req.params.registrationId);
+    
+    if (!comparison) {
+      return res.status(404).json({ error: 'Registration or cart not found' });
+    }
+    
+    res.json(comparison);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get validation report for single registration
+app.get('/api/validation/:registrationId', async (req, res) => {
+  try {
+    const { ComparisonViewer } = require('./services/comparison-viewer');
+    const viewer = new ComparisonViewer(getDB());
+    
+    const report = await viewer.generateFieldValidationReport(req.params.registrationId);
+    
+    if (!report) {
+      return res.status(404).json({ error: 'Registration not found' });
+    }
+    
+    res.json(report);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get validation summary for all registrations
+app.get('/api/validation/all', async (req, res) => {
+  try {
+    const { ComparisonViewer } = require('./services/comparison-viewer');
+    const viewer = new ComparisonViewer(getDB());
+    
+    // Get all registration IDs
+    const db = getDB();
+    const registrations = await db.collection('registrations')
+      .find({}, { projection: { registrationId: 1 } })
+      .toArray();
+    
+    const validationResults = [];
+    let totalRegistrations = registrations.length;
+    let processedCount = 0;
+    
+    // Process each registration
+    for (const registration of registrations) {
+      try {
+        const report = await viewer.generateFieldValidationReport(registration.registrationId);
+        if (report) {
+          validationResults.push({
+            registrationId: registration.registrationId,
+            overallTransferPercentage: report.overallTransferPercentage,
+            totalFields: report.totalFields,
+            transferredFields: report.transferredFields,
+            missingFields: report.missingFields.length,
+            status: report.overallTransferPercentage >= 80 ? 'good' : 
+                   report.overallTransferPercentage >= 60 ? 'warning' : 'poor'
+          });
+        }
+        processedCount++;
+      } catch (error) {
+        console.error(`Error validating registration ${registration.registrationId}:`, error);
+      }
+    }
+    
+    // Calculate summary statistics
+    const summary = {
+      totalRegistrations,
+      processedCount,
+      averageTransferPercentage: validationResults.length > 0 
+        ? (validationResults.reduce((sum, r) => sum + r.overallTransferPercentage, 0) / validationResults.length).toFixed(2)
+        : 0,
+      statusBreakdown: {
+        good: validationResults.filter(r => r.status === 'good').length,
+        warning: validationResults.filter(r => r.status === 'warning').length,
+        poor: validationResults.filter(r => r.status === 'poor').length
+      }
+    };
+    
+    res.json({
+      summary,
+      results: validationResults.sort((a, b) => b.overallTransferPercentage - a.overallTransferPercentage)
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Reports page route
+app.get('/reports', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'reports.html'));
+});
+
+// Get all registration IDs for navigation
+app.get('/api/registrations/ids', async (req, res) => {
+  try {
+    const db = getDB();
+    const registrations = await db.collection('registrations')
+      .find({}, { projection: { registrationId: 1, registrationType: 1 } })
+      .toArray();
+    
+    res.json(registrations.map(r => ({
+      id: r.registrationId,
+      type: r.registrationType
+    })));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get schema analysis for a collection
 app.get('/api/collections/:name/schema', async (req, res) => {
   try {
+    const db = getDB();
     const collection = db.collection(req.params.name);
     const sample = await collection.aggregate([
       { $sample: { size: 100 } }
@@ -201,18 +422,25 @@ function analyzeDocument(obj, schema, prefix) {
 }
 
 // Start server
-connectDB().then(() => {
+connectDB('LodgeTix-migration-test-1', 'lodgetix').then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 MongoDB Explorer running at http://localhost:${PORT}`);
-    console.log('📊 View your collections at http://localhost:${PORT}');
+    console.log(`📊 Default connection: LodgeTix-migration-test-1/lodgetix`);
   });
+}).catch(error => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
 });
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\n👋 Shutting down gracefully...');
-  if (client) {
-    await client.close();
+  // Close all MongoDB connections
+  for (const [key, conn] of connections) {
+    console.log(`Closing connection: ${key}`);
+    if (conn.client) {
+      await conn.client.close();
+    }
   }
   process.exit(0);
 });

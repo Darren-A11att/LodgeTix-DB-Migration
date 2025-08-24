@@ -276,7 +276,7 @@ class ValueConsistencyAnalyzer {
 
     const { values, nullCount, emptyCount } = result[0];
     const nonNullValues = values.filter((v: any) => v !== null && v !== undefined);
-    const uniqueValues = [...new Set(nonNullValues.map((v: any) => JSON.stringify(v)))].map(s => JSON.parse(s));
+    const uniqueValues = [...new Set(nonNullValues.map((v: any) => JSON.stringify(v)))].map((s: string) => JSON.parse(s));
     
     const patterns = this.analyzePatterns(nonNullValues);
     const statistics = this.calculateStatistics(nonNullValues);
@@ -644,4 +644,5 @@ if (require.main === module) {
   main().catch(console.error);
 }
 
-export { ValueConsistencyAnalyzer, ValueAnalysis, ConsistencyReport };
+export { ValueConsistencyAnalyzer };
+export type { ValueAnalysis, ConsistencyReport };

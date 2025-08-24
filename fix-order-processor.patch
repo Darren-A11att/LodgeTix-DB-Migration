@@ -1,0 +1,22 @@
+--- a/src/services/sync/order-processor.ts
++++ b/src/services/sync/order-processor.ts
+@@ -36,9 +36,9 @@ function processOrder(registration: any, customer: any): Order {
+       
+       orderedItems.push({
+         itemId: new ObjectId(),
+-        productId: ticket.eventTicketId ? new ObjectId(ticket.eventTicketId) : undefined,
+-        ticketId: ticket.ticketId ? new ObjectId(ticket.ticketId) : undefined,
++        productId: ticket.eventTicketId || undefined,  // Keep as UUID string
++        ticketId: ticket.ticketId || undefined,         // Keep as UUID string
+         name: ticket.ticketName || ticket.ticketType || 'Event Ticket',
+         description: `${ticket.eventName || 'Event'} - ${ticket.ticketType || 'General'}`,
+         quantity: 1,
+@@ -107,7 +107,7 @@ function processOrder(registration: any, customer: any): Order {
+     // Registration reference
+     registrationId: registration.registrationId,
+     eventId: registration.eventId,
+-    functionId: registration.functionId ? new ObjectId(registration.functionId) : undefined,
++    functionId: registration.functionId || undefined,  // Keep as UUID string
+     
+     // External system IDs
+     externalIds: {

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Report - Registration to Cart Conversion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .success { color: #10b981; }
+        .warning { color: #f59e0b; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .validation-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .registration-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .registration-row.selected {
+            background-color: #eff6ff;
+        }
+
+        .percentage-bar {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .percentage-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .detail-panel {
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .detail-content {
+            padding: 20px;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .field-item {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        .field-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .field-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .field-values {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .icon-success { background-color: #10b981; }
+        .icon-warning { background-color: #f59e0b; }
+        .icon-error { background-color: #ef4444; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error-message {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Validation Report</h1>
+            <p>Registration to Cart Conversion Analysis</p>
+        </div>
+
+        <div class="dashboard" id="dashboard">
+            <div class="metric-card">
+                <div class="metric-value info" id="totalRegistrations">-</div>
+                <div class="metric-label">Total Registrations</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value success" id="successfulTransfers">-</div>
+                <div class="metric-label">Successful Transfers</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value warning" id="partialTransfers">-</div>
+                <div class="metric-label">Partial Transfers</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value error" id="failedTransfers">-</div>
+                <div class="metric-label">Failed Transfers</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value info" id="averageAccuracy">-</div>
+                <div class="metric-label">Average Accuracy</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label for="statusFilter">Filter by Status:</label>
+                <select id="statusFilter">
+                    <option value="all">All Registrations</option>
+                    <option value="success">Successful (>90%)</option>
+                    <option value="partial">Partial (50-90%)</option>
+                    <option value="failed">Failed (<50%)</option>
+                </select>
+
+                <label for="searchFilter">Search Registration:</label>
+                <input type="text" id="searchFilter" placeholder="Search by ID or email...">
+
+                <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
+            </div>
+        </div>
+
+        <div class="validation-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Registration ID</th>
+                        <th>Email</th>
+                        <th>Transfer Status</th>
+                        <th>Fields Transferred</th>
+                        <th>Success Rate</th>
+                        <th>Issues</th>
+                    </tr>
+                </thead>
+                <tbody id="validationTableBody">
+                    <tr>
+                        <td colspan="6" class="loading">Loading validation data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-header">
+                <h3 id="detailTitle">Field-by-Field Analysis</h3>
+                <button class="btn" onclick="closeDetail()" style="float: right;">Close</button>
+            </div>
+            <div class="detail-content">
+                <div class="field-grid" id="fieldGrid">
+                </div>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script>
+        let validationData = [];
+        let filteredData = [];
+        let selectedRegistration = null;
+
+        async function loadValidationData() {
+            try {
+                const response = await fetch('/api/validation/all');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                validationData = await response.json();
+                updateDashboard();
+                renderTable();
+                hideError();
+            } catch (error) {
+                console.error('Error loading validation data:', error);
+                showError(`Failed to load validation data: ${error.message}`);
+            }
+        }
+
+        function updateDashboard() {
+            const total = validationData.length;
+            const successful = validationData.filter(r => r.successRate >= 90).length;
+            const partial = validationData.filter(r => r.successRate >= 50 && r.successRate < 90).length;
+            const failed = validationData.filter(r => r.successRate < 50).length;
+            const avgAccuracy = total > 0 ? (validationData.reduce((sum, r) => sum + r.successRate, 0) / total).toFixed(1) + '%' : '0%';
+
+            document.getElementById('totalRegistrations').textContent = total;
+            document.getElementById('successfulTransfers').textContent = successful;
+            document.getElementById('partialTransfers').textContent = partial;
+            document.getElementById('failedTransfers').textContent = failed;
+            document.getElementById('averageAccuracy').textContent = avgAccuracy;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('validationTableBody');
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+            // Apply filters
+            filteredData = validationData.filter(registration => {
+                const matchesStatus = 
+                    statusFilter === 'all' || 
+                    (statusFilter === 'success' && registration.successRate >= 90) ||
+                    (statusFilter === 'partial' && registration.successRate >= 50 && registration.successRate < 90) ||
+                    (statusFilter === 'failed' && registration.successRate < 50);
+
+                const matchesSearch = 
+                    !searchFilter ||
+                    registration.registrationId.toLowerCase().includes(searchFilter) ||
+                    (registration.email && registration.email.toLowerCase().includes(searchFilter));
+
+                return matchesStatus && matchesSearch;
+            });
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No registrations match the current filters.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredData.map(registration => {
+                const statusClass = getStatusClass(registration.successRate);
+                const statusText = getStatusText(registration.successRate);
+                const issues = getIssueCount(registration);
+
+                return `
+                    <tr class="registration-row" onclick="showDetail('${registration.registrationId}')" data-id="${registration.registrationId}">
+                        <td>${registration.registrationId}</td>
+                        <td>${registration.email || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </td>
+                        <td>${registration.transferredFields}/${registration.totalFields}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span>${registration.successRate}%</span>
+                                <div class="percentage-bar" style="flex: 1;">
+                                    <div class="percentage-fill ${getPercentageFillClass(registration.successRate)}" 
+                                         style="width: ${registration.successRate}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${issues} issues</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusClass(successRate) {
+            if (successRate >= 90) return 'badge-success';
+            if (successRate >= 50) return 'badge-warning';
+            return 'badge-error';
+        }
+
+        function getStatusText(successRate) {
+            if (successRate >= 90) return 'Success';
+            if (successRate >= 50) return 'Partial';
+            return 'Failed';
+        }
+
+        function getPercentageFillClass(successRate) {
+            if (successRate >= 90) return 'success';
+            if (successRate >= 50) return 'warning';
+            return 'error';
+        }
+
+        function getIssueCount(registration) {
+            return registration.fieldValidation ? 
+                Object.values(registration.fieldValidation).filter(field => field.status !== 'success').length : 0;
+        }
+
+        function showDetail(registrationId) {
+            selectedRegistration = validationData.find(r => r.registrationId === registrationId);
+            if (!selectedRegistration) return;
+
+            // Highlight selected row
+            document.querySelectorAll('.registration-row').forEach(row => {
+                row.classList.remove('selected');
+            });
+            document.querySelector(`[data-id="${registrationId}"]`).classList.add('selected');
+
+            // Show detail panel
+            document.getElementById('detailTitle').textContent = `Field Analysis - ${registrationId}`;
+            document.getElementById('detailPanel').style.display = 'block';
+
+            renderFieldGrid();
+        }
+
+        function renderFieldGrid() {
+            const fieldGrid = document.getElementById('fieldGrid');
+            if (!selectedRegistration.fieldValidation) {
+                fieldGrid.innerHTML = '<p>No field validation data available.</p>';
+                return;
+            }
+
+            fieldGrid.innerHTML = Object.entries(selectedRegistration.fieldValidation).map(([fieldName, field]) => {
+                const statusIcon = getStatusIcon(field.status);
+                const statusText = getStatusTextForField(field.status);
+
+                return `
+                    <div class="field-item">
+                        <div class="field-name">${fieldName}</div>
+                        <div class="field-status">
+                            <div class="status-icon ${statusIcon}"></div>
+                            <span>${statusText}</span>
+                        </div>
+                        <div class="field-values">
+                            <strong>Source:</strong> ${field.sourceValue || 'N/A'}<br>
+                            <strong>Target:</strong> ${field.targetValue || 'N/A'}
+                            ${field.transformation ? `<br><strong>Transformation:</strong> ${field.transformation}` : ''}
+                            ${field.error ? `<br><strong>Error:</strong> ${field.error}` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'success': return 'icon-success';
+                case 'warning': return 'icon-warning';
+                case 'error': return 'icon-error';
+                default: return 'icon-error';
+            }
+        }
+
+        function getStatusTextForField(status) {
+            switch (status) {
+                case 'success': return 'Transferred Successfully';
+                case 'warning': return 'Transferred with Transformation';
+                case 'error': return 'Transfer Failed';
+                default: return 'Unknown Status';
+            }
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').style.display = 'none';
+            document.querySelectorAll('.registration-row').forEach(row => {
+                row.classList.remove('selected');
+            });
+            selectedRegistration = null;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function refreshData() {
+            document.getElementById('validationTableBody').innerHTML = '<tr><td colspan="6" class="loading">Refreshing data...</td></tr>';
+            loadValidationData();
+        }
+
+        // Event listeners
+        document.getElementById('statusFilter').addEventListener('change', renderTable);
+        document.getElementById('searchFilter').addEventListener('input', renderTable);
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', loadValidationData);
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadValidationData, 30000);
+    </script>
+</body>
+</html>

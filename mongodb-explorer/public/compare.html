@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration vs Cart Comparison</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    
+    .header {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .navigation {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .nav-info {
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .nav-btn {
+      padding: 0.5rem 1rem;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: #2980b9;
+    }
+    
+    .nav-btn:disabled {
+      background: #7f8c8d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .info-bar {
+      background: white;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .info-label {
+      font-size: 0.75rem;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .info-value {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .type-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: #e9ecef;
+      color: #495057;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .status-badge.valid {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-badge.invalid {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .comparison-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .panel {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .panel-header {
+      padding: 1rem 1.5rem;
+      font-weight: 500;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .panel-header.original {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .panel-header.transformed {
+      background: #d1ecf1;
+      color: #004085;
+    }
+    
+    .panel-content {
+      padding: 1.5rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .json-view {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+    
+    .section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .field-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .field-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      background: #f8f9fa;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .field-name {
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .field-value {
+      color: #6c757d;
+      max-width: 60%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .mapping-section {
+      grid-column: 1 / -1;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-top: -1rem;
+    }
+    
+    .mapping-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .mapping-card {
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 1rem;
+    }
+    
+    .mapping-card h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      color: #495057;
+    }
+    
+    .mapping-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      font-size: 0.85rem;
+    }
+    
+    .arrow {
+      color: #6c757d;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60vh;
+      font-size: 1.2rem;
+      color: #6c757d;
+    }
+    
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 2rem;
+    }
+    
+    .validation-issues {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .validation-error {
+      color: #dc3545;
+      font-size: 0.85rem;
+      margin: 0.25rem 0;
+    }
+    
+    .validation-warning {
+      color: #ffc107;
+      font-size: 0.85rem;
+      margin: 0.25rem 0;
+    }
+    
+    .price-comparison {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .price-box {
+      text-align: center;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .price-label {
+      font-size: 0.75rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    
+    .price-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #495057;
+    }
+    
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .item-card {
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 0.75rem;
+      font-size: 0.85rem;
+    }
+    
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .item-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Registration → Cart Comparison</h1>
+    <div class="navigation">
+      <div class="nav-info" id="navInfo">
+        Loading...
+      </div>
+      <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="navigate(1)" disabled>Next →</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-bar" id="infoBar">
+    <!-- Info will be populated dynamically -->
+  </div>
+  
+  <div id="content">
+    <div class="loading">Loading comparison data...</div>
+  </div>
+  
+  <script>
+    let registrations = [];
+    let currentIndex = 0;
+    let currentComparison = null;
+    
+    // Load registration IDs on page load
+    async function init() {
+      try {
+        const response = await fetch('/api/registrations/ids');
+        registrations = await response.json();
+        
+        if (registrations.length === 0) {
+          document.getElementById('content').innerHTML = `
+            <div class="error">No registrations found in database</div>
+          `;
+          return;
+        }
+        
+        // Load first registration
+        await loadComparison(0);
+      } catch (error) {
+        console.error('Error loading registrations:', error);
+        document.getElementById('content').innerHTML = `
+          <div class="error">Error loading registrations: ${error.message}</div>
+        `;
+      }
+    }
+    
+    async function loadComparison(index) {
+      if (index < 0 || index >= registrations.length) return;
+      
+      currentIndex = index;
+      const registration = registrations[index];
+      
+      // Update navigation
+      document.getElementById('navInfo').textContent = 
+        `${index + 1} of ${registrations.length} (${registration.type})`;
+      document.getElementById('prevBtn').disabled = index === 0;
+      document.getElementById('nextBtn').disabled = index === registrations.length - 1;
+      
+      // Show loading
+      document.getElementById('content').innerHTML = `
+        <div class="loading">Loading comparison for ${registration.id}...</div>
+      `;
+      
+      try {
+        const response = await fetch(`/api/compare/${registration.id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        currentComparison = await response.json();
+        renderComparison();
+      } catch (error) {
+        console.error('Error loading comparison:', error);
+        document.getElementById('content').innerHTML = `
+          <div class="error">
+            Error loading comparison for ${registration.id}: ${error.message}
+            <br><br>
+            <button class="nav-btn" onclick="navigate(1)">Skip to Next →</button>
+          </div>
+        `;
+      }
+    }
+    
+    function navigate(direction) {
+      const newIndex = currentIndex + direction;
+      if (newIndex >= 0 && newIndex < registrations.length) {
+        loadComparison(newIndex);
+      }
+    }
+    
+    function renderComparison() {
+      if (!currentComparison) return;
+      
+      const c = currentComparison;
+      
+      // Update info bar
+      document.getElementById('infoBar').innerHTML = `
+        <div class="info-item">
+          <span class="info-label">Registration ID</span>
+          <span class="info-value">${c.registrationId}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Type</span>
+          <span class="info-value">
+            <span class="type-badge">${c.registrationType}</span>
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Cart ID</span>
+          <span class="info-value">${c.transformed.cart.cartId.substring(0, 8)}...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Validation</span>
+          <span class="info-value">
+            <span class="status-badge ${c.transformed.validation.valid ? 'valid' : 'invalid'}">
+              ${c.transformed.validation.valid ? '✓ Valid' : '✗ Invalid'}
+            </span>
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Items</span>
+          <span class="info-value">${c.transformed.cart.cartItems.length} items</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Total</span>
+          <span class="info-value">$${c.transformed.cart.total.toFixed(2)}</span>
+        </div>
+      `;
+      
+      // Render main comparison
+      document.getElementById('content').innerHTML = `
+        <div class="comparison-container">
+          <!-- Original Registration Panel -->
+          <div class="panel">
+            <div class="panel-header original">
+              📋 Original Registration
+            </div>
+            <div class="panel-content">
+              ${renderOriginal(c)}
+            </div>
+          </div>
+          
+          <!-- Transformed Cart Panel -->
+          <div class="panel">
+            <div class="panel-header transformed">
+              🛒 Transformed Cart
+            </div>
+            <div class="panel-content">
+              ${renderTransformed(c)}
+            </div>
+          </div>
+          
+          <!-- Mapping Section -->
+          <div class="mapping-section">
+            <h3 class="section-title">Field Mappings & Transformations</h3>
+            ${renderMappings(c)}
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderOriginal(c) {
+      const reg = c.original.registration;
+      const attendees = c.original.attendees || [];
+      const tickets = c.original.tickets || [];
+      
+      return `
+        <div class="section">
+          <h3 class="section-title">Registration Details</h3>
+          <div class="field-list">
+            <div class="field-item">
+              <span class="field-name">Type:</span>
+              <span class="field-value">${reg.registrationType}</span>
+            </div>
+            <div class="field-item">
+              <span class="field-name">Date:</span>
+              <span class="field-value">${new Date(reg.registrationDate).toLocaleDateString()}</span>
+            </div>
+            <div class="field-item">
+              <span class="field-name">Confirmation:</span>
+              <span class="field-value">${reg.confirmationNumber || 'N/A'}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">Booking Contact</h3>
+          <div class="json-view">
+            <pre>${JSON.stringify(reg.bookingContact || {}, null, 2)}</pre>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">Attendees (${attendees.length})</h3>
+          ${attendees.length > 0 ? `
+            <div class="items-list">
+              ${attendees.slice(0, 3).map(a => `
+                <div class="item-card">
+                  <div class="item-header">
+                    <span>${a.firstName} ${a.lastName}</span>
+                    <span>${a.attendeeId}</span>
+                  </div>
+                  <div class="item-details">
+                    <span>Email: ${a.email || 'N/A'}</span>
+                    <span>Rank: ${a.rank || 'Guest'}</span>
+                    <span>Lodge: ${a.lodgeName || 'N/A'}</span>
+                    <span>Number: ${a.lodgeNumber || 'N/A'}</span>
+                  </div>
+                </div>
+              `).join('')}
+              ${attendees.length > 3 ? `<div style="text-align: center; color: #6c757d; font-size: 0.85rem;">... and ${attendees.length - 3} more</div>` : ''}
+            </div>
+          ` : '<div style="color: #6c757d;">No attendees</div>'}
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">Tickets (${tickets.length})</h3>
+          ${tickets.length > 0 ? `
+            <div class="items-list">
+              ${tickets.map(t => `
+                <div class="item-card">
+                  <div class="item-header">
+                    <span>${t.eventName}</span>
+                    <span>$${t.price}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<div style="color: #6c757d;">No tickets</div>'}
+        </div>
+      `;
+    }
+    
+    function renderTransformed(c) {
+      const cart = c.transformed.cart;
+      const validation = c.transformed.validation;
+      const bundleItems = cart.cartItems.filter(i => !i.parentItemId);
+      const eventItems = cart.cartItems.filter(i => i.parentItemId);
+      
+      return `
+        <div class="section">
+          <h3 class="section-title">Customer</h3>
+          <div class="field-list">
+            <div class="field-item">
+              <span class="field-name">Name:</span>
+              <span class="field-value">${cart.customer.name}</span>
+            </div>
+            <div class="field-item">
+              <span class="field-name">Email:</span>
+              <span class="field-value">${cart.customer.email}</span>
+            </div>
+            <div class="field-item">
+              <span class="field-name">Type:</span>
+              <span class="field-value">${cart.customer.type}</span>
+            </div>
+            ${cart.customer.businessName ? `
+              <div class="field-item">
+                <span class="field-name">Business:</span>
+                <span class="field-value">${cart.customer.businessName}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">Bundle Items (${bundleItems.length})</h3>
+          <div class="items-list">
+            ${bundleItems.map(item => `
+              <div class="item-card">
+                <div class="item-header">
+                  <span>${item.variantId}</span>
+                  <span>Qty: ${item.quantity}</span>
+                </div>
+                <div class="item-details">
+                  <span>Price: $${item.price}</span>
+                  <span>Subtotal: $${item.subtotal}</span>
+                </div>
+                ${item.formData ? `
+                  <details style="margin-top: 0.5rem;">
+                    <summary style="cursor: pointer; font-size: 0.8rem; color: #6c757d;">FormData</summary>
+                    <div class="json-view" style="margin-top: 0.5rem; font-size: 0.75rem;">
+                      <pre>${JSON.stringify(item.formData, null, 2)}</pre>
+                    </div>
+                  </details>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">Event Items (${eventItems.length})</h3>
+          ${eventItems.length > 0 ? `
+            <div class="items-list">
+              ${eventItems.map(item => `
+                <div class="item-card">
+                  <div class="item-header">
+                    <span>${item.metadata?.eventName || item.productId}</span>
+                    <span>$${item.price}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<div style="color: #6c757d;">No event items</div>'}
+        </div>
+        
+        <div class="section">
+          <h3 class="section-title">Pricing</h3>
+          <div class="price-comparison">
+            <div class="price-box">
+              <div class="price-label">Subtotal</div>
+              <div class="price-value">$${cart.subtotal.toFixed(2)}</div>
+            </div>
+            <div class="price-box">
+              <div class="price-label">Tax</div>
+              <div class="price-value">$${cart.tax.toFixed(2)}</div>
+            </div>
+            <div class="price-box">
+              <div class="price-label">Total</div>
+              <div class="price-value">$${cart.total.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+        
+        ${!validation.valid ? `
+          <div class="section">
+            <h3 class="section-title">Validation Issues</h3>
+            <div class="validation-issues">
+              ${validation.errors.map(e => `
+                <div class="validation-error">❌ ${e.field}: ${e.message}</div>
+              `).join('')}
+              ${validation.warnings.map(w => `
+                <div class="validation-warning">⚠️ ${w.field}: ${w.message}</div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+    
+    function renderMappings(c) {
+      return `
+        <div class="mapping-grid">
+          <div class="mapping-card">
+            <h4>Customer Mapping</h4>
+            ${c.mapping.customer.fields.map(f => `
+              <div class="mapping-item">
+                <span>${f.from}</span>
+                <span class="arrow">→</span>
+                <span>${f.to}</span>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="mapping-card">
+            <h4>Pricing Changes</h4>
+            <div class="mapping-item">
+              <span>Original Total</span>
+              <span class="arrow">→</span>
+              <span>$${c.mapping.pricing.originalTotal.toFixed(2)}</span>
+            </div>
+            <div class="mapping-item">
+              <span>Cart Total</span>
+              <span class="arrow">→</span>
+              <span>$${c.mapping.pricing.transformedTotal.toFixed(2)}</span>
+            </div>
+            <div class="mapping-item">
+              <span>Difference</span>
+              <span class="arrow">→</span>
+              <span>$${c.mapping.pricing.difference.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <div class="mapping-card">
+            <h4>Structure Changes</h4>
+            ${c.differences.slice(0, 5).map(d => `
+              <div class="mapping-item" style="font-size: 0.8rem;">
+                <span>${d.type}: ${d.description}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

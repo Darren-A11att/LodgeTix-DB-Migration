@@ -34,7 +34,7 @@ async function consolidatePartnerToGuest() {
     // Function to get next SKU number
     async function getNextSkuNumber(): Promise<number> {
       const result = await countersCollection.findOneAndUpdate(
-        { _id: 'sku_counter' },
+        { _id: 'sku_counter' as any },
         { $inc: { sequence_value: 1 } },
         { returnDocument: 'after' }
       );

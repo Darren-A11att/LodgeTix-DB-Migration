@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Validation Reports - MongoDB Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .header-nav {
+      margin-top: 20px;
+    }
+    
+    .header-nav a {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      margin: 0 5px;
+      transition: background 0.3s;
+    }
+    
+    .header-nav a:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    .summary-dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .stat-label {
+      font-size: 0.85rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    
+    .stat-card.success .stat-value {
+      color: #27ae60;
+    }
+    
+    .stat-card.warning .stat-value {
+      color: #f39c12;
+    }
+    
+    .stat-card.error .stat-value {
+      color: #e74c3c;
+    }
+    
+    .main-content {
+      padding: 2rem;
+    }
+    
+    .actions-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5a6fd8;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #495057;
+      border: 1px solid #dee2e6;
+    }
+    
+    .btn-secondary:hover {
+      background: #e9ecef;
+    }
+    
+    .filter-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-left: auto;
+    }
+    
+    .filter-controls select,
+    .filter-controls input {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .results-section {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    
+    .section-header {
+      background: #f8f9fa;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dee2e6;
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background: #f8f9fa;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .status-badge.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-badge.partial {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-badge.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .progress-bar {
+      width: 100px;
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #e74c3c, #f39c12, #27ae60);
+      transition: width 0.3s;
+    }
+    
+    .view-details {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    
+    .view-details:hover {
+      text-decoration: underline;
+    }
+    
+    .loading-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6c757d;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 3px solid #667eea;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error-state {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 900px;
+      max-height: 80vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      background: #f8f9fa;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6c757d;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .field-validation-grid {
+      display: grid;
+      gap: 0.5rem;
+    }
+    
+    .field-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      align-items: center;
+    }
+    
+    .field-item:nth-child(even) {
+      background: #f8f9fa;
+    }
+    
+    .field-name {
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .field-status {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .field-status.transferred {
+      color: #27ae60;
+    }
+    
+    .field-status.missing {
+      color: #e74c3c;
+    }
+    
+    .field-status.transformed {
+      color: #f39c12;
+    }
+    
+    .category-section {
+      margin: 1.5rem 0;
+    }
+    
+    .category-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: #e9ecef;
+      border-radius: 4px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .recommendations {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #d1ecf1;
+      border-left: 4px solid #004085;
+      border-radius: 4px;
+    }
+    
+    .recommendations h4 {
+      color: #004085;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    
+    .recommendations ul {
+      margin-left: 1.5rem;
+      color: #004085;
+      font-size: 0.9rem;
+    }
+    
+    .metric-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .metric-box {
+      text-align: center;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #495057;
+    }
+    
+    .metric-label {
+      font-size: 0.75rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Field Validation Reports</h1>
+      <p>100% Field-by-Field Transfer Validation for Registration to Cart Migration</p>
+      <div class="header-nav">
+        <a href="/">← Back to Collections</a>
+        <a href="/compare.html">Side-by-Side Comparison</a>
+        <a href="/validation.html">Alternative Validation</a>
+      </div>
+    </div>
+    
+    <div class="summary-dashboard" id="summaryDashboard">
+      <div class="stat-card">
+        <div class="stat-value">-</div>
+        <div class="stat-label">Total Registrations</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-value">-</div>
+        <div class="stat-label">Successful (≥80%)</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-value">-</div>
+        <div class="stat-label">Partial (60-79%)</div>
+      </div>
+      <div class="stat-card error">
+        <div class="stat-value">-</div>
+        <div class="stat-label">Failed (<60%)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">-%</div>
+        <div class="stat-label">Avg Transfer Rate</div>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="actions-bar">
+        <button class="btn btn-primary" onclick="runFullValidation()">
+          <span>🔍</span>
+          Run Full Field Validation
+        </button>
+        <button class="btn btn-secondary" onclick="exportResults()">
+          <span>📥</span>
+          Export Results
+        </button>
+        
+        <div class="filter-controls">
+          <select id="statusFilter" onchange="applyFilters()">
+            <option value="">All Status</option>
+            <option value="success">Successful (≥80%)</option>
+            <option value="partial">Partial (60-79%)</option>
+            <option value="failed">Failed (<60%)</option>
+          </select>
+          <select id="typeFilter" onchange="applyFilters()">
+            <option value="">All Types</option>
+            <option value="individual">Individual</option>
+            <option value="lodge">Lodge</option>
+            <option value="grandLodge">Grand Lodge</option>
+            <option value="masonicOrder">Masonic Order</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Search Registration ID..." onkeyup="applyFilters()">
+        </div>
+      </div>
+      
+      <div class="results-section">
+        <div class="section-header">
+          Field-by-Field Validation Results
+        </div>
+        <div id="resultsContainer">
+          <div class="loading-state">
+            <p>Click "Run Full Field Validation" to analyze all 87 attendee fields + 40 ticket fields for every registration</p>
+            <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">This will verify 100% field transfer accuracy from registrations to carts</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Field Validation Details</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Details will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let allResults = [];
+    let filteredResults = [];
+    let isLoading = false;
+    
+    async function runFullValidation() {
+      if (isLoading) return;
+      
+      isLoading = true;
+      const resultsContainer = document.getElementById('resultsContainer');
+      resultsContainer.innerHTML = `
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          Analyzing all registrations... Validating 127 fields per registration (87 attendee + 40 ticket)
+          <p style="margin-top: 10px; color: #6c757d;">This may take 30-60 seconds depending on data volume</p>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch('/api/validation/all');
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        allResults = data.results || [];
+        filteredResults = [...allResults];
+        
+        updateSummaryDashboard(data.summary);
+        displayResults(filteredResults);
+        
+      } catch (error) {
+        console.error('Validation error:', error);
+        resultsContainer.innerHTML = `
+          <div class="error-state">
+            <strong>Error running validation:</strong> ${error.message}
+            <br><br>
+            <button class="btn btn-primary" onclick="runFullValidation()">Try Again</button>
+          </div>
+        `;
+      } finally {
+        isLoading = false;
+      }
+    }
+    
+    function updateSummaryDashboard(summary) {
+      const cards = document.querySelectorAll('.stat-card .stat-value');
+      cards[0].textContent = summary.totalRegistrations || 0;
+      cards[1].textContent = summary.statusBreakdown?.good || 0;
+      cards[2].textContent = summary.statusBreakdown?.warning || 0;
+      cards[3].textContent = summary.statusBreakdown?.poor || 0;
+      cards[4].textContent = Math.round(summary.averageTransferPercentage || 0) + '%';
+    }
+    
+    function displayResults(results) {
+      const resultsContainer = document.getElementById('resultsContainer');
+      
+      if (!results || results.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="loading-state">
+            <p>No validation results found</p>
+            <button class="btn btn-primary" onclick="runFullValidation()">Run Validation</button>
+          </div>
+        `;
+        return;
+      }
+      
+      const tableHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Registration ID</th>
+              <th>Type</th>
+              <th>Transfer Rate</th>
+              <th>Status</th>
+              <th>Fields Transferred</th>
+              <th>Critical Missing</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${results.map(result => {
+              const status = getTransferStatus(result.overallTransferPercentage);
+              const statusClass = status.toLowerCase().replace(' ', '');
+              
+              return `
+                <tr>
+                  <td><strong>${result.registrationId}</strong></td>
+                  <td>${result.registrationType || 'Unknown'}</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${result.overallTransferPercentage}%"></div>
+                      </div>
+                      <span>${Math.round(result.overallTransferPercentage || 0)}%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge ${statusClass}">${status}</span>
+                  </td>
+                  <td>
+                    <span style="color: #27ae60; font-weight: 500;">${result.transferredCount || 0}</span> / 
+                    <span style="color: #6c757d;">${result.totalFields || 0}</span>
+                  </td>
+                  <td>
+                    ${result.criticalMissingCount > 0 ? 
+                      `<span style="color: #e74c3c; font-weight: 500;">${result.criticalMissingCount}</span>` : 
+                      '<span style="color: #27ae60;">None</span>'
+                    }
+                  </td>
+                  <td>
+                    <a class="view-details" onclick="viewFieldDetails('${result.registrationId}')">View Fields</a>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      resultsContainer.innerHTML = tableHTML;
+    }
+    
+    function getTransferStatus(transferRate) {
+      if (transferRate >= 80) return 'Success';
+      if (transferRate >= 60) return 'Partial';
+      return 'Failed';
+    }
+    
+    function applyFilters() {
+      if (!allResults || allResults.length === 0) return;
+      
+      const statusFilter = document.getElementById('statusFilter').value;
+      const typeFilter = document.getElementById('typeFilter').value;
+      const searchFilter = document.getElementById('searchInput').value.toLowerCase();
+      
+      filteredResults = allResults.filter(result => {
+        let matchStatus = true;
+        let matchType = true;
+        let matchSearch = true;
+        
+        if (statusFilter) {
+          const status = getTransferStatus(result.overallTransferPercentage).toLowerCase().replace(' ', '');
+          matchStatus = status === statusFilter;
+        }
+        
+        if (typeFilter) {
+          matchType = result.registrationType === typeFilter;
+        }
+        
+        if (searchFilter) {
+          matchSearch = result.registrationId.toLowerCase().includes(searchFilter);
+        }
+        
+        return matchStatus && matchType && matchSearch;
+      });
+      
+      displayResults(filteredResults);
+    }
+    
+    async function viewFieldDetails(registrationId) {
+      const modal = document.getElementById('detailModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = `Field Transfer Details - ${registrationId}`;
+      modalBody.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div>Loading detailed field analysis...</div>';
+      modal.classList.add('active');
+      
+      try {
+        const response = await fetch(`/api/validation/${registrationId}`);
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        displayFieldDetails(data, registrationId);
+        
+      } catch (error) {
+        console.error('Error loading field details:', error);
+        modalBody.innerHTML = `
+          <div class="error-state">
+            <strong>Error loading details:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    function displayFieldDetails(report, registrationId) {
+      const modalBody = document.getElementById('modalBody');
+      
+      if (!report || !report.summary) {
+        modalBody.innerHTML = '<div class="error-state">No validation data available</div>';
+        return;
+      }
+      
+      const summary = report.summary;
+      const categories = report.categories || {};
+      const criticalMissing = report.criticalMissing || [];
+      const recommendations = report.recommendations || [];
+      const attendeeFields = report.details?.attendeeValidation || [];
+      const ticketFields = report.details?.ticketValidation || [];
+      
+      let html = `
+        <div class="metric-summary">
+          <div class="metric-box">
+            <div class="metric-value" style="color: #27ae60;">${summary.transferredFields || 0}</div>
+            <div class="metric-label">Transferred</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value" style="color: #f39c12;">${summary.transformedFields || 0}</div>
+            <div class="metric-label">Transformed</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value" style="color: #e74c3c;">${summary.missingFields || 0}</div>
+            <div class="metric-label">Missing</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value" style="color: #667eea;">${Math.round(summary.transferRate || 0)}%</div>
+            <div class="metric-label">Transfer Rate</div>
+          </div>
+        </div>
+      `;
+      
+      // Categories breakdown
+      const categoryEntries = Object.entries(categories);
+      if (categoryEntries.length > 0) {
+        html += '<h4 style="margin-bottom: 1rem; color: #495057;">Transfer by Category</h4>';
+        categoryEntries.forEach(([categoryName, stats]) => {
+          const rate = Math.round(stats.transferRate || 0);
+          html += `
+            <div style="margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #f8f9fa; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500;">${categoryName}</span>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${rate}%"></div>
+                </div>
+                <span style="font-size: 0.85rem; color: #6c757d;">${rate}% (${stats.transferred}/${stats.total})</span>
+              </div>
+            </div>
+          `;
+        });
+      }
+      
+      // Critical missing fields
+      if (criticalMissing.length > 0) {
+        html += `
+          <div class="category-section">
+            <h4 style="color: #e74c3c; margin-bottom: 0.75rem;">⚠️ Critical Missing Fields</h4>
+            <div class="field-validation-grid">
+              ${criticalMissing.slice(0, 10).map(field => `
+                <div class="field-item">
+                  <div class="field-name">${field.field}</div>
+                  <div class="field-status missing">Missing</div>
+                  <div style="color: #6c757d; font-size: 0.8rem;">${field.category}</div>
+                  <div style="color: #6c757d; font-size: 0.75rem;">High Priority</div>
+                </div>
+              `).join('')}
+              ${criticalMissing.length > 10 ? 
+                `<div style="text-align: center; color: #6c757d; font-size: 0.85rem; padding: 0.5rem;">
+                  ... and ${criticalMissing.length - 10} more critical fields
+                </div>` : ''
+              }
+            </div>
+          </div>
+        `;
+      }
+      
+      // Sample of attendee fields
+      if (attendeeFields.length > 0) {
+        html += `
+          <div class="category-section">
+            <h4>📋 Attendee Fields Sample (${attendeeFields.length} total)</h4>
+            <div class="field-validation-grid">
+              <div class="field-item" style="background: #e9ecef; font-weight: 600;">
+                <div>Field Name</div>
+                <div>Status</div>
+                <div>Category</div>
+                <div>Location</div>
+              </div>
+              ${attendeeFields.slice(0, 8).map(field => `
+                <div class="field-item">
+                  <div class="field-name">${field.field}</div>
+                  <div class="field-status ${field.status}">${field.status.charAt(0).toUpperCase() + field.status.slice(1)}</div>
+                  <div style="color: #6c757d; font-size: 0.8rem;">${field.category}</div>
+                  <div style="color: #6c757d; font-size: 0.75rem;">${field.location.transformed !== 'not_found' ? '✓ Found' : '✗ Missing'}</div>
+                </div>
+              `).join('')}
+              ${attendeeFields.length > 8 ? 
+                `<div style="text-align: center; color: #6c757d; font-size: 0.85rem; padding: 0.5rem;">
+                  ... and ${attendeeFields.length - 8} more attendee fields
+                </div>` : ''
+              }
+            </div>
+          </div>
+        `;
+      }
+      
+      // Sample of ticket fields
+      if (ticketFields.length > 0) {
+        html += `
+          <div class="category-section">
+            <h4>🎫 Ticket Fields Sample (${ticketFields.length} total)</h4>
+            <div class="field-validation-grid">
+              <div class="field-item" style="background: #e9ecef; font-weight: 600;">
+                <div>Field Name</div>
+                <div>Status</div>
+                <div>Category</div>
+                <div>Location</div>
+              </div>
+              ${ticketFields.slice(0, 6).map(field => `
+                <div class="field-item">
+                  <div class="field-name">${field.field}</div>
+                  <div class="field-status ${field.status}">${field.status.charAt(0).toUpperCase() + field.status.slice(1)}</div>
+                  <div style="color: #6c757d; font-size: 0.8rem;">${field.category}</div>
+                  <div style="color: #6c757d; font-size: 0.75rem;">${field.location.transformed !== 'not_found' ? '✓ Found' : '✗ Missing'}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Recommendations
+      if (recommendations.length > 0) {
+        html += `
+          <div class="recommendations">
+            <h4>💡 Recommendations</h4>
+            <ul>
+              ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+      
+      modalBody.innerHTML = html;
+    }
+    
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+    
+    function exportResults() {
+      if (!allResults || allResults.length === 0) {
+        alert('No results to export. Run validation first.');
+        return;
+      }
+      
+      const csvData = [
+        ['Registration ID', 'Type', 'Transfer Rate', 'Status', 'Transferred', 'Missing', 'Critical Missing'].join(','),
+        ...allResults.map(result => [
+          result.registrationId,
+          result.registrationType || 'Unknown',
+          Math.round(result.overallTransferPercentage || 0) + '%',
+          getTransferStatus(result.overallTransferPercentage),
+          result.transferredCount || 0,
+          result.missingCount || 0,
+          result.criticalMissingCount || 0
+        ].join(','))
+      ].join('\\n');
+      
+      const blob = new Blob([csvData], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `field-validation-results-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('detailModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeModal();
+      }
+    });
+    
+    // Initialize page
+    console.log('Field Validation Reports loaded - Ready to analyze 127 fields per registration');
+  </script>
+</body>
+</html>

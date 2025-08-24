@@ -431,7 +431,7 @@ export class CartService {
    * Get cart by ID
    */
   async getCart(cartId: string): Promise<Cart | null> {
-    return await this.cartsCollection.findOne({ cartId }) as Cart | null;
+    return await this.cartsCollection.findOne({ cartId }) as unknown as Cart | null;
   }
 
   /**

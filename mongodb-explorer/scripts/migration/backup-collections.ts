@@ -214,7 +214,8 @@ async function backupCollections(): Promise<BackupResult[]> {
 }
 
 // Export for use in other scripts
-export { backupCollections, BackupResult };
+export { backupCollections };
+export type { BackupResult };
 
 // Run if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {

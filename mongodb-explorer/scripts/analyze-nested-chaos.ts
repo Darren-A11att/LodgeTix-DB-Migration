@@ -218,7 +218,7 @@ class NestedChaosAnalyzer {
     console.log('\n🔍 Analyzing Cart Metadata Chaos...');
     
     const carts = await this.db.collection('carts')
-      .find({}, { metadata: 1, _id: 1 })
+      .find({}, { projection: { metadata: 1, _id: 1 } })
       .limit(500)
       .toArray();
 

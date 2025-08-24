@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import apiService from '@/lib/api';
@@ -39,7 +39,7 @@ const toNumber = (value: number | { $numberDecimal: string } | undefined): numbe
     : value as number;
 };
 
-export default function InvoicesListPage() {
+function InvoicesListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -934,5 +934,12 @@ export default function InvoicesListPage() {
         </div>
       )}
     </main>
+  );
+}
+export default function InvoicesListPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <InvoicesListContent />
+    </Suspense>
   );
 }

@@ -44,6 +44,25 @@
       font-size: 14px;
     }
     
+    .header-nav {
+      margin-top: 20px;
+    }
+    
+    .header-nav a {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      margin: 0 5px;
+      transition: background 0.3s;
+    }
+    
+    .header-nav a:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
     .main {
       display: flex;
       height: calc(100vh - 180px);
@@ -322,6 +341,12 @@
     <div class="header">
       <h1>MongoDB Explorer</h1>
       <p>E-Commerce Migration Collections Viewer</p>
+      <div class="header-nav">
+        <a href="/">📊 Collections</a>
+        <a href="/compare.html">🔄 Registration vs Cart Comparison</a>
+        <a href="/validation.html">✅ Field Validation Report</a>
+        <a href="/validation-results.html">📈 Validation Results</a>
+      </div>
     </div>
     
     <div class="main">

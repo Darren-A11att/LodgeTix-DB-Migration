@@ -1,0 +1,673 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-24T03:42:06.619Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+
+━━━ Processing Square ━━━
+
+Fetching Square payments since 2025-08-20T03:40:02.312Z (INCREMENTAL)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: d2CRLpnWMo6MRbnwNjbjakDYtFIZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 9dPAJib9ab0aQcmCrMtRMnUNkpcZY
+    ✓ Order fetched
+  👤 Fetching customer: 0T5QGSZV74EKX437CW280Q8AX4
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 1dba0e4a-57cc-4554-95b7-de9dee375ade
+  ✓ Updated import_payments with registrationId: 1dba0e4a-57cc-4554-95b7-de9dee375ade
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Sean Hogan
+    ✓ Customer already exists in production - skipping: Sean Hogan
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 1
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198d6af-1191-76e8-9068-667dcbea17ec-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (1dba0e4a-57cc-4554-95b7-de9dee375ade)
+    ✓ Contact already exists in production - skipping sync but tracking: Sean Hogan
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 1 ticket IDs (1 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment d2CRLpnWMo6MRbnwNjbjakDYtFIZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment d2CRLpnWMo6MRbnwNjbjakDYtFIZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Attendee 0198d6af-1191-76e8-9068-667dcbea17ec synced to production
+      ✓ Ticket 0198d6af-1191-76e8-9068-667dcbea17ec-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+    ✅ Payment d2CRLpnWMo6MRbnwNjbjakDYtFIZY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: HVjham6ws2yqX1imE2YlNryBNIaZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: D6kEZ2lDi3J0NJFqvwCfyjUsJ77YY
+    ✓ Order fetched
+  👤 Fetching customer: PERR703397K17T1T8F0GTEZ7FW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 5bcbe811-2b32-4467-83da-8063d2a73c55
+  ✓ Updated import_payments with registrationId: 5bcbe811-2b32-4467-83da-8063d2a73c55
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Warren Keedle
+    ✓ Created new customer: Warren Keedle
+    ✓ Updated registration with customer reference: 005b045d-10f0-419c-b80b-40dd05a2ef1e
+  ✓ Found customer data for ticket ownership: Warren Keedle
+    Extracting 2 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 2 attendee(s)
+    Extracting 4 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 4
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 4 processed tickets from registration_data
+  ✓ Found 4 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198d5ce-8368-74ef-9cac-ab9689013e89-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d5ce-8368-74ef-9cac-ab9689013e89-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d610-1def-7798-a9a8-6797686b1575-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d610-1def-7798-a9a8-6797686b1575-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (5bcbe811-2b32-4467-83da-8063d2a73c55)
+    ✨ Creating new contact with role 'attendee': Warren Keedle
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (5bcbe811-2b32-4467-83da-8063d2a73c55) - Conf: IND-089634CG
+    ✓ Processed unified contact: Warren Keedle (roles: attendee)
+    📝 Created registration reference: Grand Proclamation 2025 (5bcbe811-2b32-4467-83da-8063d2a73c55)
+    ✨ Creating new contact with role 'attendee': Malcom Ferguson
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (5bcbe811-2b32-4467-83da-8063d2a73c55) - Conf: IND-089634CG
+    ✓ Processed unified contact: Malcom Ferguson (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 4 ticket IDs (4 ObjectIds) and 2 attendee IDs (2 ObjectIds)
+  ✅ Completed processing Square payment HVjham6ws2yqX1imE2YlNryBNIaZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment HVjham6ws2yqX1imE2YlNryBNIaZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 005b045d-10f0-419c-b80b-40dd05a2ef1e synced to production
+      ✓ Attendee 0198d5ce-8368-74ef-9cac-ab9689013e89 synced to production
+      ✓ Attendee 0198d610-1def-7798-a9a8-6797686b1575 synced to production
+      ✓ Contact warrenkeedle@gmail.com synced to production
+      ✓ Contact burragorang@hotmail.com synced to production
+      ✓ Ticket 0198d5ce-8368-74ef-9cac-ab9689013e89-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198d5ce-8368-74ef-9cac-ab9689013e89-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198d610-1def-7798-a9a8-6797686b1575-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198d610-1def-7798-a9a8-6797686b1575-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment HVjham6ws2yqX1imE2YlNryBNIaZY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 3 (cursor: provided)
+
+📝 Processing Square payment: hmne4CDE6gyS6Sl9uwqwd2R7Yv8YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 5jhJklGmQxoWzgez9Iklo6sijaGZY
+    ✓ Order fetched
+  👤 Fetching customer: VKEGZV9E82BRMSAX7PEPY1P63G
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 382de2cf-c5ca-4b23-9fd5-301f1506c31b
+  ✓ Updated import_payments with registrationId: 382de2cf-c5ca-4b23-9fd5-301f1506c31b
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Rex  Calapis
+    ✓ Created new customer: Rex  Calapis
+    ✓ Updated registration with customer reference: 1200ef0f-16a0-4192-a02b-e7f03271aeb1
+  ✓ Found customer data for ticket ownership: Rex  Calapis
+    Extracting 2 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 2 attendee(s)
+    Extracting 5 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 5
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: 0)
+    📦 Returning 5 processed tickets from registration_data
+  ✓ Found 5 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198d509-f920-7186-9fdd-4ba2e19901f0-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d509-f920-7186-9fdd-4ba2e19901f0-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d509-f920-7186-9fdd-4ba2e19901f0-b8a1ef1f-5f53-4544-af7b-901756b9ba7d (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d50b-9ed9-7353-ae6a-187b7470cba7-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198d50b-9ed9-7353-ae6a-187b7470cba7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (382de2cf-c5ca-4b23-9fd5-301f1506c31b)
+    ✨ Creating new contact with role 'attendee': Rex  Calapis
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (382de2cf-c5ca-4b23-9fd5-301f1506c31b) - Conf: IND-843062HE
+    ✓ Processed unified contact: Rex  Calapis (roles: attendee)
+    📝 Created registration reference: Grand Proclamation 2025 (382de2cf-c5ca-4b23-9fd5-301f1506c31b)
+    📝 Added registration to existing contact: Grand Proclamation 2025 (382de2cf-c5ca-4b23-9fd5-301f1506c31b)
+    🔄 Updated existing contact with new role 'attendee': Charllotte  Calapis
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 5 ticket IDs (5 ObjectIds) and 2 attendee IDs (2 ObjectIds)
+  ✅ Completed processing Square payment hmne4CDE6gyS6Sl9uwqwd2R7Yv8YY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment hmne4CDE6gyS6Sl9uwqwd2R7Yv8YY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 1200ef0f-16a0-4192-a02b-e7f03271aeb1 synced to production
+      ✓ Attendee 0198d509-f920-7186-9fdd-4ba2e19901f0 synced to production
+      ✓ Attendee 0198d50b-9ed9-7353-ae6a-187b7470cba7 synced to production
+      ✓ Contact calapisrexbelli@yahoo.com.au synced to production
+      ✓ Ticket 0198d509-f920-7186-9fdd-4ba2e19901f0-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198d509-f920-7186-9fdd-4ba2e19901f0-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198d509-f920-7186-9fdd-4ba2e19901f0-b8a1ef1f-5f53-4544-af7b-901756b9ba7d synced to production
+      ✓ Ticket 0198d50b-9ed9-7353-ae6a-187b7470cba7-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198d50b-9ed9-7353-ae6a-187b7470cba7-b8a1ef1f-5f53-4544-af7b-901756b9ba7d synced to production
+    ✅ Payment hmne4CDE6gyS6Sl9uwqwd2R7Yv8YY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 4 (cursor: provided)
+
+📝 Processing Square payment: FeWwaiYVlLglr5DzOxVOM6aVyrAZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: txPzOidzeuwnupW7OT59HwyGD5RZY
+    ✓ Order fetched
+  👤 Fetching customer: 7AT8AYK6R7A8Y509TPAD8JTF6C
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: f2e68851-4b00-415d-a183-b7d11778774f
+  ✓ Updated import_payments with registrationId: f2e68851-4b00-415d-a183-b7d11778774f
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Noel  Bagadiong
+    ✓ Customer already exists in production - skipping: Noel  Bagadiong
+    Extracting 2 attendees from registration_data
+  ✓ Found 2 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198b7c7-6dad-7485-a24d-c07fb665a4c6-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198b7cb-940c-73de-9d76-028b71e8a7f3-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (f2e68851-4b00-415d-a183-b7d11778774f)
+    ✓ Contact already exists in production - skipping sync but tracking: Noel  Bagadiong
+    ⚠️ Skipping contact with no email: Mary Bagadiong 
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 2 attendee IDs (2 ObjectIds)
+  ✅ Completed processing Square payment FeWwaiYVlLglr5DzOxVOM6aVyrAZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment FeWwaiYVlLglr5DzOxVOM6aVyrAZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Attendee 0198b7c7-6dad-7485-a24d-c07fb665a4c6 synced to production
+      ✓ Attendee 0198b7cb-940c-73de-9d76-028b71e8a7f3 synced to production
+      ✓ Ticket 0198b7c7-6dad-7485-a24d-c07fb665a4c6-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198b7cb-940c-73de-9d76-028b71e8a7f3-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment FeWwaiYVlLglr5DzOxVOM6aVyrAZY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 5 (cursor: provided)
+
+📝 Processing Square payment: dqYxwPVBYjE4IzuCFJ2OcsGggLKZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 7GIY0Avod0O18Nn61qqsvowiZD6YY
+    ✓ Order fetched
+  👤 Fetching customer: 18SZ98QQGSS6ZZ1AX0J6GSQZCM
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: e822b55c-a79e-4e6e-bca9-b78d56e27b46
+  ✓ Updated import_payments with registrationId: e822b55c-a79e-4e6e-bca9-b78d56e27b46
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Graeme K Ingall
+    ✓ Created new customer: Graeme K Ingall
+    ✓ Updated registration with customer reference: 1f8f110d-09a2-4036-a562-57586b2fc89f
+  ✓ Found customer data for ticket ownership: Graeme K Ingall
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198cb3b-c716-728b-86cd-c2a26f781cdc-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198cb3b-c716-728b-86cd-c2a26f781cdc-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (e822b55c-a79e-4e6e-bca9-b78d56e27b46)
+    ✨ Creating new contact with role 'attendee': Graeme K Ingall
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (e822b55c-a79e-4e6e-bca9-b78d56e27b46) - Conf: IND-367773LU
+    ✓ Processed unified contact: Graeme K Ingall (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment dqYxwPVBYjE4IzuCFJ2OcsGggLKZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment dqYxwPVBYjE4IzuCFJ2OcsGggLKZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 1f8f110d-09a2-4036-a562-57586b2fc89f synced to production
+      ✓ Attendee 0198cb3b-c716-728b-86cd-c2a26f781cdc synced to production
+      ✓ Contact 2ingallsigloo@westnet.com.au synced to production
+      ✓ Ticket 0198cb3b-c716-728b-86cd-c2a26f781cdc-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198cb3b-c716-728b-86cd-c2a26f781cdc-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment dqYxwPVBYjE4IzuCFJ2OcsGggLKZY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 6 (cursor: provided)
+
+📝 Processing Square payment: dSykOaVyKBQeDaeMp9OvRwsWUqWZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: ny5TyReu57VPm2BOITe24pcejuFZY
+    ✓ Order fetched
+  👤 Fetching customer: 2HDX1YCW41RYRRY4WAG3DMCPEG
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: a39786e7-7942-4eac-ba7b-f8e8a6b3e164
+  ✓ Updated import_payments with registrationId: a39786e7-7942-4eac-ba7b-f8e8a6b3e164
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Avhinash Prasad
+    ✓ Created new customer: Avhinash Prasad
+    ✓ Updated registration with customer reference: bc0bcf09-939c-478a-b8d0-639956588886
+  ✓ Found customer data for ticket ownership: Avhinash Prasad
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198cb31-c313-7005-b425-2f55c26da683-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198cb31-c313-7005-b425-2f55c26da683-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (a39786e7-7942-4eac-ba7b-f8e8a6b3e164)
+    ✨ Creating new contact with role 'attendee': Avhinash Prasad
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (a39786e7-7942-4eac-ba7b-f8e8a6b3e164) - Conf: IND-737187IQ
+    ✓ Processed unified contact: Avhinash Prasad (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment dSykOaVyKBQeDaeMp9OvRwsWUqWZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment dSykOaVyKBQeDaeMp9OvRwsWUqWZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer bc0bcf09-939c-478a-b8d0-639956588886 synced to production
+      ✓ Attendee 0198cb31-c313-7005-b425-2f55c26da683 synced to production
+      ✓ Contact aviaryan@gmail.com synced to production
+      ✓ Ticket 0198cb31-c313-7005-b425-2f55c26da683-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198cb31-c313-7005-b425-2f55c26da683-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+    ✅ Payment dSykOaVyKBQeDaeMp9OvRwsWUqWZY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 7 (cursor: provided)
+
+📝 Processing Square payment: hoU2BudmLAQ5fTAvNU1yy2qBgO8YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: vGxJRrVaLzkR78WBgZDpN7qFb1MZY
+    ✓ Order fetched
+  👤 Fetching customer: 8JX23E6M9ZNEBSAX6PJWNSPQ78
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ec4084c8-74cb-4c85-a9e1-ab7643851fdc
+  ✓ Updated import_payments with registrationId: ec4084c8-74cb-4c85-a9e1-ab7643851fdc
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Brad Argaet
+    ✓ Created new customer: Brad Argaet
+    ✓ Updated registration with customer reference: c52dd9bc-f724-4942-9656-247270bf6ff4
+  ✓ Found customer data for ticket ownership: Brad Argaet
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 3 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 3
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    🔍 Looking up eventTicket: b8a1ef1f-5f53-4544-af7b-901756b9ba7d
+    ✅ Found eventTicket: Existing Banquet Ticket bought by Lodge (price: 0)
+    📦 Returning 3 processed tickets from registration_data
+  ✓ Found 3 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198c7a9-1e08-70b1-a228-9466649f9759-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198c7a9-1e08-70b1-a228-9466649f9759-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198c7a9-1e08-70b1-a228-9466649f9759-b8a1ef1f-5f53-4544-af7b-901756b9ba7d (Existing Banquet Ticket bought by Lodge, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (ec4084c8-74cb-4c85-a9e1-ab7643851fdc)
+    ✨ Creating new contact with role 'attendee': Brad Argaet
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (ec4084c8-74cb-4c85-a9e1-ab7643851fdc) - Conf: IND-199431PG
+    ✓ Processed unified contact: Brad Argaet (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 3 ticket IDs (3 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment hoU2BudmLAQ5fTAvNU1yy2qBgO8YY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment hoU2BudmLAQ5fTAvNU1yy2qBgO8YY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer c52dd9bc-f724-4942-9656-247270bf6ff4 synced to production
+      ✓ Attendee 0198c7a9-1e08-70b1-a228-9466649f9759 synced to production
+      ✓ Contact bradleyj_au@iinet.net.au synced to production
+      ✓ Ticket 0198c7a9-1e08-70b1-a228-9466649f9759-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198c7a9-1e08-70b1-a228-9466649f9759-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198c7a9-1e08-70b1-a228-9466649f9759-b8a1ef1f-5f53-4544-af7b-901756b9ba7d synced to production
+    ✅ Payment hoU2BudmLAQ5fTAvNU1yy2qBgO8YY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 8 (cursor: provided)
+
+📝 Processing Square payment: h8Ydqor5JBY3oXjvD7j4UXzUhh7YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: fen038Fp9GdWpTy4EYjgHmZKV1DZY
+    ✓ Order fetched
+  👤 Fetching customer: E45J93973JG11P8JEP7RGW0AQW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ef8661c9-a70d-4e31-95a6-c3dd47289654
+  ✓ Updated import_payments with registrationId: ef8661c9-a70d-4e31-95a6-c3dd47289654
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: J French
+    ✓ Created new customer: J French
+    ✓ Updated registration with customer reference: b26d2f92-a111-438b-8625-0d59bb2338c1
+  ✓ Found customer data for ticket ownership: J French
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 1
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198c6ce-bc47-7072-aefa-20c76b5b8978-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (ef8661c9-a70d-4e31-95a6-c3dd47289654)
+    ✨ Creating new contact with role 'attendee': Thomas  Sarangaya
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (ef8661c9-a70d-4e31-95a6-c3dd47289654) - Conf: IND-424759BZ
+    ✓ Processed unified contact: Thomas  Sarangaya (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 1 ticket IDs (1 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment h8Ydqor5JBY3oXjvD7j4UXzUhh7YY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment h8Ydqor5JBY3oXjvD7j4UXzUhh7YY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer b26d2f92-a111-438b-8625-0d59bb2338c1 synced to production
+      ✓ Attendee 0198c6ce-bc47-7072-aefa-20c76b5b8978 synced to production
+      ✓ Contact tsarangaya88@gmail.com synced to production
+      ✓ Ticket 0198c6ce-bc47-7072-aefa-20c76b5b8978-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment h8Ydqor5JBY3oXjvD7j4UXzUhh7YY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 9 (cursor: provided)
+
+📝 Processing Square payment: nhXYs4mKV9ZSaJlCgqh4UFxuyq9YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 9nIinvXKtsHPVuHUZpFLK7Vw7ZKZY
+    ✓ Order fetched
+  👤 Fetching customer: VWV93DJBENEQ13MEC8X5CHTXYC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 35899ee6-1192-4099-b1b3-32e47ec45714
+  ✓ Updated import_payments with registrationId: 35899ee6-1192-4099-b1b3-32e47ec45714
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Apain Havatian 
+    ✓ Created new customer: Apain Havatian 
+    ✓ Updated registration with customer reference: a9f09c89-7765-4e28-b9aa-0eafbe65f20a
+  ✓ Found customer data for ticket ownership: Apain Havatian 
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198c6cd-c6c3-765b-8d3d-dde70d8547c5-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198c6cd-c6c3-765b-8d3d-dde70d8547c5-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (35899ee6-1192-4099-b1b3-32e47ec45714)
+    ✨ Creating new contact with role 'attendee': Alain Havatian
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (35899ee6-1192-4099-b1b3-32e47ec45714) - Conf: IND-009984IW
+    ✓ Processed unified contact: Alain Havatian (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment nhXYs4mKV9ZSaJlCgqh4UFxuyq9YY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment nhXYs4mKV9ZSaJlCgqh4UFxuyq9YY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer a9f09c89-7765-4e28-b9aa-0eafbe65f20a synced to production
+      ✓ Attendee 0198c6cd-c6c3-765b-8d3d-dde70d8547c5 synced to production
+      ✓ Contact delta214lf@hotmail.com synced to production
+      ✓ Ticket 0198c6cd-c6c3-765b-8d3d-dde70d8547c5-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198c6cd-c6c3-765b-8d3d-dde70d8547c5-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment nhXYs4mKV9ZSaJlCgqh4UFxuyq9YY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 10 (cursor: provided)
+
+📝 Processing Square payment: 7NMAVHGx3EXVmsDJUx6dtgLWHEGZY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: RH3y6VmhnCyxW4I7gDXCTsJ3HtBZY
+    ✓ Order fetched
+  👤 Fetching customer: VWV93DJBENEQ13MEC8X5CHTXYC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: 7NMAVHGx3EXVmsDJUx6dtgLWHEGZY
+  ✓ Updated import_payments with registrationId: no-match
+  ℹ️ FAILED payment - no match is not an error
+  Got cursor for next payment
+  Fetched payment 11 (cursor: provided)
+
+📝 Processing Square payment: FuiQvRw0m3kpvNcOwNeiI1SBpS9YY
+  📥 Importing non-completed payment - status: FAILED (will not move to production)
+  🛒 Fetching order: bMNH9IXpiUI4fFhsRf3WuM4Qj8HZY
+    ✓ Order fetched
+  👤 Fetching customer: VWV93DJBENEQ13MEC8X5CHTXYC
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  📝 No registration found for payment: FuiQvRw0m3kpvNcOwNeiI1SBpS9YY
+  ✓ Updated import_payments with registrationId: no-match
+  ℹ️ FAILED payment - no match is not an error
+  Got cursor for next payment
+  Fetched payment 12 (cursor: provided)
+
+📝 Processing Square payment: RwWJ8YySXsb9OD0GnN4owd4S5PNZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: lXacPNWwRWfH3PIXeaKrVyIUtjVZY
+    ✓ Order fetched
+  👤 Fetching customer: J1JCBCCYG8AW8T01BS9EAJ9KP0
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: a59829c2-a1ab-4e5b-a491-f276f62f5088
+  ✓ Updated import_payments with registrationId: a59829c2-a1ab-4e5b-a491-f276f62f5088
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Warren Yu
+    ✓ Created new customer: Warren Yu
+    ✓ Updated registration with customer reference: 42096ba9-e2ec-4716-ae8f-a2efb311c8c0
+  ✓ Found customer data for ticket ownership: Warren Yu
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 01985480-df90-719c-8c42-67c23476c411-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 01985480-df90-719c-8c42-67c23476c411-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (a59829c2-a1ab-4e5b-a491-f276f62f5088)
+    ✨ Creating new contact with role 'attendee': Warren Yu
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (a59829c2-a1ab-4e5b-a491-f276f62f5088) - Conf: IND-822988LY
+    ✓ Processed unified contact: Warren Yu (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment RwWJ8YySXsb9OD0GnN4owd4S5PNZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment RwWJ8YySXsb9OD0GnN4owd4S5PNZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 42096ba9-e2ec-4716-ae8f-a2efb311c8c0 synced to production
+      ✓ Attendee 01985480-df90-719c-8c42-67c23476c411 synced to production
+      ✓ Contact wazzyu@gmail.com synced to production
+      ✓ Ticket 01985480-df90-719c-8c42-67c23476c411-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 01985480-df90-719c-8c42-67c23476c411-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+    ✅ Payment RwWJ8YySXsb9OD0GnN4owd4S5PNZY complete data chain synced to production
+  ✅ Payment data synced to production
+  No cursor found, completed all Square payments
+✓ Processed 12 Square payments (total fetched: 12)
+
+━━━ Processing DA-LODGETIX ━━━
+
+Fetching Stripe charges since 2025-08-20T03:40:02.312Z (INCREMENTAL)...
+
+━━━ Processing WS-LODGETIX ━━━
+
+Fetching Stripe charges since 2025-08-20T03:40:02.312Z (INCREMENTAL)...
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+Fetching Stripe charges since 2025-08-20T03:40:02.312Z (INCREMENTAL)...
+
+✅ All payments processed with immediate production sync
+   Each payment's complete data chain was synced to production before processing the next payment
+   This prevents orphaned tickets and ensures all relationships are properly maintained
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+
+📊 VERIFICATION RESULTS:
+Error Payments - Found: 0, Not Found: 12
+Error Registrations - Found: 0, Not Found: 0
+Orphaned Registrations - Found: 0, Not Found: 0
+
+📈 Overall: 0.00% of error documents exist in test DB
+⚠️  Low found rate indicates genuine sync failures
+✅ Error verification completed
+
+
+🛒 Processing Orders from Registrations...
+✅ Orders created: 0
+⏭️ Orders skipped: 316
+⚠️ Order processing errors: 316
+
+=== SYNC COMPLETE ===
+✅ Processed: 10
+⏭️ Skipped: 4
+❌ Errors: 0
+👥 Unique contacts: 11
+📊 Total: 14

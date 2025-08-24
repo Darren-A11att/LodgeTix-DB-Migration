@@ -121,7 +121,7 @@ async function fixIndividualCartFormData() {
           }
           
           // Find attendee in registration data (where the detailed attendee info is stored)
-          let attendee = registration.registrationData?.attendees?.find((a: any) => a.attendeeId === attendeeId);
+          let attendee = (registration as any).registrationData?.attendees?.find((a: any) => a.attendeeId === attendeeId);
           
           // If not found in registrationData attendees, try the root attendees array
           if (!attendee) {
@@ -152,8 +152,8 @@ async function fixIndividualCartFormData() {
             ...(attendee.suffix && { suffix: attendee.suffix }),
             
             // Contact information (use attendee data or fall back to booking contact)
-            email: attendee.primaryEmail || attendee.email || registration.registrationData?.bookingContact?.email || registration.bookingContact?.email,
-            phone: attendee.primaryPhone || attendee.phone || registration.registrationData?.bookingContact?.phone || registration.bookingContact?.phone,
+            email: attendee.primaryEmail || attendee.email || (registration as any).registrationData?.bookingContact?.email || registration.bookingContact?.email,
+            phone: attendee.primaryPhone || attendee.phone || (registration as any).registrationData?.bookingContact?.phone || registration.bookingContact?.phone,
             
             // Mason-specific fields
             ...(attendee.lodge && { lodgeName: attendee.lodge }),

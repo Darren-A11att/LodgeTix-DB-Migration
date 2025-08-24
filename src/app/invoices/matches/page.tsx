@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import JsonViewer from '@/components/JsonViewer';
@@ -46,7 +46,7 @@ interface MatchesResponse {
   hasMore: boolean;
 }
 
-export default function InvoiceMatchesPage() {
+function InvoiceMatchesContent() {
   const searchParams = useSearchParams();
   const [currentMatch, setCurrentMatch] = useState<InvoiceMatch | null>(null);
   const [loading, setLoading] = useState(true);
@@ -3781,5 +3781,13 @@ export default function InvoiceMatchesPage() {
         />
       )}
     </main>
+  );
+}
+
+export default function InvoiceMatchesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <InvoiceMatchesContent />
+    </Suspense>
   );
 }

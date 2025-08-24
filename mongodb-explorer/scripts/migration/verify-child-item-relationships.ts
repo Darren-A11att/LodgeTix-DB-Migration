@@ -57,7 +57,7 @@ async function verifyChildItemRelationships() {
     const cartsCollection = db.collection('carts');
     
     // Get all carts
-    const allCarts = await cartsCollection.find({}).toArray() as Cart[];
+    const allCarts = await cartsCollection.find({}).toArray() as unknown as Cart[];
     
     console.log(`\nTotal carts found: ${allCarts.length}`);
     

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Validation Results - MongoDB Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    
+    .header {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .nav-links a {
+      color: #3498db;
+      text-decoration: none;
+      padding: 0.25rem 0.75rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .summary-dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .stat-label {
+      font-size: 0.85rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    
+    .stat-card.success .stat-value {
+      color: #27ae60;
+    }
+    
+    .stat-card.warning .stat-value {
+      color: #f39c12;
+    }
+    
+    .stat-card.error .stat-value {
+      color: #e74c3c;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .filter-bar {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .filter-bar select,
+    .filter-bar input {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .filter-bar button {
+      padding: 0.5rem 1rem;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .filter-bar button:hover {
+      background: #2980b9;
+    }
+    
+    .results-table {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background: #f8f9fa;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .status-badge.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-badge.partial {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-badge.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .progress-bar {
+      width: 100px;
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #e74c3c, #f39c12, #27ae60);
+      transition: width 0.3s;
+    }
+    
+    .view-details {
+      color: #3498db;
+      text-decoration: none;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    
+    .view-details:hover {
+      text-decoration: underline;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      background: #f8f9fa;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6c757d;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    
+    .field-grid {
+      display: grid;
+      gap: 0.5rem;
+    }
+    
+    .field-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    
+    .field-item:nth-child(even) {
+      background: #f8f9fa;
+    }
+    
+    .field-name {
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .field-status {
+      text-align: center;
+    }
+    
+    .field-status.transferred {
+      color: #27ae60;
+    }
+    
+    .field-status.missing {
+      color: #e74c3c;
+    }
+    
+    .field-status.transformed {
+      color: #f39c12;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #6c757d;
+    }
+    
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+    }
+    
+    .category-section {
+      margin-top: 1.5rem;
+    }
+    
+    .category-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: #e9ecef;
+      border-radius: 4px;
+    }
+    
+    .recommendations {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #d1ecf1;
+      border-left: 4px solid #004085;
+      border-radius: 4px;
+    }
+    
+    .recommendations h4 {
+      color: #004085;
+      margin-bottom: 0.5rem;
+    }
+    
+    .recommendations ul {
+      margin-left: 1.5rem;
+      color: #004085;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 Field Transfer Validation Results</h1>
+    <div class="nav-links">
+      <a href="/">Collections</a>
+      <a href="/compare.html">Side-by-Side Comparison</a>
+      <a href="/validation.html">Validation Dashboard</a>
+    </div>
+  </div>
+  
+  <div class="summary-dashboard" id="summaryDashboard">
+    <div class="stat-card">
+      <div class="stat-value">-</div>
+      <div class="stat-label">Total Registrations</div>
+    </div>
+    <div class="stat-card success">
+      <div class="stat-value">-</div>
+      <div class="stat-label">Successful (≥80%)</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-value">-</div>
+      <div class="stat-label">Partial (60-79%)</div>
+    </div>
+    <div class="stat-card error">
+      <div class="stat-value">-</div>
+      <div class="stat-label">Failed (<60%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">-%</div>
+      <div class="stat-label">Avg Transfer Rate</div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="filter-bar">
+      <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="success">Successful (≥80%)</option>
+        <option value="partial">Partial (60-79%)</option>
+        <option value="failed">Failed (<60%)</option>
+      </select>
+      <select id="typeFilter">
+        <option value="">All Types</option>
+        <option value="individual">Individual</option>
+        <option value="lodge">Lodge</option>
+        <option value="grandLodge">Grand Lodge</option>
+        <option value="masonicOrder">Masonic Order</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Search Registration ID...">
+      <button onclick="applyFilters()">Apply Filters</button>
+      <button onclick="runValidation()">Run Full Validation</button>
+    </div>
+    
+    <div class="results-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Registration ID</th>
+            <th>Type</th>
+            <th>Transfer Rate</th>
+            <th>Status</th>
+            <th>Fields</th>
+            <th>Missing Critical</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTable">
+          <tr>
+            <td colspan="7" class="loading">Click "Run Full Validation" to analyze all registrations</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Field Validation Details</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Details will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let allResults = [];
+    let filteredResults = [];
+    
+    async function runValidation() {
+      const resultsTable = document.getElementById('resultsTable');
+      resultsTable.innerHTML = '<tr><td colspan="7" class="loading">Running validation on all registrations... This may take a moment.</td></tr>';
+      
+      try {
+        const response = await fetch('/api/validation/all');
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        allResults = data.results || [];
+        filteredResults = allResults;
+        
+        updateSummaryDashboard(data.summary);
+        displayResults(filteredResults);
+        
+      } catch (error) {
+        console.error('Error running validation:', error);
+        resultsTable.innerHTML = `<tr><td colspan="7" class="error-message">Error: ${error.message}</td></tr>`;
+      }
+    }
+    
+    function updateSummaryDashboard(summary) {
+      const cards = document.querySelectorAll('.stat-card .stat-value');
+      cards[0].textContent = summary.total;
+      cards[1].textContent = summary.statusCounts.good;
+      cards[2].textContent = summary.statusCounts.warning;
+      cards[3].textContent = summary.statusCounts.poor;
+      cards[4].textContent = Math.round(summary.averageTransferRate) + '%';
+    }
+    
+    function displayResults(results) {
+      const resultsTable = document.getElementById('resultsTable');
+      
+      if (results.length === 0) {
+        resultsTable.innerHTML = '<tr><td colspan="7">No results to display</td></tr>';
+        return;
+      }
+      
+      resultsTable.innerHTML = results.map(result => {
+        const status = getStatus(result.transferRate);
+        const statusClass = status.toLowerCase().replace(' ', '');
+        
+        return `
+          <tr>
+            <td><strong>${result.registrationId}</strong></td>
+            <td>${result.registrationType || 'Unknown'}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${result.transferRate}%"></div>
+                </div>
+                <span>${Math.round(result.transferRate)}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge ${statusClass}">${status}</span>
+            </td>
+            <td>
+              <span style="color: #27ae60;">${result.transferred}</span> / 
+              <span style="color: #6c757d;">${result.total}</span>
+            </td>
+            <td>
+              ${result.criticalMissing > 0 ? 
+                `<span style="color: #e74c3c; font-weight: 500;">${result.criticalMissing}</span>` : 
+                '<span style="color: #27ae60;">None</span>'
+              }
+            </td>
+            <td>
+              <a class="view-details" onclick="viewDetails('${result.registrationId}')">View Details</a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    function getStatus(transferRate) {
+      if (transferRate >= 80) return 'Success';
+      if (transferRate >= 60) return 'Partial';
+      return 'Failed';
+    }
+    
+    function applyFilters() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const typeFilter = document.getElementById('typeFilter').value;
+      const searchFilter = document.getElementById('searchInput').value.toLowerCase();
+      
+      filteredResults = allResults.filter(result => {
+        let matchStatus = true;
+        let matchType = true;
+        let matchSearch = true;
+        
+        if (statusFilter) {
+          const status = getStatus(result.transferRate).toLowerCase().replace(' ', '');
+          matchStatus = status === statusFilter;
+        }
+        
+        if (typeFilter) {
+          matchType = result.registrationType === typeFilter;
+        }
+        
+        if (searchFilter) {
+          matchSearch = result.registrationId.toLowerCase().includes(searchFilter);
+        }
+        
+        return matchStatus && matchType && matchSearch;
+      });
+      
+      displayResults(filteredResults);
+    }
+    
+    async function viewDetails(registrationId) {
+      const modal = document.getElementById('detailModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = `Field Validation Details - ${registrationId}`;
+      modalBody.innerHTML = '<div class="loading">Loading validation details...</div>';
+      modal.classList.add('active');
+      
+      try {
+        const response = await fetch(`/api/validation/${registrationId}`);
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        displayDetailedValidation(data);
+        
+      } catch (error) {
+        console.error('Error loading details:', error);
+        modalBody.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+      }
+    }
+    
+    function displayDetailedValidation(report) {
+      const modalBody = document.getElementById('modalBody');
+      
+      const categories = Object.entries(report.categories || {});
+      const criticalMissing = report.criticalMissing || [];
+      const recommendations = report.recommendations || [];
+      
+      let html = `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #27ae60;">${report.summary.transferredFields}</div>
+            <div style="font-size: 0.8rem; color: #6c757d;">Transferred</div>
+          </div>
+          <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #f39c12;">${report.summary.transformedFields}</div>
+            <div style="font-size: 0.8rem; color: #6c757d;">Transformed</div>
+          </div>
+          <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #e74c3c;">${report.summary.missingFields}</div>
+            <div style="font-size: 0.8rem; color: #6c757d;">Missing</div>
+          </div>
+        </div>
+      `;
+      
+      // Categories breakdown
+      if (categories.length > 0) {
+        html += '<h4 style="margin-bottom: 1rem;">Field Categories</h4>';
+        categories.forEach(([category, stats]) => {
+          html += `
+            <div class="category-section">
+              <div class="category-title">
+                ${category}: ${Math.round(stats.transferRate)}% transferred 
+                (${stats.transferred}/${stats.total} fields)
+              </div>
+            </div>
+          `;
+        });
+      }
+      
+      // Critical missing fields
+      if (criticalMissing.length > 0) {
+        html += `
+          <h4 style="margin-top: 1.5rem; color: #e74c3c;">Critical Missing Fields</h4>
+          <div class="field-grid">
+            ${criticalMissing.map(field => `
+              <div class="field-item">
+                <div class="field-name">${field.field}</div>
+                <div class="field-status missing">Missing</div>
+                <div style="color: #6c757d; font-size: 0.8rem;">${field.category}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      
+      // Recommendations
+      if (recommendations.length > 0) {
+        html += `
+          <div class="recommendations">
+            <h4>Recommendations</h4>
+            <ul>
+              ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+      
+      // Detailed field list
+      if (report.details) {
+        html += '<h4 style="margin-top: 1.5rem;">All Attendee Fields</h4>';
+        html += '<div class="field-grid">';
+        
+        const attendeeFields = report.details.attendeeValidation || [];
+        attendeeFields.forEach(field => {
+          const statusClass = field.status;
+          const statusLabel = field.status.charAt(0).toUpperCase() + field.status.slice(1);
+          
+          html += `
+            <div class="field-item">
+              <div class="field-name">${field.field}</div>
+              <div class="field-status ${statusClass}">${statusLabel}</div>
+              <div style="color: #6c757d; font-size: 0.8rem;">${field.category}</div>
+            </div>
+          `;
+        });
+        
+        html += '</div>';
+      }
+      
+      modalBody.innerHTML = html;
+    }
+    
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('detailModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeModal();
+      }
+    });
+    
+    // Run validation on page load (optional - remove if you want manual trigger)
+    // runValidation();
+  </script>
+</body>
+</html>

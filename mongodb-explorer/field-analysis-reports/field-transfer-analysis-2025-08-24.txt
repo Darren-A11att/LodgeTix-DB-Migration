@@ -1,0 +1,297 @@
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║                           COMPREHENSIVE FIELD TRANSFER ANALYSIS                   ║
+║                               Generated: 2025-08-24                               ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+
+📊 COLLECTION SUMMARY
+─────────────────────────────────────────────────────────────────────────────────
+Attendees Collection: 469 documents, 87 unique fields
+Tickets Collection: 941 documents, 40 unique fields
+
+🔗 COMMON FIELDS (17 fields)
+─────────────────────────────────────────────────────────────────────────────────
+✓ _id
+✓ _id.buffer
+✓ _id.buffer.0
+✓ _id.buffer.1
+✓ _id.buffer.10
+✓ _id.buffer.11
+✓ _id.buffer.2
+✓ _id.buffer.3
+✓ _id.buffer.4
+✓ _id.buffer.5
+✓ _id.buffer.6
+✓ _id.buffer.7
+✓ _id.buffer.8
+✓ _id.buffer.9
+✓ _importedAt
+✓ _sourceSystem
+✓ attendeeId
+✓ createdAt
+✓ qrCodeUrl
+✓ registrationId
+✓ updatedAt
+
+👥 ATTENDEES-ONLY FIELDS (70 fields)
+─────────────────────────────────────────────────────────────────────────────────
+• attendeeData
+• attendeeData.attendeeId
+• attendeeData.attendeeType
+• attendeeData.contactConfirmed
+• attendeeData.contactPreference
+• attendeeData.dietaryRequirements
+• attendeeData.firstName
+• attendeeData.firstTime
+• attendeeData.grandLodge
+• attendeeData.grandLodgeId
+• attendeeData.grandLodgeOrganisationId
+• attendeeData.grandOfficerStatus
+• attendeeData.guestOfId
+• attendeeData.isCheckedIn
+• attendeeData.isPartner
+• attendeeData.isPrimary
+• attendeeData.lastName
+• attendeeData.lodge
+• attendeeData.lodgeId
+• attendeeData.lodgeNameNumber
+• attendeeData.lodgeOrganisationId
+• attendeeData.notes
+• attendeeData.otherGrandOfficerRole
+• attendeeData.partner
+• attendeeData.partnerOf
+• attendeeData.paymentStatus
+• attendeeData.postNominals
+• attendeeData.presentGrandOfficerRole
+• attendeeData.primaryEmail
+• attendeeData.primaryPhone
+• attendeeData.rank
+• attendeeData.relationship
+• attendeeData.specialNeeds
+• attendeeData.suffix
+• attendeeData.tableAssignment
+• attendeeData.ticket
+• attendeeData.ticket.selectedEvents
+• attendeeData.ticket.ticketDefinitionId
+• attendeeData.title
+• attendeeData.updatedAt
+• attendeeData.useSameLodge
+• attendeeType
+• authUserId
+• contactId
+• contactPreference
+• dietaryRequirements
+• email
+• eventTitle
+• firstName
+• hasPartner
+• isPartner
+• isPrimary
+• lastName
+• masonicStatus
+• personId
+• phone
+• primaryEmail
+• primaryPhone
+• relatedAttendeeId
+• relationship
+• specialNeeds
+• suffix
+• suffix1
+• suffix2
+• suffix3
+• title
+
+🎫 TICKETS-ONLY FIELDS (23 fields)
+─────────────────────────────────────────────────────────────────────────────────
+• checkedInAt
+• currency
+• eventId
+• eventTicketId
+• isPartnerTicket
+• originalPrice
+• packageId
+• paymentStatus
+• pricePaid
+• purchasedAt
+• reservationExpiresAt
+• reservationId
+• seatInfo
+• status
+• ticketId
+• ticketNumber
+• ticketPrice
+• ticketStatus
+• ticketTypeId
+
+📋 COMPLETE FIELD INVENTORY
+─────────────────────────────────────────────────────────────────────────────────
+
+ATTENDEES COLLECTION (87 fields):
+  _id
+  _id.buffer
+  _id.buffer.0-11 (MongoDB ObjectId buffer components)
+  _importedAt
+  _sourceSystem
+  attendeeData (nested object containing):
+    - attendeeId
+    - attendeeType
+    - contactConfirmed
+    - contactPreference
+    - dietaryRequirements
+    - firstName
+    - firstTime
+    - grandLodge
+    - grandLodgeId
+    - grandLodgeOrganisationId
+    - grandOfficerStatus
+    - guestOfId
+    - isCheckedIn
+    - isPartner
+    - isPrimary
+    - lastName
+    - lodge
+    - lodgeId
+    - lodgeNameNumber
+    - lodgeOrganisationId
+    - notes
+    - otherGrandOfficerRole
+    - partner
+    - partnerOf
+    - paymentStatus
+    - postNominals
+    - presentGrandOfficerRole
+    - primaryEmail
+    - primaryPhone
+    - rank
+    - relationship
+    - specialNeeds
+    - suffix
+    - tableAssignment
+    - ticket (nested object containing):
+      * selectedEvents
+      * ticketDefinitionId
+    - title
+    - updatedAt
+    - useSameLodge
+  attendeeId
+  attendeeType
+  authUserId
+  contactId
+  contactPreference
+  createdAt
+  dietaryRequirements
+  email
+  eventTitle
+  firstName
+  hasPartner
+  isPartner
+  isPrimary
+  lastName
+  masonicStatus
+  personId
+  phone
+  primaryEmail
+  primaryPhone
+  qrCodeUrl
+  registrationId
+  relatedAttendeeId
+  relationship
+  specialNeeds
+  suffix
+  suffix1
+  suffix2
+  suffix3
+  title
+  updatedAt
+
+TICKETS COLLECTION (40 fields):
+  _id
+  _id.buffer
+  _id.buffer.0-11 (MongoDB ObjectId buffer components)
+  _importedAt
+  _sourceSystem
+  attendeeId
+  checkedInAt
+  createdAt
+  currency
+  eventId
+  eventTicketId
+  isPartnerTicket
+  originalPrice
+  packageId
+  paymentStatus
+  pricePaid
+  purchasedAt
+  qrCodeUrl
+  registrationId
+  reservationExpiresAt
+  reservationId
+  seatInfo
+  status
+  ticketId
+  ticketNumber
+  ticketPrice
+  ticketStatus
+  ticketTypeId
+  updatedAt
+
+🔍 KEY FINDINGS FOR FIELD TRANSFER
+─────────────────────────────────────────────────────────────────────────────────
+
+1. RELATIONSHIP FIELDS:
+   - Both collections share: attendeeId, registrationId
+   - These are the primary linking fields for data transfer
+
+2. NESTED ATTENDEE DATA:
+   - Attendees contain a nested 'attendeeData' object with 41 sub-fields
+   - This represents the core attendee information structure
+   - Contains both personal info and masonic-specific data
+
+3. CONTACT INFORMATION:
+   - Multiple email/phone fields: primaryEmail, email, primaryPhone, phone
+   - Contact preferences and confirmation status tracked
+
+4. MASONIC-SPECIFIC DATA:
+   - Grand Lodge information (grandLodge, grandLodgeId, grandLodgeOrganisationId)
+   - Lodge information (lodge, lodgeId, lodgeNameNumber, lodgeOrganisationId)
+   - Officer status and ranks (grandOfficerStatus, presentGrandOfficerRole, etc.)
+   - Post nominals and masonic status
+
+5. TICKET PRICING & STATUS:
+   - Multiple price fields: originalPrice, pricePaid, ticketPrice
+   - Payment and ticket status tracking
+   - Event and package associations
+
+6. PARTNER RELATIONSHIPS:
+   - Partner tracking in both collections (isPartner, hasPartner, isPartnerTicket)
+   - Relationship mapping (partner, partnerOf, relatedAttendeeId)
+
+7. METADATA FIELDS:
+   - Import tracking (_importedAt, _sourceSystem)
+   - QR code generation (qrCodeUrl)
+   - Timestamps (createdAt, updatedAt)
+
+🎯 FIELD TRANSFER IMPLICATIONS
+─────────────────────────────────────────────────────────────────────────────────
+
+CRITICAL FIELDS TO PRESERVE:
+- All nested attendeeData fields (41 fields)
+- Contact information (email, phone, contact preferences)
+- Masonic profile data (lodge, grand lodge, officer status)
+- Partner relationships and connections
+- Ticket pricing and event associations
+- Import metadata and timestamps
+
+TRANSFORMATION CONSIDERATIONS:
+- Flatten nested attendeeData structure or preserve as formData
+- Consolidate multiple email/phone fields
+- Maintain masonic organizational hierarchy
+- Preserve partner relationship mappings
+- Convert ticket pricing to cart line items
+
+═══════════════════════════════════════════════════════════════════════════════════
+Analysis completed: 2025-08-24
+Total attendee fields analyzed: 87
+Total ticket fields analyzed: 40
+Common fields identified: 17
+═══════════════════════════════════════════════════════════════════════════════════
