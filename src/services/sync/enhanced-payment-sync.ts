@@ -944,9 +944,11 @@ export class EnhancedPaymentSyncService {
 
       // Check if registration already exists in production collection
       const existingProductionRegistration = await db.collection('registrations').findOne({ id: registration.id });
+      let skipRegistrationImport = false;
       if (existingProductionRegistration) {
-        this.writeToLog(`  ✓ Registration already exists in production - skipping import`);
-        return;
+        this.writeToLog(`  ✓ Registration already exists in production - will still process customer and tickets`);
+        skipRegistrationImport = true;
+        // Don't return! We still need to process customer and tickets even if registration exists
       }
 
       const registrationImport = createImportDocument(
@@ -955,13 +957,21 @@ export class EnhancedPaymentSyncService {
         'supabase-registration'
       );
 
-      await db.collection('import_registrations').replaceOne(
-        { id: registration.id },
-        registrationImport,
-        { upsert: true }
-      );
-      const regLogPrefix = shouldMoveToProduction ? '✓' : '📝';
-      this.writeToLog(`  ${regLogPrefix} Imported FULL registration to import_registrations with field transformation`);
+      if (!skipRegistrationImport) {
+        await db.collection('import_registrations').replaceOne(
+          { id: registration.id },
+          registrationImport,
+          { upsert: true }
+        );
+        const regLogPrefix = shouldMoveToProduction ? '✓' : '📝';
+        this.writeToLog(`  ${regLogPrefix} Imported FULL registration to import_registrations with field transformation`);
+      } else {
+        // Still need to get the registration from import_registrations for processing
+        const existingImport = await db.collection('import_registrations').findOne({ id: registration.id });
+        if (existingImport) {
+          Object.assign(registrationImport, existingImport);
+        }
+      }
 
       // 4. Process booking contact as customer (use the imported registration with transformed fields)
       await this.processCustomerFromRegistration(registrationImport, db);
@@ -1308,9 +1318,11 @@ export class EnhancedPaymentSyncService {
 
       // Check if registration already exists in production collection
       const existingProductionRegistration = await db.collection('registrations').findOne({ id: registration.id });
+      let skipRegistrationImport = false;
       if (existingProductionRegistration) {
-        this.writeToLog(`  ✓ Registration already exists in production - skipping import`);
-        return;
+        this.writeToLog(`  ✓ Registration already exists in production - will still process customer and tickets`);
+        skipRegistrationImport = true;
+        // Don't return! We still need to process customer and tickets even if registration exists
       }
 
       const registrationImport = createImportDocument(
@@ -1319,13 +1331,21 @@ export class EnhancedPaymentSyncService {
         'supabase-registration'
       );
 
-      await db.collection('import_registrations').replaceOne(
-        { id: registration.id },
-        registrationImport,
-        { upsert: true }
-      );
-      const regLogPrefix = shouldMoveToProduction ? '✓' : '📝';
-      this.writeToLog(`  ${regLogPrefix} Imported FULL registration to import_registrations with field transformation`);
+      if (!skipRegistrationImport) {
+        await db.collection('import_registrations').replaceOne(
+          { id: registration.id },
+          registrationImport,
+          { upsert: true }
+        );
+        const regLogPrefix = shouldMoveToProduction ? '✓' : '📝';
+        this.writeToLog(`  ${regLogPrefix} Imported FULL registration to import_registrations with field transformation`);
+      } else {
+        // Still need to get the registration from import_registrations for processing
+        const existingImport = await db.collection('import_registrations').findOne({ id: registration.id });
+        if (existingImport) {
+          Object.assign(registrationImport, existingImport);
+        }
+      }
 
       // 4. Process booking contact as customer (use the imported registration with transformed fields)
       await this.processCustomerFromRegistration(registrationImport, db);
@@ -1400,13 +1420,22 @@ export class EnhancedPaymentSyncService {
     const updatedRegistration = await db.collection('import_registrations').findOne({ id: registration.id });
     const customerUUID = updatedRegistration?.metadata?.customerUUID;
     
-    // Get the customer data if we have the UUID
+    // Get the customer data if we have the UUID - check both collections
     let customerData = null;
     if (customerUUID) {
-      customerData = await db.collection('import_customers').findOne({ customerId: customerUUID });
+      // First check production customers collection
+      customerData = await db.collection('customers').findOne({ customerId: customerUUID });
+      if (!customerData) {
+        // If not in production, check import collection
+        customerData = await db.collection('import_customers').findOne({ customerId: customerUUID });
+      }
       if (customerData) {
         this.writeToLog(`  ✓ Found customer data for ticket ownership: ${customerData.firstName} ${customerData.lastName}`);
+      } else {
+        this.writeToLog(`  ⚠️ Customer UUID ${customerUUID} not found in either collection`);
       }
+    } else {
+      this.writeToLog(`  ⚠️ No customer UUID in registration metadata`);
     }
 
     // Process attendees
@@ -1429,7 +1458,30 @@ export class EnhancedPaymentSyncService {
       // Check if ticket already exists in production collection
       const existingProductionTicket = await db.collection('tickets').findOne({ ticketId: ticket.ticketId });
       if (existingProductionTicket) {
-        this.writeToLog(`    ✓ Ticket already exists in production - skipping: ${ticket.ticketId}`);
+        // Check if the existing ticket has an empty ownerId and we have customer data to fix it
+        if ((!existingProductionTicket.ticketOwner?.ownerId || existingProductionTicket.ticketOwner?.ownerId === '') && customerUUID) {
+          this.writeToLog(`    🔧 Fixing empty ownerId for existing production ticket: ${ticket.ticketId}`);
+          
+          // Update the ticket with the customer information
+          await db.collection('tickets').updateOne(
+            { ticketId: ticket.ticketId },
+            {
+              $set: {
+                'ticketOwner.ownerId': customerUUID,
+                'ticketOwner.ownerType': 'customer',
+                'ticketOwner.customerBusinessName': customerData?.businessName || null,
+                'ticketOwner.customerName': customerData ? `${customerData.firstName} ${customerData.lastName}`.trim() : null,
+                'metadata.customerId': customerUUID,
+                'metadata.customerRef': customerData?._id,
+                updatedAt: new Date(),
+                migrationNote: 'Fixed empty ownerId during sync'
+              }
+            }
+          );
+          this.writeToLog(`    ✅ Updated ticket ${ticket.ticketId} with customer ${customerUUID}`);
+        } else {
+          this.writeToLog(`    ✓ Ticket already exists in production with valid owner - skipping: ${ticket.ticketId}`);
+        }
         continue;
       }
 
@@ -1440,6 +1492,12 @@ export class EnhancedPaymentSyncService {
       ticket.metadata.registrationRef = registrationDoc?._id;  // ObjectId
       ticket.metadata.customerId = customerUUID;  // Business ID
       // Customer ObjectId will be added later if needed
+      
+      // Check if ticket exists in import_tickets with empty ownerId
+      const existingImportTicket = await db.collection('import_tickets').findOne({ ticketId: ticket.ticketId });
+      if (existingImportTicket && (!existingImportTicket.ticketOwner?.ownerId || existingImportTicket.ticketOwner?.ownerId === '')) {
+        this.writeToLog(`    🔧 Fixing empty ownerId for existing import ticket: ${ticket.ticketId}`);
+      }
       
       const ticketImport = createImportDocument(
         ticket,
@@ -1558,10 +1616,15 @@ export class EnhancedPaymentSyncService {
     // Update registration with all extracted references (BOTH ObjectIds and business IDs)
     this.writeToLog(`  📝 Updating registration with extracted references`);
     
-    // Get the customer ObjectId if we have the UUID
+    // Get the customer ObjectId if we have the UUID - check both collections
     let customerObjectId: ObjectId | undefined;
     if (customerUUID) {
-      const customerDoc = await db.collection('import_customers').findOne({ customerId: customerUUID });
+      // First check production customers collection
+      let customerDoc = await db.collection('customers').findOne({ customerId: customerUUID });
+      if (!customerDoc) {
+        // If not in production, check import collection
+        customerDoc = await db.collection('import_customers').findOne({ customerId: customerUUID });
+      }
       customerObjectId = customerDoc?._id;
     }
     
@@ -1716,7 +1779,21 @@ export class EnhancedPaymentSyncService {
       // Check if customer already exists in production collection
       const existingProductionCustomer = await db.collection('customers').findOne({ hash: customerData.hash });
       if (existingProductionCustomer) {
-        this.writeToLog(`    ✓ Customer already exists in production - skipping: ${customerData.firstName} ${customerData.lastName}`);
+        this.writeToLog(`    ✓ Customer already exists in production - using existing: ${customerData.firstName} ${customerData.lastName}`);
+        
+        // IMPORTANT: Still need to update registration with customer reference!
+        await db.collection('import_registrations').updateOne(
+          { id: registration.id },
+          {
+            $set: {
+              'registrationData.bookingContactRef': existingProductionCustomer.customerId,
+              'metadata.customerId': existingProductionCustomer._id,
+              'metadata.customerUUID': existingProductionCustomer.customerId,
+              'metadata.extractedCustomerId': existingProductionCustomer.customerId
+            }
+          }
+        );
+        this.writeToLog(`    ✓ Updated registration with existing customer reference: ${existingProductionCustomer.customerId}`);
         return;
       }
 
@@ -1746,6 +1823,10 @@ export class EnhancedPaymentSyncService {
       } else {
         const existingCustomer = await db.collection('import_customers').findOne({ hash: customerData.hash });
         customerId = existingCustomer?._id;
+        // Use existing customer's ID instead of the newly generated one
+        if (existingCustomer) {
+          customerData.customerId = existingCustomer.customerId; // Use existing customer's UUID
+        }
         this.writeToLog(`    ✓ Updated existing customer: ${customerData.firstName} ${customerData.lastName}`);
       }
 
@@ -2405,17 +2486,41 @@ export class EnhancedPaymentSyncService {
   private async updateTicketWithFieldComparison(ticketData: any, registrationId: string, db: Db): Promise<void> {
     const ticketId = ticketData.id || `${registrationId}-ticket-${ticketData.ticketNumber}`;
     
+    // Get registration to find customer
+    const registration = await db.collection('import_registrations').findOne({ id: registrationId });
+    const customerUUID = registration?.metadata?.customerId || registration?.customerId;
+    
+    let customerData = null;
+    if (customerUUID) {
+      customerData = await db.collection('customers').findOne({ customerId: customerUUID });
+      if (!customerData) {
+        customerData = await db.collection('import_customers').findOne({ customerId: customerUUID });
+      }
+    }
+    
     // Check existing ticket
     const existingTicket = await db.collection('import_tickets').findOne({ id: ticketId });
     
     if (!existingTicket) {
-      // New ticket, import it
+      // New ticket, import it - add ticketOwner if we have customer data
+      const ticketWithOwner = {
+        ...ticketData,
+        id: ticketId,
+        registrationId
+      };
+      
+      // Add ticketOwner if we have customer data
+      if (customerData) {
+        ticketWithOwner.ticketOwner = {
+          ownerId: customerData.customerId,
+          ownerType: 'customer',
+          customerBusinessName: customerData.businessName || null,
+          customerName: `${customerData.firstName} ${customerData.lastName}`.trim()
+        };
+      }
+      
       const ticketImport = createImportDocument(
-        {
-          ...ticketData,
-          id: ticketId,
-          registrationId
-        },
+        ticketWithOwner,
         'supabase',
         'supabase-ticket'
       );
@@ -2424,6 +2529,18 @@ export class EnhancedPaymentSyncService {
     } else if (this.isSourceNewer(ticketData, existingTicket)) {
       // Check for changed fields
       const changedFields = this.getChangedFields(ticketData, existingTicket);
+      
+      // Also check if we need to fix empty ownerId
+      if ((!existingTicket.ticketOwner?.ownerId || existingTicket.ticketOwner?.ownerId === '') && customerData) {
+        changedFields.ticketOwner = {
+          ownerId: customerData.customerId,
+          ownerType: 'customer',
+          customerBusinessName: customerData.businessName || null,
+          customerName: `${customerData.firstName} ${customerData.lastName}`.trim()
+        };
+        changedFields['metadata.customerId'] = customerData.customerId;
+        this.writeToLog(`      🔧 Fixing empty ownerId for ticket ${ticketId}`);
+      }
       
       if (Object.keys(changedFields).length > 0) {
         changedFields.updatedAt = new Date();
@@ -2436,10 +2553,50 @@ export class EnhancedPaymentSyncService {
         // Also update in production if exists
         const prodTicket = await db.collection('tickets').findOne({ id: ticketId });
         if (prodTicket) {
+          // Check if production ticket also needs ownerId fix
+          if ((!prodTicket.ticketOwner?.ownerId || prodTicket.ticketOwner?.ownerId === '') && customerData) {
+            changedFields.ticketOwner = {
+              ownerId: customerData.customerId,
+              ownerType: 'customer',
+              customerBusinessName: customerData.businessName || null,
+              customerName: `${customerData.firstName} ${customerData.lastName}`.trim()
+            };
+            changedFields['metadata.customerId'] = customerData.customerId;
+          }
           await db.collection('tickets').updateOne(
             { id: ticketId },
             { $set: changedFields }
           );
+        }
+      }
+    } else {
+      // Even if not newer, check if we need to fix empty ownerId
+      if ((!existingTicket.ticketOwner?.ownerId || existingTicket.ticketOwner?.ownerId === '') && customerData) {
+        const ownerFix = {
+          ticketOwner: {
+            ownerId: customerData.customerId,
+            ownerType: 'customer',
+            customerBusinessName: customerData.businessName || null,
+            customerName: `${customerData.firstName} ${customerData.lastName}`.trim()
+          },
+          'metadata.customerId': customerData.customerId,
+          updatedAt: new Date()
+        };
+        
+        await db.collection('import_tickets').updateOne(
+          { id: ticketId },
+          { $set: ownerFix }
+        );
+        this.writeToLog(`      🔧 Fixed empty ownerId for existing ticket ${ticketId}`);
+        
+        // Also fix in production if exists
+        const prodTicket = await db.collection('tickets').findOne({ id: ticketId });
+        if (prodTicket && (!prodTicket.ticketOwner?.ownerId || prodTicket.ticketOwner?.ownerId === '')) {
+          await db.collection('tickets').updateOne(
+            { id: ticketId },
+            { $set: ownerFix }
+          );
+          this.writeToLog(`      🔧 Fixed empty ownerId in production ticket ${ticketId}`);
         }
       }
     }
@@ -3540,9 +3697,12 @@ export class EnhancedPaymentSyncService {
           const hasAttendee = !!ticket.attendeeId;
           
           // Create ticketOwner object - always based on the customer who purchased
+          if (!customerData?.customerId) {
+            this.writeToLog(`      ⚠️ Creating ticket without customer data for eventTicketId: ${eventTicketId}`);
+          }
           const ticketOwner = {
             ownerId: customerData?.customerId || '', // Use the UUID customerId
-            ownerType: customerData?.businessName ? 'organisation' : 'contact',
+            ownerType: 'customer', // Always use 'customer' for standardization
             customerBusinessName: customerData?.businessName || null,
             customerName: customerData ? `${customerData.firstName} ${customerData.lastName}`.trim() : null
           };
