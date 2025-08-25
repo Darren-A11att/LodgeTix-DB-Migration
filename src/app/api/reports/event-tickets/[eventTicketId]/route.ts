@@ -37,6 +37,7 @@ export async function GET(
     // Map to simplified structure with attendee lookups
     const ticketRows = await Promise.all(tickets.map(async (ticket) => {
       const attendeeId = ticket.ticketHolder?.attendeeId || ticket.ticket_holder?.attendee_id || '';
+      const registrationId = ticket.details?.registrationId || ticket.details?.registration_id || '';
       
       // Lookup attendee if we have an attendeeId
       let attendeeName = '';
@@ -145,10 +146,35 @@ export async function GET(
             }
           }
         }
+      } else if (registrationId) {
+        // If no attendeeId but we have a registrationId, lookup the registration
+        const registration = await db.collection('registrations').findOne({
+          $or: [
+            { registrationId: registrationId },
+            { registration_id: registrationId }
+          ]
+        });
+        
+        if (registration) {
+          // Get organisation name from registration
+          const organisationName = registration.organisationName || 
+                                  registration.organisation_name || 
+                                  registration.customer?.businessName || 
+                                  registration.customer?.business_name || 
+                                  '';
+          
+          // Use organisation name for attendee name and lodge name/number
+          attendeeName = organisationName;
+          lodgeNameNumber = organisationName;
+          
+          // Use registration type for attendee type
+          attendeeType = registration.registrationType || 
+                        registration.registration_type || 
+                        '';
+        }
       }
       
       // Lookup registration confirmation number
-      const registrationId = ticket.details?.registrationId || ticket.details?.registration_id || '';
       let confirmationNumber = '';
       
       if (registrationId) {
