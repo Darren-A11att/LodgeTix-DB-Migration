@@ -10,10 +10,14 @@ interface TicketRow {
   price: number;
   quantity: number;
   status: string;
-  attendeeId: string | null;
+  attendeeName: string;
+  attendeeType: string;
+  lodgeNameNumber: string;
+  grandLodgeAbbreviation: string;
+  partner: string;
   customerName: string | null;
   businessName: string | null;
-  registrationId: string | null;
+  confirmationNumber: string;
   paymentId: string | null;
   createdAt: string;
 }
@@ -93,16 +97,20 @@ export default function EventTicketDetailsPage() {
   const downloadCSV = () => {
     if (!details) return;
 
-    const headers = ['Ticket Number', 'Status', 'Price', 'Quantity', 'Customer Name', 'Business Name', 'Attendee ID', 'Registration ID', 'Payment ID', 'Date'];
+    const headers = ['Ticket Number', 'Status', 'Price', 'Quantity', 'Attendee Name', 'Attendee Type', 'Lodge Name/Number', 'Grand Lodge', 'Partner', 'Customer Name', 'Business Name', 'Confirmation Number', 'Payment ID', 'Date'];
     const rows = details.tickets.map(ticket => [
       ticket.ticketNumber || '',
       ticket.status || '',
       ticket.price.toFixed(2),
       ticket.quantity,
+      ticket.attendeeName || '',
+      ticket.attendeeType || '',
+      ticket.lodgeNameNumber || '',
+      ticket.grandLodgeAbbreviation || '',
+      ticket.partner || '',
       ticket.customerName || '',
       ticket.businessName || '',
-      ticket.attendeeId || '',
-      ticket.registrationId || '',
+      ticket.confirmationNumber || '',
       ticket.paymentId || '',
       formatDate(ticket.createdAt)
     ]);
@@ -112,11 +120,25 @@ export default function EventTicketDetailsPage() {
       ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
+    // Format filename as ticket_eventTicketName_YYMMDD
+    const today = new Date();
+    const yy = today.getFullYear().toString().slice(-2);
+    const mm = (today.getMonth() + 1).toString().padStart(2, '0');
+    const dd = today.getDate().toString().padStart(2, '0');
+    const dateStr = `${yy}${mm}${dd}`;
+    
+    // Clean the event ticket name for use in filename (remove special characters)
+    const cleanEventName = details.eventTicket.name
+      .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+      .replace(/\s+/g, '_'); // Replace spaces with underscores
+    
+    const filename = `ticket_${cleanEventName}_${dateStr}.csv`;
+
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `event-ticket-${eventTicketId}-tickets.csv`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -271,16 +293,28 @@ export default function EventTicketDetailsPage() {
                 Quantity
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Attendee Name
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Attendee Type
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Lodge Name/Number
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Grand Lodge
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                Partner
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Customer Name
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Business Name
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Attendee ID
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Registration ID
+                Confirmation Number
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Payment ID
@@ -312,16 +346,28 @@ export default function EventTicketDetailsPage() {
                   {ticket.quantity}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.attendeeName || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.attendeeType || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.lodgeNameNumber || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.grandLodgeAbbreviation || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.partner || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
                   {ticket.customerName || '-'}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm">
                   {ticket.businessName || '-'}
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
-                  {ticket.attendeeId || '-'}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
-                  {ticket.registrationId || '-'}
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {ticket.confirmationNumber || '-'}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
                   {ticket.paymentId || '-'}
