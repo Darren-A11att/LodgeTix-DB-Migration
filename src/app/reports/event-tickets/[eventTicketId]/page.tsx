@@ -6,22 +6,16 @@ import { useParams } from 'next/navigation';
 import SimpleDatabaseSelector from '@/components/SimpleDatabaseSelector';
 
 interface TicketRow {
-  ticketId: string;
   ticketNumber: string;
-  status: string;
   price: number;
   quantity: number;
-  holderName: string;
-  registrationType: string;  // Registration type from registration
-  attendeeType: string;  // Attendee type from attendee
-  partnerName: string;
-  lodgeNameNumber: string;
-  bookedBy: string;
-  owner: string;  // Owner based on ticketOwner.ownerType
-  confirmationNumber: string;
-  paymentStatus: string;
-  createdDate: string;
-  revenue: number;
+  status: string;
+  attendeeId: string | null;
+  customerName: string | null;
+  businessName: string | null;
+  registrationId: string | null;
+  paymentId: string | null;
+  createdAt: string;
 }
 
 interface EventTicketDetails {
@@ -99,22 +93,18 @@ export default function EventTicketDetailsPage() {
   const downloadCSV = () => {
     if (!details) return;
 
-    const headers = ['Ticket Number', 'Status', 'Price', 'Quantity', 'Holder', 'Registration Type', 'Attendee Type', 'Partner', 'Lodge', 'Booked By', 'Owner', 'Confirm Number', 'Payment Status', 'Date'];
+    const headers = ['Ticket Number', 'Status', 'Price', 'Quantity', 'Customer Name', 'Business Name', 'Attendee ID', 'Registration ID', 'Payment ID', 'Date'];
     const rows = details.tickets.map(ticket => [
       ticket.ticketNumber || '',
       ticket.status || '',
       ticket.price.toFixed(2),
       ticket.quantity,
-      ticket.holderName || '',
-      ticket.registrationType || '',
-      ticket.attendeeType || '',
-      ticket.partnerName || '',
-      ticket.lodgeNameNumber || '',
-      ticket.bookedBy || '',
-      ticket.owner || '',
-      ticket.confirmationNumber || '',
-      ticket.paymentStatus || '',
-      formatDate(ticket.createdDate)
+      ticket.customerName || '',
+      ticket.businessName || '',
+      ticket.attendeeId || '',
+      ticket.registrationId || '',
+      ticket.paymentId || '',
+      formatDate(ticket.createdAt)
     ]);
 
     const csv = [
@@ -154,7 +144,7 @@ export default function EventTicketDetailsPage() {
         return b.quantity - a.quantity;
       case 'date':
       default:
-        return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
   });
 
@@ -281,31 +271,19 @@ export default function EventTicketDetailsPage() {
                 Quantity
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Holder
+                Customer Name
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Registration Type
+                Business Name
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Attendee Type
+                Attendee ID
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Partner
+                Registration ID
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Lodge
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Booked By
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Owner
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Confirm Number
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                Payment Status
+                Payment ID
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Date
@@ -313,8 +291,8 @@ export default function EventTicketDetailsPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredTickets.map((ticket) => (
-              <tr key={ticket.ticketId} className="hover:bg-gray-50">
+            {filteredTickets.map((ticket, index) => (
+              <tr key={ticket.ticketNumber || index} className="hover:bg-gray-50">
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
                   {ticket.ticketNumber || '-'}
                 </td>
@@ -334,41 +312,22 @@ export default function EventTicketDetailsPage() {
                   {ticket.quantity}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.holderName || '-'}
+                  {ticket.customerName || '-'}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.registrationType || '-'}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.attendeeType || '-'}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.partnerName || '-'}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.lodgeNameNumber || '-'}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.bookedBy || '-'}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  {ticket.owner || '-'}
+                  {ticket.businessName || '-'}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
-                  {ticket.confirmationNumber || '-'}
+                  {ticket.attendeeId || '-'}
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    ticket.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                    ticket.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    ticket.paymentStatus === 'failed' ? 'bg-red-100 text-red-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {ticket.paymentStatus || 'unknown'}
-                  </span>
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
+                  {ticket.registrationId || '-'}
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-mono">
+                  {ticket.paymentId || '-'}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(ticket.createdDate)}
+                  {formatDate(ticket.createdAt)}
                 </td>
               </tr>
             ))}

@@ -1,0 +1,127 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-24T23:12:01.328Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+
+━━━ Processing Square ━━━
+
+Fetching Square payments since 2025-08-24T13:55:03.376Z (INCREMENTAL)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: lucldJ7g97i4J2HAuR2Mk2UMZnBZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: 3OBCcEhIn8ZSX315mBlJucawj4dZY
+    ✓ Order fetched
+  👤 Fetching customer: CGRFCYRB45DKSCDDR0VJR3D8GR
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 85736184-7e27-4d23-8a30-c6e04472fc7c
+  ✓ Updated import_payments with registrationId: 85736184-7e27-4d23-8a30-c6e04472fc7c
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Lester Glenn Serrano
+    ✓ Created new customer: Lester Glenn Serrano
+    ✓ Updated registration with customer reference: a790cf49-bd6c-465a-892e-935ead1fb72b
+  ✓ Found customer data for ticket ownership: Lester Glenn Serrano
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 1 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 1
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 1 processed tickets from registration_data
+  ✓ Found 1 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198dc7e-8b36-757e-b84e-69adc3da5806-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (85736184-7e27-4d23-8a30-c6e04472fc7c)
+    ✨ Creating new contact with role 'attendee': Lester Glenn Serrano
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (85736184-7e27-4d23-8a30-c6e04472fc7c) - Conf: IND-519322VC
+    ✓ Processed unified contact: Lester Glenn Serrano (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 1 ticket IDs (1 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment lucldJ7g97i4J2HAuR2Mk2UMZnBZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment lucldJ7g97i4J2HAuR2Mk2UMZnBZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer a790cf49-bd6c-465a-892e-935ead1fb72b synced to production
+      ✓ Attendee 0198dc7e-8b36-757e-b84e-69adc3da5806 synced to production
+      ✓ Contact lesterglennserrano@gmail.com synced to production
+      ✓ Ticket 0198dc7e-8b36-757e-b84e-69adc3da5806-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment lucldJ7g97i4J2HAuR2Mk2UMZnBZY complete data chain synced to production
+  ✅ Payment data synced to production
+  No cursor found, completed all Square payments
+✓ Processed 1 Square payments (total fetched: 1)
+
+━━━ Processing DA-LODGETIX ━━━
+
+Fetching Stripe charges since 2025-08-24T13:55:03.376Z (INCREMENTAL)...
+
+━━━ Processing WS-LODGETIX ━━━
+
+Fetching Stripe charges since 2025-08-24T13:55:03.376Z (INCREMENTAL)...
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+Fetching Stripe charges since 2025-08-24T13:55:03.376Z (INCREMENTAL)...
+
+✅ All payments processed with immediate production sync
+   Each payment's complete data chain was synced to production before processing the next payment
+   This prevents orphaned tickets and ensures all relationships are properly maintained
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+
+📊 VERIFICATION RESULTS:
+Error Payments - Found: 0, Not Found: 12
+Error Registrations - Found: 0, Not Found: 0
+Orphaned Registrations - Found: 0, Not Found: 0
+
+📈 Overall: 0.00% of error documents exist in test DB
+⚠️  Low found rate indicates genuine sync failures
+✅ Error verification completed
+
+
+🛒 Processing Orders from Registrations...
+✅ Orders created: 1
+⏭️ Orders skipped: 316
+
+📋 Skip Reasons:
+   Order already exists for this registration: 316 orders
+
+=== SYNC COMPLETE ===
+✅ Processed: 1
+⏭️ Skipped: 0
+❌ Errors: 0
+👥 Unique contacts: 1
+📊 Total: 1

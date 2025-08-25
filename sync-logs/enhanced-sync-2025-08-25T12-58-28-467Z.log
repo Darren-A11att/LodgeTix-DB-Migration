@@ -1,0 +1,188 @@
+=== ENHANCED PAYMENT SYNC LOG ===
+Started at: 2025-08-25T12:58:28.468Z
+Processing Square with orders/customers and contacts
+
+✓ Supabase client initialized
+✓ Square provider initialized (REQUIRED)
+✓ DA-LODGETIX initialized
+✓ WS-LODGETIX initialized
+✓ WS-LODGETICKETS initialized
+
+Initialized 4 payment provider(s)
+✓ Connected to MongoDB:
+  Cluster: LodgeTix-migration-test-1
+  Database: lodgetix
+  URI: mongodb+srv:****@lodgetix-migration-test.wydwfu6.mongodb.net/lodgetix?retryWrites=true&w=majority&appName=LodgeTix-migration-test-1
+
+=== STARTING ENHANCED PAYMENT SYNC ===
+Processing workflow:
+1. Import payment to import_payments (with field transformation)
+2. Fetch order/customer for Square payments
+3. Find registration in Supabase
+4. Update with charge ID for Stripe
+5. Import to import_registrations (with field transformation)
+6. Import attendees to import_attendees
+7. Import tickets to import_tickets
+8. Import contacts to import_contacts with deduplication
+9. Process booking contact as customer with registration metadata
+9. Selective sync to production collections based on field comparison
+
+
+━━━ Processing Square ━━━
+
+Fetching Square payments since 2025-08-25T10:41:58.841Z (INCREMENTAL)...
+  Fetched payment 1 (cursor: none)
+
+📝 Processing Square payment: PBl8UqO1NAwkHuOO9MsfkhV68p5YY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: hXVV1pqoBypWkRUVznmUlesD39MZY
+    ✓ Order fetched
+  👤 Fetching customer: ZYQPYZPEYWVA7NXMXK1D8HFCDW
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: ae82b9b1-7b2b-4175-a4b0-b62c217b5ff1
+  ✓ Updated import_payments with registrationId: ae82b9b1-7b2b-4175-a4b0-b62c217b5ff1
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Felipe Santos Silva Fonseca
+    ✓ Created new customer: Felipe Santos Silva Fonseca
+    ✓ Updated registration with customer reference: 243e4a44-d3ae-41fd-8c60-45ed9102d48c
+  ✓ Found customer data for ticket ownership: Felipe Santos Silva Fonseca
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198deb1-5210-77a4-be22-348ce38634cf-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198deb1-5210-77a4-be22-348ce38634cf-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (ae82b9b1-7b2b-4175-a4b0-b62c217b5ff1)
+    ✨ Creating new contact with role 'attendee': Felipe Fonseca
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (ae82b9b1-7b2b-4175-a4b0-b62c217b5ff1) - Conf: IND-171909GW
+    ✓ Processed unified contact: Felipe Fonseca (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment PBl8UqO1NAwkHuOO9MsfkhV68p5YY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment PBl8UqO1NAwkHuOO9MsfkhV68p5YY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 243e4a44-d3ae-41fd-8c60-45ed9102d48c synced to production
+      ✓ Attendee 0198deb1-5210-77a4-be22-348ce38634cf synced to production
+      ✓ Contact felipessfonseca@gmail.com synced to production
+      ✓ Ticket 0198deb1-5210-77a4-be22-348ce38634cf-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+      ✓ Ticket 0198deb1-5210-77a4-be22-348ce38634cf-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+    ✅ Payment PBl8UqO1NAwkHuOO9MsfkhV68p5YY complete data chain synced to production
+  ✅ Payment data synced to production
+  Got cursor for next payment
+  Fetched payment 2 (cursor: provided)
+
+📝 Processing Square payment: 9eAa7ppZx5ZDSs3UkWr6vVxNWcAZY
+  ✅ Importing completed payment - status: COMPLETED
+  🛒 Fetching order: RBqn9g0T30v0BWZniavexRoOSj6YY
+    ✓ Order fetched
+  👤 Fetching customer: 98VG6X7AZGC03KXBQT0A950K7C
+    ✓ Customer fetched
+  ✓ Imported to import_payments with field transformation
+  ✓ Found registration: 4917e184-766f-4ed9-89a7-92dae2b1fe7d
+  ✓ Updated import_payments with registrationId: 4917e184-766f-4ed9-89a7-92dae2b1fe7d
+  ✓ Imported FULL registration to import_registrations with field transformation
+  📝 Processing booking contact as customer
+    Customer data created: Allan Wojcik da Silva
+    ✓ Created new customer: Allan Wojcik da Silva
+    ✓ Updated registration with customer reference: 8cda41a9-cf25-4fef-87c1-d2d1199fadf5
+  ✓ Found customer data for ticket ownership: Allan Wojcik da Silva
+    Extracting 1 attendees from registration_data
+    🔍 Looking up grand lodge: 3e893fa6-2cc2-448c-be9c-e3858cc90e11
+    ✓ Found grand lodge name: United Grand Lodge of New South Wales & Australian Capital Territory
+  ✓ Found 1 attendee(s)
+    Extracting 2 tickets from registration_data.selectedTickets
+    Total tickets after expansion: 2
+    📝 Using event_ticket_id for eventTicketId: be94ef03-6647-48d5-97ea-f98c862e30e6
+    🔍 Looking up eventTicket: be94ef03-6647-48d5-97ea-f98c862e30e6
+    ✅ Found eventTicket: Quarterly Communication (price: 0)
+    📝 Using event_ticket_id for eventTicketId: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    🔍 Looking up eventTicket: 7196514b-d4b8-4fe0-93ac-deb4c205dd09
+    ✅ Found eventTicket: Grand Proclamation Ceremony (price: 20)
+    📦 Returning 2 processed tickets from registration_data
+  ✓ Found 2 ticket(s) in registration
+    💾 Saving ticket to import_tickets: 0198e0cd-b708-7498-803e-b9e97df0e158-be94ef03-6647-48d5-97ea-f98c862e30e6 (Quarterly Communication, qty: 1)
+      ✅ Created ticket document
+    💾 Saving ticket to import_tickets: 0198e0cd-b708-7498-803e-b9e97df0e158-7196514b-d4b8-4fe0-93ac-deb4c205dd09 (Grand Proclamation Ceremony, qty: 1)
+      ✅ Created ticket document
+    📝 Created registration reference: Grand Proclamation 2025 (4917e184-766f-4ed9-89a7-92dae2b1fe7d)
+    ✨ Creating new contact with role 'attendee': Allan Wojcik da Silva
+    📋 Registrations added: 1 items
+      1. Grand Proclamation 2025 (4917e184-766f-4ed9-89a7-92dae2b1fe7d) - Conf: IND-856458TX
+    ✓ Processed unified contact: Allan Wojcik da Silva (roles: attendee)
+  📝 Updating registration with extracted references
+    ✅ Updated registration with 2 ticket IDs (2 ObjectIds) and 1 attendee IDs (1 ObjectIds)
+  ✅ Completed processing Square payment 9eAa7ppZx5ZDSs3UkWr6vVxNWcAZY (production eligible)
+  🔄 Syncing payment data to production...
+    → Syncing payment 9eAa7ppZx5ZDSs3UkWr6vVxNWcAZY data to production...
+      ✓ Payment synced to production
+      ✓ Registration synced to production
+      ✓ Customer 8cda41a9-cf25-4fef-87c1-d2d1199fadf5 synced to production
+      ✓ Attendee 0198e0cd-b708-7498-803e-b9e97df0e158 synced to production
+      ✓ Contact allanwsilva@gmail.com synced to production
+      ✓ Ticket 0198e0cd-b708-7498-803e-b9e97df0e158-be94ef03-6647-48d5-97ea-f98c862e30e6 synced to production
+      ✓ Ticket 0198e0cd-b708-7498-803e-b9e97df0e158-7196514b-d4b8-4fe0-93ac-deb4c205dd09 synced to production
+    ✅ Payment 9eAa7ppZx5ZDSs3UkWr6vVxNWcAZY complete data chain synced to production
+  ✅ Payment data synced to production
+  No cursor found, completed all Square payments
+✓ Processed 2 Square payments (total fetched: 2)
+
+━━━ Processing DA-LODGETIX ━━━
+
+Fetching Stripe charges since 2025-08-25T10:41:58.841Z (INCREMENTAL)...
+
+━━━ Processing WS-LODGETIX ━━━
+
+Fetching Stripe charges since 2025-08-25T10:41:58.841Z (INCREMENTAL)...
+
+━━━ Processing WS-LODGETICKETS ━━━
+
+Fetching Stripe charges since 2025-08-25T10:41:58.841Z (INCREMENTAL)...
+
+✅ All payments processed with immediate production sync
+   Each payment's complete data chain was synced to production before processing the next payment
+   This prevents orphaned tickets and ensures all relationships are properly maintained
+
+🔍 Starting Error Verification...
+Checking error documents against test database...
+
+
+📊 VERIFICATION RESULTS:
+Error Payments - Found: 0, Not Found: 12
+Error Registrations - Found: 0, Not Found: 0
+Orphaned Registrations - Found: 0, Not Found: 0
+
+📈 Overall: 0.00% of error documents exist in test DB
+⚠️  Low found rate indicates genuine sync failures
+✅ Error verification completed
+
+
+🛒 Processing Orders from Registrations...
+✅ Orders created: 2
+⏭️ Orders skipped: 317
+
+📋 Skip Reasons:
+   Order already exists for this registration: 317 orders
+
+=== SYNC COMPLETE ===
+✅ Processed: 2
+⏭️ Skipped: 0
+❌ Errors: 0
+👥 Unique contacts: 2
+📊 Total: 2
